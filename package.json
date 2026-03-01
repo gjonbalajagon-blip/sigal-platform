@@ -1,0 +1,35 @@
+{
+  "name": "sigal-platform",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "docxtemplater": "^3.68.3",
+    "pizzip": "^3.2.0"
+  }
+}
+{
+  "name": "sigal-platform",
+  "version": "1.0.0",
+  "description": "Platform sigurimesh shëndetësore për Sigal Insurance Group",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node -e \"console.log('Platform is ready')\""
+  },
+  "keywords": [],
+  "author": "Sigal Insurance Group",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "docxtemplater": "^3.56.0",
+    "pizzip": "^3.1.6"
+  }
+}
