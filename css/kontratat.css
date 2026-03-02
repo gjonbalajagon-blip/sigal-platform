@@ -1,0 +1,104 @@
+.modal-large {
+    max-width: 680px;
+}
+
+.lloji-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.lloji-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+    color: #555;
+}
+
+.lloji-btn:hover {
+    border-color: #0057B8;
+    color: #0057B8;
+}
+
+.lloji-btn.active {
+    border-color: #0057B8;
+    background: #0057B8;
+    color: white;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.badge-lloji {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-lloji.individ { background: #dbeafe; color: #1e40af; }
+.badge-lloji.biznes { background: #fef3c7; color: #92400e; }
+.badge-lloji.familje { background: #d1fae5; color: #065f46; }
+
+.badge-status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-status.aktive { background: #d1fae5; color: #065f46; }
+.badge-status.skaduar { background: #fee2e2; color: #dc2626; }
+.badge-status.ne-pritje { background: #fef3c7; color: #92400e; }
+.pakot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.pako-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.pako-check:hover {
+    border-color: #0057B8;
+    background: #f0f4f8;
+}
+
+.pako-check input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #0057B8;
+}
+.btn-word {
+    background: #dbeafe;
+    color: #1e40af;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-word:hover {
+    background: #bfdbfe;
+}
