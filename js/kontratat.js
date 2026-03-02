@@ -335,36 +335,19 @@ async function ngarkoTemplate() {
 
 async function gjeneroWord(index) {
     const k = kontratat[index];
-    const buffer = await ngarkoTemplate();
-    const zip = new PizZip(buffer);
-    const doc = new docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-
-    // objekt me fushat që i ke në template (emrat e placeholder‑eve)
-    doc.setData({
-        EMRI: k.emri,
-        LLOJI: llojiLabel[k.lloji] || '',
-        ADRESA: k.adresa || '',
-        NR_BIZNESIT: k.nrBiznesit || '',
-        PERFAQESUESI: k.perfaqesuesi || '',
-        FILLIM: k.fillimi || '',
-        MBARIM: k.mbarimi || '',
-        PAKOT: (k.pakot || []).join(', '),
-        // …shtoni çdo fushë tjetër
-    });
-
     try {
-        doc.render();
+        const response = await fetch('https://sigal-platform-production.up.railway.app/api/gjenero-kontrate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(k)
+        });
+        const data = await response.json();
+        if (data.success) {
+            window.open(`https://sigal-platform-production.up.railway.app/api/shkarko/${data.fileName}`, '_blank');
+        } else {
+            alert('Gabim: ' + data.error);
+        }
     } catch (err) {
-        console.error(err);
-        alert('Gabim në renderimin e kontratës');
-        return;
+        alert('Serveri nuk është aktiv!');
     }
-
-    const out = doc.getZip().generate({ type: 'blob' });
-    const url = URL.createObjectURL(out);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Kontrata_${k.emri.replace(/\s+/g,'_')}.docx`;
-    a.click();
-    URL.revokeObjectURL(url);
 }
