@@ -10,9 +10,10 @@ function zgjidhLlojin(lloji, btn) {
     document.querySelectorAll('.lloji-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    // Shfaq/fsheh fushat sipas llojit
     document.getElementById('field-nr-biznesit').style.display = (lloji === 'biznes') ? 'block' : 'none';
     document.getElementById('field-perfaqesuesi').style.display = (lloji === 'biznes' || lloji === 'familje') ? 'block' : 'none';
+    document.getElementById('field-nr-personal').style.display = (lloji === 'individ' || lloji === 'familje') ? 'block' : 'none';
+    document.getElementById('field-pozita').style.display = (lloji === 'biznes') ? 'block' : 'none';
 }
 
 function shtoKontrate() {
@@ -21,7 +22,10 @@ function shtoKontrate() {
     document.getElementById('m-emri').value = '';
     document.getElementById('m-adresa').value = '';
     document.getElementById('m-nr-biznesit').value = '';
+    document.getElementById('m-nr-personal').value = '';
     document.getElementById('m-perfaqesuesi').value = '';
+    document.getElementById('m-pozita').value = '';
+    document.getElementById('m-data-kontrates').value = '';
     document.querySelectorAll('.pako-check input').forEach(cb => cb.checked = false);
     document.getElementById('m-fillimi').value = '';
     document.getElementById('m-mbarimi').value = '';
@@ -37,12 +41,15 @@ function ruajKontrate() {
     const emri = document.getElementById('m-emri').value.trim();
     if (!emri) { alert('Ju lutem shkruani emrin e klientit!'); return; }
 
-    const kontrata = {
+   const kontrata = {
         emri,
         lloji: document.getElementById('m-lloji').value,
         adresa: document.getElementById('m-adresa').value.trim(),
         nrBiznesit: document.getElementById('m-nr-biznesit').value.trim(),
+        nrPersonal: document.getElementById('m-nr-personal').value.trim(),
         perfaqesuesi: document.getElementById('m-perfaqesuesi').value.trim(),
+        pozita: document.getElementById('m-pozita').value.trim(),
+        dataKontrates: document.getElementById('m-data-kontrates').value,
         pakot: Array.from(document.querySelectorAll('.pako-check input:checked')).map(cb => cb.value),
         fillimi: document.getElementById('m-fillimi').value,
         mbarimi: document.getElementById('m-mbarimi').value,
@@ -72,18 +79,18 @@ function editoKontrate(index) {
     editIndex = index;
     const k = kontratat[index];
     document.getElementById('modal-title').textContent = 'Edito Kontratë';
-    document.getElementById('m-nr').value = k.nr || '';
     document.getElementById('m-emri').value = k.emri;
     document.getElementById('m-adresa').value = k.adresa || '';
     document.getElementById('m-nr-biznesit').value = k.nrBiznesit || '';
+    document.getElementById('m-nr-personal').value = k.nrPersonal || '';
     document.getElementById('m-perfaqesuesi').value = k.perfaqesuesi || '';
+    document.getElementById('m-pozita').value = k.pozita || '';
+    document.getElementById('m-data-kontrates').value = k.dataKontrates || '';
     document.querySelectorAll('.pako-check input').forEach(cb => {
-    cb.checked = (k.pakot || []).includes(cb.value);
-});
+        cb.checked = (k.pakot || []).includes(cb.value);
+    });
     document.getElementById('m-fillimi').value = k.fillimi || '';
     document.getElementById('m-mbarimi').value = k.mbarimi || '';
-    document.getElementById('m-email').value = k.email || '';
-    document.getElementById('m-telefoni').value = k.telefoni || '';
     const btns = document.querySelectorAll('.lloji-btn');
     const llojiMap = { individ: 0, biznes: 1, familje: 2 };
     zgjidhLlojin(k.lloji, btns[llojiMap[k.lloji] || 0]);
