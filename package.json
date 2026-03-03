@@ -1,21 +1,17 @@
 {
   "name": "sigal-platform",
   "version": "1.0.0",
-  "description": "Platform sigurimesh shëndetësore për Sigal Insurance Group",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "Sigal Insurance Group",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",
-    "docx-merger": "^0.0.3",
+    "docx-merger": "0.0.3",
     "docxtemplater": "^3.68.3",
     "express": "^4.18.2",
     "fast-xml-parser": "^4.3.2",
     "pizzip": "^3.2.0"
   }
-}``
+}
