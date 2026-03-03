@@ -9,11 +9,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
 
-// Endpoint për gjenerimin e kontratës
-app.post('/api/gjenero-kontrate', (req, res) => {
+// Krijo output folder nese nuk ekziston
+const outputDir = path.join(__dirname, 'output');
+if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir);
+}
+
+// Endpoint per gjenerimin e kontrates
+app.post('/api/gjenero-kontrate', async (req, res) => {
     try {
         const klienti = req.body;
-        const outputPath = gjenerKontrate(klienti, path.join(__dirname, 'output'));
+        const outputPath = await gjenerKontrate(klienti, outputDir);
         const fileName = path.basename(outputPath);
         res.json({ success: true, fileName });
     } catch (err) {
@@ -22,7 +28,7 @@ app.post('/api/gjenero-kontrate', (req, res) => {
     }
 });
 
-// Endpoint për shkarkimin e skedarit
+// Endpoint per shkarkimin e skedarit
 app.get('/api/shkarko/:fileName', (req, res) => {
     const filePath = path.join(__dirname, 'output', req.params.fileName);
     if (fs.existsSync(filePath)) {
@@ -32,6 +38,7 @@ app.get('/api/shkarko/:fileName', (req, res) => {
     }
 });
 
-app.listen(3000, () => {
-    console.log('✅ Serveri është aktiv në http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Serveri eshte aktiv ne port ${PORT}`);
 });

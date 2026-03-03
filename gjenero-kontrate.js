@@ -3,8 +3,6 @@ const Docxtemplater = require('docxtemplater');
 const fs = require('fs');
 const path = require('path');
 const mergeDocx = require('./merge-docx');
-const merged = await mergeDocx(dokumentet);
-fs.writeFileSync(outputPath, merged);
 
 const PAKO_FILES_INDIVID = {
     'Pako Bazë':         'PAKOT_INDIVID_BAZE.docx',
@@ -33,32 +31,30 @@ function merrhTabelatXML(pakotBuf) {
     const body = xml.match(/<w:body>([\s\S]*?)<\/w:body>/);
     if (!body) return '';
     let content = body[1].replace(/<w:sectPr[\s\S]*?<\/w:sectPr>/g, '');
-    // Fshi paragrafet bosh në fund
     content = content.replace(/(<w:p[^>]*>\s*<\/w:p>\s*)+$/g, '');
     content = content.replace(/<w:p[^>]*>\s*<w:r>\s*<w:br w:type="page"\/>\s*<\/w:r>\s*<\/w:p>\s*$/g, '');
     return content;
 }
 
-function gjenerKontrate(k, outputDir) {
+async function gjenerKontrate(k, outputDir) {
     const templateFile = k.lloji === 'individ' ? 'kontrata-individ.docx' :
                          k.lloji === 'familje' ? 'kontrata-familje.docx' : 'kontrata-biznes.docx';
 
     const templatePath = path.join(__dirname, 'templates', templateFile);
 
-    const kontraktuesEmri = k.lloji === 'biznes' ? k.emri : 
+    const kontraktuesEmri = k.lloji === 'biznes' ? k.emri :
                             k.lloji === 'familje' ? k.perfaqesuesi : k.emri;
     const emriKlientit = k.lloji === 'individ' ? k.emri : k.perfaqesuesi;
-    const pozitaKlientit = k.lloji === 'biznes' ? (k.pozita || 'Drejtor') : 
+    const pozitaKlientit = k.lloji === 'biznes' ? (k.pozita || 'Drejtor') :
                            k.lloji === 'familje' ? 'Kryefamiljar' : '';
 
-    // Grumbull tabelat e pakove
     const renditja = ['Pako Bazë', 'Pako Standard', 'Pako Standard Plus', 'Pako Premium', 'Pako Silver', 'Pako Gold'];
     const pakotRenditura = renditja.filter(p => (k.pakot || []).includes(p));
 
     let tabelatXML = '';
     const PAKO_FILES = k.lloji === 'individ' ? PAKO_FILES_INDIVID : PAKO_FILES_FAMILJE_BIZNES;
-pakotRenditura.forEach((pako, index) => {
-    const fileName = PAKO_FILES[pako];
+    pakotRenditura.forEach((pako, index) => {
+        const fileName = PAKO_FILES[pako];
         if (fileName) {
             const pakotPath = path.join(__dirname, 'templates', fileName);
             if (fs.existsSync(pakotPath)) {
@@ -71,7 +67,7 @@ pakotRenditura.forEach((pako, index) => {
         }
     });
 
-    // HAPI 1: Fut tabelat në XML para docxtemplater
+    // HAPI 1: Fut tabelat ne XML para docxtemplater
     const zip1 = new PizZip(fs.readFileSync(templatePath));
     let xml = zip1.file('word/document.xml').asText();
 
@@ -84,7 +80,7 @@ pakotRenditura.forEach((pako, index) => {
     zip1.file('word/document.xml', xml);
     const modifiedBuf = zip1.generate({ type: 'nodebuffer' });
 
-    // HAPI 2: Docxtemplater për placeholders e tjera
+    // HAPI 2: Docxtemplater per placeholders e tjera
     const zip2 = new PizZip(modifiedBuf);
     const doc = new Docxtemplater(zip2, { paragraphLoop: true, linebreaks: true });
 
@@ -115,14 +111,8 @@ pakotRenditura.forEach((pako, index) => {
     const outputName = `Kontrata_${k.emri.replace(/\s+/g, '_')}_${formatData(k.dataKontrates)}.docx`;
     const outputPath = path.join(outputDir || path.join(__dirname, 'output'), outputName);
 
-    if (dokumentet.length === 1) {
-        fs.writeFileSync(outputPath, dokumentet[0]);
-    } else {
-     const merger = new DocxMerger({pageBreak: false}, dokumentet);
-        merger.save('nodebuffer', (data) => {
-            fs.writeFileSync(outputPath, data);
-        });
-    }
+    const merged = await mergeDocx(dokumentet);
+    fs.writeFileSync(outputPath, merged);
 
     return outputPath;
 }
