@@ -2,10 +2,9 @@ const PizZip = require('pizzip');
 const Docxtemplater = require('docxtemplater');
 const fs = require('fs');
 const path = require('path');
-const merger = new DocxMerger({pageBreak: false}, dokumentet);
-merger.save('nodebuffer', (data) => {
-    fs.writeFileSync(outputPath, data);
-});
+const mergeDocx = require('./merge-docx');
+const merged = await mergeDocx(dokumentet);
+fs.writeFileSync(outputPath, merged);
 
 const PAKO_FILES_INDIVID = {
     'Pako Bazë':         'PAKOT_INDIVID_BAZE.docx',
