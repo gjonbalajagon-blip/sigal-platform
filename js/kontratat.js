@@ -203,3 +203,4 @@ async function gjeneroWord(index) {
         alert('Serveri nuk është aktiv!');
     }
 }
+document.addEventListener('DOMContentLoaded', renderTabela);
