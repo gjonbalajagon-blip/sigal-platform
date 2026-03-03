@@ -12,10 +12,10 @@
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",
-    "docx-merger": "^0.0.4",
+    "docx-merger": "^0.0.3",
     "docxtemplater": "^3.68.3",
     "express": "^4.18.2",
     "fast-xml-parser": "^4.3.2",
     "pizzip": "^3.2.0"
   }
-}
+}``
