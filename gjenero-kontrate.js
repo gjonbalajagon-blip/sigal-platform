@@ -113,19 +113,100 @@ async function gjenerKontrate(k, outputDir) {
 
     const kontrataBuf = doc.getZip().generate({ type: 'nodebuffer' });
 
-    // HAPI 3: Bashko me Aneksin 2
-    const mergeDocx = require('./merge-docx');
-    const dokumentet = [kontrataBuf];
+    // HAPI 3: Fut Aneksin 2 direkt ne dokument (pa merge)
     const aneksi2Path = path.join(__dirname, 'templates', 'aneksi2.docx');
+    let finalBuf = kontrataBuf;
+    
     if (fs.existsSync(aneksi2Path)) {
-        dokumentet.push(fs.readFileSync(aneksi2Path));
+        const aneksZip = new PizZip(fs.readFileSync(aneksi2Path));
+        const aneksXml = aneksZip.file('word/document.xml').asText();
+        const aneksBody = aneksXml.match(/<w:body>([\s\S]*?)<\/w:body>/);
+        
+        if (aneksBody) {
+            let aneksContent = aneksBody[1];
+            aneksContent = aneksContent.replace(/<w:sectPr[\s\S]*?<\/w:sectPr>/g, '');
+            
+            const finalZip = new PizZip(kontrataBuf);
+            let finalXml = finalZip.file('word/document.xml').asText();
+            
+            
+            // Kopjo relationships nga aneksi
+            const aneksRelsFile = aneksZip.file('word/_rels/document.xml.rels');
+            const mainRelsFile = finalZip.file('word/_rels/document.xml.rels');
+            if (aneksRelsFile && mainRelsFile) {
+                let mainRels = mainRelsFile.asText();
+                const aneksRels = aneksRelsFile.asText();
+                
+                let maxId = 0;
+                const idMatches = mainRels.match(/Id="rId(\d+)"/g) || [];
+                idMatches.forEach(m => {
+                    const num = parseInt(m.match(/\d+/)[0]);
+                    if (num > maxId) maxId = num;
+                });
+                
+                const rIdMap = {};
+                const relRegex = /<Relationship\s+[^>]*>/g;
+                let relMatch;
+                while ((relMatch = relRegex.exec(aneksRels)) !== null) {
+                    const rel = relMatch[0];
+                    const idMatch = rel.match(/Id="(rId(\d+))"/);
+                    const targetMatch = rel.match(/Target="([^"]+)"/);
+                    const typeMatch = rel.match(/Type="([^"]+)"/);
+                    const modeMatch = rel.match(/TargetMode="([^"]+)"/);
+                    
+                    if (!idMatch || !targetMatch || !typeMatch) continue;
+                    
+                    const oldId = idMatch[1];
+                    const target = targetMatch[1];
+                    const type = typeMatch[1];
+                    
+                    if (type.includes('/styles') || type.includes('/settings') || 
+                        type.includes('/fontTable') || type.includes('/theme') ||
+                        type.includes('/webSettings') || type.includes('/numbering')) continue;
+                    
+                    maxId++;
+                    const newId = 'rId' + maxId;
+                    rIdMap[oldId] = newId;
+                    
+                    let newRel;
+                    if (modeMatch && modeMatch[1] === 'External') {
+                        newRel = '<Relationship Id="' + newId + '" Type="' + type + '" Target="' + target + '" TargetMode="External"/>';
+                    } else {
+                        newRel = '<Relationship Id="' + newId + '" Type="' + type + '" Target="' + target + '"/>';
+                    }
+                    mainRels = mainRels.replace('</Relationships>', newRel + '</Relationships>');
+                }
+                
+                for (const [oldId, newId] of Object.entries(rIdMap)) {
+                    aneksContent = aneksContent.split('"' + oldId + '"').join('"' + newId + '"');
+                }
+                
+                finalZip.file('word/_rels/document.xml.rels', mainRels);
+            }
+            
+            let contentTypes = finalZip.file('[Content_Types].xml').asText();
+            if (!contentTypes.includes('image/x-emf')) {
+                contentTypes = contentTypes.replace('</Types>', '<Default Extension="emf" ContentType="image/x-emf"/></Types>');
+            }
+            if (!contentTypes.includes('image/jpeg') && !contentTypes.includes('image/jpg')) {
+                contentTypes = contentTypes.replace('</Types>', '<Default Extension="jpeg" ContentType="image/jpeg"/></Types>');
+            }
+            if (!contentTypes.includes('Microsoft_Word_Document1.docx')) {
+                contentTypes = contentTypes.replace('</Types>', '<Override PartName="/word/embeddings/Microsoft_Word_Document1.docx" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document"/></Types>');
+            }
+            finalZip.file('[Content_Types].xml', contentTypes);
+            
+            const pageBreak = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+            finalXml = finalXml.replace(/<w:sectPr/, pageBreak + aneksContent + '<w:sectPr');
+            
+            finalZip.file('word/document.xml', finalXml);
+            finalBuf = finalZip.generate({ type: 'nodebuffer' });
+        }
     }
 
     const outputName = `Kontrata_${k.emri.replace(/\s+/g, '_')}_${formatData(k.dataKontrates)}.docx`;
     const outputPath = path.join(outputDir || path.join(__dirname, 'output'), outputName);
-
-    const merged = await mergeDocx(dokumentet);
-    fs.writeFileSync(outputPath, merged);
+    fs.writeFileSync(outputPath, finalBuf);
 
     return outputPath;
 }
