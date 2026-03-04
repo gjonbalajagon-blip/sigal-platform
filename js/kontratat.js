@@ -140,6 +140,9 @@ function renderTabela() {
         const dite = Math.ceil((new Date(k.mbarimi) - new Date()) / (1000 * 60 * 60 * 24));
         return dite >= 0 && dite <= 35;
     }).length;
+    document.getElementById('count-skaduar').textContent = kontratat.filter(k => llogaritStatus(k.mbarimi) === 'skaduar').length;
+    document.getElementById('count-individ').textContent = kontratat.filter(k => k.lloji === 'individ').length;
+    document.getElementById('count-familje').textContent = kontratat.filter(k => k.lloji === 'familje').length;
     document.getElementById('count-biznes').textContent = kontratat.filter(k => k.lloji === 'biznes').length;
     document.getElementById('count-total').textContent = kontratat.length;
 
