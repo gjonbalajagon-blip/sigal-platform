@@ -113,11 +113,19 @@ async function gjenerKontrate(k, outputDir) {
 
     const kontrataBuf = doc.getZip().generate({ type: 'nodebuffer' });
 
-    // HAPI 3: Ruaj kontratën (pa merge me aneks2 per tash)
+    // HAPI 3: Bashko me Aneksin 2
+    const mergeDocx = require('./merge-docx');
+    const dokumentet = [kontrataBuf];
+    const aneksi2Path = path.join(__dirname, 'templates', 'aneksi2.docx');
+    if (fs.existsSync(aneksi2Path)) {
+        dokumentet.push(fs.readFileSync(aneksi2Path));
+    }
+
     const outputName = `Kontrata_${k.emri.replace(/\s+/g, '_')}_${formatData(k.dataKontrates)}.docx`;
     const outputPath = path.join(outputDir || path.join(__dirname, 'output'), outputName);
 
-    fs.writeFileSync(outputPath, kontrataBuf);
+    const merged = await mergeDocx(dokumentet);
+    fs.writeFileSync(outputPath, merged);
 
     return outputPath;
 }
