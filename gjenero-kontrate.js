@@ -2,7 +2,6 @@ const PizZip = require('pizzip');
 const Docxtemplater = require('docxtemplater');
 const fs = require('fs');
 const path = require('path');
-const mergeDocx = require('./merge-docx');
 
 const PAKO_FILES_INDIVID = {
     'Pako Bazë':         'PAKOT_INDIVID_BAZE.docx',
@@ -71,12 +70,25 @@ async function gjenerKontrate(k, outputDir) {
     const zip1 = new PizZip(fs.readFileSync(templatePath));
     let xml = zip1.file('word/document.xml').asText();
 
-    const paragrafPlaceholder = /<w:p[^>]*>(?:(?!<w:p[ >]).)*\{~pakot\}[\s\S]*?<\/w:p>/;
-    if (tabelatXML && paragrafPlaceholder.test(xml)) {
-        xml = xml.replace(paragrafPlaceholder, tabelatXML);
-    } else if (tabelatXML) {
-        xml = xml.replace('{~pakot}', tabelatXML);
+    // Fshi bookmark _GoBack
+    xml = xml.replace(/<w:bookmarkStart[^>]*w:name="_GoBack"[^>]*\/>/g, '');
+
+    if (tabelatXML) {
+        const idx = xml.indexOf('{~pakot}');
+        if (idx > -1) {
+            // Gjej mbylljen e paragrafit pas {~pakot}
+            const pEnd = xml.indexOf('</w:p>', idx);
+            if (pEnd > -1) {
+                // Fut tabelat menjehere pas mbylljes se paragrafit
+                xml = xml.substring(0, pEnd + 6) + tabelatXML + xml.substring(pEnd + 6);
+            }
+            // Fshi {~pakot} tekstin
+            xml = xml.replace('{~pakot}', '');
+        }
+    } else {
+        xml = xml.replace('{~pakot}', '');
     }
+
     zip1.file('word/document.xml', xml);
     const modifiedBuf = zip1.generate({ type: 'nodebuffer' });
 
@@ -101,18 +113,11 @@ async function gjenerKontrate(k, outputDir) {
 
     const kontrataBuf = doc.getZip().generate({ type: 'nodebuffer' });
 
-    // HAPI 3: Bashko me Aneksin 2
-    const dokumentet = [kontrataBuf];
-    const aneksi2Path = path.join(__dirname, 'templates', 'aneksi2.docx');
-    if (fs.existsSync(aneksi2Path)) {
-        dokumentet.push(fs.readFileSync(aneksi2Path));
-    }
-
+    // HAPI 3: Ruaj kontratën (pa merge me aneks2 per tash)
     const outputName = `Kontrata_${k.emri.replace(/\s+/g, '_')}_${formatData(k.dataKontrates)}.docx`;
     const outputPath = path.join(outputDir || path.join(__dirname, 'output'), outputName);
 
-    const merged = await mergeDocx(dokumentet);
-    fs.writeFileSync(outputPath, merged);
+    fs.writeFileSync(outputPath, kontrataBuf);
 
     return outputPath;
 }
