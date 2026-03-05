@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sigal Health | Kontratat</title>
+    <title>Sigal Health | Oferta</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
     <link rel="stylesheet" href="../css/faturimi.css">
     <link rel="stylesheet" href="../css/kontratat.css">
+    <link rel="stylesheet" href="../css/oferta.css">
 </head>
 <body>
 
@@ -17,8 +18,8 @@
         </div>
         <nav class="sidebar-nav">
             <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
-            <a href="oferta.html" class="nav-item">📋 Oferta</a>
-            <a href="kontratat.html" class="nav-item active">📄 Kontratat</a>
+            <a href="oferta.html" class="nav-item active">📋 Oferta</a>
+            <a href="kontratat.html" class="nav-item">📄 Kontratat</a>
             <a href="faturimi.html" class="nav-item">🧾 Faturimi</a>
             <a href="#" class="nav-item">🔄 Rinovimet</a>
             <a href="#" class="nav-item">💰 Debitorët</a>
@@ -36,25 +37,23 @@
         <div class="topbar">
             <div style="display:flex; align-items:center; gap:16px;">
                 <button class="btn-toggle" onclick="toggleSidebar()">☰</button>
-                <h1>Kontratat</h1>
+                <h1>Oferta</h1>
             </div>
-            <button class="btn-primary" onclick="shtoKontrate()">+ Kontratë e Re</button>
+            <button class="btn-primary" onclick="shtoOferte()">+ Ofertë e Re</button>
         </div>
 
         <div class="filter-bar">
             <select id="filter-lloji" onchange="filtro()">
                 <option value="all">Të gjitha llojet</option>
-                <option value="individ">👤 Individ</option>
-                <option value="biznes">🏢 Biznes</option>
-                <option value="familje">👨‍👩‍👧 Familje</option>
+                <option value="individ">👤 Individuale</option>
+                <option value="familjare-biznes">🏢 Familjare/Biznes</option>
             </select>
             <select id="filter-statusi" onchange="filtro()">
                 <option value="all">Të gjitha statuset</option>
                 <option value="aktive">🟢 Aktive</option>
                 <option value="skaduar">🔴 Skaduar</option>
-                <option value="ne-pritje">🟡 Në Pritje</option>
             </select>
-            <input type="text" id="search-kontrate" placeholder="🔍 Kërko kontratë..." onkeyup="filtro()">
+            <input type="text" id="search-oferte" placeholder="🔍 Kërko ofertë..." onkeyup="filtro()">
         </div>
 
         <div class="stats-container">
@@ -62,10 +61,6 @@
                 <div class="fstat-card small aktive-card">
                     <span id="count-aktive">0</span>
                     <p>Aktive</p>
-                </div>
-                <div class="fstat-card small skadon-card">
-                    <span id="count-skadon">0</span>
-                    <p>Skadon së shpejti</p>
                 </div>
                 <div class="fstat-card small skaduar-card">
                     <span id="count-skaduar">0</span>
@@ -79,18 +74,15 @@
             <div class="stats-row">
                 <div class="fstat-card small individ-card">
                     <span id="count-individ">0</span>
-                    <p>Individ</p>
-                </div>
-                <div class="fstat-card small familje-card">
-                    <span id="count-familje">0</span>
-                    <p>Familje</p>
+                    <p>Individuale</p>
                 </div>
                 <div class="fstat-card small biznes-card">
                     <span id="count-biznes">0</span>
-                    <p>Biznese</p>
+                    <p>Familjare/Biznes</p>
                 </div>
             </div>
         </div>
+
         <div class="table-container">
             <table>
                 <thead>
@@ -98,29 +90,28 @@
                         <th>Klienti</th>
                         <th>Lloji</th>
                         <th>Pakot</th>
-                        <th>Fillimi</th>
-                        <th>Mbarimi</th>
+                        <th>Data Krijimit</th>
                         <th>Skadon</th>
                         <th>Statusi</th>
                         <th>Veprimet</th>
                     </tr>
                 </thead>
-                <tbody id="kontratat-tbody"></tbody>
+                <tbody id="ofertat-tbody"></tbody>
             </table>
         </div>
     </div>
 
+    <!-- Modal Ofertë e Re -->
     <div class="modal-overlay" id="modal-overlay" onclick="mbyllModal()">
         <div class="modal modal-large" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h2 id="modal-title">Kontratë e Re</h2>
+                <h2 id="modal-title">Ofertë e Re</h2>
                 <button onclick="mbyllModal()">✕</button>
             </div>
             <div class="modal-body">
                 <div class="lloji-selector">
-                    <button class="lloji-btn active" onclick="zgjidhLlojin('individ', this)">👤 Individ</button>
-                    <button class="lloji-btn" onclick="zgjidhLlojin('biznes', this)">🏢 Biznes</button>
-                    <button class="lloji-btn" onclick="zgjidhLlojin('familje', this)">👨‍👩‍👧 Familje</button>
+                    <button class="lloji-btn active" onclick="zgjidhLlojin('individ', this)">👤 Individuale</button>
+                    <button class="lloji-btn" onclick="zgjidhLlojin('familjare-biznes', this)">🏢 Familjare/Biznes</button>
                 </div>
                 <input type="hidden" id="m-lloji" value="individ">
                 <div class="form-grid">
@@ -132,6 +123,14 @@
                         <label>Adresa</label>
                         <input type="text" id="m-adresa" placeholder="Rruga, Qyteti">
                     </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="m-email" placeholder="email@example.com">
+                    </div>
+                    <div class="form-group" id="field-nr-personal">
+                        <label>Numri Personal</label>
+                        <input type="text" id="m-nr-personal" placeholder="Nr. Personal">
+                    </div>
                     <div class="form-group" id="field-nr-biznesit" style="display:none">
                         <label>Numri i Biznesit</label>
                         <input type="text" id="m-nr-biznesit" placeholder="NIPT/Nr. Fiskal">
@@ -140,47 +139,28 @@
                         <label>Përfaqësuesi</label>
                         <input type="text" id="m-perfaqesuesi" placeholder="Emri i përfaqësuesit">
                     </div>
-                    <div class="form-group" id="field-nr-personal">
-                        <label>Numri Personal</label>
-                        <input type="text" id="m-nr-personal" placeholder="Nr. Personal">
-                    </div>
                     <div class="form-group" id="field-pozita" style="display:none">
                         <label>Pozita</label>
                         <input type="text" id="m-pozita" placeholder="Pozita">
                     </div>
-                    <div class="form-group">
-                        <label>Data e Kontratës</label>
-                        <input type="date" id="m-data-kontrates">
-                    </div>
-                    <div class="form-group">
-                        <label>Data Fillimit</label>
-                        <input type="date" id="m-fillimi">
-                    </div>
-                    <div class="form-group">
-                        <label>Data Mbarimit</label>
-                        <input type="date" id="m-mbarimi">
-                    </div>
                     <div class="form-group" style="grid-column: 1 / -1">
                         <label>Pakot e Zgjedhura</label>
-                        <div class="pakot-grid">
+                        <div class="pakot-grid" id="pakot-container">
                             <label class="pako-check"><input type="checkbox" value="Pako Bazë"> Pako Bazë</label>
                             <label class="pako-check"><input type="checkbox" value="Pako Standard"> Pako Standard</label>
                             <label class="pako-check"><input type="checkbox" value="Pako Standard Plus"> Pako Standard Plus</label>
-                            <label class="pako-check"><input type="checkbox" value="Pako Premium"> Pako Premium</label>
-                            <label class="pako-check"><input type="checkbox" value="Pako Silver"> Pako Silver</label>
-                            <label class="pako-check"><input type="checkbox" value="Pako Gold"> Pako Gold</label>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="mbyllModal()">Anulo</button>
-                <button class="btn-primary" onclick="ruajKontrate()">💾 Ruaj</button>
+                <button class="btn-primary" onclick="ruajOferte()">💾 Ruaj</button>
             </div>
         </div>
     </div>
 
     <script src="../js/main.js"></script>
-    <script src="../js/kontratat.js"></script>
+    <script src="../js/oferta.js"></script>
 </body>
 </html>
