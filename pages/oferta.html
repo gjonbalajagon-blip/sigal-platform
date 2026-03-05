@@ -90,6 +90,8 @@
                         <th>Klienti</th>
                         <th>Lloji</th>
                         <th>Pakot</th>
+                        <th>Krijuar nga</th>
+                        <th>Kërkuar nga</th>
                         <th>Data Krijimit</th>
                         <th>Skadon</th>
                         <th>Statusi</th>
@@ -116,32 +118,24 @@
                 <input type="hidden" id="m-lloji" value="individ">
                 <div class="form-grid">
                     <div class="form-group" style="grid-column: 1 / -1">
-                        <label>Emri i Klientit</label>
+                        <label>Emri Mbiemri</label>
                         <input type="text" id="m-emri" placeholder="Emri Mbiemri / Kompania">
-                    </div>
-                    <div class="form-group">
-                        <label>Adresa</label>
-                        <input type="text" id="m-adresa" placeholder="Rruga, Qyteti">
                     </div>
                     <div class="form-group">
                         <label>Email</label>
                         <input type="email" id="m-email" placeholder="email@example.com">
                     </div>
-                    <div class="form-group" id="field-nr-personal">
-                        <label>Numri Personal</label>
-                        <input type="text" id="m-nr-personal" placeholder="Nr. Personal">
+                    <div class="form-group">
+                        <label>Kërkuar nga</label>
+                        <select id="m-kerkuar-nga" onchange="tregoBoxAgjenti()">
+                            <option value="direkt">Direkt</option>
+                            <option value="online">Online</option>
+                            <option value="agjenti">Agjenti</option>
+                        </select>
                     </div>
-                    <div class="form-group" id="field-nr-biznesit" style="display:none">
-                        <label>Numri i Biznesit</label>
-                        <input type="text" id="m-nr-biznesit" placeholder="NIPT/Nr. Fiskal">
-                    </div>
-                    <div class="form-group" id="field-perfaqesuesi" style="display:none">
-                        <label>Përfaqësuesi</label>
-                        <input type="text" id="m-perfaqesuesi" placeholder="Emri i përfaqësuesit">
-                    </div>
-                    <div class="form-group" id="field-pozita" style="display:none">
-                        <label>Pozita</label>
-                        <input type="text" id="m-pozita" placeholder="Pozita">
+                    <div class="form-group" id="field-agjenti" style="display:none">
+                        <label>Emri i Agjentit</label>
+                        <input type="text" id="m-agjenti" placeholder="Emri i agjentit">
                     </div>
                     <div class="form-group" style="grid-column: 1 / -1">
                         <label>Pakot e Zgjedhura</label>

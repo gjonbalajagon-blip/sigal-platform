@@ -30,6 +30,29 @@ function shtoKontrate() {
     document.getElementById('m-fillimi').value = '';
     document.getElementById('m-mbarimi').value = '';
     zgjidhLlojin('individ', document.querySelectorAll('.lloji-btn')[0]);
+
+    // Kontrollo nese ka te dhena nga oferta
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('nga_oferta') === 'true') {
+        const data = JSON.parse(localStorage.getItem('oferta_per_kontrate') || '{}');
+        if (data.emri) {
+            document.getElementById('m-emri').value = data.emri;
+            const btns = document.querySelectorAll('.lloji-btn');
+            const llojiMap = { individ: 0, biznes: 1, familje: 2 };
+            zgjidhLlojin(data.lloji || 'individ', btns[llojiMap[data.lloji] || 0]);
+
+            // Tick pakot
+            setTimeout(() => {
+                document.querySelectorAll('.pako-check input').forEach(cb => {
+                    cb.checked = (data.pakot || []).includes(cb.value);
+                });
+            }, 100);
+        }
+        // Pastro URL-ne dhe localStorage
+        window.history.replaceState({}, '', 'kontratat.html');
+        localStorage.removeItem('oferta_per_kontrate');
+    }
+
     document.getElementById('modal-overlay').classList.add('active');
 }
 
@@ -206,4 +229,11 @@ async function gjeneroWord(index) {
         alert('Serveri nuk është aktiv!');
     }
 }
-document.addEventListener('DOMContentLoaded', renderTabela);
+document.addEventListener('DOMContentLoaded', function() {
+    renderTabela();
+    // Hap modal automatikisht nese vjen nga oferta
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('nga_oferta') === 'true') {
+        shtoKontrate();
+    }
+});

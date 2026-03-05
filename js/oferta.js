@@ -10,15 +10,8 @@ function zgjidhLlojin(lloji, btn) {
     document.querySelectorAll('.lloji-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    const isIndivid = lloji === 'individ';
-    document.getElementById('field-nr-personal').style.display = isIndivid ? 'block' : 'none';
-    document.getElementById('field-nr-biznesit').style.display = isIndivid ? 'none' : 'block';
-    document.getElementById('field-perfaqesuesi').style.display = isIndivid ? 'none' : 'block';
-    document.getElementById('field-pozita').style.display = isIndivid ? 'none' : 'block';
-
-    // Ndrro pakot sipas llojit
     const container = document.getElementById('pakot-container');
-    if (isIndivid) {
+    if (lloji === 'individ') {
         container.innerHTML = `
             <label class="pako-check"><input type="checkbox" value="Pako Bazë"> Pako Bazë</label>
             <label class="pako-check"><input type="checkbox" value="Pako Standard"> Pako Standard</label>
@@ -36,16 +29,19 @@ function zgjidhLlojin(lloji, btn) {
     }
 }
 
+function tregoBoxAgjenti() {
+    const val = document.getElementById('m-kerkuar-nga').value;
+    document.getElementById('field-agjenti').style.display = val === 'agjenti' ? 'block' : 'none';
+}
+
 function shtoOferte() {
     editIndex = -1;
     document.getElementById('modal-title').textContent = 'Ofertë e Re';
     document.getElementById('m-emri').value = '';
-    document.getElementById('m-adresa').value = '';
     document.getElementById('m-email').value = '';
-    document.getElementById('m-nr-personal').value = '';
-    document.getElementById('m-nr-biznesit').value = '';
-    document.getElementById('m-perfaqesuesi').value = '';
-    document.getElementById('m-pozita').value = '';
+    document.getElementById('m-kerkuar-nga').value = 'direkt';
+    document.getElementById('m-agjenti').value = '';
+    document.getElementById('field-agjenti').style.display = 'none';
     document.querySelectorAll('.pako-check input').forEach(cb => cb.checked = false);
     zgjidhLlojin('individ', document.querySelectorAll('.lloji-btn')[0]);
     document.getElementById('modal-overlay').classList.add('active');
@@ -63,16 +59,17 @@ function ruajOferte() {
     const skadon = new Date(today);
     skadon.setDate(skadon.getDate() + 30);
 
+    const kerkuarNga = document.getElementById('m-kerkuar-nga').value;
+    const agjenti = document.getElementById('m-agjenti').value.trim();
+
     const oferta = {
         emri,
         lloji: document.getElementById('m-lloji').value,
-        adresa: document.getElementById('m-adresa').value.trim(),
         email: document.getElementById('m-email').value.trim(),
-        nrPersonal: document.getElementById('m-nr-personal').value.trim(),
-        nrBiznesit: document.getElementById('m-nr-biznesit').value.trim(),
-        perfaqesuesi: document.getElementById('m-perfaqesuesi').value.trim(),
-        pozita: document.getElementById('m-pozita').value.trim(),
+        kerkuarNga: kerkuarNga,
+        agjenti: kerkuarNga === 'agjenti' ? agjenti : '',
         pakot: Array.from(document.querySelectorAll('.pako-check input:checked')).map(cb => cb.value),
+        krijuarNga: 'Agon', // Mund te ndryshohet me login system
         dataKrijimit: today.toISOString().split('T')[0],
         dataSkadon: skadon.toISOString().split('T')[0]
     };
@@ -93,12 +90,10 @@ function editoOferte(index) {
     const o = ofertat[index];
     document.getElementById('modal-title').textContent = 'Edito Ofertën';
     document.getElementById('m-emri').value = o.emri;
-    document.getElementById('m-adresa').value = o.adresa || '';
     document.getElementById('m-email').value = o.email || '';
-    document.getElementById('m-nr-personal').value = o.nrPersonal || '';
-    document.getElementById('m-nr-biznesit').value = o.nrBiznesit || '';
-    document.getElementById('m-perfaqesuesi').value = o.perfaqesuesi || '';
-    document.getElementById('m-pozita').value = o.pozita || '';
+    document.getElementById('m-kerkuar-nga').value = o.kerkuarNga || 'direkt';
+    document.getElementById('m-agjenti').value = o.agjenti || '';
+    tregoBoxAgjenti();
 
     const btns = document.querySelectorAll('.lloji-btn');
     const llojiMap = { 'individ': 0, 'familjare-biznes': 1 };
@@ -150,22 +145,38 @@ function dergoEmail(index) {
 }
 
 function krijoKontrate(index) {
+    const confirmed = confirm('A jeni i sigurt që doni të krijoni kontratë?\nOferta është pranuar?');
+    if (!confirmed) return;
+
     const o = ofertat[index];
-    // Ruaj të dhënat e ofertës për t'i përdorur në kontratat
     const kontratData = {
         emri: o.emri,
         lloji: o.lloji === 'individ' ? 'individ' : 'biznes',
-        adresa: o.adresa || '',
         email: o.email || '',
-        nrPersonal: o.nrPersonal || '',
-        nrBiznesit: o.nrBiznesit || '',
-        perfaqesuesi: o.perfaqesuesi || '',
-        pozita: o.pozita || '',
         pakot: o.pakot || [],
         ngaOferta: true
     };
     localStorage.setItem('oferta_per_kontrate', JSON.stringify(kontratData));
     window.location.href = 'kontratat.html?nga_oferta=true';
+}
+
+async function gjeneroWord(index) {
+    const o = ofertat[index];
+    try {
+        const response = await fetch('https://sigal-platform-production.up.railway.app/api/gjenero-oferte', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(o)
+        });
+        const data = await response.json();
+        if (data.success) {
+            window.open(`https://sigal-platform-production.up.railway.app/api/shkarko/${data.fileName}`, '_blank');
+        } else {
+            alert('Gabim: ' + data.error);
+        }
+    } catch (err) {
+        alert('Serveri nuk është aktiv ose endpoint nuk ekziston ende!');
+    }
 }
 
 function filtro() {
@@ -185,7 +196,6 @@ function renderTabela() {
         return llojiOk && statusOk && searchOk;
     });
 
-    // Stats
     document.getElementById('count-aktive').textContent = ofertat.filter(o => llogaritStatus(o.dataSkadon) === 'aktive').length;
     document.getElementById('count-skaduar').textContent = ofertat.filter(o => llogaritStatus(o.dataSkadon) === 'skaduar').length;
     document.getElementById('count-individ').textContent = ofertat.filter(o => o.lloji === 'individ').length;
@@ -202,10 +212,16 @@ function renderTabela() {
         'familjare-biznes': '🏢 Familjare/Biznes'
     };
 
+    const kerkuarLabels = {
+        'direkt': 'Direkt',
+        'online': 'Online',
+        'agjenti': 'Agjenti'
+    };
+
     const tbody = document.getElementById('ofertat-tbody');
 
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px; color:#888;">Nuk ka oferta. Shtoni me "+ Ofertë e Re"</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:40px; color:#888;">Nuk ka oferta. Shtoni me "+ Ofertë e Re"</td></tr>`;
         return;
     }
 
@@ -213,19 +229,23 @@ function renderTabela() {
         const idx = ofertat.indexOf(o);
         const statusi = llogaritStatus(o.dataSkadon);
         const ditet = llogaritDitet(o.dataSkadon);
+        const kerkuar = o.kerkuarNga === 'agjenti' ? `Agjenti: ${o.agjenti}` : (kerkuarLabels[o.kerkuarNga] || '-');
         return `
         <tr>
             <td>${o.emri}</td>
             <td><span class="badge-lloji ${o.lloji}">${llojiLabels[o.lloji]}</span></td>
             <td>${(o.pakot || []).join(', ') || '-'}</td>
+            <td>${o.krijuarNga || '-'}</td>
+            <td>${kerkuar}</td>
             <td>${o.dataKrijimit || '-'}</td>
             <td class="${ditet.klasa}">${ditet.teksti}</td>
             <td><span class="badge-status ${statusi}">${statusLabels[statusi]}</span></td>
             <td>
                 <div class="action-btns">
                     <button class="btn-edit" onclick="editoOferte(${idx})">✏️</button>
+                    <button class="btn-word" onclick="gjeneroWord(${idx})">📄 Word</button>
                     <button class="btn-email" onclick="dergoEmail(${idx})">📧</button>
-                    <button class="btn-kontrate" onclick="krijoKontrate(${idx})">📄 Kontratë</button>
+                    <button class="btn-kontrate" onclick="krijoKontrate(${idx})">📋 Kontratë</button>
                     <button class="btn-delete" onclick="fshijOferte(${idx})">🗑️</button>
                 </div>
             </td>
