@@ -209,6 +209,8 @@ function renderTabela() {
                 </div>
             </td>
         </tr>`;
+    }).join('');
+
     // Re-render Lucide icons ne tabele
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
