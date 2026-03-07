@@ -203,16 +203,13 @@ function renderTabela() {
             <td><span class="badge-status ${statusi}">${statusLabels[statusi]}</span></td>
             <td>
                 <div class="action-btns">
-                    <button class="btn-edit" onclick="editoKontrate(${idx})" title="Edito"><i data-lucide="pencil"></i></button>
-                    <button class="btn-word" onclick="gjeneroWord(${idx})"><i data-lucide="file-down"></i> Word</button>
-                    <button class="btn-delete" onclick="fshijKontrate(${idx})" title="Fshi"><i data-lucide="trash-2"></i></button>
+                    <button class="btn-edit" onclick="editoKontrate(${idx})" title="Edito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>
+                    <button class="btn-word" onclick="gjeneroWord(${idx})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg> Word</button>
+                    <button class="btn-delete" onclick="fshijKontrate(${idx})" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
                 </div>
             </td>
         </tr>`;
     }).join('');
-
-    // Re-render Lucide icons ne tabele
-    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 async function gjeneroWord(index) {
