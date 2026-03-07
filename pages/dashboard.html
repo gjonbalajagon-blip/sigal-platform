@@ -4,74 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sigal Health | Dashboard</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-logo">
             <img src="../Sigal-KS-Logo.webp" alt="Sigal Logo">
+            <div class="logo-text">
+                <span class="logo-text-main">SIGAL</span>
+                <span class="logo-text-sub">Insurance Group</span>
+            </div>
         </div>
         <nav class="sidebar-nav">
-            <a href="#" class="nav-item active">📊 Dashboard</a>
-            <a href="oferta.html" class="nav-item">📋 Oferta</a>
-            <a href="kontratat.html" class="nav-item">📄 Kontratat</a>
-            <a href="faturimi.html" class="nav-item">🧾 Faturimi</a>
-            <a href="#" class="nav-item">🔄 Rinovimet</a>
-            <a href="#" class="nav-item">💰 Debitorët</a>
-            <a href="#" class="nav-item">📈 Raportet</a>
-            <a href="#" class="nav-item">✅ Detyrat</a>
-            <a href="#" class="nav-item">📁 Dokumentet</a>
-            <a href="#" class="nav-item">👥 Stafi</a>
+            <a href="dashboard.html" class="nav-item active">
+                <span class="nav-icon"><i data-lucide="layout-dashboard"></i></span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="oferta.html" class="nav-item">
+                <span class="nav-icon"><i data-lucide="clipboard-list"></i></span>
+                <span class="nav-label">Oferta</span>
+            </a>
+            <a href="kontratat.html" class="nav-item">
+                <span class="nav-icon"><i data-lucide="file-text"></i></span>
+                <span class="nav-label">Kontratat</span>
+            </a>
+            <a href="faturimi.html" class="nav-item">
+                <span class="nav-icon"><i data-lucide="receipt"></i></span>
+                <span class="nav-label">Faturimi</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="refresh-cw"></i></span>
+                <span class="nav-label">Rinovimet</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="wallet"></i></span>
+                <span class="nav-label">Debitorët</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="bar-chart-3"></i></span>
+                <span class="nav-label">Raportet</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="check-circle"></i></span>
+                <span class="nav-label">Detyrat</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="folder-open"></i></span>
+                <span class="nav-label">Dokumentet</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="users"></i></span>
+                <span class="nav-label">Stafi</span>
+            </a>
         </nav>
         <div class="sidebar-footer">
-            <a href="../index.html" class="nav-item logout">🚪 Logout</a>
+            <a href="../index.html" class="nav-item logout">
+                <span class="nav-icon"><i data-lucide="log-out"></i></span>
+                <span class="nav-label">Dilni</span>
+            </a>
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <div class="topbar">
             <h1>Dashboard</h1>
-            <div class="user-info">
-                <span>👤 Admin</span>
-            </div>
+            <div class="user-info">Admin</div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">📄</div>
-                <div class="stat-info">
-                    <h3>Kontratat Aktive</h3>
-                    <p class="stat-number">0</p>
+        <div class="content-area">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i data-lucide="file-text"></i></div>
+                    <div class="stat-info">
+                        <h3>Kontratat Aktive</h3>
+                        <p class="stat-number">0</p>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-info">
-                    <h3>Të Siguruarit</h3>
-                    <p class="stat-number">0</p>
+                <div class="stat-card">
+                    <div class="stat-icon"><i data-lucide="users"></i></div>
+                    <div class="stat-info">
+                        <h3>Të Siguruarit</h3>
+                        <p class="stat-number">0</p>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🔄</div>
-                <div class="stat-info">
-                    <h3>Rinovimet Pending</h3>
-                    <p class="stat-number">0</p>
+                <div class="stat-card">
+                    <div class="stat-icon"><i data-lucide="refresh-cw"></i></div>
+                    <div class="stat-info">
+                        <h3>Rinovimet Pending</h3>
+                        <p class="stat-number">0</p>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">💰</div>
-                <div class="stat-info">
-                    <h3>Debitorët</h3>
-                    <p class="stat-number">0</p>
+                <div class="stat-card">
+                    <div class="stat-icon"><i data-lucide="wallet"></i></div>
+                    <div class="stat-info">
+                        <h3>Debitorët</h3>
+                        <p class="stat-number">0</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <script>lucide.createIcons();</script>
 </body>
 </html>

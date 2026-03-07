@@ -4,109 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sigal Health | Kontratat</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
-    <link rel="stylesheet" href="../css/faturimi.css">
-    <link rel="stylesheet" href="../css/kontratat.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
     <div class="sidebar">
         <div class="sidebar-logo">
             <img src="../Sigal-KS-Logo.webp" alt="Sigal Logo">
+            <div class="logo-text">
+                <span class="logo-text-main">SIGAL</span>
+                <span class="logo-text-sub">Insurance Group</span>
+            </div>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
-            <a href="oferta.html" class="nav-item">📋 Oferta</a>
-            <a href="kontratat.html" class="nav-item active">📄 Kontratat</a>
-            <a href="faturimi.html" class="nav-item">🧾 Faturimi</a>
-            <a href="#" class="nav-item">🔄 Rinovimet</a>
-            <a href="#" class="nav-item">💰 Debitorët</a>
-            <a href="#" class="nav-item">📈 Raportet</a>
-            <a href="#" class="nav-item">✅ Detyrat</a>
-            <a href="#" class="nav-item">📁 Dokumentet</a>
-            <a href="#" class="nav-item">👥 Stafi</a>
+            <a href="dashboard.html" class="nav-item">
+                <span class="nav-icon"><i data-lucide="layout-dashboard"></i></span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="oferta.html" class="nav-item">
+                <span class="nav-icon"><i data-lucide="clipboard-list"></i></span>
+                <span class="nav-label">Oferta</span>
+            </a>
+            <a href="kontratat.html" class="nav-item active">
+                <span class="nav-icon"><i data-lucide="file-text"></i></span>
+                <span class="nav-label">Kontratat</span>
+            </a>
+            <a href="faturimi.html" class="nav-item">
+                <span class="nav-icon"><i data-lucide="receipt"></i></span>
+                <span class="nav-label">Faturimi</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="refresh-cw"></i></span>
+                <span class="nav-label">Rinovimet</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="wallet"></i></span>
+                <span class="nav-label">Debitorët</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="bar-chart-3"></i></span>
+                <span class="nav-label">Raportet</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="check-circle"></i></span>
+                <span class="nav-label">Detyrat</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="folder-open"></i></span>
+                <span class="nav-label">Dokumentet</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon"><i data-lucide="users"></i></span>
+                <span class="nav-label">Stafi</span>
+            </a>
         </nav>
         <div class="sidebar-footer">
-            <a href="../index.html" class="nav-item logout">🚪 Logout</a>
+            <a href="../index.html" class="nav-item logout">
+                <span class="nav-icon"><i data-lucide="log-out"></i></span>
+                <span class="nav-label">Dilni</span>
+            </a>
         </div>
     </div>
 
     <div class="main-content">
         <div class="topbar">
-            <div style="display:flex; align-items:center; gap:16px;">
-                <button class="btn-toggle" onclick="toggleSidebar()">☰</button>
-                <h1>Kontratat</h1>
-            </div>
-            <button class="btn-primary" onclick="shtoKontrate()">+ Kontratë e Re</button>
+            <h1>Kontratat</h1>
+            <button class="btn-primary" onclick="shtoKontrate()">
+                <i data-lucide="plus" style="width:15px;height:15px;"></i> Kontratë e Re
+            </button>
         </div>
 
-        <div class="filter-bar">
-            <select id="filter-lloji" onchange="filtro()">
-                <option value="all">Të gjitha llojet</option>
-                <option value="individ">👤 Individ</option>
-                <option value="biznes">🏢 Biznes</option>
-                <option value="familje">👨‍👩‍👧 Familje</option>
-            </select>
-            <select id="filter-statusi" onchange="filtro()">
-                <option value="all">Të gjitha statuset</option>
-                <option value="aktive">🟢 Aktive</option>
-                <option value="skaduar">🔴 Skaduar</option>
-                <option value="ne-pritje">🟡 Në Pritje</option>
-            </select>
-            <input type="text" id="search-kontrate" placeholder="🔍 Kërko kontratë..." onkeyup="filtro()">
-        </div>
+        <div class="content-area">
+            <div class="filter-bar">
+                <select id="filter-lloji" onchange="filtro()">
+                    <option value="all">Të gjitha llojet</option>
+                    <option value="individ">Individ</option>
+                    <option value="biznes">Biznes</option>
+                    <option value="familje">Familje</option>
+                </select>
+                <select id="filter-statusi" onchange="filtro()">
+                    <option value="all">Të gjitha statuset</option>
+                    <option value="aktive">Aktive</option>
+                    <option value="skaduar">Skaduar</option>
+                    <option value="ne-pritje">Në Pritje</option>
+                </select>
+                <input type="text" id="search-kontrate" placeholder="Kërko kontratë..." onkeyup="filtro()">
+            </div>
 
-        <div class="stats-container">
-            <div class="stats-row">
-                <div class="fstat-card small aktive-card">
-                    <span id="count-aktive">0</span>
-                    <p>Aktive</p>
+            <div class="stats-container">
+                <div class="stats-row">
+                    <div class="fstat-card small aktive-card">
+                        <span id="count-aktive">0</span>
+                        <p>Aktive</p>
+                    </div>
+                    <div class="fstat-card small skadon-card">
+                        <span id="count-skadon">0</span>
+                        <p>Skadon së shpejti</p>
+                    </div>
+                    <div class="fstat-card small skaduar-card">
+                        <span id="count-skaduar">0</span>
+                        <p>Skaduar</p>
+                    </div>
+                    <div class="fstat-card big total-card">
+                        <span id="count-total">0</span>
+                        <p>Total</p>
+                    </div>
                 </div>
-                <div class="fstat-card small skadon-card">
-                    <span id="count-skadon">0</span>
-                    <p>Skadon së shpejti</p>
-                </div>
-                <div class="fstat-card small skaduar-card">
-                    <span id="count-skaduar">0</span>
-                    <p>Skaduar</p>
-                </div>
-                <div class="fstat-card big total-card">
-                    <span id="count-total">0</span>
-                    <p>Total</p>
+                <div class="stats-row">
+                    <div class="fstat-card small individ-card">
+                        <span id="count-individ">0</span>
+                        <p>Individ</p>
+                    </div>
+                    <div class="fstat-card small familje-card">
+                        <span id="count-familje">0</span>
+                        <p>Familje</p>
+                    </div>
+                    <div class="fstat-card small biznes-card">
+                        <span id="count-biznes">0</span>
+                        <p>Biznese</p>
+                    </div>
                 </div>
             </div>
-            <div class="stats-row">
-                <div class="fstat-card small individ-card">
-                    <span id="count-individ">0</span>
-                    <p>Individ</p>
-                </div>
-                <div class="fstat-card small familje-card">
-                    <span id="count-familje">0</span>
-                    <p>Familje</p>
-                </div>
-                <div class="fstat-card small biznes-card">
-                    <span id="count-biznes">0</span>
-                    <p>Biznese</p>
-                </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Klienti</th>
+                            <th>Lloji</th>
+                            <th>Pakot</th>
+                            <th>Fillimi</th>
+                            <th>Mbarimi</th>
+                            <th>Skadon</th>
+                            <th>Statusi</th>
+                            <th>Veprimet</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kontratat-tbody"></tbody>
+                </table>
             </div>
-        </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Klienti</th>
-                        <th>Lloji</th>
-                        <th>Pakot</th>
-                        <th>Fillimi</th>
-                        <th>Mbarimi</th>
-                        <th>Skadon</th>
-                        <th>Statusi</th>
-                        <th>Veprimet</th>
-                    </tr>
-                </thead>
-                <tbody id="kontratat-tbody"></tbody>
-            </table>
         </div>
     </div>
 
@@ -118,9 +155,9 @@
             </div>
             <div class="modal-body">
                 <div class="lloji-selector">
-                    <button class="lloji-btn active" onclick="zgjidhLlojin('individ', this)">👤 Individ</button>
-                    <button class="lloji-btn" onclick="zgjidhLlojin('biznes', this)">🏢 Biznes</button>
-                    <button class="lloji-btn" onclick="zgjidhLlojin('familje', this)">👨‍👩‍👧 Familje</button>
+                    <button class="lloji-btn active" onclick="zgjidhLlojin('individ', this)">Individ</button>
+                    <button class="lloji-btn" onclick="zgjidhLlojin('biznes', this)">Biznes</button>
+                    <button class="lloji-btn" onclick="zgjidhLlojin('familje', this)">Familje</button>
                 </div>
                 <input type="hidden" id="m-lloji" value="individ">
                 <div class="form-grid">
@@ -175,12 +212,13 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="mbyllModal()">Anulo</button>
-                <button class="btn-primary" onclick="ruajKontrate()">💾 Ruaj</button>
+                <button class="btn-primary" onclick="ruajKontrate()">Ruaj</button>
             </div>
         </div>
     </div>
 
     <script src="../js/main.js"></script>
     <script src="../js/kontratat.js"></script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
