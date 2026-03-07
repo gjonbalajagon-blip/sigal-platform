@@ -170,15 +170,15 @@ function renderTabela() {
     document.getElementById('count-total').textContent = kontratat.length;
 
     const statusLabels = {
-        aktive: '🟢 Aktive',
-        skaduar: '🔴 Skaduar',
-        'ne-pritje': '🟡 Në Pritje'
+        aktive: 'Aktive',
+        skaduar: 'Skaduar',
+        'ne-pritje': 'Në Pritje'
     };
 
     const llojiLabels = {
-        individ: '👤 Individ',
-        biznes: '🏢 Biznes',
-        familje: '👨‍👩‍👧 Familje'
+        individ: 'Individ',
+        biznes: 'Biznes',
+        familje: 'Familje'
     };
 
     const tbody = document.getElementById('kontratat-tbody');
@@ -203,12 +203,14 @@ function renderTabela() {
             <td><span class="badge-status ${statusi}">${statusLabels[statusi]}</span></td>
             <td>
                 <div class="action-btns">
-                    <button class="btn-edit" onclick="editoKontrate(${idx})">✏️</button><button class="btn-word" onclick="gjeneroWord(${idx})">📄 Word</button>
-                    <button class="btn-delete" onclick="fshijKontrate(${idx})">🗑️</button>
+                    <button class="btn-edit" onclick="editoKontrate(${idx})" title="Edito"><i data-lucide="pencil"></i></button>
+                    <button class="btn-word" onclick="gjeneroWord(${idx})"><i data-lucide="file-down"></i> Word</button>
+                    <button class="btn-delete" onclick="fshijKontrate(${idx})" title="Fshi"><i data-lucide="trash-2"></i></button>
                 </div>
             </td>
         </tr>`;
-    }).join('');
+    // Re-render Lucide icons ne tabele
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 async function gjeneroWord(index) {
@@ -231,6 +233,7 @@ async function gjeneroWord(index) {
 }
 document.addEventListener('DOMContentLoaded', function() {
     renderTabela();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
     // Hap modal automatikisht nese vjen nga oferta
     const params = new URLSearchParams(window.location.search);
     if (params.get('nga_oferta') === 'true') {
