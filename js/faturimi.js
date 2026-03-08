@@ -107,34 +107,36 @@ function filtroKlientet() {
 }
 
 function renderTabela() {
-    const filterStatus = document.getElementById('filter-status').value;
+    const filterStatus = document.getElementById('fHGilter-status').value;
     const filterMuaji = parseInt(document.getElementById('filter-muaji').value) || muajiAktual();
     const search = document.getElementById('search-klient').value.toLowerCase();
 
     const filtered = klientet.filter((k, i) => {
         const searchOk = k.emri.toLowerCase().includes(search);
-        const statusMuaj = k.statuset?.[filterMuaji] || 'kerkesa';
+        const statusMuaj = k.statuset?.[filterMuaji] || 'asgje';
         const statusOk = filterStatus === 'all' || statusMuaj === filterStatus;
         return searchOk && statusOk;
     });
 
     // Update counts per muajin e zgjedhur
     const muajiFilter = filterMuaji;
-    document.getElementById('count-kerkesa').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'kerkesa') === 'kerkesa').length;
-    document.getElementById('count-process').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'kerkesa') === 'process').length;
-    document.getElementById('count-leshuar').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'kerkesa') === 'leshuar').length;
+    document.getElementById('count-asgje').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'asgje').length;
+    document.getElementById('count-kerkesa').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'kerkesa').length;
+    document.getElementById('count-process').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'process').length;
+    document.getElementById('count-leshuar').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'leshuar').length;
     document.getElementById('count-total').textContent = klientet.length;
 
     const statusLabels = {
-        kerkesa: '🟡 Kërkesë',
-        process: '🔵 Në Proces',
-        leshuar: '🟢 E Lëshuar'
+        asgje: 'Asgjë',
+        kerkesa: 'Kërkesë',
+        process: 'Në Proces',
+        leshuar: 'E Lëshuar'
     };
 
     const dergesaLabels = {
-        email: '📧 Email',
-        direkt: '🤝 Direkt',
-        poste: '📮 Postë'
+        email: 'Email',
+        direkt: 'Direkt',
+        poste: 'Postë'
     };
 
     const tbody = document.getElementById('faturimi-tbody');
@@ -147,7 +149,7 @@ function renderTabela() {
     tbody.innerHTML = filtered.map(k => {
         const idx = klientet.indexOf(k);
         const muajiZgjedhur = filterMuaji;
-        const statusAktual = k.statuset?.[muajiZgjedhur] || 'kerkesa';
+        const statusAktual = k.statuset?.[muajiZgjedhur] || 'asgje';
 
         const muajiOptions = muajt.slice(1).map((m, i) => {
             const muajNr = i + 1;
@@ -169,17 +171,26 @@ function renderTabela() {
                 </select>
             </td>
             <td>
-                <select class="status-select ${statusAktual}" onchange="ndryshoStatusMuaj(${idx}, ${muajiZgjedhur}, this.value)">
-                    <option value="kerkesa" ${statusAktual === 'kerkesa' ? 'selected' : ''}>🟡 Kërkesë</option>
-                    <option value="process" ${statusAktual === 'process' ? 'selected' : ''}>🔵 Në Proces</option>
-                    <option value="leshuar" ${statusAktual === 'leshuar' ? 'selected' : ''}>🟢 E Lëshuar</option>
-                </select>
+                <div class="status-circles">
+                    <span class="status-dot ${statusAktual === 'asgje' ? 'active' : ''}" title="Asgjë" onclick="ndryshoStatusMuaj(${idx}, ${muajiZgjedhur}, 'asgje')" style="background:${statusAktual === 'asgje' ? '#94a3b8' : '#e2e8f0'}">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${statusAktual === 'asgje' ? '#fff' : '#94a3b8'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>
+                    </span>
+                    <span class="status-dot ${statusAktual === 'kerkesa' ? 'active' : ''}" title="Kërkesë Dërguar" onclick="ndryshoStatusMuaj(${idx}, ${muajiZgjedhur}, 'kerkesa')" style="background:${statusAktual === 'kerkesa' ? '#f59e0b' : '#e2e8f0'}">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${statusAktual === 'kerkesa' ? '#fff' : '#94a3b8'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
+                    </span>
+                    <span class="status-dot ${statusAktual === 'process' ? 'active' : ''}" title="Në Proces" onclick="ndryshoStatusMuaj(${idx}, ${muajiZgjedhur}, 'process')" style="background:${statusAktual === 'process' ? '#0047AB' : '#e2e8f0'}">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${statusAktual === 'process' ? '#fff' : '#94a3b8'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
+                    </span>
+                    <span class="status-dot ${statusAktual === 'leshuar' ? 'active' : ''}" title="Faturë e Lëshuar" onclick="ndryshoStatusMuaj(${idx}, ${muajiZgjedhur}, 'leshuar')" style="background:${statusAktual === 'leshuar' ? '#22c55e' : '#e2e8f0'}">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${statusAktual === 'leshuar' ? '#fff' : '#94a3b8'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                    </span>
+                </div>
             </td>
             <td>
                 <div class="action-btns">
-                    <button class="btn-edit" onclick="editoKlient(${idx})">✏️</button>
-                    <button class="btn-delete" onclick="fshijKlient(${idx})">🗑️</button>
-                    ${k.dergesa === 'email' && k.email ? `<button class="btn-email" onclick="dergoEmail(${idx})">📧</button>` : ''}
+                    <button class="btn-edit" onclick="editoKlient(${idx})" title="Edito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>
+                    <button class="btn-delete" onclick="fshijKlient(${idx})" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                    ${k.dergesa === 'email' && k.email ? `<button class="btn-email" onclick="dergoEmail(${idx})" title="Dërgo Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button>` : ''}
                 </div>
             </td>
         </tr>`;

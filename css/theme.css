@@ -1124,3 +1124,29 @@ tr:hover {
         flex-direction: column;
     }
 }
+/* Status circles for faturimi */
+.status-circles {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.status-dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+.status-dot:hover {
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.fstat-card.asgje { border-left-color: #94a3b8; }
+.fstat-card.asgje span { color: #64748b; }

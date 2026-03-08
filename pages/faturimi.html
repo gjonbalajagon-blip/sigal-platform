@@ -79,6 +79,7 @@
             <div class="filter-bar">
                 <select id="filter-status" onchange="filtroKlientet()">
                     <option value="all">Të gjithë statuset</option>
+                    <option value="asgje">Asgjë</option>
                     <option value="kerkesa">Kërkesë Dërguar</option>
                     <option value="process">Në Proces</option>
                     <option value="leshuar">Faturë e Lëshuar</option>
@@ -102,6 +103,10 @@
             </div>
 
             <div class="faturimi-stats">
+                <div class="fstat-card asgje">
+                    <span id="count-asgje">0</span>
+                    <p>Asgjë</p>
+                </div>
                 <div class="fstat-card kerkesa">
                     <span id="count-kerkesa">0</span>
                     <p>Kërkesë Dërguar</p>
