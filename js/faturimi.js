@@ -107,7 +107,7 @@ function filtroKlientet() {
 }
 
 function renderTabela() {
-    const filterStatus = document.getElementById('fHGilter-status').value;
+    const filterStatus = document.getElementById('filter-status').value;
     const filterMuaji = parseInt(document.getElementById('filter-muaji').value) || muajiAktual();
     const search = document.getElementById('search-klient').value.toLowerCase();
 
