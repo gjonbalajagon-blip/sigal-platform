@@ -1000,6 +1000,9 @@ tr:hover {
 .skaduar-card { border-left-color: var(--sigal-red-dot); }
 .skaduar-card span { color: var(--sigal-red); }
 
+.realizuara-card { border-left-color: #166534; }
+.realizuara-card span { color: #166534; }
+
 .individ-card { border-left-color: var(--sigal-blue); }
 .individ-card span { color: var(--sigal-navy); }
 
