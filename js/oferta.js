@@ -191,12 +191,18 @@ function renderTabela() {
     const filterStatusi = document.getElementById('filter-statusi').value;
     const search = document.getElementById('search-oferte').value.toLowerCase();
 
+    const filterViti = document.getElementById('filter-viti') ? document.getElementById('filter-viti').value : 'all';
     const filtered = ofertat.filter(o => {
         const llojiOk = filterLloji === 'all' || o.lloji === filterLloji;
         const statusi = llogaritStatus(o.dataSkadon);
         const statusOk = filterStatusi === 'all' || statusi === filterStatusi;
         const searchOk = o.emri.toLowerCase().includes(search);
-        return llojiOk && statusOk && searchOk;
+        const vitiOk = filterViti === 'all' || (o.dataKrijimit || '').startsWith(filterViti);
+        return llojiOk && statusOk && searchOk && vitiOk;
+    }).sort((a, b) => {
+        if (!a.dataSkadon) return 1;
+        if (!b.dataSkadon) return -1;
+        return new Date(a.dataSkadon) - new Date(b.dataSkadon);
     });
 
     document.getElementById('count-aktive').textContent = ofertat.filter(o => llogaritStatus(o.dataSkadon) === 'aktive').length;

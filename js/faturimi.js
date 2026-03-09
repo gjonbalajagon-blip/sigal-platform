@@ -120,12 +120,18 @@ function renderTabela() {
     const filterMuaji = parseInt(document.getElementById('filter-muaji').value) || muajiAktual();
     const search = document.getElementById('search-klient').value.toLowerCase();
 
+    const filterViti = document.getElementById('filter-viti') ? document.getElementById('filter-viti').value : 'all';
     const filtered = klientet.filter((k, i) => {
         const searchOk = k.emri.toLowerCase().includes(search);
         const statusMuaj = k.statuset?.[filterMuaji] || 'asgje';
         const statusOk = filterStatus === 'all' || statusMuaj === filterStatus;
         const llojiOk = tabAktual === 'vjetor' ? k.faturimiLloji === 'vjetor' : k.faturimiLloji !== 'vjetor';
-        return searchOk && statusOk && llojiOk;
+        const vitiOk = filterViti === 'all' || (k.dataFillimit || '').startsWith(filterViti);
+        return searchOk && statusOk && llojiOk && vitiOk;
+    }).sort((a, b) => {
+        if (!a.dataMbarimit) return 1;
+        if (!b.dataMbarimit) return -1;
+        return new Date(a.dataMbarimit) - new Date(b.dataMbarimit);
     });
 
     // Update counts per muajin e zgjedhur

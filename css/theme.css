@@ -1201,3 +1201,18 @@ input[type="number"] {
     color: var(--sigal-navy);
     border-bottom-color: var(--sigal-navy);
 }
+.btn-rinovo {
+    background: none;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 2px 4px;
+    cursor: pointer;
+    color: #0047AB;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.15s;
+}
+.btn-rinovo:hover {
+    background: #e8eff8;
+    border-color: #0047AB;
+}

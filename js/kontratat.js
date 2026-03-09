@@ -133,6 +133,20 @@ function ruajKontrate() {
     renderTabela();
 }
 
+function rinovoKontrate(index) {
+    if (!confirm('Rinovo kontratën për 1 vit?')) return;
+    const k = kontratat[index];
+    kontratat[index].arkivuar = true;
+
+    const fillimRi = k.mbarimi ? new Date(new Date(k.mbarimi).getTime() + 86400000).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+    const mbarimRi = new Date(new Date(fillimRi).setFullYear(new Date(fillimRi).getFullYear() + 1) - 86400000).toISOString().split('T')[0];
+
+    const kontratRe = { ...k, fillimi: fillimRi, mbarimi: mbarimRi, dataKontrates: fillimRi, dataKrijimit: new Date().toISOString().split('T')[0], arkivuar: false };
+    kontratat.push(kontratRe);
+    ruajNeStorage();
+    renderTabela();
+}
+
 function fshijKontrate(index) {
     if (confirm('A jeni i sigurt që doni të fshini këtë kontratë?')) {
         kontratat.splice(index, 1);
@@ -194,9 +208,14 @@ function renderTabela() {
     const filtered = kontratat.filter(k => {
         const llojiOk = filterLloji === 'all' || k.lloji === filterLloji;
         const statusi = llogaritStatus(k.mbarimi);
-        const statusOk = filterStatusi === 'all' || statusi === filterStatusi;
+        const arkivuarOk = filterStatusi === 'skaduar' ? true : !k.arkivuar;
+        const statusOk = filterStatusi === 'all' ? !k.arkivuar : statusi === filterStatusi;
         const searchOk = k.emri.toLowerCase().includes(search) || (k.nr || '').toLowerCase().includes(search);
-        return llojiOk && statusOk && searchOk;
+        return llojiOk && statusOk && arkivuarOk && searchOk;
+    }).sort((a, b) => {
+        if (!a.mbarimi) return 1;
+        if (!b.mbarimi) return -1;
+        return new Date(a.mbarimi) - new Date(b.mbarimi);
     });
 
     // Stats
@@ -236,8 +255,13 @@ function renderTabela() {
         const statusi = llogaritStatus(k.mbarimi);
         const ditet = llogaritDitet(k.mbarimi);
         return `
-        <tr>
-<td>${k.emri}</td>
+        <tr${k.arkivuar ? ' style="opacity:0.5"' : ''}>
+            <td>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <button class="btn-rinovo" onclick="rinovoKontrate(${idx})" title="Rinovo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
+                    ${k.emri}${k.arkivuar ? ' <span style="font-size:10px;color:#94a3b8;font-weight:600;">ARKIVUAR</span>' : ''}
+                </div>
+            </td>
             <td>${k.lloji === 'biznes' ? (k.nrBiznesit || '-') : (k.nrPersonal || '-')}</td>
               <td><span class="badge-lloji ${k.lloji}">${llojiLabels[k.lloji]}</span></td>
             <td>${(k.pakot || []).join(', ') || '-'}</td>
