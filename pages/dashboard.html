@@ -6,6 +6,104 @@
     <title>Sigal Health | Dashboard</title>
     <link rel="stylesheet" href="../css/theme.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid var(--sigal-border);
+            padding: 18px 20px;
+            border-left: 4px solid var(--sigal-navy);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .kpi-card .kpi-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--sigal-text-light);
+        }
+        .kpi-card .kpi-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--sigal-navy);
+            line-height: 1;
+        }
+        .kpi-card .kpi-sub {
+            font-size: 11px;
+            color: var(--sigal-text-muted);
+        }
+        .kpi-card.warning { border-left-color: #b45309; }
+        .kpi-card.warning .kpi-value { color: #b45309; }
+        .kpi-card.success { border-left-color: #166534; }
+        .kpi-card.success .kpi-value { color: #166534; }
+        .kpi-card.info { border-left-color: #0047AB; }
+        .kpi-card.info .kpi-value { color: #0047AB; }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .chart-card {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid var(--sigal-border);
+            padding: 18px 20px;
+        }
+        .chart-card h3 {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--sigal-text-light);
+            margin-bottom: 16px;
+        }
+        .chart-wrap {
+            position: relative;
+            height: 200px;
+        }
+
+        .skadon-card-wrap {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid var(--sigal-border);
+            padding: 18px 20px;
+        }
+        .skadon-card-wrap h3 {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--sigal-text-light);
+            margin-bottom: 14px;
+        }
+        .skadon-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--sigal-border);
+        }
+        .skadon-row:last-child { border-bottom: none; }
+        .skadon-name { font-size: 13px; font-weight: 600; flex: 1; }
+        .skadon-lloji { font-size: 11px; color: #fff; padding: 2px 7px; border-radius: 10px; }
+        .skadon-lloji.individ { background: #0047AB; }
+        .skadon-lloji.familje { background: #166534; }
+        .skadon-lloji.biznes { background: #b45309; }
+        .skadon-bar-wrap { flex: 2; background: #f0f4fa; border-radius: 4px; height: 6px; }
+        .skadon-bar { height: 6px; border-radius: 4px; }
+        .skadon-dite { font-size: 12px; font-weight: 700; min-width: 60px; text-align: right; }
+    </style>
 </head>
 <body>
 
@@ -75,78 +173,57 @@
 
         <div class="content-area">
 
-            <!-- Rreshti 1: Kontratat -->
-            <div class="stats-container" style="margin-bottom:8px;">
-                <div class="stats-row">
-                    <div class="fstat-card small aktive-card">
-                        <span id="stat-kontratat-aktive">0</span>
-                        <p>Kontratat Aktive</p>
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Kontratat Aktive</div>
+                    <div class="kpi-value" id="kpi-aktive">0</div>
+                    <div class="kpi-sub" id="kpi-aktive-sub">— individ / — familje / — biznes</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="kpi-label">Skadojnë ≤ 35 ditë</div>
+                    <div class="kpi-value" id="kpi-skadon">0</div>
+                    <div class="kpi-sub">kontrata kërkojnë vëmendje</div>
+                </div>
+                <div class="kpi-card info">
+                    <div class="kpi-label">Ofertat Aktive</div>
+                    <div class="kpi-value" id="kpi-ofertat">0</div>
+                    <div class="kpi-sub" id="kpi-ofertat-sub">— të realizuara</div>
+                </div>
+                <div class="kpi-card success">
+                    <div class="kpi-label">Fatura të Lëshuara</div>
+                    <div class="kpi-value" id="kpi-leshuar">0</div>
+                    <div class="kpi-sub" id="kpi-leshuar-sub">muaji aktual</div>
+                </div>
+            </div>
+
+            <!-- Grafikët -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Kontratat sipas Llojit</h3>
+                    <div class="chart-wrap">
+                        <canvas id="chart-lloji"></canvas>
                     </div>
-                    <div class="fstat-card small skadon-card">
-                        <span id="stat-skadojne">0</span>
-                        <p>Skadojnë së shpejti</p>
-                    </div>
-                    <div class="fstat-card small skaduar-card">
-                        <span id="stat-skaduar">0</span>
-                        <p>Skaduar</p>
-                    </div>
-                    <div class="fstat-card big total-card">
-                        <span id="stat-total">0</span>
-                        <p>Total Kontratat</p>
+                </div>
+                <div class="chart-card">
+                    <h3>Statusi i Faturimit — Muaji Aktual</h3>
+                    <div class="chart-wrap">
+                        <canvas id="chart-faturimi"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Rreshti 2: Lloji + Ofertat -->
-            <div class="stats-container" style="margin-bottom:8px;">
-                <div class="stats-row">
-                    <div class="fstat-card small individ-card">
-                        <span id="stat-individ">0</span>
-                        <p>Individ</p>
-                    </div>
-                    <div class="fstat-card small familje-card">
-                        <span id="stat-familje">0</span>
-                        <p>Familje</p>
-                    </div>
-                    <div class="fstat-card small biznes-card">
-                        <span id="stat-biznes">0</span>
-                        <p>Biznes</p>
-                    </div>
-                    <div class="fstat-card small realizuara-card">
-                        <span id="stat-ofertat-aktive">0</span>
-                        <p>Ofertat Aktive</p>
-                    </div>
-                    <div class="fstat-card small" style="border-left-color:#166534;">
-                        <span id="stat-ofertat-realizuara" style="color:#166534;">0</span>
-                        <p>Ofertat Realizuara</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rreshti 3: Faturimi muaji aktual -->
-            <div class="stats-container" style="margin-bottom:24px;">
-                <div class="stats-row">
-                    <div class="fstat-card small process">
-                        <span id="stat-faturimi-process">0</span>
-                        <p>Faturimi Në Proces</p>
-                    </div>
-                    <div class="fstat-card small leshuar">
-                        <span id="stat-faturimi-leshuar">0</span>
-                        <p>Fatura të Lëshuara</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Lista: Skadojnë së shpejti -->
-            <div style="background:#fff;border-radius:8px;border:1px solid var(--sigal-border);padding:16px 20px;max-width:600px;">
-                <h3 style="font-size:13px;font-weight:700;color:var(--sigal-navy);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">⚠️ Kontratat që skadojnë brenda 35 ditëve</h3>
-                <div id="lista-skadon"></div>
+            <!-- Skadojnë së shpejti -->
+            <div class="skadon-card-wrap">
+                <h3>⚠️ Kontratat që skadojnë së shpejti</h3>
+                <div id="lista-skadon"><p style="color:#94a3b8;font-size:13px;">Duke ngarkuar...</p></div>
             </div>
 
         </div>
     </div>
 
-    <script>lucide.createIcons();</script>
+    <script src="../js/main.js"></script>
     <script src="../js/dashboard.js"></script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
