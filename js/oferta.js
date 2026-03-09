@@ -36,7 +36,7 @@ function tregoBoxAgjenti() {
 
 function shtoOferte() {
     editIndex = -1;
-    document.getElementById('modal-title').textContent = 'Ofertë e Re';
+    document.getElementById('modal-title').textContent = 'Oferte e Re';
     document.getElementById('m-emri').value = '';
     document.getElementById('m-email').value = '';
     document.getElementById('m-kerkuar-nga').value = 'direkt';
@@ -69,7 +69,7 @@ function ruajOferte() {
         kerkuarNga: kerkuarNga,
         agjenti: kerkuarNga === 'agjenti' ? agjenti : '',
         pakot: Array.from(document.querySelectorAll('.pako-check input:checked')).map(cb => cb.value),
-        krijuarNga: 'Agon', // Mund te ndryshohet me login system
+        krijuarNga: 'Agon',
         dataKrijimit: today.toISOString().split('T')[0],
         dataSkadon: skadon.toISOString().split('T')[0]
     };
@@ -88,7 +88,7 @@ function ruajOferte() {
 function editoOferte(index) {
     editIndex = index;
     const o = ofertat[index];
-    document.getElementById('modal-title').textContent = 'Edito Ofertën';
+    document.getElementById('modal-title').textContent = 'Edito Oferten';
     document.getElementById('m-emri').value = o.emri;
     document.getElementById('m-email').value = o.email || '';
     document.getElementById('m-kerkuar-nga').value = o.kerkuarNga || 'direkt';
@@ -96,7 +96,7 @@ function editoOferte(index) {
     tregoBoxAgjenti();
 
     const btns = document.querySelectorAll('.lloji-btn');
-    const llojiMap = { 'individ': 0, 'familjare-biznes': 1 };
+    const llojiMap = { 'individ': 0, 'familje': 1, 'biznes': 2 };
     zgjidhLlojin(o.lloji, btns[llojiMap[o.lloji] || 0]);
 
     document.querySelectorAll('.pako-check input').forEach(cb => {
@@ -107,7 +107,7 @@ function editoOferte(index) {
 }
 
 function fshijOferte(index) {
-    if (confirm('A jeni i sigurt që doni të fshini këtë ofertë?')) {
+    if (confirm('A jeni i sigurt qe doni te fshini kete oferte?')) {
         ofertat.splice(index, 1);
         ruajNeStorage();
         renderTabela();
@@ -127,31 +127,31 @@ function llogaritDitet(dataSkadon) {
     const skadon = new Date(dataSkadon);
     const dite = Math.ceil((skadon - tani) / (1000 * 60 * 60 * 24));
     if (dite < 0) return { teksti: 'Skaduar', klasa: 'skadon-expired' };
-    if (dite <= 7) return { teksti: `⚠️ ${dite} ditë`, klasa: 'skadon-warning' };
-    return { teksti: `${dite} ditë`, klasa: 'skadon-ok' };
+    if (dite <= 7) return { teksti: dite + ' dite', klasa: 'skadon-warning' };
+    return { teksti: dite + ' dite', klasa: 'skadon-ok' };
 }
 
 function dergoEmail(index) {
     const o = ofertat[index];
     if (!o.email) {
-        alert('Klienti nuk ka email të regjistruar!');
+        alert('Klienti nuk ka email te regjistruar!');
         return;
     }
-    const subject = encodeURIComponent(`Ofertë nga SIGAL Insurance Group - ${o.emri}`);
+    const subject = encodeURIComponent('Oferte nga SIGAL Insurance Group - ' + o.emri);
     const body = encodeURIComponent(
-        `I nderuar ${o.emri},\n\nJu dërgojmë ofertën tonë për sigurim shëndetësor.\n\nPakot e zgjedhura: ${(o.pakot || []).join(', ')}\nValiditeti: 30 ditë nga ${o.dataKrijimit}\n\nMe respekt,\nSIGAL Insurance Group`
+        'I nderuar ' + o.emri + ',\n\nJu dergojme oferten tone per sigurim shendetsor.\n\nPakot e zgjedhura: ' + (o.pakot || []).join(', ') + '\nValiditeti: 30 dite nga ' + o.dataKrijimit + '\n\nMe respekt,\nSIGAL Insurance Group'
     );
-    window.open(`mailto:${o.email}?subject=${subject}&body=${body}`);
+    window.open('mailto:' + o.email + '?subject=' + subject + '&body=' + body);
 }
 
 function krijoKontrate(index) {
-    const confirmed = confirm('A jeni i sigurt që doni të krijoni kontratë?\nOferta është pranuar?');
+    const confirmed = confirm('A jeni i sigurt qe doni te krijoni kontrate?\nOferta eshte pranuar?');
     if (!confirmed) return;
 
     const o = ofertat[index];
     const kontratData = {
         emri: o.emri,
-        lloji: o.lloji === 'individ' ? 'individ' : 'biznes',
+        lloji: o.lloji,
         email: o.email || '',
         pakot: o.pakot || [],
         ngaOferta: true
@@ -170,12 +170,12 @@ async function gjeneroWord(index) {
         });
         const data = await response.json();
         if (data.success) {
-            window.open(`https://sigal-platform-production.up.railway.app/api/shkarko/${data.fileName}`, '_blank');
+            window.open('https://sigal-platform-production.up.railway.app/api/shkarko/' + data.fileName, '_blank');
         } else {
             alert('Gabim: ' + data.error);
         }
     } catch (err) {
-        alert('Serveri nuk është aktiv ose endpoint nuk ekziston ende!');
+        alert('Serveri nuk eshte aktiv!');
     }
 }
 
@@ -199,17 +199,19 @@ function renderTabela() {
     document.getElementById('count-aktive').textContent = ofertat.filter(o => llogaritStatus(o.dataSkadon) === 'aktive').length;
     document.getElementById('count-skaduar').textContent = ofertat.filter(o => llogaritStatus(o.dataSkadon) === 'skaduar').length;
     document.getElementById('count-individ').textContent = ofertat.filter(o => o.lloji === 'individ').length;
-    document.getElementById('count-biznes').textContent = ofertat.filter(o => o.lloji === 'familjare-biznes').length;
+    document.getElementById('count-familje').textContent = ofertat.filter(o => o.lloji === 'familje').length;
+    document.getElementById('count-biznes').textContent = ofertat.filter(o => o.lloji === 'biznes').length;
     document.getElementById('count-total').textContent = ofertat.length;
 
     const statusLabels = {
-        aktive: '🟢 Aktive',
-        skaduar: '🔴 Skaduar'
+        aktive: 'Aktive',
+        skaduar: 'Skaduar'
     };
 
     const llojiLabels = {
-        'individ': '👤 Individuale',
-        'familjare-biznes': '🏢 Familjare/Biznes'
+        'individ': 'Individuale',
+        'familje': 'Familjare',
+        'biznes': 'Biznese'
     };
 
     const kerkuarLabels = {
@@ -221,7 +223,7 @@ function renderTabela() {
     const tbody = document.getElementById('ofertat-tbody');
 
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:40px; color:#888;">Nuk ka oferta. Shtoni me "+ Ofertë e Re"</td></tr>`;
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; color:#888;">Nuk ka oferta. Shtoni me "+ Oferte e Re"</td></tr>';
         return;
     }
 
@@ -229,27 +231,24 @@ function renderTabela() {
         const idx = ofertat.indexOf(o);
         const statusi = llogaritStatus(o.dataSkadon);
         const ditet = llogaritDitet(o.dataSkadon);
-        const kerkuar = o.kerkuarNga === 'agjenti' ? `Agjenti: ${o.agjenti}` : (kerkuarLabels[o.kerkuarNga] || '-');
-        return `
-        <tr>
-            <td>${o.emri}</td>
-            <td><span class="badge-lloji ${o.lloji}">${llojiLabels[o.lloji]}</span></td>
-            <td>${(o.pakot || []).join(', ') || '-'}</td>
-            <td>${o.krijuarNga || '-'}</td>
-            <td>${kerkuar}</td>
-            <td>${o.dataKrijimit || '-'}</td>
-            <td class="${ditet.klasa}">${ditet.teksti}</td>
-            <td><span class="badge-status ${statusi}">${statusLabels[statusi]}</span></td>
-            <td>
-                <div class="action-btns">
-                    <button class="btn-edit" onclick="editoOferte(${idx})">✏️</button>
-                    <button class="btn-word" onclick="gjeneroWord(${idx})">📄 Word</button>
-                    <button class="btn-email" onclick="dergoEmail(${idx})">📧</button>
-                    <button class="btn-kontrate" onclick="krijoKontrate(${idx})">📋 Kontratë</button>
-                    <button class="btn-delete" onclick="fshijOferte(${idx})">🗑️</button>
-                </div>
-            </td>
-        </tr>`;
+        const kerkuar = o.kerkuarNga === 'agjenti' ? 'Agjenti: ' + o.agjenti : (kerkuarLabels[o.kerkuarNga] || '-');
+        return '<tr>' +
+            '<td>' + o.emri + '</td>' +
+            '<td><span class="badge-lloji ' + o.lloji + '">' + (llojiLabels[o.lloji] || o.lloji) + '</span></td>' +
+            '<td>' + ((o.pakot || []).join(', ') || '-') + '</td>' +
+            '<td>' + (o.krijuarNga || '-') + '</td>' +
+            '<td>' + kerkuar + '</td>' +
+            '<td>' + (o.dataKrijimit || '-') + '</td>' +
+            '<td class="' + ditet.klasa + '">' + ditet.teksti + '</td>' +
+            '<td><span class="badge-status ' + statusi + '">' + statusLabels[statusi] + '</span></td>' +
+            '<td><div class="action-btns">' +
+                '<button class="btn-edit" onclick="editoOferte(' + idx + ')" title="Edito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>' +
+                '<button class="btn-word" onclick="gjeneroWord(' + idx + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg> Word</button>' +
+                '<button class="btn-email" onclick="dergoEmail(' + idx + ')" title="Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button>' +
+                '<button class="btn-kontrate" onclick="krijoKontrate(' + idx + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Kontrate</button>' +
+                '<button class="btn-delete" onclick="fshijOferte(' + idx + ')" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>' +
+            '</div></td>' +
+        '</tr>';
     }).join('');
 }
 

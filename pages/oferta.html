@@ -80,7 +80,8 @@
                 <select id="filter-lloji" onchange="filtro()">
                     <option value="all">Të gjitha llojet</option>
                     <option value="individ">Individuale</option>
-                    <option value="familjare-biznes">Familjare/Biznes</option>
+                    <option value="familje">Familjare</option>
+                    <option value="biznes">Biznese</option>
                 </select>
                 <select id="filter-statusi" onchange="filtro()">
                     <option value="all">Të gjitha statuset</option>
@@ -108,11 +109,15 @@
                 <div class="stats-row">
                     <div class="fstat-card small individ-card">
                         <span id="count-individ">0</span>
-                        <p>Individuale</p>
+                        <p>Individ</p>
+                    </div>
+                    <div class="fstat-card small familje-card">
+                        <span id="count-familje">0</span>
+                        <p>Familje</p>
                     </div>
                     <div class="fstat-card small biznes-card">
                         <span id="count-biznes">0</span>
-                        <p>Familjare/Biznes</p>
+                        <p>Biznese</p>
                     </div>
                 </div>
             </div>
@@ -147,7 +152,8 @@
             <div class="modal-body">
                 <div class="lloji-selector">
                     <button class="lloji-btn active" onclick="zgjidhLlojin('individ', this)">Individuale</button>
-                    <button class="lloji-btn" onclick="zgjidhLlojin('familjare-biznes', this)">Familjare/Biznes</button>
+                    <button class="lloji-btn" onclick="zgjidhLlojin('familje', this)">Familjare</button>
+                    <button class="lloji-btn" onclick="zgjidhLlojin('biznes', this)">Biznese</button>
                 </div>
                 <input type="hidden" id="m-lloji" value="individ">
                 <div class="form-grid">
