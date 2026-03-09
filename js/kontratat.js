@@ -76,6 +76,8 @@ function ruajKontrate() {
         pakot: Array.from(document.querySelectorAll('.pako-check input:checked')).map(cb => cb.value),
         fillimi: document.getElementById('m-fillimi').value,
         mbarimi: document.getElementById('m-mbarimi').value,
+        email: document.getElementById('m-email') ? document.getElementById('m-email').value.trim() : '',
+        faturimiLloji: document.getElementById('m-faturimi-lloji') ? document.getElementById('m-faturimi-lloji').value : 'mujor',
         dataKrijimit: new Date().toISOString().split('T')[0]
     };
 

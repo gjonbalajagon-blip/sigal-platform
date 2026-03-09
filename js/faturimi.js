@@ -50,9 +50,11 @@ function ruajKlient() {
 
     if (!emri) { alert('Ju lutem shkruani emrin e klientit!'); return; }
 
+    const faturimiLloji = document.getElementById('m-faturimi-lloji').value;
+
     const klienti = {
         emri, kontrataНр, dataFillimit, dataMbarimit,
-        dergesa, email, afati,
+        dergesa, email, afati, faturimiLloji,
         statuset: {}
     };
 

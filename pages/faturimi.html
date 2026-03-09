@@ -102,26 +102,28 @@
                 <input type="text" id="search-klient" placeholder="Kërko klient..." onkeyup="filtroKlientet()">
             </div>
 
-            <div class="faturimi-stats">
-                <div class="fstat-card asgje">
-                    <span id="count-asgje">0</span>
-                    <p>Asgjë</p>
-                </div>
-                <div class="fstat-card kerkesa">
-                    <span id="count-kerkesa">0</span>
-                    <p>Kërkesë Dërguar</p>
-                </div>
-                <div class="fstat-card process">
-                    <span id="count-process">0</span>
-                    <p>Në Proces</p>
-                </div>
-                <div class="fstat-card leshuar">
-                    <span id="count-leshuar">0</span>
-                    <p>Faturë e Lëshuar</p>
-                </div>
-                <div class="fstat-card total">
-                    <span id="count-total">0</span>
-                    <p>Total Klientë</p>
+            <div class="stats-container">
+                <div class="stats-row">
+                    <div class="fstat-card small asgje">
+                        <span id="count-asgje">0</span>
+                        <p>Asgjë</p>
+                    </div>
+                    <div class="fstat-card small kerkesa">
+                        <span id="count-kerkesa">0</span>
+                        <p>Kërkesë</p>
+                    </div>
+                    <div class="fstat-card small process">
+                        <span id="count-process">0</span>
+                        <p>Në Proces</p>
+                    </div>
+                    <div class="fstat-card small leshuar">
+                        <span id="count-leshuar">0</span>
+                        <p>E Lëshuar</p>
+                    </div>
+                    <div class="fstat-card big total-card">
+                        <span id="count-total">0</span>
+                        <p>Total</p>
+                    </div>
                 </div>
             </div>
 
@@ -196,6 +198,13 @@
                         <option value="10">Tetor</option>
                         <option value="11">Nëntor</option>
                         <option value="12">Dhjetor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Mënyra e Faturimit</label>
+                    <select id="m-faturimi-lloji">
+                        <option value="mujor">Faturim Mujor</option>
+                        <option value="vjetor">Faturim Vjetor</option>
                     </select>
                 </div>
                 <div class="form-group">
