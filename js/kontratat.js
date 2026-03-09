@@ -108,6 +108,24 @@ function ruajKontrate() {
         kontratat[editIndex] = kontrata;
     } else {
         kontratat.push(kontrata);
+
+        // Transfer automatik në Faturimi
+        const faturimi = JSON.parse(localStorage.getItem('faturimi_klientet')) || [];
+        faturimi.push({
+            emri: kontrata.emri,
+            kontrataNr: kontrata.lloji === 'biznes' ? kontrata.nrBiznesit : kontrata.nrPersonal,
+            nrPersonal: kontrata.nrPersonal,
+            nrBiznesit: kontrata.nrBiznesit,
+            lloji: kontrata.lloji,
+            dataFillimit: kontrata.fillimi,
+            dataMbarimit: kontrata.mbarimi,
+            email: kontrata.email,
+            faturimiLloji: kontrata.faturimiLloji || 'mujor',
+            dergesa: 'email',
+            afati: 30,
+            statuset: {}
+        });
+        localStorage.setItem('faturimi_klientet', JSON.stringify(faturimi));
     }
 
     ruajNeStorage();
