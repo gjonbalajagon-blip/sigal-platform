@@ -14,6 +14,25 @@ function zgjidhLlojin(lloji, btn) {
     document.getElementById('field-perfaqesuesi').style.display = (lloji === 'biznes' || lloji === 'familje') ? 'block' : 'none';
     document.getElementById('field-nr-personal').style.display = (lloji === 'individ' || lloji === 'familje') ? 'block' : 'none';
     document.getElementById('field-pozita').style.display = (lloji === 'biznes') ? 'block' : 'none';
+
+    // Ndrro pakot sipas llojit
+    const container = document.getElementById('pakot-container');
+    if (container) {
+        if (lloji === 'individ') {
+            container.innerHTML = 
+                '<label class="pako-check"><input type="checkbox" value="Pako Bazë"> Pako Bazë</label>' +
+                '<label class="pako-check"><input type="checkbox" value="Pako Standard"> Pako Standard</label>' +
+                '<label class="pako-check"><input type="checkbox" value="Pako Standard Plus"> Pako Standard Plus</label>';
+        } else {
+            container.innerHTML = 
+                '<label class="pako-check"><input type="checkbox" value="Pako Bazë"> Pako Bazë</label>' +
+                '<label class="pako-check"><input type="checkbox" value="Pako Standard"> Pako Standard</label>' +
+                '<label class="pako-check"><input type="checkbox" value="Pako Standard Plus"> Pako Standard Plus</label>' +
+                '<label class="pako-check"><input type="checkbox" value="Pako Premium"> Pako Premium</label>' +
+                '<label class="pako-check"><input type="checkbox" value="Pako Silver"> Pako Silver</label>' +
+                '<label class="pako-check"><input type="checkbox" value="Pako Gold"> Pako Gold</label>';
+        }
+    }
 }
 
 function shtoKontrate() {

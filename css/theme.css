@@ -1150,3 +1150,24 @@ tr:hover {
 
 .fstat-card.asgje { border-left-color: #94a3b8; }
 .fstat-card.asgje span { color: #64748b; }
+/* Date picker styling */
+input[type="date"] {
+    position: relative;
+    font-family: inherit;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+input[type="date"],
+input[type="number"] {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-variant-numeric: tabular-nums;
+}
