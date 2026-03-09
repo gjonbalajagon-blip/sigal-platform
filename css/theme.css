@@ -1174,3 +1174,30 @@ input[type="number"] {
     font-family: 'IBM Plex Sans', sans-serif;
     font-variant-numeric: tabular-nums;
 }
+.faturimi-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--sigal-border);
+}
+
+.tab-btn {
+    padding: 8px 24px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sigal-text-light);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover { color: var(--sigal-navy); }
+
+.tab-btn.active {
+    color: var(--sigal-navy);
+    border-bottom-color: var(--sigal-navy);
+}

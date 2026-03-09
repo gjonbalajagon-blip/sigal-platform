@@ -8,7 +8,14 @@ function llogaritSkadon(dataMbarimit) {
     if (diferencaDite <= 35) return { teksti: `⚠️ ${diferencaDite} ditë`, klasa: 'skadon-warning' };
     return { teksti: `${diferencaDite} ditë`, klasa: 'skadon-ok' };
 }let klientet = JSON.parse(localStorage.getItem('faturimi_klientet')) || [];
-let editIndex = -1;
+let editIndex = -1; let tabAktual = 'mujor';
+
+function ndryshoTab(tab) {
+    tabAktual = tab;
+    document.getElementById('tab-mujor').classList.toggle('active', tab === 'mujor');
+    document.getElementById('tab-vjetor').classList.toggle('active', tab === 'vjetor');
+    renderTabela();
+}
 let statusIndex = -1;
 
 const muajt = ['', 'Janar', 'Shkurt', 'Mars', 'Prill', 'Maj', 'Qershor',
@@ -117,7 +124,8 @@ function renderTabela() {
         const searchOk = k.emri.toLowerCase().includes(search);
         const statusMuaj = k.statuset?.[filterMuaji] || 'asgje';
         const statusOk = filterStatus === 'all' || statusMuaj === filterStatus;
-        return searchOk && statusOk;
+        const llojiOk = tabAktual === 'vjetor' ? k.faturimiLloji === 'vjetor' : k.faturimiLloji !== 'vjetor';
+        return searchOk && statusOk && llojiOk;
     });
 
     // Update counts per muajin e zgjedhur
@@ -198,8 +206,6 @@ function renderTabela() {
                     <button class="btn-delete" onclick="fshijKlient(${idx})" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
                     ${k.dergesa === 'email' && k.email ? `<button class="btn-email" onclick="dergoEmail(${idx})" title="Dërgo Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button>` : ''}
                 </div>
-            </td>
-            <td><span style="font-size:11px;font-weight:600;color:${k.faturimiLloji === 'vjetor' ? '#0047AB' : '#6b7a8d'}">${k.faturimiLloji === 'vjetor' ? 'Vjetor' : 'Mujor'}</span></td>
         </tr>`;
     }).join('');
 

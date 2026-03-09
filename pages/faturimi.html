@@ -82,6 +82,10 @@
         </div>
 
         <div class="content-area">
+            <div class="faturimi-tabs">
+                <button class="tab-btn active" id="tab-mujor" onclick="ndryshoTab('mujor')">Mujor</button>
+                <button class="tab-btn" id="tab-vjetor" onclick="ndryshoTab('vjetor')">Vjetor</button>
+            </div>
             <div class="filter-bar">
                 <select id="filter-status" onchange="filtroKlientet()">
                     <option value="all">Të gjithë statuset</option>
@@ -167,8 +171,8 @@
                     <input type="text" id="m-emri" placeholder="p.sh. Kompania ABC">
                 </div>
                 <div class="form-group">
-                    <label>Numri i Kontratës</label>
-                    <input type="text" id="m-kontrata-nr" placeholder="p.sh. KS-2024-001">
+                    <label>Nr. ID / NRB</label>
+                    <input type="text" id="m-kontrata-nr" placeholder="Nr. Personal ose Nr. Biznesit">
                 </div>
                 <div class="form-group">
                     <label>Data Fillimit Kontratës</label>
