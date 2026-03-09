@@ -144,7 +144,7 @@ function renderTabela() {
     const tbody = document.getElementById('faturimi-tbody');
 
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:40px; color:#888;">Nuk ka të dhëna. Shtoni klientë me butonin "+ Shto Klient"</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:40px; color:#888;">Nuk ka të dhëna. Shtoni klientë me butonin "+ Shto Klient"</td></tr>`;
         return;
     }
 
@@ -162,6 +162,7 @@ function renderTabela() {
 
         return `
         <tr>
+            <td><input type="checkbox" class="klient-check" data-index="${idx}" onchange="perditesoEmailBtn()"></td>
             <td><strong>${k.emri}</strong></td>
             <td>${k.kontrataНр || '-'}</td>
             <td style="font-size:12px">${k.dataFillimit || '-'} → ${k.dataMbarimit || '-'}</td>
@@ -208,7 +209,44 @@ function dergoEmail(index) {
     );
     window.open(`mailto:${k.email}?subject=${subject}&body=${body}`);
 }
+function zgjidhTeGjitha(checked) {
+    document.querySelectorAll('.klient-check').forEach(cb => cb.checked = checked);
+    perditesoEmailBtn();
+}
 
+function perditesoEmailBtn() {
+    const zgjedhur = document.querySelectorAll('.klient-check:checked').length;
+    const btn = document.getElementById('btn-dergo-email');
+    const count = document.getElementById('count-zgjedhur');
+    if (zgjedhur > 0) {
+        btn.style.display = 'inline-flex';
+        count.textContent = zgjedhur;
+    } else {
+        btn.style.display = 'none';
+    }
+}
+
+function dergoEmailZgjedhurve() {
+    const zgjedhur = [];
+    document.querySelectorAll('.klient-check:checked').forEach(cb => {
+        const idx = parseInt(cb.dataset.index);
+        const k = klientet[idx];
+        if (k && k.email) zgjedhur.push(k.email);
+    });
+
+    if (zgjedhur.length === 0) {
+        alert('Asnje klient i zgjedhur nuk ka email!');
+        return;
+    }
+
+    const emails = zgjedhur.join(',');
+    const muajiAkt = muajiAktual();
+    const subject = encodeURIComponent('Kerkese per listen e te siguruarve - ' + muajt[muajiAkt]);
+    const body = encodeURIComponent(
+        'Te nderuar,\n\nJu lutem na dergoni listen e perditesuar te te siguruarve per muajin ' + muajt[muajiAkt] + '.\n\nFaleminderit,\nDepartamenti i Sigurimeve Shendetesore\nSigal Insurance Group'
+    );
+    window.open('mailto:' + emails + '?subject=' + subject + '&body=' + body);
+}
 // Initialize - set filter muaji to current month
 document.getElementById('filter-muaji').value = muajiAktual();
 renderTabela();
