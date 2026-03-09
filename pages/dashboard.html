@@ -74,39 +74,79 @@
         </div>
 
         <div class="content-area">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i data-lucide="file-text"></i></div>
-                    <div class="stat-info">
-                        <h3>Kontratat Aktive</h3>
-                        <p class="stat-number">0</p>
+
+            <!-- Rreshti 1: Kontratat -->
+            <div class="stats-container" style="margin-bottom:8px;">
+                <div class="stats-row">
+                    <div class="fstat-card small aktive-card">
+                        <span id="stat-kontratat-aktive">0</span>
+                        <p>Kontratat Aktive</p>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i data-lucide="users"></i></div>
-                    <div class="stat-info">
-                        <h3>Të Siguruarit</h3>
-                        <p class="stat-number">0</p>
+                    <div class="fstat-card small skadon-card">
+                        <span id="stat-skadojne">0</span>
+                        <p>Skadojnë së shpejti</p>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i data-lucide="refresh-cw"></i></div>
-                    <div class="stat-info">
-                        <h3>Rinovimet Pending</h3>
-                        <p class="stat-number">0</p>
+                    <div class="fstat-card small skaduar-card">
+                        <span id="stat-skaduar">0</span>
+                        <p>Skaduar</p>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i data-lucide="wallet"></i></div>
-                    <div class="stat-info">
-                        <h3>Debitorët</h3>
-                        <p class="stat-number">0</p>
+                    <div class="fstat-card big total-card">
+                        <span id="stat-total">0</span>
+                        <p>Total Kontratat</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Rreshti 2: Lloji + Ofertat -->
+            <div class="stats-container" style="margin-bottom:8px;">
+                <div class="stats-row">
+                    <div class="fstat-card small individ-card">
+                        <span id="stat-individ">0</span>
+                        <p>Individ</p>
+                    </div>
+                    <div class="fstat-card small familje-card">
+                        <span id="stat-familje">0</span>
+                        <p>Familje</p>
+                    </div>
+                    <div class="fstat-card small biznes-card">
+                        <span id="stat-biznes">0</span>
+                        <p>Biznes</p>
+                    </div>
+                    <div class="fstat-card small realizuara-card">
+                        <span id="stat-ofertat-aktive">0</span>
+                        <p>Ofertat Aktive</p>
+                    </div>
+                    <div class="fstat-card small" style="border-left-color:#166534;">
+                        <span id="stat-ofertat-realizuara" style="color:#166534;">0</span>
+                        <p>Ofertat Realizuara</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rreshti 3: Faturimi muaji aktual -->
+            <div class="stats-container" style="margin-bottom:24px;">
+                <div class="stats-row">
+                    <div class="fstat-card small process">
+                        <span id="stat-faturimi-process">0</span>
+                        <p>Faturimi Në Proces</p>
+                    </div>
+                    <div class="fstat-card small leshuar">
+                        <span id="stat-faturimi-leshuar">0</span>
+                        <p>Fatura të Lëshuara</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista: Skadojnë së shpejti -->
+            <div style="background:#fff;border-radius:8px;border:1px solid var(--sigal-border);padding:16px 20px;max-width:600px;">
+                <h3 style="font-size:13px;font-weight:700;color:var(--sigal-navy);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">⚠️ Kontratat që skadojnë brenda 35 ditëve</h3>
+                <div id="lista-skadon"></div>
+            </div>
+
         </div>
     </div>
 
     <script>lucide.createIcons();</script>
+    <script src="../js/dashboard.js"></script>
 </body>
 </html>
