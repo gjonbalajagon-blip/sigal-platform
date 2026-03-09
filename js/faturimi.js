@@ -135,6 +135,8 @@ function renderTabela() {
     document.getElementById('count-process').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'process').length;
     document.getElementById('count-leshuar').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'leshuar').length;
     document.getElementById('count-total').textContent = klientet.length;
+    document.getElementById('count-mujor').textContent = klientet.filter(k => k.faturimiLloji !== 'vjetor').length;
+    document.getElementById('count-vjetor').textContent = klientet.filter(k => k.faturimiLloji === 'vjetor').length;
 
     const statusLabels = {
         asgje: 'Asgjë',
@@ -211,11 +213,9 @@ function renderTabela() {
 
     let html = '';
     if (mujor.length > 0) {
-        html += `<tr><td colspan="11" style="background:#f0f4fa;font-weight:700;font-size:11px;color:#0047AB;padding:6px 12px;letter-spacing:1px;">MUJOR (${mujor.length})</td></tr>`;
         html += renderRows(mujor);
     }
     if (vjetor.length > 0) {
-        html += `<tr><td colspan="11" style="background:#f0f4fa;font-weight:700;font-size:11px;color:#002B5C;padding:6px 12px;letter-spacing:1px;">VJETOR (${vjetor.length})</td></tr>`;
         html += renderRows(vjetor);
     }
     tbody.innerHTML = html || `<tr><td colspan="11" style="text-align:center; padding:40px; color:#888;">Nuk ka të dhëna.</td></tr>`;
