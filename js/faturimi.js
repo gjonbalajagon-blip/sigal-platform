@@ -148,7 +148,10 @@ function renderTabela() {
         return;
     }
 
-    tbody.innerHTML = filtered.map(k => {
+    const mujor = filtered.filter(k => k.faturimiLloji !== 'vjetor');
+    const vjetor = filtered.filter(k => k.faturimiLloji === 'vjetor');
+
+    const renderRows = (list) => list.map(k => {
         const idx = klientet.indexOf(k);
         const muajiZgjedhur = filterMuaji;
         const statusAktual = k.statuset?.[muajiZgjedhur] || 'asgje';
@@ -164,7 +167,7 @@ function renderTabela() {
         <tr>
             <td><input type="checkbox" class="klient-check" data-index="${idx}" onchange="perditesoEmailBtn()"></td>
             <td><strong>${k.emri}</strong></td>
-            <td>${k.kontrataНр || '-'}</td>
+            <td>${k.nrPersonal || k.nrBiznesit || k.kontrataНр || '-'}</td>
             <td style="font-size:12px">${k.dataFillimit || '-'} → ${k.dataMbarimit || '-'}</td>
             <td>${dergesaLabels[k.dergesa] || k.dergesa}</td>
             <td>${k.email || '-'}</td><td class="${llogaritSkadon(k.dataMbarimit).klasa}">${llogaritSkadon(k.dataMbarimit).teksti}</td>
@@ -196,8 +199,20 @@ function renderTabela() {
                     ${k.dergesa === 'email' && k.email ? `<button class="btn-email" onclick="dergoEmail(${idx})" title="Dërgo Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button>` : ''}
                 </div>
             </td>
+            <td><span style="font-size:11px;font-weight:600;color:${k.faturimiLloji === 'vjetor' ? '#0047AB' : '#6b7a8d'}">${k.faturimiLloji === 'vjetor' ? 'Vjetor' : 'Mujor'}</span></td>
         </tr>`;
     }).join('');
+
+    let html = '';
+    if (mujor.length > 0) {
+        html += `<tr><td colspan="11" style="background:#f0f4fa;font-weight:700;font-size:11px;color:#0047AB;padding:6px 12px;letter-spacing:1px;">MUJOR (${mujor.length})</td></tr>`;
+        html += renderRows(mujor);
+    }
+    if (vjetor.length > 0) {
+        html += `<tr><td colspan="11" style="background:#f0f4fa;font-weight:700;font-size:11px;color:#002B5C;padding:6px 12px;letter-spacing:1px;">VJETOR (${vjetor.length})</td></tr>`;
+        html += renderRows(vjetor);
+    }
+    tbody.innerHTML = html || `<tr><td colspan="11" style="text-align:center; padding:40px; color:#888;">Nuk ka të dhëna.</td></tr>`;
 }
 
 function dergoEmail(index) {

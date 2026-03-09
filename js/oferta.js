@@ -77,6 +77,7 @@ function ruajOferte() {
     if (editIndex >= 0) {
         ofertat[editIndex] = oferta;
     } else {
+        oferta.realizuar = false;
         ofertat.push(oferta);
     }
 
@@ -156,6 +157,8 @@ function krijoKontrate(index) {
         pakot: o.pakot || [],
         ngaOferta: true
     };
+    ofertat[index].realizuar = true;
+    ruajNeStorage();
     localStorage.setItem('oferta_per_kontrate', JSON.stringify(kontratData));
     window.location.href = 'kontratat.html?nga_oferta=true';
 }
@@ -202,6 +205,7 @@ function renderTabela() {
     document.getElementById('count-familje').textContent = ofertat.filter(o => o.lloji === 'familje').length;
     document.getElementById('count-biznes').textContent = ofertat.filter(o => o.lloji === 'biznes').length;
     document.getElementById('count-total').textContent = ofertat.length;
+    document.getElementById('count-realizuara').textContent = ofertat.filter(o => o.realizuar).length;
 
     const statusLabels = {
         aktive: 'Aktive',
