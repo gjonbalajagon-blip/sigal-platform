@@ -34,7 +34,11 @@ function zgjidhLlojin(lloji, btn) {
         }
     }
 }
-
+function zgjidhFaturimin(lloji, btn) {
+    document.getElementById('m-faturimi-lloji').value = lloji;
+    btn.parentElement.querySelectorAll('.lloji-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
 function shtoKontrate() {
     editIndex = -1;
     document.getElementById('modal-title').textContent = 'Kontratë e Re';
@@ -215,8 +219,9 @@ function renderTabela() {
         const ditet = llogaritDitet(k.mbarimi);
         return `
         <tr>
-            <td>${k.emri}</td>
-            <td><span class="badge-lloji ${k.lloji}">${llojiLabels[k.lloji]}</span></td>
+<td>${k.emri}</td>
+            <td>${k.lloji === 'biznes' ? (k.nrBiznesit || '-') : (k.nrPersonal || '-')}</td>
+              <td><span class="badge-lloji ${k.lloji}">${llojiLabels[k.lloji]}</span></td>
             <td>${(k.pakot || []).join(', ') || '-'}</td>
             <td>${k.fillimi || '-'}</td>
             <td>${k.mbarimi || '-'}</td>

@@ -209,10 +209,11 @@
                 </div>
                 <div class="form-group">
                     <label>Mënyra e Faturimit</label>
-                    <select id="m-faturimi-lloji">
-                        <option value="mujor">Faturim Mujor</option>
-                        <option value="vjetor">Faturim Vjetor</option>
-                    </select>
+                    <div class="lloji-selector" style="margin-bottom:0">
+                        <button type="button" class="lloji-btn active" onclick="zgjidhFaturimin('mujor', this)">Mujor</button>
+                        <button type="button" class="lloji-btn" onclick="zgjidhFaturimin('vjetor', this)">Vjetor</button>
+                    </div>
+                    <input type="hidden" id="m-faturimi-lloji" value="mujor">
                 </div>
                 <div class="form-group">
                     <label>Afati i Përgjigjes (ditë)</label>

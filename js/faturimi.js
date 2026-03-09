@@ -246,6 +246,10 @@ function dergoEmailZgjedhurve() {
         'Te nderuar,\n\nJu lutem na dergoni listen e perditesuar te te siguruarve per muajin ' + muajt[muajiAkt] + '.\n\nFaleminderit,\nDepartamenti i Sigurimeve Shendetesore\nSigal Insurance Group'
     );
     window.open('mailto:' + emails + '?subject=' + subject + '&body=' + body);
+function zgjidhFaturimin(lloji, btn) {
+    document.getElementById('m-faturimi-lloji').value = lloji;
+    btn.parentElement.querySelectorAll('.lloji-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 }
 // Initialize - set filter muaji to current month
 document.getElementById('filter-muaji').value = muajiAktual();
