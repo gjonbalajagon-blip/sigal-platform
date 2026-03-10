@@ -236,13 +236,15 @@ function renderTabela() {
     const filterStatusi = document.getElementById('filter-statusi').value;
     const search = document.getElementById('search-kontrate').value.toLowerCase();
 
+    const filterViti = document.getElementById('filter-viti') ? document.getElementById('filter-viti').value : 'all';
     const filtered = kontratat.filter(k => {
         const llojiOk = filterLloji === 'all' || k.lloji === filterLloji;
         const statusi = llogaritStatus(k.mbarimi);
         const arkivuarOk = filterStatusi === 'skaduar' ? true : !k.arkivuar;
         const statusOk = filterStatusi === 'all' ? !k.arkivuar : statusi === filterStatusi;
         const searchOk = k.emri.toLowerCase().includes(search) || (k.nr || '').toLowerCase().includes(search);
-        return llojiOk && statusOk && arkivuarOk && searchOk;
+        const vitiOk = filterViti === 'all' || (k.fillimi || '').startsWith(filterViti) || (k.dataKrijimit || '').startsWith(filterViti);
+        return llojiOk && statusOk && arkivuarOk && searchOk && vitiOk;
     }).sort((a, b) => {
         if (!a.mbarimi) return 1;
         if (!b.mbarimi) return -1;
