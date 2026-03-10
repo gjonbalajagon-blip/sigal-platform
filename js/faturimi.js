@@ -53,7 +53,6 @@ function shtoKlient() {
     document.getElementById('m-data-mbarimit').value = '';
     document.getElementById('m-dergesa').value = 'email';
     document.getElementById('m-email').value = '';
-    document.getElementById('m-afati').value = '';
     document.getElementById('modal-overlay').classList.add('active');
 }
 
