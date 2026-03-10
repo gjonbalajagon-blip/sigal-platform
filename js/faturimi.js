@@ -302,13 +302,30 @@ function zgjidhFaturimin(lloji, btn) {
 // Initialize - set filter muaji to current month
 document.getElementById('filter-muaji').value = muajiAktual();
 
-['m-data-fillimit', 'm-data-mbarimit'].forEach(id => {
-    document.getElementById(id).addEventListener('input', function() {
-        let v = this.value.replace(/\D/g, '').slice(0, 8);
-        if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
-        if (v.length >= 6) v = v.slice(0,5) + '/' + v.slice(5);
-        this.value = v;
-    });
+document.getElementById('m-data-fillimit').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+    if (v.length >= 6) v = v.slice(0,5) + '/' + v.slice(5);
+    this.value = v;
+    if (v.length === 10) {
+        const [d, m, y] = v.split('/');
+        const fillimi = new Date(`${y}-${m}-${d}`);
+        if (isNaN(fillimi)) return;
+        const mbarimi = new Date(fillimi);
+        mbarimi.setFullYear(mbarimi.getFullYear() + 1);
+        mbarimi.setDate(mbarimi.getDate() - 1);
+        document.getElementById('m-data-mbarimit').value =
+            String(mbarimi.getDate()).padStart(2,'0') + '/' +
+            String(mbarimi.getMonth()+1).padStart(2,'0') + '/' +
+            mbarimi.getFullYear();
+    }
+});
+
+document.getElementById('m-data-mbarimit').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+    if (v.length >= 6) v = v.slice(0,5) + '/' + v.slice(5);
+    this.value = v;
 });
 
 renderTabela();
