@@ -12,15 +12,12 @@ let editIndex = -1; let tabAktual = 'mujor';
 
 function formatData(data) {
     if (!data) return '-';
-    const parts = data.split('-');
-    if (parts.length !== 3) return data;
-    if (parts[0].length === 4) {
-        // yyyy-mm-dd
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    } else {
-        // mm-dd-yyyy
-        return `${parts[1]}/${parts[0]}/${parts[2]}`;
+    // Nese eshte yyyy-mm-dd (nga storage i vjeter)
+    if (data.includes('-') && data.split('-')[0].length === 4) {
+        const [y, m, d] = data.split('-');
+        return `${d}/${m}/${y}`;
     }
+    return data; // tashme dd/mm/yyyy
 }
 
 function ndryshoTab(tab) {
@@ -295,4 +292,14 @@ function zgjidhFaturimin(lloji, btn) {
 }
 // Initialize - set filter muaji to current month
 document.getElementById('filter-muaji').value = muajiAktual();
+
+['m-data-fillimit', 'm-data-mbarimit'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function() {
+        let v = this.value.replace(/\D/g, '').slice(0, 8);
+        if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+        if (v.length >= 6) v = v.slice(0,5) + '/' + v.slice(5);
+        this.value = v;
+    });
+});
+
 renderTabela();
