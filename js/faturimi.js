@@ -10,6 +10,19 @@ function llogaritSkadon(dataMbarimit) {
 }let klientet = JSON.parse(localStorage.getItem('faturimi_klientet')) || [];
 let editIndex = -1; let tabAktual = 'mujor';
 
+function formatData(data) {
+    if (!data) return '-';
+    const parts = data.split('-');
+    if (parts.length !== 3) return data;
+    if (parts[0].length === 4) {
+        // yyyy-mm-dd
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    } else {
+        // mm-dd-yyyy
+        return `${parts[1]}/${parts[0]}/${parts[2]}`;
+    }
+}
+
 function ndryshoTab(tab) {
     tabAktual = tab;
     document.getElementById('tab-mujor').classList.toggle('active', tab === 'mujor');
@@ -184,7 +197,7 @@ function renderTabela() {
             <td><input type="checkbox" class="klient-check" data-index="${idx}" onchange="perditesoEmailBtn()"></td>
             <td><strong>${k.emri}</strong></td>
             <td>${k.nrPersonal || k.nrBiznesit || k.kontrataНр || '-'}</td>
-            <td style="font-size:12px">${k.dataFillimit || '-'} → ${k.dataMbarimit || '-'}</td>
+            <td style="font-size:12px">${formatData(k.dataFillimit)} → ${formatData(k.dataMbarimit)}</td>
             <td>${dergesaLabels[k.dergesa] || k.dergesa}</td>
             <td>${k.email || '-'}</td><td class="${llogaritSkadon(k.dataMbarimit).klasa}">${llogaritSkadon(k.dataMbarimit).teksti}</td>
             <td>

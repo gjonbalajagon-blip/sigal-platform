@@ -3,9 +3,15 @@ let editIndex = -1;
 
 function formatData(data) {
     if (!data) return '-';
-    const [y, m, d] = data.split('-');
-    if (!y || !m || !d) return data;
-    return `${d}/${m}/${y}`;
+    const parts = data.split('-');
+    if (parts.length !== 3) return data;
+    if (parts[0].length === 4) {
+        // yyyy-mm-dd
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    } else {
+        // mm-dd-yyyy
+        return `${parts[1]}/${parts[0]}/${parts[2]}`;
+    }
 }
 
 function ruajNeStorage() {
