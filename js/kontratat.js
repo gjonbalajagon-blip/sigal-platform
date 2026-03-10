@@ -1,6 +1,13 @@
 let kontratat = JSON.parse(localStorage.getItem('kontratat')) || [];
 let editIndex = -1;
 
+function formatData(data) {
+    if (!data) return '-';
+    const [y, m, d] = data.split('-');
+    if (!y || !m || !d) return data;
+    return `${d}/${m}/${y}`;
+}
+
 function ruajNeStorage() {
     localStorage.setItem('kontratat', JSON.stringify(kontratat));
 }
@@ -277,8 +284,8 @@ function renderTabela() {
             <td>${k.lloji === 'biznes' ? (k.nrBiznesit || '-') : (k.nrPersonal || '-')}</td>
               <td><span class="badge-lloji ${k.lloji}">${llojiLabels[k.lloji]}</span></td>
             <td>${(k.pakot || []).join(', ') || '-'}</td>
-            <td>${k.fillimi || '-'}</td>
-            <td>${k.mbarimi || '-'}</td>
+            <td>${formatData(k.fillimi)}</td>
+            <td>${formatData(k.mbarimi)}</td>
             <td class="${ditet.klasa}">${ditet.teksti}</td>
             <td><span class="badge-status ${statusi}">${statusLabels[statusi]}</span></td>
             <td>
@@ -311,6 +318,14 @@ async function gjeneroWord(index) {
     }
 }
 document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('m-fillimi').addEventListener('change', function() {
+        const fillimi = new Date(this.value);
+        if (!fillimi) return;
+        const mbarimi = new Date(fillimi);
+        mbarimi.setFullYear(mbarimi.getFullYear() + 1);
+        mbarimi.setDate(mbarimi.getDate() - 1);
+        document.getElementById('m-mbarimi').value = mbarimi.toISOString().split('T')[0];
+    });
     renderTabela();
     if (typeof lucide !== 'undefined') lucide.createIcons();
     // Hap modal automatikisht nese vjen nga oferta
