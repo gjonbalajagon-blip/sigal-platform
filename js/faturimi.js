@@ -1,7 +1,16 @@
+function parseDate(data) {
+    if (!data) return null;
+    if (data.includes('/')) {
+        const [d, m, y] = data.split('/');
+        return new Date(`${y}-${m}-${d}`);
+    }
+    return new Date(data);
+}
+
 function llogaritSkadon(dataMbarimit) {
     if (!dataMbarimit) return { teksti: '-', klasa: '' };
     const tani = new Date();
-    const skadon = new Date(dataMbarimit);
+    const skadon = parseDate(dataMbarimit);
     const diferencaDite = Math.ceil((skadon - tani) / (1000 * 60 * 60 * 24));
 
     if (diferencaDite < 0) return { teksti: `Skaduar ${Math.abs(diferencaDite)} ditë`, klasa: 'skadon-expired' };

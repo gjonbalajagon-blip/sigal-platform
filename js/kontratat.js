@@ -3,15 +3,12 @@ let editIndex = -1;
 
 function formatData(data) {
     if (!data) return '-';
-    const parts = data.split('-');
-    if (parts.length !== 3) return data;
-    if (parts[0].length === 4) {
-        // yyyy-mm-dd
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    } else {
-        // mm-dd-yyyy
-        return `${parts[1]}/${parts[0]}/${parts[2]}`;
+    // Nese eshte yyyy-mm-dd (nga storage i vjeter)
+    if (data.includes('-') && data.split('-')[0].length === 4) {
+        const [y, m, d] = data.split('-');
+        return `${d}/${m}/${y}`;
     }
+    return data; // tashme dd/mm/yyyy
 }
 
 function ruajNeStorage() {
@@ -202,10 +199,19 @@ function editoKontrate(index) {
     document.getElementById('modal-overlay').classList.add('active');
 }
 
+function parseDate(data) {
+    if (!data) return null;
+    if (data.includes('/')) {
+        const [d, m, y] = data.split('/');
+        return new Date(`${y}-${m}-${d}`);
+    }
+    return new Date(data);
+}
+
 function llogaritStatus(mbarimi) {
     if (!mbarimi) return 'ne-pritje';
     const tani = new Date();
-    const skadon = new Date(mbarimi);
+    const skadon = parseDate(mbarimi);
     const dite = Math.ceil((skadon - tani) / (1000 * 60 * 60 * 24));
     if (dite < 0) return 'skaduar';
     return 'aktive';
@@ -214,7 +220,7 @@ function llogaritStatus(mbarimi) {
 function llogaritDitet(mbarimi) {
     if (!mbarimi) return { teksti: '-', klasa: '' };
     const tani = new Date();
-    const skadon = new Date(mbarimi);
+    const skadon = parseDate(mbarimi);
     const dite = Math.ceil((skadon - tani) / (1000 * 60 * 60 * 24));
     if (dite < 0) return { teksti: `Skaduar ${Math.abs(dite)}d`, klasa: 'skadon-expired' };
     if (dite <= 35) return { teksti: `⚠️ ${dite} ditë`, klasa: 'skadon-warning' };
@@ -324,13 +330,23 @@ async function gjeneroWord(index) {
     }
 }
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('m-fillimi').addEventListener('change', function() {
-        const fillimi = new Date(this.value);
-        if (!fillimi) return;
-        const mbarimi = new Date(fillimi);
-        mbarimi.setFullYear(mbarimi.getFullYear() + 1);
-        mbarimi.setDate(mbarimi.getDate() - 1);
-        document.getElementById('m-mbarimi').value = mbarimi.toISOString().split('T')[0];
+    document.getElementById('m-fillimi').addEventListener('input', function() {
+        let v = this.value.replace(/\D/g, '').slice(0, 8);
+        if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+        if (v.length >= 6) v = v.slice(0,5) + '/' + v.slice(5);
+        this.value = v;
+        if (v.length === 10) {
+            const [d, m, y] = v.split('/');
+            const fillimi = new Date(`${y}-${m}-${d}`);
+            if (isNaN(fillimi)) return;
+            const mbarimi = new Date(fillimi);
+            mbarimi.setFullYear(mbarimi.getFullYear() + 1);
+            mbarimi.setDate(mbarimi.getDate() - 1);
+            document.getElementById('m-mbarimi').value =
+                String(mbarimi.getDate()).padStart(2,'0') + '/' +
+                String(mbarimi.getMonth()+1).padStart(2,'0') + '/' +
+                mbarimi.getFullYear();
+        }
     });
     renderTabela();
     if (typeof lucide !== 'undefined') lucide.createIcons();
