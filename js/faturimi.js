@@ -71,7 +71,6 @@ function ruajKlient() {
     const dataMbarimit = document.getElementById('m-data-mbarimit').value;
     const dergesa = document.getElementById('m-dergesa').value;
     const email = document.getElementById('m-email').value.trim();
-    const afati = document.getElementById('m-afati').value;
 
     if (!emri) { alert('Ju lutem shkruani emrin e klientit!'); return; }
 
@@ -113,7 +112,6 @@ function editoKlient(index) {
     document.getElementById('m-data-mbarimit').value = k.dataMbarimit || '';
     document.getElementById('m-dergesa').value = k.dergesa;
     document.getElementById('m-email').value = k.email;
-    document.getElementById('m-afati').value = k.afati || '';
     document.getElementById('modal-overlay').classList.add('active');
 }
 function ndryshoStatusMuaj(klientIndex, muaji, vlera) {
