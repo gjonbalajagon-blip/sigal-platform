@@ -144,6 +144,18 @@ function rinovoKontrate(index) {
     const kontratRe = { ...k, fillimi: fillimRi, mbarimi: mbarimRi, dataKontrates: fillimRi, dataKrijimit: new Date().toISOString().split('T')[0], arkivuar: false };
     kontratat.push(kontratRe);
     ruajNeStorage();
+
+    // Përditëso Faturimi
+    const faturimi = JSON.parse(localStorage.getItem('faturimi_klientet')) || [];
+    const idxFaturimi = faturimi.findIndex(f =>
+        f.emri === k.emri && (f.nrPersonal === k.nrPersonal || f.nrBiznesit === k.nrBiznesit)
+    );
+    if (idxFaturimi >= 0) {
+        faturimi[idxFaturimi].dataFillimit = fillimRi;
+        faturimi[idxFaturimi].dataMbarimit = mbarimRi;
+        localStorage.setItem('faturimi_klientet', JSON.stringify(faturimi));
+    }
+
     renderTabela();
 }
 
