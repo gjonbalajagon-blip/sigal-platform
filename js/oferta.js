@@ -10,23 +10,47 @@ function zgjidhLlojin(lloji, btn) {
     document.querySelectorAll('.lloji-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
+    const pakotList = lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
+    const eshteIndivid = lloji === 'individ';
     const container = document.getElementById('pakot-container');
-    if (lloji === 'individ') {
-        container.innerHTML = `
-            <label class="pako-check"><input type="checkbox" value="Pako Bazë"> Pako Bazë</label>
-            <label class="pako-check"><input type="checkbox" value="Pako Standard"> Pako Standard</label>
-            <label class="pako-check"><input type="checkbox" value="Pako Standard Plus"> Pako Standard Plus</label>
-        `;
-    } else {
-        container.innerHTML = `
-            <label class="pako-check"><input type="checkbox" value="Pako Bazë"> Pako Bazë</label>
-            <label class="pako-check"><input type="checkbox" value="Pako Standard"> Pako Standard</label>
-            <label class="pako-check"><input type="checkbox" value="Pako Standard Plus"> Pako Standard Plus</label>
-            <label class="pako-check"><input type="checkbox" value="Pako Premium"> Pako Premium</label>
-            <label class="pako-check"><input type="checkbox" value="Pako Silver"> Pako Silver</label>
-            <label class="pako-check"><input type="checkbox" value="Pako Gold"> Pako Gold</label>
-        `;
-    }
+
+    container.innerHTML = pakotList.map(p => `
+        <div class="pako-editor" id="pe-${p.id}">
+            <div class="pako-editor-header">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                    <input type="checkbox" class="pako-check-input" value="${p.id}" onchange="togglePakoEditor('${p.id}', this.checked)">
+                    <strong>Paketa ${p.emri}</strong>
+                </label>
+            </div>
+            <div class="pako-editor-body" id="peb-${p.id}" style="display:none;">
+                <table class="pako-edit-table">
+                    <tr><td class="pel">Zona e mbuluar</td><td><input class="pako-input" data-pako="${p.id}" data-field="zona" value="${p.zona}"></td></tr>
+                    <tr><td class="pel">Shuma e Siguruar (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="shuma" value="${p.shuma}"></td></tr>
+                    <tr><td colspan="2" class="pako-section-hdr">Trajtimet Hospitalore</td></tr>
+                    <tr><td class="pel">Mbulimi</td><td><input class="pako-input" data-pako="${p.id}" data-field="hospitalore" value="${p.hospitalore}"></td></tr>
+                    <tr><td colspan="2" class="pako-section-hdr">Trajtimet Ambulantore</td></tr>
+                    <tr><td class="pel">Mbulimi</td><td><input class="pako-input" data-pako="${p.id}" data-field="ambulatore" value="${p.ambulatore}"></td></tr>
+                    <tr><td colspan="2" class="pako-section-hdr">Trajtime tjera</td></tr>
+                    <tr><td class="pel">Shtatzania dhe lindja</td><td><input class="pako-input" data-pako="${p.id}" data-field="shtatzania" value="${p.shtatzania}"></td></tr>
+                    <tr><td class="pel">Kujdesi dentar</td><td><input class="pako-input" data-pako="${p.id}" data-field="dentar" value="${p.dentar}"></td></tr>
+                    <tr><td class="pel">Kujdesi optik</td><td><input class="pako-input" data-pako="${p.id}" data-field="optik" value="${p.optik}"></td></tr>
+                    <tr><td class="pel">Kujdesi për dëgim</td><td><input class="pako-input" data-pako="${p.id}" data-field="degim" value="${p.degim}"></td></tr>
+                    <tr><td class="pel">Kujdesi psikiatrik</td><td><input class="pako-input" data-pako="${p.id}" data-field="psikiatrik" value="${p.psikiatrik}"></td></tr>
+                    <tr><td class="pel">Fizioterapia</td><td><input class="pako-input" data-pako="${p.id}" data-field="fizioterapi" value="${p.fizioterapi}"></td></tr>
+                    <tr><td class="pel">Autoambulanca</td><td><input class="pako-input" data-pako="${p.id}" data-field="autoambulanca" value="${p.autoambulanca}"></td></tr>
+                    <tr><td class="pel">Aksidenti</td><td><input class="pako-input" data-pako="${p.id}" data-field="aksidentit" value="${p.aksidentit}"></td></tr>
+                    <tr><td class="pel">Onkologjike</td><td><input class="pako-input" data-pako="${p.id}" data-field="onkologjike" value="${p.onkologjike}"></td></tr>
+                    <tr><td colspan="2" class="pako-section-hdr">Primet ${eshteIndivid ? 'vjetore' : 'mujore'}</td></tr>
+                    <tr><td class="pel">Primi mbi 18 vjeç (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="primi_madh" value="${p.primi_madh}"></td></tr>
+                    ${!eshteIndivid ? `<tr><td class="pel">Primi fëmijë nën 18 vjeç (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="primi_femije" value="${p.primi_femije}"></td></tr>` : ''}
+                </table>
+            </div>
+        </div>
+    `).join('');
+}
+
+function togglePakoEditor(id, checked) {
+    document.getElementById('peb-' + id).style.display = checked ? 'block' : 'none';
 }
 
 function tregoBoxAgjenti() {
@@ -68,7 +92,14 @@ function ruajOferte() {
         email: document.getElementById('m-email').value.trim(),
         kerkuarNga: kerkuarNga,
         agjenti: kerkuarNga === 'agjenti' ? agjenti : '',
-        pakot: Array.from(document.querySelectorAll('.pako-check input:checked')).map(cb => cb.value),
+        pakot: Array.from(document.querySelectorAll('.pako-check-input:checked')).map(cb => {
+            const pakoId = cb.value;
+            const vlerat = {};
+            document.querySelectorAll(`.pako-input[data-pako="${pakoId}"]`).forEach(inp => {
+                vlerat[inp.dataset.field] = inp.value;
+            });
+            return { id: pakoId, ...vlerat };
+        }),
         krijuarNga: JSON.parse(localStorage.getItem('user_aktual'))?.username || 'agon',
         krijuarNgaEmri: (() => { const u = JSON.parse(localStorage.getItem('user_aktual')); return u ? `${u.emri} ${u.mbiemri||''}`.trim() : 'Agon'; })(),
         dataKrijimit: today.toISOString().split('T')[0],

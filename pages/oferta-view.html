@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigal Health | Oferta Juaj</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; color: #1a2332; }
+        .header { background: #002B5C; padding: 20px 40px; display: flex; align-items: center; gap: 16px; }
+        .header img { height: 50px; }
+        .header h1 { color: white; font-size: 18px; }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .oferta-header { background: white; border-radius: 12px; padding: 28px; margin-bottom: 24px; border: 1px solid #e5e9f0; }
+        .oferta-header h2 { font-size: 20px; color: #002B5C; margin-bottom: 8px; }
+        .oferta-header p { color: #6b7a8d; font-size: 14px; }
+        .pako-card { background: white; border-radius: 12px; border: 2px solid #e5e9f0; margin-bottom: 16px; overflow: hidden; transition: border-color 0.2s; }
+        .pako-card.selected { border-color: #002B5C; }
+        .pako-header { padding: 16px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: #f8fafc; border-bottom: 1px solid #e5e9f0; }
+        .pako-header input[type=radio] { width: 18px; height: 18px; accent-color: #002B5C; }
+        .pako-header h3 { font-size: 15px; color: #002B5C; font-weight: 700; }
+        .pako-header .primi { margin-left: auto; font-size: 18px; font-weight: 800; color: #002B5C; }
+        .pako-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .pako-table td { padding: 8px 16px; border-bottom: 1px solid #f0f0f0; }
+        .pako-table tr:last-child td { border-bottom: none; }
+        .pako-table .label { color: #6b7a8d; width: 55%; }
+        .pako-table .value { font-weight: 600; color: #1a2332; }
+        .section-header td { background: #002B5C; color: white !important; font-weight: 700; font-size: 11px; padding: 6px 16px; }
+        .koment-box { background: white; border-radius: 12px; padding: 24px; margin-top: 24px; border: 1px solid #e5e9f0; }
+        .koment-box h3 { margin-bottom: 12px; color: #002B5C; }
+        .koment-box textarea { width: 100%; border: 1px solid #e5e9f0; border-radius: 8px; padding: 12px; font-family: inherit; font-size: 13px; resize: vertical; min-height: 100px; }
+        .btn-submit { background: #002B5C; color: white; border: none; padding: 14px 32px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 16px; }
+        .btn-submit:hover { background: #0047AB; }
+        .success-msg { text-align: center; padding: 60px 20px; }
+        .success-msg h2 { color: #002B5C; margin-bottom: 12px; }
+        .nuk-gjendet { text-align: center; padding: 80px 20px; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="../Sigal-KS-Logo.webp" alt="Sigal">
+        <h1>Sigal KS Insurance Group</h1>
+    </div>
+    <div class="container" id="container">
+        <div class="nuk-gjendet">Duke ngarkuar...</div>
+    </div>
+
+    <script src="../js/pakot.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const ofertaId = params.get('id');
+
+        function ngarko() {
+            const ofertat = JSON.parse(localStorage.getItem('ofertat')) || [];
+            const oferta = ofertat[ofertaId];
+
+            if (!oferta) {
+                document.getElementById('container').innerHTML = '<div class="nuk-gjendet"><h2>Oferta nuk u gjet.</h2><p>Kontaktoni agentin tuaj.</p></div>';
+                return;
+            }
+
+            const pakotList = oferta.lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
+            const pakotZgjedhura = pakotList.filter(p => (oferta.pakot || []).includes(p.id));
+
+            if (pakotZgjedhura.length === 0) {
+                document.getElementById('container').innerHTML = '<div class="nuk-gjendet"><h2>Nuk ka paketa në këtë ofertë.</h2></div>';
+                return;
+            }
+
+            const eshteIndivid = oferta.lloji === 'individ';
+
+            document.getElementById('container').innerHTML = `
+                <div class="oferta-header">
+                    <h2>Ofertë për ${oferta.emri}</h2>
+                    <p>Zgjidhni paketën që ju përshtatet më shumë dhe dërgoni konfirmimin tuaj.</p>
+                </div>
+                ${pakotZgjedhura.map(p => `
+                <div class="pako-card" id="card-${p.id}">
+                    <div class="pako-header" onclick="zgjidhPako('${p.id}')">
+                        <input type="radio" name="pako" value="${p.id}" id="r-${p.id}">
+                        <h3>Paketa ${p.emri}</h3>
+                        <span class="primi">€ ${eshteIndivid ? p.primi_madh + '/vit' : p.primi_madh + '/muaj'}</span>
+                    </div>
+                    <table class="pako-table">
+                        <tr><td class="label">Zona e mbuluar</td><td class="value">${p.zona}</td></tr>
+                        <tr><td class="label">Shuma e Siguruar</td><td class="value">€ ${p.shuma}</td></tr>
+                        <tr class="section-header"><td colspan="2">Trajtimet Mjekësore Hospitalore</td></tr>
+                        <tr><td class="label">Mbulimi</td><td class="value">${p.hospitalore}</td></tr>
+                        <tr class="section-header"><td colspan="2">Trajtimet Mjekësore Ambulantore</td></tr>
+                        <tr><td class="label">Mbulimi</td><td class="value">${p.ambulatore}</td></tr>
+                        <tr class="section-header"><td colspan="2">Trajtime Mjekësore tjera</td></tr>
+                        <tr><td class="label">Shtatzania dhe lindja</td><td class="value">${p.shtatzania}</td></tr>
+                        <tr><td class="label">Kujdesi dentar</td><td class="value">${p.dentar}</td></tr>
+                        <tr><td class="label">Kujdesi optik</td><td class="value">${p.optik}</td></tr>
+                        <tr><td class="label">Kujdesi për dëgim</td><td class="value">${p.degim}</td></tr>
+                        <tr><td class="label">Kujdesi psikiatrik</td><td class="value">${p.psikiatrik}</td></tr>
+                        <tr><td class="label">Fizioterapia</td><td class="value">${p.fizioterapi}</td></tr>
+                        <tr><td class="label">Autoambulanca</td><td class="value">${p.autoambulanca}</td></tr>
+                        <tr><td class="label">Shpenzimet e mjekimit si pasojë e aksidentit</td><td class="value">${p.aksidentit}</td></tr>
+                        <tr><td class="label">Trajtimet onkologjike</td><td class="value">${p.onkologjike}</td></tr>
+                        <tr class="section-header"><td colspan="2">Primet</td></tr>
+                        <tr><td class="label">Primi për person mbi 18 vjeç</td><td class="value">€ ${p.primi_madh}${eshteIndivid ? '/vit' : '/muaj'}</td></tr>
+                        ${p.primi_femije ? `<tr><td class="label">Primi për fëmijë nën 18 vjeç</td><td class="value">€ ${p.primi_femije}${eshteIndivid ? '/vit' : '/muaj'}</td></tr>` : ''}
+                    </table>
+                </div>`).join('')}
+                <div class="koment-box">
+                    <h3>Koment (opsional)</h3>
+                    <textarea id="koment" placeholder="Shkruani çdo pyetje ose koment..."></textarea>
+                    <button class="btn-submit" onclick="dergoPako()">Konfirmoj Zgjedhjen</button>
+                </div>
+            `;
+        }
+
+        function zgjidhPako(id) {
+            document.querySelectorAll('.pako-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('card-' + id).classList.add('selected');
+            document.getElementById('r-' + id).checked = true;
+        }
+
+        function dergoPako() {
+            const zgjedhur = document.querySelector('input[name=pako]:checked');
+            if (!zgjedhur) { alert('Ju lutem zgjidhni një paketë!'); return; }
+
+            const ofertat = JSON.parse(localStorage.getItem('ofertat')) || [];
+            ofertat[ofertaId].pakaZgjedhur = zgjedhur.value;
+            ofertat[ofertaId].komentKlient = document.getElementById('koment').value;
+            ofertat[ofertaId].konfirmuar = true;
+            ofertat[ofertaId].dataKonfirmimit = new Date().toISOString().split('T')[0];
+            localStorage.setItem('ofertat', JSON.stringify(ofertat));
+
+            document.getElementById('container').innerHTML = `
+                <div class="success-msg">
+                    <h2>✓ Faleminderit!</h2>
+                    <p>Zgjedhja juaj u regjistrua. Agjenti juaj do t'ju kontaktojë së shpejti.</p>
+                </div>`;
+        }
+
+        ngarko();
+    </script>
+</body>
+</html>
