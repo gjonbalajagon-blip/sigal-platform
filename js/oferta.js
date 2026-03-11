@@ -279,7 +279,7 @@ function renderTabela() {
         return '<tr>' +
             '<td>' + o.emri + '</td>' +
             '<td><span class="badge-lloji ' + o.lloji + '">' + (llojiLabels[o.lloji] || o.lloji) + '</span></td>' +
-            '<td>' + ((o.pakot || []).join(', ') || '-') + '</td>' +
+            '<td>' + ((o.pakot || []).map(p => typeof p === 'object' ? p.emri || p.id : p).join(', ') || '-') + '</td>' +
             '<td>' + (o.krijuarNgaEmri || o.krijuarNga || '-') + '</td>' +
             '<td>' + kerkuar + '</td>' +
             '<td>' + (o.dataKrijimit || '-') + '</td>' +

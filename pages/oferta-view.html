@@ -60,7 +60,15 @@
             }
 
             const pakotList = oferta.lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
-            const pakotZgjedhura = pakotList.filter(p => (oferta.pakot || []).includes(p.id));
+            const pakotZgjedhura = pakotList.filter(p => 
+    (oferta.pakot || []).some(op => 
+        (typeof op === 'object' ? op.id : op) === p.id ||
+        (typeof op === 'string' && op.toLowerCase().includes(p.emri.toLowerCase()))
+    )
+).map(p => {
+    const custom = (oferta.pakot || []).find(op => typeof op === 'object' && op.id === p.id);
+    return custom ? { ...p, ...custom } : p;
+});
 
             if (pakotZgjedhura.length === 0) {
                 document.getElementById('container').innerHTML = '<div class="nuk-gjendet"><h2>Nuk ka paketa në këtë ofertë.</h2></div>';
