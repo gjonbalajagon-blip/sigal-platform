@@ -48,5 +48,5 @@ function filtroSipasRolit(lista, fushaKrijuesi) {
     const user = getUserAktual();
     if (!user) return lista;
     if (['superadmin', 'management', 'dep_management'].includes(user.role)) return lista;
-    return lista.filter(item => !item[fushaKrijuesi] || item[fushaKrijuesi] === user.username);
+    return lista.filter(item => !item[fushaKrijuesi] || item[fushaKrijuesi].toLowerCase() === user.username.toLowerCase());
 }

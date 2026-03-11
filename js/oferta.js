@@ -69,7 +69,8 @@ function ruajOferte() {
         kerkuarNga: kerkuarNga,
         agjenti: kerkuarNga === 'agjenti' ? agjenti : '',
         pakot: Array.from(document.querySelectorAll('.pako-check input:checked')).map(cb => cb.value),
-        krijuarNga: 'Agon',
+        krijuarNga: JSON.parse(localStorage.getItem('user_aktual'))?.username || 'agon',
+        krijuarNgaEmri: (() => { const u = JSON.parse(localStorage.getItem('user_aktual')); return u ? `${u.emri} ${u.mbiemri||''}`.trim() : 'Agon'; })(),
         dataKrijimit: today.toISOString().split('T')[0],
         dataSkadon: skadon.toISOString().split('T')[0]
     };
@@ -247,7 +248,7 @@ function renderTabela() {
             '<td>' + o.emri + '</td>' +
             '<td><span class="badge-lloji ' + o.lloji + '">' + (llojiLabels[o.lloji] || o.lloji) + '</span></td>' +
             '<td>' + ((o.pakot || []).join(', ') || '-') + '</td>' +
-            '<td>' + (o.krijuarNga || '-') + '</td>' +
+            '<td>' + (o.krijuarNgaEmri || o.krijuarNga || '-') + '</td>' +
             '<td>' + kerkuar + '</td>' +
             '<td>' + (o.dataKrijimit || '-') + '</td>' +
             '<td class="' + ditet.klasa + '">' + ditet.teksti + '</td>' +

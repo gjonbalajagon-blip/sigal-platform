@@ -200,6 +200,7 @@ function renderTabela() {
         <tr>
             <td><input type="checkbox" class="klient-check" data-index="${idx}" onchange="perditesoEmailBtn()"></td>
             <td><strong>${k.emri}</strong></td>
+            <td style="font-size:12px;color:#6b7a8d;">${k.krijuarNgaEmri || k.krijuarNga || 'Agon'}</td>
             <td>${k.nrPersonal || k.nrBiznesit || k.kontrataНр || '-'}</td>
             <td style="font-size:12px">${formatData(k.dataFillimit)} → ${formatData(k.dataMbarimit)}</td>
             <td>${dergesaLabels[k.dergesa] || k.dergesa}</td>

@@ -302,7 +302,8 @@ function renderTabela() {
             </td>
             <td>${k.lloji === 'biznes' ? (k.nrBiznesit || '-') : (k.nrPersonal || '-')}</td>
               <td><span class="badge-lloji ${k.lloji}">${llojiLabels[k.lloji]}</span></td>
-            <td>${(k.pakot || []).join(', ') || '-'}</td>
+            <th>Pakot</th>
+                            <th>Krijuar Nga</th>
             <td>${formatData(k.fillimi)}</td>
             <td>${formatData(k.mbarimi)}</td>
             <td class="${ditet.klasa}">${ditet.teksti}</td>
