@@ -170,9 +170,10 @@ function dergoEmail(index) {
         alert('Klienti nuk ka email te regjistruar!');
         return;
     }
-    const subject = encodeURIComponent('Oferte nga SIGAL Insurance Group - ' + o.emri);
+    const link = `https://sigal-platform-shendet.vercel.app/pages/oferta-view.html?id=${index}`;
+    const subject = encodeURIComponent('Ofertë nga SIGAL Insurance Group - ' + o.emri);
     const body = encodeURIComponent(
-        'I nderuar ' + o.emri + ',\n\nJu dergojme oferten tone per sigurim shendetsor.\n\nPakot e zgjedhura: ' + (o.pakot || []).join(', ') + '\nValiditeti: 30 dite nga ' + o.dataKrijimit + '\n\nMe respekt,\nSIGAL Insurance Group'
+        'I nderuar ' + o.emri + ',\n\nJu dërgojmë ofertën tonë për sigurim shëndetësor.\n\nJu lutem klikoni linkun më poshtë për të parë paketën dhe për të konfirmuar zgjedhjen tuaj:\n\n' + link + '\n\nValiditeti: 30 ditë nga ' + o.dataKrijimit + '\n\nMe respekt,\nSIGAL Insurance Group'
     );
     window.open('mailto:' + o.email + '?subject=' + subject + '&body=' + body);
 }
@@ -290,6 +291,7 @@ function renderTabela() {
                 '<button class="btn-email" onclick="dergoEmail(' + idx + ')" title="Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button>' +
                 '<button class="btn-kontrate" onclick="krijoKontrate(' + idx + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Kontrate</button>' +
                 '<button class="btn-delete" onclick="fshijOferte(' + idx + ')" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>' +
+                '<button class="btn-link" onclick="kopjoLink(' + idx + ')" title="Kopjo Link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>' +
             '</div></td>' +
         '</tr>';
     }).join('');
