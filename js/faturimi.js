@@ -137,7 +137,8 @@ function renderTabela() {
     const search = document.getElementById('search-klient').value.toLowerCase();
 
     const filterViti = document.getElementById('filter-viti') ? document.getElementById('filter-viti').value : 'all';
-    const filtered = klientet.filter((k, i) => {
+    const klientetFiltruara = filtroSipasRolit(klientet, 'krijuarNga');
+    const filtered = klientetFiltruara.filter(k => {
         const searchOk = k.emri.toLowerCase().includes(search);
         const statusMuaj = k.statuset?.[filterMuaji] || 'asgje';
         const statusOk = filterStatus === 'all' || statusMuaj === filterStatus;
@@ -152,13 +153,13 @@ function renderTabela() {
 
     // Update counts per muajin e zgjedhur
     const muajiFilter = filterMuaji;
-    document.getElementById('count-asgje').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'asgje').length;
-    document.getElementById('count-kerkesa').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'kerkesa').length;
-    document.getElementById('count-process').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'process').length;
-    document.getElementById('count-leshuar').textContent = klientet.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'leshuar').length;
+    document.getElementById('count-asgje').textContent = klientetFiltruara.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'asgje').length;
+    document.getElementById('count-kerkesa').textContent = klientetFiltruara.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'kerkesa').length;
+    document.getElementById('count-process').textContent = klientetFiltruara.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'process').length;
+    document.getElementById('count-leshuar').textContent = klientetFiltruara.filter(k => (k.statuset?.[muajiFilter] || 'asgje') === 'leshuar').length;
     document.getElementById('count-total').textContent = klientet.length;
-    document.getElementById('count-mujor').textContent = klientet.filter(k => k.faturimiLloji !== 'vjetor').length;
-    document.getElementById('count-vjetor').textContent = klientet.filter(k => k.faturimiLloji === 'vjetor').length;
+    document.getElementById('count-mujor').textContent = klientetFiltruara.filter(k => k.faturimiLloji !== 'vjetor').length;
+    document.getElementById('count-vjetor').textContent = klientetFiltruara.filter(k => k.faturimiLloji === 'vjetor').length;
 
     const statusLabels = {
         asgje: 'Asgjë',

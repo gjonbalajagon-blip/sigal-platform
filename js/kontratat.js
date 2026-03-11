@@ -1,4 +1,8 @@
 let kontratat = JSON.parse(localStorage.getItem('kontratat')) || [];
+
+function reloadData() {
+    kontratat = JSON.parse(localStorage.getItem('kontratat')) || [];
+}
 let editIndex = -1;
 
 function formatData(data) {
@@ -237,7 +241,8 @@ function renderTabela() {
     const search = document.getElementById('search-kontrate').value.toLowerCase();
 
     const filterViti = document.getElementById('filter-viti') ? document.getElementById('filter-viti').value : 'all';
-    const filtered = kontratat.filter(k => {
+    const kontratatFiltruara = filtroSipasRolit(kontratat, 'krijuarNga');
+    const filtered = kontratatFiltruara.filter(k => {
         const llojiOk = filterLloji === 'all' || k.lloji === filterLloji;
         const statusi = llogaritStatus(k.mbarimi);
         const arkivuarOk = filterStatusi === 'skaduar' ? true : !k.arkivuar;
@@ -252,16 +257,16 @@ function renderTabela() {
     });
 
     // Stats
-    document.getElementById('count-aktive').textContent = kontratat.filter(k => llogaritStatus(k.mbarimi) === 'aktive').length;
-    document.getElementById('count-skadon').textContent = kontratat.filter(k => {
+    document.getElementById('count-aktive').textContent = kontratatFiltruara.filter(k => llogaritStatus(k.mbarimi) === 'aktive').length;
+    document.getElementById('count-skadon').textContent = kontratatFiltruara.filter(k => {
         if (!k.mbarimi) return false;
         const dite = Math.ceil((new Date(k.mbarimi) - new Date()) / (1000 * 60 * 60 * 24));
         return dite >= 0 && dite <= 35;
     }).length;
-    document.getElementById('count-skaduar').textContent = kontratat.filter(k => llogaritStatus(k.mbarimi) === 'skaduar').length;
-    document.getElementById('count-individ').textContent = kontratat.filter(k => k.lloji === 'individ').length;
-    document.getElementById('count-familje').textContent = kontratat.filter(k => k.lloji === 'familje').length;
-    document.getElementById('count-biznes').textContent = kontratat.filter(k => k.lloji === 'biznes').length;
+    document.getElementById('count-skaduar').textContent = kontratatFiltruara.filter(k => llogaritStatus(k.mbarimi) === 'skaduar').length;
+    document.getElementById('count-individ').textContent = kontratatFiltruara.filter(k => k.lloji === 'individ').length;
+    document.getElementById('count-familje').textContent = kontratatFiltruara.filter(k => k.lloji === 'familje').length;
+    document.getElementById('count-biznes').textContent = kontratatFiltruara.filter(k => k.lloji === 'biznes').length;
     document.getElementById('count-total').textContent = kontratat.length;
 
     const statusLabels = {

@@ -44,3 +44,9 @@ function checkAuth() {
     }
     return user;
 }
+function filtroSipasRolit(lista, fushaKrijuesi) {
+    const user = getUserAktual();
+    if (!user) return [];
+    if (['superadmin', 'management', 'dep_management'].includes(user.role)) return lista;
+    return lista.filter(item => (item[fushaKrijuesi] || 'agon') === user.username);
+}

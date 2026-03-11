@@ -192,7 +192,8 @@ function renderTabela() {
     const search = document.getElementById('search-oferte').value.toLowerCase();
 
     const filterViti = document.getElementById('filter-viti') ? document.getElementById('filter-viti').value : 'all';
-    const filtered = ofertat.filter(o => {
+    const ofertatFiltruara = filtroSipasRolit(ofertat, 'krijuarNga');
+    const filtered = ofertatFiltruara.filter(o => {
         const llojiOk = filterLloji === 'all' || o.lloji === filterLloji;
         const statusi = llogaritStatus(o.dataSkadon);
         const statusOk = filterStatusi === 'all' || statusi === filterStatusi;
@@ -205,13 +206,13 @@ function renderTabela() {
         return new Date(a.dataSkadon) - new Date(b.dataSkadon);
     });
 
-    document.getElementById('count-aktive').textContent = ofertat.filter(o => llogaritStatus(o.dataSkadon) === 'aktive').length;
-    document.getElementById('count-skaduar').textContent = ofertat.filter(o => llogaritStatus(o.dataSkadon) === 'skaduar').length;
-    document.getElementById('count-individ').textContent = ofertat.filter(o => o.lloji === 'individ').length;
-    document.getElementById('count-familje').textContent = ofertat.filter(o => o.lloji === 'familje').length;
-    document.getElementById('count-biznes').textContent = ofertat.filter(o => o.lloji === 'biznes').length;
+    document.getElementById('count-aktive').textContent = ofertatFiltruara.filter(o => llogaritStatus(o.dataSkadon) === 'aktive').length;
+    document.getElementById('count-skaduar').textContent = ofertatFiltruara.filter(o => llogaritStatus(o.dataSkadon) === 'skaduar').length;
+    document.getElementById('count-individ').textContent = ofertatFiltruara.filter(o => o.lloji === 'individ').length;
+    document.getElementById('count-familje').textContent = ofertatFiltruara.filter(o => o.lloji === 'familje').length;
+    document.getElementById('count-biznes').textContent = ofertatFiltruara.filter(o => o.lloji === 'biznes').length;
     document.getElementById('count-total').textContent = ofertat.length;
-    document.getElementById('count-realizuara').textContent = ofertat.filter(o => o.realizuar).length;
+    document.getElementById('count-realizuara').textContent = ofertatFiltruara.filter(o => o.realizuar).length;
 
     const statusLabels = {
         aktive: 'Aktive',
