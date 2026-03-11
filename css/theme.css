@@ -1225,3 +1225,5 @@ input[type="number"] {
 .pako-input { width: 100%; border: none; background: transparent; font-size: 12px; font-family: inherit; color: #1a2332; padding: 2px 4px; }
 .pako-input:focus { outline: 1px solid var(--sigal-blue); border-radius: 4px; background: #f0f7ff; }
 .pako-section-hdr { background: #002B5C; color: white !important; font-size: 10px; font-weight: 700; padding: 4px 12px !important; }
+.btn-link { background: #f0f7ff; color: #0047AB; border: 1px solid #0047AB; border-radius: 6px; padding: 4px 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
+.btn-link:hover { background: #0047AB; color: white; }
