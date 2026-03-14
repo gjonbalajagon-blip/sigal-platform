@@ -125,16 +125,37 @@
             document.getElementById('r-' + id).checked = true;
         }
 
-        function dergoPako() {
+async function dergoPako() {
             const zgjedhur = document.querySelector('input[name=pako]:checked');
             if (!zgjedhur) { alert('Ju lutem zgjidhni një paketë!'); return; }
 
             const ofertat = JSON.parse(localStorage.getItem('ofertat')) || [];
-            ofertat[ofertaId].pakaZgjedhur = zgjedhur.value;
+            const oferta = ofertat[ofertaId];
+            const pakaId = zgjedhur.value;
+            const pakotList = oferta.lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
+            const paka = pakotList.find(p => p.id === pakaId);
+
+            ofertat[ofertaId].pakaZgjedhur = paka ? paka.emri : pakaId;
             ofertat[ofertaId].komentKlient = document.getElementById('koment').value;
             ofertat[ofertaId].konfirmuar = true;
             ofertat[ofertaId].dataKonfirmimit = new Date().toISOString().split('T')[0];
             localStorage.setItem('ofertat', JSON.stringify(ofertat));
+
+            try {
+                await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        emriKlientit: oferta.emri,
+                        emailKlientit: oferta.email,
+                        pakaZgjedhur: paka ? `Paketa ${paka.emri}` : pakaId,
+                        koment: document.getElementById('koment').value,
+                        emailAgjentit: oferta.krijuarNgaEmail || 'gjonbalajagon@gmail.com'
+                    })
+                });
+            } catch(e) {
+                console.error('Email error:', e);
+            }
 
             document.getElementById('container').innerHTML = `
                 <div class="success-msg">
@@ -142,7 +163,6 @@
                     <p>Zgjedhja juaj u regjistrua. Agjenti juaj do t'ju kontaktojë së shpejti.</p>
                 </div>`;
         }
-
         ngarko();
     </script>
 </body>
