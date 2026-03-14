@@ -142,6 +142,7 @@ async function dergoPako() {
             localStorage.setItem('ofertat', JSON.stringify(ofertat));
 
             try {
+                console.log('emailKlientit:', oferta.email);
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 5000);
                 await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte', {
