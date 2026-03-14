@@ -1,13 +1,24 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+
+async function dergoPosto(to, subject, html) {
+    const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${RESEND_API_KEY}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            from: 'SIGAL Insurance <onboarding@resend.dev>',
+            to,
+            subject,
+            html
+        })
+    });
+    return res.json();
+}
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
@@ -113,33 +124,27 @@ app.post('/api/konfirmo-oferte', async (req, res) => {
     try {
         const { emriKlientit, emailKlientit, pakaZgjedhur, koment, emailAgjentit } = req.body;
 
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: emailAgjentit || process.env.EMAIL_USER,
-            subject: `Konfirmim Oferte - ${emriKlientit}`,
-            html: `
-                <h2>Konfirmim i Ofertës</h2>
-                <p><strong>Klienti:</strong> ${emriKlientit}</p>
-                <p><strong>Paketa e zgjedhur:</strong> ${pakaZgjedhur}</p>
-                <p><strong>Koment:</strong> ${koment || 'Pa koment'}</p>
-                <p><strong>Data:</strong> ${new Date().toLocaleDateString('sq-AL')}</p>
-            `
-        });
+        await dergoPosto(
+            emailAgjentit || process.env.EMAIL_USER,
+            `Konfirmim Oferte - ${emriKlientit}`,
+            `<h2>Konfirmim i Ofertës</h2>
+            <p><strong>Klienti:</strong> ${emriKlientit}</p>
+            <p><strong>Paketa e zgjedhur:</strong> ${pakaZgjedhur}</p>
+            <p><strong>Koment:</strong> ${koment || 'Pa koment'}</p>
+            <p><strong>Data:</strong> ${new Date().toLocaleDateString('sq-AL')}</p>`
+        );
 
         if (emailKlientit) {
-            await transporter.sendMail({
-                from: process.env.EMAIL_USER,
-                to: emailKlientit,
-                subject: `Konfirmimi i Ofertës - SIGAL Insurance Group`,
-                html: `
-                    <h2>Faleminderit, ${emriKlientit}!</h2>
-                    <p>Zgjedhja juaj është regjistruar me sukses.</p>
-                    <p><strong>Paketa e zgjedhur:</strong> ${pakaZgjedhur}</p>
-                    <p>Agjenti ynë do t'ju kontaktojë së shpejti.</p>
-                    <br>
-                    <p>Me respekt,<br><strong>SIGAL KS Insurance Group</strong></p>
-                `
-            });
+            await dergoPosto(
+                emailKlientit,
+                `Konfirmimi i Ofertës - SIGAL Insurance Group`,
+                `<h2>Faleminderit, ${emriKlientit}!</h2>
+                <p>Zgjedhja juaj është regjistruar me sukses.</p>
+                <p><strong>Paketa e zgjedhur:</strong> ${pakaZgjedhur}</p>
+                <p>Agjenti ynë do t'ju kontaktojë së shpejti.</p>
+                <br>
+                <p>Me respekt,<br><strong>SIGAL KS Insurance Group</strong></p>`
+            );
         }
 
         res.json({ success: true });
