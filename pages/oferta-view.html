@@ -142,9 +142,15 @@ async function dergoPako() {
             localStorage.setItem('ofertat', JSON.stringify(ofertat));
 
             try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 5000);
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 5000);
                 await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte', {
                     method: 'POST',
+                    signal: controller.signal,
                     headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal,
                     body: JSON.stringify({
                         emriKlientit: oferta.emri,
                         emailKlientit: oferta.email,
@@ -153,7 +159,9 @@ async function dergoPako() {
                         emailAgjentit: oferta.krijuarNgaEmail || 'gjonbalajagon@gmail.com'
                     })
                 });
-            } catch(e) {
+            git add pages/oferta-view.html
+git commit -m "fix: timeout 5s per fetch konfirmim"
+git push
                 console.error('Email error:', e);
             }
 
