@@ -66,7 +66,6 @@ function shtoOferte() {
     document.getElementById('m-kerkuar-nga').value = 'direkt';
     document.getElementById('m-agjenti').value = '';
     document.getElementById('field-agjenti').style.display = 'none';
-    document.querySelectorAll('.pako-check input').forEach(cb => cb.checked = false);
     zgjidhLlojin('individ', document.querySelectorAll('.lloji-btn')[0]);
     document.getElementById('modal-overlay').classList.add('active');
 }
@@ -102,11 +101,18 @@ function ruajOferte() {
         }),
         krijuarNga: JSON.parse(localStorage.getItem('user_aktual'))?.username || 'agon',
         krijuarNgaEmri: (() => { const u = JSON.parse(localStorage.getItem('user_aktual')); return u ? `${u.emri} ${u.mbiemri||''}`.trim() : 'Agon'; })(),
+        krijuarNgaEmail: JSON.parse(localStorage.getItem('user_aktual'))?.email || 'gjonbalajagon@gmail.com',
         dataKrijimit: today.toISOString().split('T')[0],
         dataSkadon: skadon.toISOString().split('T')[0]
     };
 
     if (editIndex >= 0) {
+        // Ruaj fushat qe nuk duhet me u mbishkrua
+        oferta.realizuar = ofertat[editIndex].realizuar;
+        oferta.konfirmuar = ofertat[editIndex].konfirmuar;
+        oferta.pakaZgjedhur = ofertat[editIndex].pakaZgjedhur;
+        oferta.komentKlient = ofertat[editIndex].komentKlient;
+        oferta.dataKonfirmimit = ofertat[editIndex].dataKonfirmimit;
         ofertat[editIndex] = oferta;
     } else {
         oferta.realizuar = false;
@@ -118,6 +124,7 @@ function ruajOferte() {
     renderTabela();
 }
 
+// ====== BUG FIX 1: Edit tash i pre-selekton pakot e ruajtura ======
 function editoOferte(index) {
     editIndex = index;
     const o = ofertat[index];
@@ -132,9 +139,34 @@ function editoOferte(index) {
     const llojiMap = { 'individ': 0, 'familje': 1, 'biznes': 2 };
     zgjidhLlojin(o.lloji, btns[llojiMap[o.lloji] || 0]);
 
-    document.querySelectorAll('.pako-check input').forEach(cb => {
-        cb.checked = (o.pakot || []).includes(cb.value);
+    // Nxjerr ID-te e pakove te ruajtura (si objekte ose string)
+    const pakotIds = (o.pakot || []).map(p => {
+        if (typeof p === 'object') return p.id;
+        // Nese eshte string si "Pako Bazë", konverto ne id
+        const pakotList = o.lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
+        const found = pakotList.find(pk => pk.emri === p || `Pako ${pk.emri}` === p || pk.id === p);
+        return found ? found.id : p;
     });
+
+    // Selekto checkboxat dhe hap editor-at per pakot e ruajtura
+    setTimeout(() => {
+        document.querySelectorAll('.pako-check-input').forEach(cb => {
+            const isSelected = pakotIds.includes(cb.value);
+            cb.checked = isSelected;
+            if (isSelected) {
+                togglePakoEditor(cb.value, true);
+                // Mbush vlerat custom nese ekzistojne
+                const customPako = (o.pakot || []).find(p => typeof p === 'object' && p.id === cb.value);
+                if (customPako) {
+                    document.querySelectorAll(`.pako-input[data-pako="${cb.value}"]`).forEach(inp => {
+                        if (customPako[inp.dataset.field] !== undefined) {
+                            inp.value = customPako[inp.dataset.field];
+                        }
+                    });
+                }
+            }
+        });
+    }, 50);
 
     document.getElementById('modal-overlay').classList.add('active');
 }
@@ -196,13 +228,31 @@ function krijoKontrate(index) {
     window.location.href = 'kontratat.html?nga_oferta=true';
 }
 
+// ====== BUG FIX 2: Word gen — dergon emrat e pakove si array strings ======
 async function gjeneroWord(index) {
     const o = ofertat[index];
     try {
+        // Backend pret pakot si array strings me emrat e pakove
+        const pakotEmra = (o.pakot || []).map(p => {
+            if (typeof p === 'object') {
+                // Konverto id ne emrin e plote "Pako Bazë", "Pako Standard", etj
+                const pakotList = o.lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
+                const found = pakotList.find(pk => pk.id === p.id);
+                return found ? `Pako ${found.emri}` : p.id;
+            }
+            return p;
+        });
+
+        const payload = {
+            emri: o.emri,
+            lloji: o.lloji === 'familje' || o.lloji === 'biznes' ? 'familje_biznes' : o.lloji,
+            pakot: pakotEmra
+        };
+
         const response = await fetch('https://sigal-platform-production.up.railway.app/api/gjenero-oferte', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(o)
+            body: JSON.stringify(payload)
         });
         const data = await response.json();
         if (data.success) {
@@ -213,6 +263,49 @@ async function gjeneroWord(index) {
     } catch (err) {
         alert('Serveri nuk eshte aktiv!');
     }
+}
+
+// ====== BUG FIX 3: Copy link funksioni qe mungonte ======
+function kopjoLink(index) {
+    const link = `https://sigal-platform-shendet.vercel.app/pages/oferta-view.html?id=${index}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(() => {
+            tregoToast('Linku u kopjua!');
+        }).catch(() => {
+            kopjoFallback(link);
+        });
+    } else {
+        kopjoFallback(link);
+    }
+}
+
+function kopjoFallback(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        tregoToast('Linku u kopjua!');
+    } catch (e) {
+        alert('Kopjimi dështoi. Linku: ' + text);
+    }
+    document.body.removeChild(ta);
+}
+
+function tregoToast(msg) {
+    let toast = document.getElementById('toast-msg');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-msg';
+        toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#002B5C;color:white;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity 0.3s;';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => { toast.style.opacity = '0'; }, 2000);
 }
 
 function filtro() {
