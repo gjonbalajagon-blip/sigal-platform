@@ -1,24 +1,31 @@
 const express = require('express');
-const nodemailer = require('nodemailer');
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
+// ===== BREVO EMAIL (zëvendëson Resend) =====
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
 async function dergoPosto(to, subject, html) {
-    const res = await fetch('https://api.resend.com/emails', {
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${RESEND_API_KEY}`,
-            'Content-Type': 'application/json'
+            'api-key': BREVO_API_KEY,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         },
         body: JSON.stringify({
-            from: 'SIGAL Insurance <onboarding@resend.dev>',
-            to,
+            sender: { name: 'SIGAL Insurance', email: process.env.SENDER_EMAIL || 'gjonbalajagon@gmail.com' },
+            to: [{ email: to }],
             subject,
-            html
+            htmlContent: html
         })
     });
-    return res.json();
+    const data = await res.json();
+    if (!res.ok) {
+        console.error('Brevo error:', data);
+        throw new Error(data.message || 'Email dështoi');
+    }
+    return data;
 }
+
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
@@ -47,6 +54,7 @@ app.post('/api/gjenero-kontrate', async (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 });
+
 // Endpoint per gjenerimin e ofertes
 app.post('/api/gjenero-oferte', async (req, res) => {
     try {
@@ -119,13 +127,15 @@ app.post('/api/gjenero-oferte', async (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 });
-// Endpoint per shkarkimin e skedarit
+
+// Endpoint per konfirmimin e ofertes — dergon email te AGJENTI + KLIENTI
 app.post('/api/konfirmo-oferte', async (req, res) => {
     try {
         const { emriKlientit, emailKlientit, pakaZgjedhur, koment, emailAgjentit } = req.body;
 
+        // 1. Email te AGJENTI
         await dergoPosto(
-            emailAgjentit || process.env.EMAIL_USER,
+            emailAgjentit || process.env.SENDER_EMAIL || 'gjonbalajagon@gmail.com',
             `Konfirmim Oferte - ${emriKlientit}`,
             `<h2>Konfirmim i Ofertës</h2>
             <p><strong>Klienti:</strong> ${emriKlientit}</p>
@@ -134,6 +144,7 @@ app.post('/api/konfirmo-oferte', async (req, res) => {
             <p><strong>Data:</strong> ${new Date().toLocaleDateString('sq-AL')}</p>`
         );
 
+        // 2. Email te KLIENTI
         if (emailKlientit) {
             await dergoPosto(
                 emailKlientit,
@@ -154,6 +165,7 @@ app.post('/api/konfirmo-oferte', async (req, res) => {
     }
 });
 
+// Endpoint per shkarkimin e skedarit
 app.get('/api/shkarko/:fileName', (req, res) => {
     const filePath = path.join(__dirname, 'output', req.params.fileName);
     if (fs.existsSync(filePath)) {
