@@ -15,6 +15,7 @@ function shtoOferte() {
     document.getElementById('m-agjenti').value = '';
     document.getElementById('field-agjenti').style.display = 'none';
     document.getElementById('version-panel').style.display = 'none';
+    document.getElementById('oferta-summary').style.display = 'none';
     zgjidhLlojin('individ', document.querySelectorAll('.drawer-lloji-btn')[0]);
     document.getElementById('drawer-overlay').classList.add('active');
 }
@@ -103,6 +104,60 @@ function renderVersions(versione) {
             ${!isCurrent ? `<button class="v-restore" onclick="riktheVersion(${i})">Rikthe</button>` : '<span style="margin-left:auto;font-size:10px;color:#002B5C;font-weight:600;">Aktuale</span>'}
         </div>`;
     }).reverse().join('');
+}
+
+// ====== OFERTA SUMMARY PANEL ======
+function toggleSummary() {
+    document.getElementById('summary-body').classList.toggle('open');
+}
+
+function renderSummary(oferta) {
+    const pakotList = oferta.lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
+    const eshteIndivid = oferta.lloji === 'individ';
+    const pakot = (oferta.pakot || []).map(p => {
+        if (typeof p === 'object') {
+            const base = pakotList.find(pk => pk.id === p.id);
+            return base ? { ...base, ...p } : p;
+        }
+        const found = pakotList.find(pk => pk.emri === p || `Pako ${pk.emri}` === p || pk.id === p);
+        return found || null;
+    }).filter(Boolean);
+
+    if (pakot.length === 0) return;
+
+    const body = document.getElementById('summary-body');
+    body.classList.remove('open');
+    body.innerHTML = pakot.map((p, i) => `
+        <div class="summary-pako">
+            <div class="summary-pako-header" onclick="this.nextElementSibling.classList.toggle('open')">
+                <h5>${p.emri || p.id}</h5>
+                <span class="sp-primi">€ ${p.primi_madh || '-'}${eshteIndivid ? '/vit' : '/muaj'}</span>
+            </div>
+            <div class="summary-pako-details">
+                <table>
+                    <tr><td>Zona e mbuluar</td><td>${p.zona || '-'}</td></tr>
+                    <tr><td>Shuma e Siguruar</td><td>€ ${p.shuma || '-'}</td></tr>
+                    <tr class="summary-section-hdr"><td colspan="2">Trajtimet Hospitalore</td></tr>
+                    <tr><td>Mbulimi</td><td>${p.hospitalore || '-'}</td></tr>
+                    <tr class="summary-section-hdr"><td colspan="2">Trajtimet Ambulantore</td></tr>
+                    <tr><td>Mbulimi</td><td>${p.ambulatore || '-'}</td></tr>
+                    <tr class="summary-section-hdr"><td colspan="2">Trajtime tjera</td></tr>
+                    <tr><td>Shtatzania dhe lindja</td><td>${p.shtatzania || '-'}</td></tr>
+                    <tr><td>Kujdesi dentar</td><td>${p.dentar || '-'}</td></tr>
+                    <tr><td>Kujdesi optik</td><td>${p.optik || '-'}</td></tr>
+                    <tr><td>Kujdesi për dëgim</td><td>${p.degim || '-'}</td></tr>
+                    <tr><td>Kujdesi psikiatrik</td><td>${p.psikiatrik || '-'}</td></tr>
+                    <tr><td>Fizioterapia</td><td>${p.fizioterapi || '-'}</td></tr>
+                    <tr><td>Autoambulanca</td><td>${p.autoambulanca || '-'}</td></tr>
+                    <tr><td>Aksidenti</td><td>${p.aksidentit || '-'}</td></tr>
+                    <tr><td>Onkologjike</td><td>${p.onkologjike || '-'}</td></tr>
+                    <tr class="summary-section-hdr"><td colspan="2">Primet</td></tr>
+                    <tr><td>Primi mbi 18 vjeç</td><td>€ ${p.primi_madh || '-'}${eshteIndivid ? '/vit' : '/muaj'}</td></tr>
+                    ${p.primi_femije ? `<tr><td>Primi fëmijë nën 18 vjeç</td><td>€ ${p.primi_femije}${eshteIndivid ? '/vit' : '/muaj'}</td></tr>` : ''}
+                </table>
+            </div>
+        </div>
+    `).join('');
 }
 
 function riktheVersion(vIdx) {
@@ -255,6 +310,17 @@ function editoOferte(index) {
         renderVersions(o.versione);
     } else {
         vPanel.style.display = 'none';
+    }
+
+    // Shfaq summary panel (collapsed, klikohet per me u hap)
+    const sPanel = document.getElementById('oferta-summary');
+    if (o.pakot && o.pakot.length > 0) {
+        sPanel.style.display = 'block';
+        sPanel.classList.remove('open');
+        sPanel.classList.add('open');
+        renderSummary(o);
+    } else {
+        sPanel.style.display = 'none';
     }
 
     document.getElementById('drawer-overlay').classList.add('active');
