@@ -5,9 +5,29 @@ function ruajNeStorage() {
     localStorage.setItem('ofertat', JSON.stringify(ofertat));
 }
 
+// ====== DRAWER MODAL (Pika 6) ======
+function shtoOferte() {
+    editIndex = -1;
+    document.getElementById('modal-title').textContent = 'Ofertë e Re';
+    document.getElementById('m-emri').value = '';
+    document.getElementById('m-email').value = '';
+    document.getElementById('m-kerkuar-nga').value = 'direkt';
+    document.getElementById('m-agjenti').value = '';
+    document.getElementById('field-agjenti').style.display = 'none';
+    document.getElementById('version-panel').style.display = 'none';
+    zgjidhLlojin('individ', document.querySelectorAll('.drawer-lloji-btn')[0]);
+    document.getElementById('drawer-overlay').classList.add('active');
+}
+
+function mbyllDrawer() {
+    document.getElementById('drawer-overlay').classList.remove('active');
+}
+// Alias per compatibility
+function mbyllModal() { mbyllDrawer(); }
+
 function zgjidhLlojin(lloji, btn) {
     document.getElementById('m-lloji').value = lloji;
-    document.querySelectorAll('.lloji-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.drawer-lloji-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
     const pakotList = lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
@@ -15,34 +35,32 @@ function zgjidhLlojin(lloji, btn) {
     const container = document.getElementById('pakot-container');
 
     container.innerHTML = pakotList.map(p => `
-        <div class="pako-editor" id="pe-${p.id}">
-            <div class="pako-editor-header">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-                    <input type="checkbox" class="pako-check-input" value="${p.id}" onchange="togglePakoEditor('${p.id}', this.checked)">
-                    <strong>Paketa ${p.emri}</strong>
-                </label>
+        <div class="drawer-pako-editor" id="pe-${p.id}">
+            <div class="drawer-pako-editor-header">
+                <input type="checkbox" class="pako-check-input" value="${p.id}" onchange="togglePakoEditor('${p.id}', this.checked)">
+                <strong>${p.emri}</strong>
             </div>
-            <div class="pako-editor-body" id="peb-${p.id}" style="display:none;">
-                <table class="pako-edit-table">
-                    <tr><td class="pel">Zona e mbuluar</td><td><input class="pako-input" data-pako="${p.id}" data-field="zona" value="${p.zona}"></td></tr>
-                    <tr><td class="pel">Shuma e Siguruar (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="shuma" value="${p.shuma}"></td></tr>
-                    <tr><td colspan="2" class="pako-section-hdr">Trajtimet Hospitalore</td></tr>
-                    <tr><td class="pel">Mbulimi</td><td><input class="pako-input" data-pako="${p.id}" data-field="hospitalore" value="${p.hospitalore}"></td></tr>
-                    <tr><td colspan="2" class="pako-section-hdr">Trajtimet Ambulantore</td></tr>
-                    <tr><td class="pel">Mbulimi</td><td><input class="pako-input" data-pako="${p.id}" data-field="ambulatore" value="${p.ambulatore}"></td></tr>
+            <div class="drawer-pako-editor-body" id="peb-${p.id}">
+                <table>
+                    <tr><td>Zona e mbuluar</td><td><input class="pako-input" data-pako="${p.id}" data-field="zona" value="${p.zona}"></td></tr>
+                    <tr><td>Shuma e Siguruar (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="shuma" value="${p.shuma}"></td></tr>
+                    <tr><td colspan="2" class="pako-section-hdr">Hospitalore</td></tr>
+                    <tr><td>Mbulimi</td><td><input class="pako-input" data-pako="${p.id}" data-field="hospitalore" value="${p.hospitalore}"></td></tr>
+                    <tr><td colspan="2" class="pako-section-hdr">Ambulantore</td></tr>
+                    <tr><td>Mbulimi</td><td><input class="pako-input" data-pako="${p.id}" data-field="ambulatore" value="${p.ambulatore}"></td></tr>
                     <tr><td colspan="2" class="pako-section-hdr">Trajtime tjera</td></tr>
-                    <tr><td class="pel">Shtatzania dhe lindja</td><td><input class="pako-input" data-pako="${p.id}" data-field="shtatzania" value="${p.shtatzania}"></td></tr>
-                    <tr><td class="pel">Kujdesi dentar</td><td><input class="pako-input" data-pako="${p.id}" data-field="dentar" value="${p.dentar}"></td></tr>
-                    <tr><td class="pel">Kujdesi optik</td><td><input class="pako-input" data-pako="${p.id}" data-field="optik" value="${p.optik}"></td></tr>
-                    <tr><td class="pel">Kujdesi për dëgim</td><td><input class="pako-input" data-pako="${p.id}" data-field="degim" value="${p.degim}"></td></tr>
-                    <tr><td class="pel">Kujdesi psikiatrik</td><td><input class="pako-input" data-pako="${p.id}" data-field="psikiatrik" value="${p.psikiatrik}"></td></tr>
-                    <tr><td class="pel">Fizioterapia</td><td><input class="pako-input" data-pako="${p.id}" data-field="fizioterapi" value="${p.fizioterapi}"></td></tr>
-                    <tr><td class="pel">Autoambulanca</td><td><input class="pako-input" data-pako="${p.id}" data-field="autoambulanca" value="${p.autoambulanca}"></td></tr>
-                    <tr><td class="pel">Aksidenti</td><td><input class="pako-input" data-pako="${p.id}" data-field="aksidentit" value="${p.aksidentit}"></td></tr>
-                    <tr><td class="pel">Onkologjike</td><td><input class="pako-input" data-pako="${p.id}" data-field="onkologjike" value="${p.onkologjike}"></td></tr>
+                    <tr><td>Shtatzania</td><td><input class="pako-input" data-pako="${p.id}" data-field="shtatzania" value="${p.shtatzania}"></td></tr>
+                    <tr><td>Dentar</td><td><input class="pako-input" data-pako="${p.id}" data-field="dentar" value="${p.dentar}"></td></tr>
+                    <tr><td>Optik</td><td><input class="pako-input" data-pako="${p.id}" data-field="optik" value="${p.optik}"></td></tr>
+                    <tr><td>Dëgim</td><td><input class="pako-input" data-pako="${p.id}" data-field="degim" value="${p.degim}"></td></tr>
+                    <tr><td>Psikiatrik</td><td><input class="pako-input" data-pako="${p.id}" data-field="psikiatrik" value="${p.psikiatrik}"></td></tr>
+                    <tr><td>Fizioterapi</td><td><input class="pako-input" data-pako="${p.id}" data-field="fizioterapi" value="${p.fizioterapi}"></td></tr>
+                    <tr><td>Autoambulanca</td><td><input class="pako-input" data-pako="${p.id}" data-field="autoambulanca" value="${p.autoambulanca}"></td></tr>
+                    <tr><td>Aksidenti</td><td><input class="pako-input" data-pako="${p.id}" data-field="aksidentit" value="${p.aksidentit}"></td></tr>
+                    <tr><td>Onkologjike</td><td><input class="pako-input" data-pako="${p.id}" data-field="onkologjike" value="${p.onkologjike}"></td></tr>
                     <tr><td colspan="2" class="pako-section-hdr">Primet ${eshteIndivid ? 'vjetore' : 'mujore'}</td></tr>
-                    <tr><td class="pel">Primi mbi 18 vjeç (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="primi_madh" value="${p.primi_madh}"></td></tr>
-                    ${!eshteIndivid ? `<tr><td class="pel">Primi fëmijë nën 18 vjeç (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="primi_femije" value="${p.primi_femije}"></td></tr>` : ''}
+                    <tr><td>Primi mbi 18 vjeç (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="primi_madh" value="${p.primi_madh}"></td></tr>
+                    ${!eshteIndivid ? `<tr><td>Primi fëmijë (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="primi_femije" value="${p.primi_femije}"></td></tr>` : ''}
                 </table>
             </div>
         </div>
@@ -50,7 +68,14 @@ function zgjidhLlojin(lloji, btn) {
 }
 
 function togglePakoEditor(id, checked) {
-    document.getElementById('peb-' + id).style.display = checked ? 'block' : 'none';
+    const body = document.getElementById('peb-' + id);
+    const card = document.getElementById('pe-' + id);
+    body.style.display = checked ? 'block' : 'none';
+    if (checked) {
+        card.classList.add('selected');
+    } else {
+        card.classList.remove('selected');
+    }
 }
 
 function tregoBoxAgjenti() {
@@ -58,20 +83,57 @@ function tregoBoxAgjenti() {
     document.getElementById('field-agjenti').style.display = val === 'agjenti' ? 'block' : 'none';
 }
 
-function shtoOferte() {
-    editIndex = -1;
-    document.getElementById('modal-title').textContent = 'Oferte e Re';
-    document.getElementById('m-emri').value = '';
-    document.getElementById('m-email').value = '';
-    document.getElementById('m-kerkuar-nga').value = 'direkt';
-    document.getElementById('m-agjenti').value = '';
-    document.getElementById('field-agjenti').style.display = 'none';
-    zgjidhLlojin('individ', document.querySelectorAll('.lloji-btn')[0]);
-    document.getElementById('modal-overlay').classList.add('active');
+// ====== VERSIONING (Pika 5) ======
+function toggleVersions() {
+    document.getElementById('version-body').classList.toggle('open');
 }
 
-function mbyllModal() {
-    document.getElementById('modal-overlay').classList.remove('active');
+function renderVersions(versione) {
+    if (!versione || versione.length === 0) return;
+    const body = document.getElementById('version-body');
+    document.getElementById('version-count').textContent = versione.length;
+
+    body.innerHTML = versione.map((v, i) => {
+        const pakotTxt = (v.pakot || []).map(p => typeof p === 'object' ? (p.emri || p.id) : p).join(', ');
+        const isCurrent = i === versione.length - 1;
+        return `<div class="version-item">
+            <span class="version-dot ${isCurrent ? '' : 'old'}"></span>
+            <span class="v-date">${v.data || '-'}</span>
+            <span class="v-pakot">${pakotTxt || '-'}</span>
+            ${!isCurrent ? `<button class="v-restore" onclick="riktheVersion(${i})">Rikthe</button>` : '<span style="margin-left:auto;font-size:10px;color:#002B5C;font-weight:600;">Aktuale</span>'}
+        </div>`;
+    }).reverse().join('');
+}
+
+function riktheVersion(vIdx) {
+    if (editIndex < 0) return;
+    const o = ofertat[editIndex];
+    const v = o.versione[vIdx];
+    if (!v || !confirm('Rikthe versionin e dates ' + (v.data || '?') + '?')) return;
+
+    // Mbush format me te dhenat e versionit
+    const btns = document.querySelectorAll('.drawer-lloji-btn');
+    const llojiMap = { 'individ': 0, 'familje': 1, 'biznes': 2 };
+    zgjidhLlojin(v.lloji || o.lloji, btns[llojiMap[v.lloji || o.lloji] || 0]);
+
+    setTimeout(() => {
+        const pakotIds = (v.pakot || []).map(p => typeof p === 'object' ? p.id : p);
+        document.querySelectorAll('.pako-check-input').forEach(cb => {
+            const isSelected = pakotIds.includes(cb.value);
+            cb.checked = isSelected;
+            togglePakoEditor(cb.value, isSelected);
+            if (isSelected) {
+                const customPako = (v.pakot || []).find(p => typeof p === 'object' && p.id === cb.value);
+                if (customPako) {
+                    document.querySelectorAll(`.pako-input[data-pako="${cb.value}"]`).forEach(inp => {
+                        if (customPako[inp.dataset.field] !== undefined) {
+                            inp.value = customPako[inp.dataset.field];
+                        }
+                    });
+                }
+            }
+        });
+    }, 50);
 }
 
 function ruajOferte() {
@@ -85,20 +147,27 @@ function ruajOferte() {
     const kerkuarNga = document.getElementById('m-kerkuar-nga').value;
     const agjenti = document.getElementById('m-agjenti').value.trim();
 
+    const pakotAktuale = Array.from(document.querySelectorAll('.pako-check-input:checked')).map(cb => {
+        const pakoId = cb.value;
+        const vlerat = {};
+        document.querySelectorAll(`.pako-input[data-pako="${pakoId}"]`).forEach(inp => {
+            vlerat[inp.dataset.field] = inp.value;
+        });
+        return { id: pakoId, ...vlerat };
+    });
+
+    if (pakotAktuale.length === 0) {
+        alert('Ju lutem zgjidhni së paku një paketë!');
+        return;
+    }
+
     const oferta = {
         emri,
         lloji: document.getElementById('m-lloji').value,
         email: document.getElementById('m-email').value.trim(),
         kerkuarNga: kerkuarNga,
         agjenti: kerkuarNga === 'agjenti' ? agjenti : '',
-        pakot: Array.from(document.querySelectorAll('.pako-check-input:checked')).map(cb => {
-            const pakoId = cb.value;
-            const vlerat = {};
-            document.querySelectorAll(`.pako-input[data-pako="${pakoId}"]`).forEach(inp => {
-                vlerat[inp.dataset.field] = inp.value;
-            });
-            return { id: pakoId, ...vlerat };
-        }),
+        pakot: pakotAktuale,
         krijuarNga: JSON.parse(localStorage.getItem('user_aktual'))?.username || 'agon',
         krijuarNgaEmri: (() => { const u = JSON.parse(localStorage.getItem('user_aktual')); return u ? `${u.emri} ${u.mbiemri||''}`.trim() : 'Agon'; })(),
         krijuarNgaEmail: JSON.parse(localStorage.getItem('user_aktual'))?.email || 'gjonbalajagon@gmail.com',
@@ -113,49 +182,60 @@ function ruajOferte() {
         oferta.pakaZgjedhur = ofertat[editIndex].pakaZgjedhur;
         oferta.komentKlient = ofertat[editIndex].komentKlient;
         oferta.dataKonfirmimit = ofertat[editIndex].dataKonfirmimit;
+
+        // ====== VERSIONING: Ruaj versionin paraprak ======
+        const versionetEVjetra = ofertat[editIndex].versione || [];
+        // Shto versionin aktual (para ndryshimit) si version historik
+        versionetEVjetra.push({
+            data: ofertat[editIndex].dataKrijimit || new Date().toISOString().split('T')[0],
+            lloji: ofertat[editIndex].lloji,
+            pakot: ofertat[editIndex].pakot,
+            emri: ofertat[editIndex].emri
+        });
+        oferta.versione = versionetEVjetra;
+        oferta.dataKrijimit = ofertat[editIndex].dataKrijimit; // Mbaj daten origjinale
+
         ofertat[editIndex] = oferta;
     } else {
         oferta.realizuar = false;
+        oferta.versione = [];
         ofertat.push(oferta);
     }
 
     ruajNeStorage();
-    mbyllModal();
+    mbyllDrawer();
     renderTabela();
 }
 
-// ====== BUG FIX 1: Edit tash i pre-selekton pakot e ruajtura ======
+// ====== EDIT ME PRE-SELECT (Bug fix 1 + Versioning) ======
 function editoOferte(index) {
     editIndex = index;
     const o = ofertat[index];
-    document.getElementById('modal-title').textContent = 'Edito Oferten';
+    document.getElementById('modal-title').textContent = 'Edito Ofertën';
     document.getElementById('m-emri').value = o.emri;
     document.getElementById('m-email').value = o.email || '';
     document.getElementById('m-kerkuar-nga').value = o.kerkuarNga || 'direkt';
     document.getElementById('m-agjenti').value = o.agjenti || '';
     tregoBoxAgjenti();
 
-    const btns = document.querySelectorAll('.lloji-btn');
+    const btns = document.querySelectorAll('.drawer-lloji-btn');
     const llojiMap = { 'individ': 0, 'familje': 1, 'biznes': 2 };
     zgjidhLlojin(o.lloji, btns[llojiMap[o.lloji] || 0]);
 
-    // Nxjerr ID-te e pakove te ruajtura (si objekte ose string)
+    // Pre-select pakot
     const pakotIds = (o.pakot || []).map(p => {
         if (typeof p === 'object') return p.id;
-        // Nese eshte string si "Pako Bazë", konverto ne id
         const pakotList = o.lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
         const found = pakotList.find(pk => pk.emri === p || `Pako ${pk.emri}` === p || pk.id === p);
         return found ? found.id : p;
     });
 
-    // Selekto checkboxat dhe hap editor-at per pakot e ruajtura
     setTimeout(() => {
         document.querySelectorAll('.pako-check-input').forEach(cb => {
             const isSelected = pakotIds.includes(cb.value);
             cb.checked = isSelected;
+            togglePakoEditor(cb.value, isSelected);
             if (isSelected) {
-                togglePakoEditor(cb.value, true);
-                // Mbush vlerat custom nese ekzistojne
                 const customPako = (o.pakot || []).find(p => typeof p === 'object' && p.id === cb.value);
                 if (customPako) {
                     document.querySelectorAll(`.pako-input[data-pako="${cb.value}"]`).forEach(inp => {
@@ -168,7 +248,16 @@ function editoOferte(index) {
         });
     }, 50);
 
-    document.getElementById('modal-overlay').classList.add('active');
+    // Shfaq versioning panel nese ka versione
+    const vPanel = document.getElementById('version-panel');
+    if (o.versione && o.versione.length > 0) {
+        vPanel.style.display = 'block';
+        renderVersions(o.versione);
+    } else {
+        vPanel.style.display = 'none';
+    }
+
+    document.getElementById('drawer-overlay').classList.add('active');
 }
 
 function fshijOferte(index) {
@@ -228,14 +317,12 @@ function krijoKontrate(index) {
     window.location.href = 'kontratat.html?nga_oferta=true';
 }
 
-// ====== BUG FIX 2: Word gen — dergon emrat e pakove si array strings ======
+// ====== WORD GEN FIX (Bug fix 2) ======
 async function gjeneroWord(index) {
     const o = ofertat[index];
     try {
-        // Backend pret pakot si array strings me emrat e pakove
         const pakotEmra = (o.pakot || []).map(p => {
             if (typeof p === 'object') {
-                // Konverto id ne emrin e plote "Pako Bazë", "Pako Standard", etj
                 const pakotList = o.lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
                 const found = pakotList.find(pk => pk.id === p.id);
                 return found ? `Pako ${found.emri}` : p.id;
@@ -265,7 +352,7 @@ async function gjeneroWord(index) {
     }
 }
 
-// ====== BUG FIX 3: Copy link funksioni qe mungonte ======
+// ====== COPY LINK (Bug fix 3) ======
 function kopjoLink(index) {
     const link = `https://sigal-platform-shendet.vercel.app/pages/oferta-view.html?id=${index}`;
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -312,12 +399,13 @@ function filtro() {
     renderTabela();
 }
 
+// ====== RENDER ME STATS REALIZUARA (Pika 4) ======
 function renderTabela() {
     const filterLloji = document.getElementById('filter-lloji').value;
     const filterStatusi = document.getElementById('filter-statusi').value;
     const search = document.getElementById('search-oferte').value.toLowerCase();
-
     const filterViti = document.getElementById('filter-viti') ? document.getElementById('filter-viti').value : 'all';
+
     const ofertatFiltruara = filtroSipasRolit(ofertat, 'krijuarNga');
     const filtered = ofertatFiltruara.filter(o => {
         const llojiOk = filterLloji === 'all' || o.lloji === filterLloji;
@@ -332,35 +420,33 @@ function renderTabela() {
         return new Date(a.dataSkadon) - new Date(b.dataSkadon);
     });
 
+    // Stats kryesore
     document.getElementById('count-aktive').textContent = ofertatFiltruara.filter(o => llogaritStatus(o.dataSkadon) === 'aktive').length;
     document.getElementById('count-skaduar').textContent = ofertatFiltruara.filter(o => llogaritStatus(o.dataSkadon) === 'skaduar').length;
-    document.getElementById('count-individ').textContent = ofertatFiltruara.filter(o => o.lloji === 'individ').length;
-    document.getElementById('count-familje').textContent = ofertatFiltruara.filter(o => o.lloji === 'familje').length;
-    document.getElementById('count-biznes').textContent = ofertatFiltruara.filter(o => o.lloji === 'biznes').length;
     document.getElementById('count-total').textContent = ofertat.length;
     document.getElementById('count-realizuara').textContent = ofertatFiltruara.filter(o => o.realizuar).length;
 
-    const statusLabels = {
-        aktive: 'Aktive',
-        skaduar: 'Skaduar'
-    };
+    // Stats sipas llojit
+    document.getElementById('count-individ').textContent = ofertatFiltruara.filter(o => o.lloji === 'individ').length;
+    document.getElementById('count-familje').textContent = ofertatFiltruara.filter(o => o.lloji === 'familje').length;
+    document.getElementById('count-biznes').textContent = ofertatFiltruara.filter(o => o.lloji === 'biznes').length;
 
-    const llojiLabels = {
-        'individ': 'Individuale',
-        'familje': 'Familjare',
-        'biznes': 'Biznese'
-    };
+    // ====== PIKA 4: Realizuara sipas llojit ======
+    const rIndivid = ofertatFiltruara.filter(o => o.lloji === 'individ' && o.realizuar).length;
+    const rFamilje = ofertatFiltruara.filter(o => o.lloji === 'familje' && o.realizuar).length;
+    const rBiznes = ofertatFiltruara.filter(o => o.lloji === 'biznes' && o.realizuar).length;
+    document.getElementById('count-individ-r').textContent = rIndivid > 0 ? rIndivid + ' realizuar' : '';
+    document.getElementById('count-familje-r').textContent = rFamilje > 0 ? rFamilje + ' realizuar' : '';
+    document.getElementById('count-biznes-r').textContent = rBiznes > 0 ? rBiznes + ' realizuar' : '';
 
-    const kerkuarLabels = {
-        'direkt': 'Direkt',
-        'online': 'Online',
-        'agjenti': 'Agjenti'
-    };
+    const statusLabels = { aktive: 'Aktive', skaduar: 'Skaduar' };
+    const llojiLabels = { 'individ': 'Individuale', 'familje': 'Familjare', 'biznes': 'Biznese' };
+    const kerkuarLabels = { 'direkt': 'Direkt', 'online': 'Online', 'agjenti': 'Agjenti' };
 
     const tbody = document.getElementById('ofertat-tbody');
 
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; color:#888;">Nuk ka oferta. Shtoni me "+ Oferte e Re"</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; color:#888;">Nuk ka oferta. Shtoni me "+ Ofertë e Re"</td></tr>';
         return;
     }
 
@@ -369,8 +455,10 @@ function renderTabela() {
         const statusi = llogaritStatus(o.dataSkadon);
         const ditet = llogaritDitet(o.dataSkadon);
         const kerkuar = o.kerkuarNga === 'agjenti' ? 'Agjenti: ' + o.agjenti : (kerkuarLabels[o.kerkuarNga] || '-');
+        const vCount = (o.versione || []).length;
+        const vBadge = vCount > 0 ? ` <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;" title="${vCount} versione">${vCount}v</span>` : '';
         return '<tr>' +
-            '<td>' + o.emri + '</td>' +
+            '<td>' + o.emri + vBadge + '</td>' +
             '<td><span class="badge-lloji ' + o.lloji + '">' + (llojiLabels[o.lloji] || o.lloji) + '</span></td>' +
             '<td>' + ((o.pakot || []).map(p => typeof p === 'object' ? p.emri || p.id : p).join(', ') || '-') + '</td>' +
             '<td>' + (o.krijuarNgaEmri || o.krijuarNga || '-') + '</td>' +
