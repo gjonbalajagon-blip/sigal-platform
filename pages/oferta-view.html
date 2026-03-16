@@ -31,27 +31,34 @@
         .pako-top .pt-right{text-align:right;flex-shrink:0}
         .pako-top .pt-price{font-size:20px;font-weight:800}
         .pako-top .pt-per{font-size:9px;opacity:0.8;font-weight:500}
-        .pako-color-baze .pako-top{background:#E3EBF8;color:#002B5C}
+        .pako-color-baze .pako-top{background:#E8F0FE;color:#1a365d}
         .pako-color-standard .pako-top{background:#002B5C;color:white}
-        .pako-color-standard_plus .pako-top{background:#004E8C;color:white}
-        .pako-color-premium .pako-top{background:#0070C0;color:white}
-        .pako-color-silver .pako-top{background:linear-gradient(135deg,#0070C0,#0099CC);color:white}
-        .pako-color-gold .pako-top{background:linear-gradient(135deg,#0099CC,#00B4D8);color:white}
+        .pako-color-standard_plus .pako-top{background:#003D7A;color:white}
+        .pako-color-premium .pako-top{background:#0047AB;color:white}
+        .pako-color-silver .pako-top{background:linear-gradient(135deg,#1a2744,#002B5C);color:white}
+        .pako-color-gold .pako-top{background:linear-gradient(135deg,#002B5C,#0070C0);color:white}
         .pako-color-standard .pako-top input,.pako-color-standard_plus .pako-top input,.pako-color-premium .pako-top input,.pako-color-silver .pako-top input,.pako-color-gold .pako-top input{accent-color:white}
-        .pako-tags{padding:6px 14px 8px;display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid #f0f0f0}
-        .cat-tag{font-size:8px;font-weight:700;padding:2px 6px;border-radius:10px;display:inline-flex;align-items:center}
-        .cat-tag.green{background:#dcfce7;color:#166534}
-        .cat-tag.blue{background:#dbeafe;color:#1e40af}
-        .cat-tag.orange{background:#ffedd5;color:#9a3412}
-        .cat-tag.red{background:#fee2e2;color:#991b1b}
-        .cat-tag.gray{background:#f3f4f6;color:#6b7280}
+        /* Section headers inherit pako color via CSS variable */
+        .pako-color-baze{--pako-bg:#002B5C;--pako-hover:#003570}
+        .pako-color-standard{--pako-bg:#002B5C;--pako-hover:#003570}
+        .pako-color-standard_plus{--pako-bg:#003D7A;--pako-hover:#004E8C}
+        .pako-color-premium{--pako-bg:#0047AB;--pako-hover:#0055CC}
+        .pako-color-silver{--pako-bg:#1a2744;--pako-hover:#253050}
+        .pako-color-gold{--pako-bg:#002B5C;--pako-hover:#003D7A}
+        .pako-tags{padding:6px 14px 8px;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid #f0f0f0}
+        .cat-tag{font-size:9px;font-weight:600;color:#4a5568;display:inline-flex;align-items:center;gap:4px}
+        .cat-tag .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+        .cat-tag .dot.green{background:#22c55e}
+        .cat-tag .dot.blue{background:#3b82f6}
+        .cat-tag .dot.orange{background:#f59e0b}
+        .cat-tag .dot.red{background:#ef4444}
         .pako-det{display:none}
         .pako-card.selected .pako-det{display:block}
         .shuma-banner{display:flex;align-items:center;justify-content:center;padding:10px 14px;background:linear-gradient(135deg,#002B5C 0%,#0047AB 100%);gap:8px}
         .shuma-banner .shuma-label{font-size:10px;color:rgba(255,255,255,0.8);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
         .shuma-banner .shuma-val{font-size:22px;font-weight:800;color:white;letter-spacing:-0.5px}
-        .section-hdr{padding:10px 14px;background:#002B5C;color:white;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.2s}
-        .section-hdr:hover{background:#003570}
+        .section-hdr{padding:10px 14px;background:var(--pako-bg,#002B5C);color:white;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.2s}
+        .section-hdr:hover{background:var(--pako-hover,#003570)}
         .section-hdr .sh-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
         .section-hdr .sh-icon{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
         .section-hdr .sh-icon svg{width:13px;height:13px;stroke:white;stroke-width:2;fill:none}
@@ -241,16 +248,16 @@
         function gjenerTags(p) {
             const t = p.tags || {};
             let html = '<div class="pako-tags">';
-            if (t.hospitalore) html += '<span class="cat-tag green">Hospitalizim ' + t.hospitalore + '</span>';
+            if (t.hospitalore) html += '<span class="cat-tag"><span class="dot green"></span>Hospitalizim ' + t.hospitalore + '</span>';
             if (t.ambulantore) {
-                if (t.ambulantore === 'Nuk mbulohet') html += '<span class="cat-tag gray">Ambulantore: Nuk mbulohet - Zbritje</span>';
-                else html += '<span class="cat-tag blue">Ambulantore ' + t.ambulantore + '</span>';
+                if (t.ambulantore === 'Nuk mbulohet') html += '<span class="cat-tag"><span class="dot blue"></span>Ambulantore: Nuk mbulohet - Zbritje</span>';
+                else html += '<span class="cat-tag"><span class="dot blue"></span>Ambulantore ' + t.ambulantore + '</span>';
             }
             if (t.tjera) {
-                if (t.tjera === 'Rrjeti Mjekësor') html += '<span class="cat-tag gray">Përfitime tjera: Nuk mbulohen - Zbritje</span>';
-                else html += '<span class="cat-tag orange">Përfitime tjera: ' + t.tjera + '</span>';
+                if (t.tjera === 'Rrjeti Mjekësor') html += '<span class="cat-tag"><span class="dot orange"></span>Përfitime tjera: Nuk mbulohen - Zbritje</span>';
+                else html += '<span class="cat-tag"><span class="dot orange"></span>Përfitime tjera: ' + t.tjera + '</span>';
             }
-            if (t.aksidente) html += '<span class="cat-tag red">Aksidente ' + t.aksidente + '</span>';
+            if (t.aksidente) html += '<span class="cat-tag"><span class="dot red"></span>Aksidente ' + t.aksidente + '</span>';
             html += '</div>';
             return html;
         }
@@ -302,11 +309,43 @@
             return html;
         }
         function gjenerOptJete() {
-            return '<div class="opt-card" id="opt-jete" onclick="toggleOpt(\'jete\')"><div class="opt-preview"><input type="checkbox" id="cb-opt-jete" onclick="event.stopPropagation();toggleOpt(\'jete\')"><div class="opt-main"><div class="opt-title-row"><span class="opt-title">Jetë Plus Cash</span><span class="opt-badge rec">Rekomanduar</span></div><div class="opt-tagline">Mbështetje financiare e menjëhershme për gjendje shëndetësore me kosto të lartë. Nëse diagnostikoheni me sëmundje të mbuluar, SIGAL ju akordon shumën e siguruar si cash benefit.</div><div class="opt-highlights"><span class="opt-hl price">Nga € 30/vit</span><span class="opt-hl feature">Tumor malinj</span><span class="opt-hl feature">Tumor beninj</span><span class="opt-hl zona">Gjithë bota</span></div><div class="opt-select-hint">Zgjidhni për të parë detajet e plota dhe tabelën e çmimeve ↓</div></div></div><div class="opt-details"><div class="opt-det-hdr">Sëmundjet që mbulohen</div><div class="opt-det-r"><div class="dl">Tumor malinj invaziv</div><div class="dv">E mbuluar</div></div><div class="opt-det-r"><div class="dl">Tumor beninj në kokë</div><div class="dv">E mbuluar</div></div><div class="opt-det-r"><div class="dl">Opinion i dytë mjekësor për çdo diagnozë</div><div class="dv">E mbuluar</div></div><div class="opt-det-hdr">Shërbimet që mbulohen</div><div class="opt-det-r"><div class="dl">Gjetja e spitalit më të specializuar për trajtim</div><div class="dv">E përfshirë</div></div><div class="opt-det-r"><div class="dl">Organizimi i akomodimit dhe udhëtimit</div><div class="dv">E përfshirë</div></div><div class="opt-det-r"><div class="dl">Shërbimi i përkthimit gjatë trajtimit</div><div class="dv">E përfshirë</div></div><div class="opt-note">Periudha e pritjes: 180 ditë nga data kur kontrata hyn në fuqi për individët; 90 ditë për grupet mbi 50 persona. Fëmijët nën 21 vjeç mbulohen me të njëjtën pako.</div><div class="price-table-wrap"><div class="price-table-title">Tabela e çmimeve sipas moshës dhe shumës së siguruar (€/vit)</div><table class="price-table"><thead><tr><th>Mosha</th><th>€5,000</th><th>€10,000</th><th>€20,000</th><th>€50,000</th></tr></thead><tbody><tr><td>21-30 <span class="gl">M/F</span></td><td>30/30</td><td>35/40</td><td>50/60</td><td>90/100</td></tr><tr><td>31-40 <span class="gl">M/F</span></td><td>35/45</td><td>45/65</td><td>80/90</td><td>120/200</td></tr><tr><td>41-50 <span class="gl">M/F</span></td><td>50/65</td><td>70/80</td><td>90/120</td><td>250/350</td></tr><tr><td>51-60 <span class="gl">M/F</span></td><td>100/100</td><td>150/150</td><td>300/300</td><td>600/600</td></tr><tr><td>61-70 <span class="gl">M/F</span></td><td>200/120</td><td>380/250</td><td>750/420</td><td>1800/1000</td></tr><tr><td>71-80 <span class="gl">M/F</span></td><td>250/150</td><td>380/220</td><td>980/520</td><td>2400/1200</td></tr></tbody></table></div></div></div>';
+            return '<div class="opt-card" id="opt-jete" onclick="toggleOpt(\'jete\')">' +
+                '<div class="opt-preview"><input type="checkbox" id="cb-opt-jete" onclick="event.stopPropagation();toggleOpt(\'jete\')">' +
+                '<div class="opt-main"><div class="opt-title-row"><span class="opt-title">Jet\u00eb Plus Cash</span><span class="opt-badge rec">Rekomanduar</span></div>' +
+                '<div class="opt-tagline">Mb\u00ebshtetje financiare e menj\u00ebhershme p\u00ebr gjendje sh\u00ebndet\u00ebsore me kosto t\u00eb lart\u00eb. N\u00ebse diagnostikoheni me s\u00ebmundje t\u00eb mbuluar, SIGAL ju akordon shum\u00ebn e siguruar si cash benefit.</div>' +
+                '<div class="opt-highlights"><span class="opt-hl price">Nga \u20ac 30/vit</span><span class="opt-hl feature">Tumor malinj</span><span class="opt-hl feature">Tumor beninj</span><span class="opt-hl zona">Gjith\u00eb bota</span><span class="opt-hl" style="background:#dbeafe;color:#1e40af">F\u00ebmij\u00ebt n\u00ebn 21 vje\u00e7 falas</span></div>' +
+                '<div class="opt-select-hint">Zgjidhni p\u00ebr t\u00eb par\u00eb detajet e plota dhe tabel\u00ebn e \u00e7mimeve \u2193</div>' +
+                '</div></div>' +
+                '<div class="opt-details">' +
+                '<div class="opt-det-hdr">S\u00ebmundjet q\u00eb mbulohen</div>' +
+                '<div class="opt-det-r"><div class="dl">Tumor malinj invaziv</div><div class="dv">E mbuluar</div></div>' +
+                '<div class="opt-det-r"><div class="dl">Tumor beninj n\u00eb kok\u00eb</div><div class="dv">E mbuluar</div></div>' +
+                '<div class="opt-det-r"><div class="dl">Opinion i dyt\u00eb mjek\u00ebsor p\u00ebr \u00e7do diagnoz\u00eb</div><div class="dv">E mbuluar</div></div>' +
+                '<div class="opt-det-hdr">Sh\u00ebrbimet q\u00eb mbulohen</div>' +
+                '<div class="opt-det-r"><div class="dl">Gjetja e spitalit m\u00eb t\u00eb specializuar p\u00ebr trajtim</div><div class="dv">E p\u00ebrfshir\u00eb</div></div>' +
+                '<div class="opt-det-r"><div class="dl">Organizimi i akomodimit dhe udh\u00ebtimit</div><div class="dv">E p\u00ebrfshir\u00eb</div></div>' +
+                '<div class="opt-det-r"><div class="dl">Sh\u00ebrbimi i p\u00ebrkthimit gjat\u00eb trajtimit</div><div class="dv">E p\u00ebrfshir\u00eb</div></div>' +
+                '<div class="opt-note">Periudha e pritjes: 180 dit\u00eb nga data kur kontrata hyn n\u00eb fuqi p\u00ebr individ\u00ebt; 90 dit\u00eb p\u00ebr grupet mbi 50 persona. F\u00ebmij\u00ebt n\u00ebn 21 vje\u00e7 mbulohen me t\u00eb nj\u00ebjt\u00ebn pako pa kosto shtes\u00eb.</div>' +
+                '<div class="primi-section"><div class="primi-r"><div class="dl">Primi vjetor (nga)</div><div class="dv">\u20ac 30/vit</div></div></div>' +
+                '<div class="price-table-wrap"><div class="price-table-title">Tabela e \u00e7mimeve sipas mosh\u00ebs dhe shum\u00ebs s\u00eb siguruar (\u20ac/vit)</div>' +
+                '<table class="price-table"><thead><tr><th>Mosha</th><th>Gjinia</th><th>\u20ac 5,000</th><th>\u20ac 10,000</th><th>\u20ac 20,000</th><th>\u20ac 50,000</th></tr></thead><tbody>' +
+                '<tr><td rowspan="2" style="font-weight:700">21-30</td><td style="color:#0047AB;font-weight:700">M</td><td>\u20ac 30</td><td>\u20ac 35</td><td>\u20ac 50</td><td>\u20ac 90</td></tr>' +
+                '<tr><td style="color:#e11d48;font-weight:700">F</td><td>\u20ac 30</td><td>\u20ac 40</td><td>\u20ac 60</td><td>\u20ac 100</td></tr>' +
+                '<tr><td rowspan="2" style="font-weight:700">31-40</td><td style="color:#0047AB;font-weight:700">M</td><td>\u20ac 35</td><td>\u20ac 45</td><td>\u20ac 80</td><td>\u20ac 120</td></tr>' +
+                '<tr><td style="color:#e11d48;font-weight:700">F</td><td>\u20ac 45</td><td>\u20ac 65</td><td>\u20ac 90</td><td>\u20ac 200</td></tr>' +
+                '<tr><td rowspan="2" style="font-weight:700">41-50</td><td style="color:#0047AB;font-weight:700">M</td><td>\u20ac 50</td><td>\u20ac 70</td><td>\u20ac 90</td><td>\u20ac 250</td></tr>' +
+                '<tr><td style="color:#e11d48;font-weight:700">F</td><td>\u20ac 65</td><td>\u20ac 80</td><td>\u20ac 120</td><td>\u20ac 350</td></tr>' +
+                '<tr><td rowspan="2" style="font-weight:700">51-60</td><td style="color:#0047AB;font-weight:700">M</td><td>\u20ac 100</td><td>\u20ac 150</td><td>\u20ac 300</td><td>\u20ac 600</td></tr>' +
+                '<tr><td style="color:#e11d48;font-weight:700">F</td><td>\u20ac 100</td><td>\u20ac 150</td><td>\u20ac 300</td><td>\u20ac 600</td></tr>' +
+                '<tr><td rowspan="2" style="font-weight:700">61-70</td><td style="color:#0047AB;font-weight:700">M</td><td>\u20ac 200</td><td>\u20ac 380</td><td>\u20ac 750</td><td>\u20ac 1,800</td></tr>' +
+                '<tr><td style="color:#e11d48;font-weight:700">F</td><td>\u20ac 120</td><td>\u20ac 250</td><td>\u20ac 420</td><td>\u20ac 1,000</td></tr>' +
+                '<tr><td rowspan="2" style="font-weight:700">71-80</td><td style="color:#0047AB;font-weight:700">M</td><td>\u20ac 250</td><td>\u20ac 380</td><td>\u20ac 980</td><td>\u20ac 2,400</td></tr>' +
+                '<tr><td style="color:#e11d48;font-weight:700">F</td><td>\u20ac 150</td><td>\u20ac 220</td><td>\u20ac 520</td><td>\u20ac 1,200</td></tr>' +
+                '</tbody></table></div></div></div>';
         }
 
         function gjenerOptOpinion() {
-            return '<div class="opt-card" id="opt-opinion" onclick="toggleOpt(\'opinion\')"><div class="opt-preview"><input type="checkbox" id="cb-opt-opinion" onclick="event.stopPropagation();toggleOpt(\'opinion\')"><div class="opt-main"><div class="opt-title-row"><span class="opt-title">Opinioni i Dytë Mjekësor</span><span class="opt-badge new">I ri</span></div><div class="opt-tagline">Mendim i specializuar ndërkombëtar nga Qendrat Mjekësore Botërore më të mira. MediGuide ju ndihmon me gjetjen e spitalit, organizimin e udhëtimit, dhe përkthimin gjatë trajtimit.</div><div class="opt-highlights"><span class="opt-hl price">€ 1/muaj</span><span class="opt-hl feature">3 Qendra Botërore</span><span class="opt-hl feature">Brenda 10 ditëve</span></div><div class="opt-select-hint">Zgjidhni për të parë procesin e plotë ↓</div></div></div><div class="opt-details"><div class="opt-det-hdr">Si funksionon procesi</div><div class="opt-det-r"><div class="dl">Brenda 12 orëve pune: dërgohen formularët për lëshimin e të dhënave mjekësore</div><div class="dv">Hapi 1</div></div><div class="opt-det-r"><div class="dl">Brenda 3 ditëve pune: ju dërgohen 3 Qendra Mjekësore Botërore më të mira</div><div class="dv">Hapi 2</div></div><div class="opt-det-r"><div class="dl">Zgjidhni Qendrën — MediGuide bashkëpunon me Mjekun Personal për mbledhjen e të dhënave</div><div class="dv">Hapi 3</div></div><div class="opt-det-r"><div class="dl">Qendra përfundon analizën dhe rekomandimet brenda 10 ditëve pune</div><div class="dv">Hapi 4</div></div><div class="opt-det-r"><div class="dl">Opinioni ju dërgohet ju dhe mjekut tuaj brenda 12 orëve pune</div><div class="dv">Hapi 5</div></div><div class="opt-det-hdr">Gjetja e Qendrës Mjekësore</div><div class="opt-det-r"><div class="dl">MediGuide ju referon një ofrues në rajonin ku dëshironi të trajtoheni</div><div class="dv">E përfshirë</div></div><div class="opt-det-r"><div class="dl">Të gjitha kostot e opinionit mbulohen nga SIGAL/MediGuide</div><div class="dv">E përfshirë</div></div><div class="opt-note">Shërbimet mjekësore në qendrën e zgjedhur paguhen nga pacienti. MediGuide ofron rrjet ndërkombëtar ofruesish me kosto të ulura.</div><div class="opt-primi"><div class="dl">Primi</div><div class="dv">€ 1/muaj · € 12/vit</div></div></div></div>';
+            return '<div class="opt-card" id="opt-opinion" onclick="toggleOpt(\'opinion\')"><div class="opt-preview"><input type="checkbox" id="cb-opt-opinion" onclick="event.stopPropagation();toggleOpt(\'opinion\')"><div class="opt-main"><div class="opt-title-row"><span class="opt-title">Opinioni i Dytë Mjekësor</span><span class="opt-badge new">I ri</span></div><div class="opt-tagline">Mendim i specializuar ndërkombëtar nga Qendrat Mjekësore Botërore më të mira. MediGuide ju ndihmon me gjetjen e spitalit, organizimin e udhëtimit, dhe përkthimin gjatë trajtimit.</div><div class="opt-highlights"><span class="opt-hl price">€ 1/muaj</span><span class="opt-hl feature">3 Qendra Botërore</span><span class="opt-hl feature">Brenda 10 ditëve</span></div><div class="opt-select-hint">Zgjidhni për të parë procesin e plotë ↓</div></div></div><div class="opt-details"><div class="opt-det-hdr">Si funksionon procesi</div><div class="opt-det-r"><div class="dl">Brenda 12 orëve pune: dërgohen formularët për lëshimin e të dhënave mjekësore</div><div class="dv">Hapi 1</div></div><div class="opt-det-r"><div class="dl">Brenda 3 ditëve pune: ju dërgohen 3 Qendra Mjekësore Botërore më të mira</div><div class="dv">Hapi 2</div></div><div class="opt-det-r"><div class="dl">Zgjidhni Qendrën — MediGuide bashkëpunon me Mjekun Personal për mbledhjen e të dhënave</div><div class="dv">Hapi 3</div></div><div class="opt-det-r"><div class="dl">Qendra përfundon analizën dhe rekomandimet brenda 10 ditëve pune</div><div class="dv">Hapi 4</div></div><div class="opt-det-r"><div class="dl">Opinioni ju dërgohet ju dhe mjekut tuaj brenda 12 orëve pune</div><div class="dv">Hapi 5</div></div><div class="opt-det-hdr">Gjetja e Qendrës Mjekësore</div><div class="opt-det-r"><div class="dl">MediGuide ju referon një ofrues në rajonin ku dëshironi të trajtoheni</div><div class="dv">E përfshirë</div></div><div class="opt-det-r"><div class="dl">Të gjitha kostot e opinionit mbulohen nga SIGAL/MediGuide</div><div class="dv">E përfshirë</div></div><div class="opt-note">Shërbimet mjekësore në qendrën e zgjedhur paguhen nga pacienti. MediGuide ofron rrjet ndërkombëtar ofruesish me kosto të ulura.</div><div class="primi-section"><div class="primi-r"><div class="dl">Primi vjetor</div><div class="dv">€ 12/vit</div></div><div class="primi-r"><div class="dl">Primi mujor</div><div class="dv">€ 1/muaj</div></div></div></div></div>';
         }
 
         function ngarko() {
