@@ -18,9 +18,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .oferta-meta{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .oferta-meta span{font-size:10px;color:#6b7a8d;background:#f4f6f9;padding:3px 8px;border-radius:14px}
 .countdown{background:#fff3cd !important;color:#856404 !important;font-weight:600}
+.countdown.urgent{background:#f8d7da !important;color:#721c24 !important}
 .section-title{font-size:11px;font-weight:700;color:#002B5C;margin:16px 0 8px;text-transform:uppercase;letter-spacing:0.5px}
-
-/* Tab bar */
 .tab-bar{display:flex;background:white;border-radius:10px;border:1px solid #e5e9f0;overflow:hidden;margin-bottom:8px;flex-wrap:wrap}
 .tab-item{flex:1;padding:8px 2px;text-align:center;cursor:pointer;border-right:1px solid #e5e9f0;min-width:0;transition:all 0.15s}
 .tab-item:last-child{border-right:none}
@@ -32,72 +31,63 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .tab-item.active .ti-price{color:white}
 .tab-item.active .ti-per{color:rgba(255,255,255,0.6)}
 .tab-item:hover:not(.active){background:#f8fafc}
-
-/* Tab detail card */
+.tab-item.sel-mark{box-shadow:inset 0 -3px 0 #22c55e}
 .tab-detail{background:white;border-radius:10px;border:1px solid #e5e9f0;overflow:hidden}
-.td-header{padding:14px 16px;display:flex;align-items:center;gap:10px}
+/* Header row */
+.td-hdr{padding:14px 16px;display:flex;align-items:center;gap:8px}
 .td-info{flex:1}
 .td-name{font-size:18px;font-weight:800;color:#002B5C}
 .td-zone{font-size:10px;color:#6b7a8d;margin-top:2px}
-.td-shuma{text-align:center;flex-shrink:0;padding:0 8px}
-.td-shuma-val{font-size:18px;font-weight:800;color:#002B5C}
-.td-shuma-label{font-size:8px;color:#6b7a8d;font-weight:600;text-transform:uppercase}
-.td-price{text-align:right;flex-shrink:0}
-.td-price-val{font-size:18px;font-weight:800;color:#002B5C}
-.td-price-per{font-size:9px;color:#6b7a8d}
-
-/* Tags gri */
-.td-tags{padding:6px 16px 8px;display:flex;gap:5px;flex-wrap:wrap;border-top:1px solid #f0f0f0}
-.tag{font-size:8px;font-weight:600;padding:3px 8px;border-radius:4px;background:#f4f6f9;color:#4a5568;border:1px solid #e5e9f0}
-
-/* Section headers */
-.section-hdr{padding:10px 14px;background:#002B5C;color:white;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.2s}
-.section-hdr:hover{background:#003570}
-.sh-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.td-center{text-align:center;flex-shrink:0;padding:0 6px}
+.td-shuma{font-size:18px;font-weight:800;color:#002B5C}
+.td-shuma-lbl{font-size:8px;color:#6b7a8d;text-transform:uppercase}
+.td-right{text-align:right;flex-shrink:0}
+.td-price{font-size:18px;font-weight:800;color:#002B5C}
+.td-per{font-size:9px;color:#6b7a8d}
+/* Primi inline lart */
+.primi-row{padding:6px 16px 8px;display:flex;gap:12px;flex-wrap:wrap;border-bottom:1px solid #e5e9f0}
+.primi-row .pr-item{font-size:10px;color:#4a5568}
+.primi-row .pr-item strong{font-weight:800;color:#002B5C;font-size:12px}
+/* Summary bar */
+.summary-bar{display:flex;border-bottom:1px solid #e5e9f0}
+.sb-item{flex:1;padding:10px 8px;text-align:center;border-right:1px solid #e5e9f0}
+.sb-item:last-child{border-right:none}
+.sb-label{font-size:8px;color:#6b7a8d;text-transform:uppercase;font-weight:600;letter-spacing:0.3px}
+.sb-val{font-size:14px;font-weight:800;color:#002B5C;margin-top:2px}
+.sb-val.zbr{color:#9a3412;font-size:10px;font-weight:600}
+.sb-link{text-align:center;padding:8px;font-size:10px;color:#0047AB;font-weight:600;cursor:pointer;border-bottom:1px solid #e5e9f0}
+.sb-link:hover{background:#f8fafc}
+/* Detail sections */
+.detail-body{display:none}
+.detail-body.open{display:block}
+.sh{padding:10px 14px;background:#002B5C;color:white;display:flex;align-items:center;justify-content:space-between}
+.sh-left{display:flex;align-items:center;gap:8px;flex:1}
 .sh-icon{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .sh-icon svg{width:13px;height:13px;stroke:white;stroke-width:2;fill:none}
-.sh-title{font-size:12px;font-weight:700}
-.sh-subtitle{font-size:9px;opacity:0.7;margin-top:1px}
-.sh-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.sh-t{font-size:12px;font-weight:700}
+.sh-sub{font-size:9px;opacity:0.7;margin-top:1px}
 .sh-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
-.sh-badge.green{background:#22c55e;color:white}
-.sh-badge.blue{background:#60a5fa;color:white}
-.sh-badge.gray{background:rgba(255,255,255,0.2);color:white}
-.sh-toggle{font-size:9px;opacity:0.6;display:flex;align-items:center;gap:3px}
-.arr{font-size:10px;transition:transform 0.2s}
-.section-hdr.open .arr{transform:rotate(180deg)}
-.section-body{display:none;background:#fafbfc}
-.section-body.open{display:block}
-
-.merged-summary{padding:10px 14px;background:#f0f4ff;border-bottom:1px solid #e5e9f0;display:flex;align-items:center;gap:8px}
-.ms-badge{font-size:11px;font-weight:700;color:#002B5C;background:white;padding:3px 10px;border-radius:6px;border:1px solid #d0ddef}
-.ms-text{font-size:10px;color:#4a5568}
-.merged-items{padding:6px 14px 8px;display:flex;flex-wrap:wrap;gap:4px}
-.mi{font-size:9px;color:#6b7a8d;background:white;padding:2px 7px;border-radius:4px;border:1px solid #e5e9f0}
-.not-covered-summary{padding:10px 14px;background:#fff8f0;border-bottom:1px solid #f0e6d8}
-.nc-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.sh-badge.g{background:#22c55e;color:white}
+.sh-badge.b{background:#60a5fa;color:white}
+.sh-badge.gr{background:rgba(255,255,255,0.2);color:white}
+.mi-wrap{padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px}
+.mi{font-size:10px;color:#4a5568;background:white;padding:3px 8px;border-radius:4px;border:1px solid #e5e9f0}
+.nc{padding:10px 14px;background:#fff8f0;border-bottom:1px solid #f0e6d8}
+.nc-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .nc-badge{font-size:10px;font-weight:700;color:#9a3412;background:#ffedd5;padding:3px 8px;border-radius:6px}
 .nc-title{font-size:11px;font-weight:700;color:#78350f}
-.nc-desc{font-size:10px;color:#92400e;line-height:1.4;margin-top:2px}
-.nc-items{padding:6px 14px 8px;display:flex;flex-wrap:wrap;gap:4px}
+.nc-desc{font-size:10px;color:#92400e;margin-top:2px}
+.nc-items{padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px}
 .nc-items .mi{color:#9a3412;background:#fff7ed;border-color:#fed7aa}
-.det-r{display:flex;padding:6px 14px;font-size:11px;border-bottom:1px solid #f0f0f0;align-items:flex-start;gap:6px}
-.det-r:last-child{border-bottom:none}
-.det-r .dl{flex:1;color:#4a5568;line-height:1.3}
-.det-r .dv{flex-shrink:0;font-weight:600;color:#1a2332;text-align:right;max-width:45%}
-.primi-section{border-top:2px solid #002B5C}
-.primi-r{display:flex;padding:10px 14px;background:#f0f4ff;align-items:center}
-.primi-r .dl{flex:1;font-size:12px;font-weight:600;color:#002B5C}
-.primi-r .dv{font-size:16px;font-weight:800;color:#002B5C}
-.primi-r+.primi-r{background:#f8fafc;border-top:1px solid #e5e9f0}
-.primi-r+.primi-r .dv{font-size:14px;font-weight:700}
-.nota-spital{padding:8px 14px;font-size:9px;color:#6b7a8d;background:#f8f9fa;border-top:1px solid #f0f0f0;line-height:1.4;font-style:italic}
-
-/* Zgjedh buton */
-.btn-zgjedh{display:block;width:calc(100% - 28px);margin:12px 14px;padding:11px;text-align:center;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;font-family:inherit;border:2px solid #002B5C;background:white;color:#002B5C;transition:all 0.2s}
-.btn-zgjedh:hover{background:#f0f4ff}
-.btn-zgjedh.active{background:#002B5C;color:white}
-
+.dr{display:flex;padding:7px 14px;font-size:12px;border-bottom:1px solid #f0f0f0}
+.dr:last-child{border-bottom:none}
+.dr .dl{flex:1;color:#4a5568;line-height:1.3}
+.dr .dv{font-weight:600;color:#1a2332;text-align:right}
+.nota{padding:8px 14px;font-size:9px;color:#6b7a8d;background:#f8f9fa;border-top:1px solid #f0f0f0;font-style:italic;line-height:1.4}
+.btn-z{display:block;width:calc(100% - 28px);margin:12px 14px;padding:11px;text-align:center;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;font-family:inherit;border:2px solid #002B5C;background:white;color:#002B5C;transition:all 0.2s}
+.btn-z:hover{background:#f0f4ff}
+.btn-z.active{background:#002B5C;color:white}
+.btn-z.active:hover{background:#003570}
 /* Opt cards */
 .opt-card{background:white;border:2px solid #e5e9f0;border-radius:10px;margin-bottom:8px;overflow:hidden;cursor:pointer;transition:all 0.2s}
 .opt-card:hover{border-color:#b0c4de}
@@ -117,8 +107,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .opt-hl.zona{background:#fef3c7;color:#92400e}
 .opt-select-hint{font-size:9px;color:#0047AB;margin-top:6px;font-weight:500}
 .opt-price-side{text-align:right;flex-shrink:0;padding-top:2px}
-.opt-price-side .ops-price{font-size:17px;font-weight:800;color:#002B5C}
-.opt-price-side .ops-per{font-size:9px;color:#6b7a8d}
+.ops-price{font-size:17px;font-weight:800;color:#002B5C}
+.ops-per{font-size:9px;color:#6b7a8d}
 .opt-details{display:none;border-top:1px solid #f0f0f0;background:#fafbfc}
 .opt-card.selected .opt-details{display:block}
 .opt-det-hdr{padding:6px 14px;background:#002B5C;color:white;font-size:10px;font-weight:700}
@@ -127,6 +117,9 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .opt-det-r .dl{flex:1;color:#4a5568}
 .opt-det-r .dv{font-weight:600;color:#002B5C}
 .opt-note{padding:6px 14px;font-size:9px;color:#6b7a8d;line-height:1.4;font-style:italic;border-top:1px solid #f0f0f0}
+.opt-primi{display:flex;padding:8px 14px;background:#f0f4ff;border-top:1px solid #e5e9f0}
+.opt-primi .dl{flex:1;font-size:11px;font-weight:600;color:#002B5C}
+.opt-primi .dv{font-size:13px;font-weight:800;color:#002B5C}
 .price-table-wrap{padding:8px 14px;border-top:1px solid #e5e9f0}
 .price-table-title{font-size:10px;font-weight:700;color:#002B5C;margin-bottom:6px}
 .price-table{width:100%;border-collapse:collapse;font-size:9px}
@@ -136,8 +129,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .price-table td{padding:3px 6px;border-bottom:1px solid #f0f0f0;text-align:center}
 .price-table td:first-child{text-align:left;font-weight:600;color:#1a2332}
 .price-table tr:nth-child(even){background:#f8fafc}
-
-/* App banner */
+/* App */
 .app-banner{background:#002B5C;border-radius:10px;padding:14px 16px;margin:16px 0;display:flex;align-items:center;gap:12px}
 .app-logo{width:44px;height:44px;border-radius:10px;flex-shrink:0;overflow:hidden;background:white}
 .app-logo img{width:44px;height:44px;border-radius:10px;display:block}
@@ -148,7 +140,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .app-stores{display:flex;gap:6px;margin-top:6px}
 .store-btn{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.15);color:white;font-size:9px;font-weight:600;padding:4px 10px;border-radius:6px;text-decoration:none}
 .store-btn svg{width:12px;height:12px;fill:white}
-
 /* Rrjeti popup */
 .net-trigger{background:white;border-radius:10px;border:1px solid #e5e9f0;margin:12px 0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .net-trigger:hover{background:#f8fafc}
@@ -162,7 +153,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .net-popup-hdr{padding:14px 16px;border-bottom:1px solid #e5e9f0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:white;z-index:1;border-radius:16px 16px 0 0}
 .net-popup-hdr h3{font-size:14px;font-weight:700;color:#002B5C}
 .net-close{width:28px;height:28px;border-radius:50%;background:#f4f6f9;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6b7a8d}
-.net-kartele{padding:10px 14px;background:#f0f4ff;border-bottom:1px solid #e5e9f0;display:flex;align-items:center;gap:10px}
+.nk{padding:10px 14px;background:#f0f4ff;border-bottom:1px solid #e5e9f0;display:flex;align-items:center;gap:10px}
 .nk-icon{width:36px;height:24px;border-radius:4px;background:#002B5C;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nk-icon svg{width:16px;height:16px;stroke:white;stroke-width:2;fill:none}
 .nk-text{flex:1}
@@ -174,7 +165,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .net-dot{width:5px;height:5px;border-radius:50%;background:#0047AB;flex-shrink:0}
 .net-item .nn{font-weight:600;color:#1a2332;flex:1}
 .net-item .nl{font-size:10px;color:#6b7a8d}
-
 .koment-box{background:white;border-radius:10px;padding:16px;margin-top:16px;border:1px solid #e5e9f0}
 .koment-box h3{margin-bottom:6px;color:#002B5C;font-size:12px;font-weight:700}
 .koment-box textarea{width:100%;border:1px solid #e5e9f0;border-radius:6px;padding:8px 10px;font-family:inherit;font-size:11px;resize:vertical;min-height:60px}
@@ -203,27 +193,16 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 </style>
 </head>
 <body>
-<div class="header">
-    <img src="../Sigal-KS-Logo.webp" alt="Sigal">
-    <h1>Sigal KS Insurance Group</h1>
-</div>
+<div class="header"><img src="../Sigal-KS-Logo.webp" alt="Sigal"><h1>Sigal KS Insurance Group</h1></div>
 <div class="container" id="container"><div style="text-align:center;padding:40px;color:#888">Duke ngarkuar...</div></div>
-<div class="popup-overlay" id="popup-optional">
-    <div class="popup"><h3>Shtoni mbrojtje shtesë?</h3><p>Pakot opsionale ofrojnë mbrojtje shtesë për ju dhe familjen tuaj.</p><div class="popup-btns"><button class="popup-skip" onclick="vazhdo(false)">Jo, faleminderit</button><button class="popup-add" onclick="vazhdo(true)">Po, shikoji</button></div></div>
-</div>
-<div class="net-overlay" id="net-overlay" onclick="if(event.target===this)mbyllRrjetin()">
-    <div class="net-popup" id="net-popup"></div>
-</div>
+<div class="popup-overlay" id="popup-optional"><div class="popup"><h3>Shtoni mbrojtje shtesë?</h3><p>Pakot opsionale ofrojnë mbrojtje shtesë për ju dhe familjen tuaj.</p><div class="popup-btns"><button class="popup-skip" onclick="vazhdo(false)">Jo, faleminderit</button><button class="popup-add" onclick="vazhdo(true)">Po, shikoji</button></div></div></div>
+<div class="net-overlay" id="net-overlay" onclick="if(event.target===this)mbyllRrjetin()"><div class="net-popup" id="net-popup"></div></div>
 <script src="../js/pakot.js"></script>
 <script>
-const params = new URLSearchParams(window.location.search);
-const ofertaId = params.get('id');
-let ofertaData = null;
-let pakotGlobal = [];
-let activeTab = 0;
-let selectedPakot = new Set();
-
-const RRJETI = {
+const params=new URLSearchParams(window.location.search);
+const ofertaId=params.get('id');
+let ofertaData=null,pakotGlobal=[],activeTab=0,selectedPakot=new Set();
+const RRJETI={
     spitalet:[{e:'Spitali Amerikan',q:'Prishtinë'},{e:'Spitali "Lindja"',q:'Prishtinë'},{e:'Klinika Kirurgjike "Aloka"',q:'Prishtinë'},{e:'Spitali Fati Im',q:'Prishtinë'},{e:'Spitali Bahçeçi',q:'Prishtinë–Shkup km9'},{e:'Spitali IHC',q:'Prishtinë–Ferizaj km5'},{e:'Klinika Gjermane e Syrit',q:'Prishtinë'},{e:'Olive Medical Group',q:'Prishtinë'},{e:'Spitali Royal Medical',q:'Prishtinë–Ferizaj km15'},{e:'United Hospital',q:'Prishtinë–Ferizaj km7'}],
     laboratoret:[{e:'ProLab',q:'Prishtinë'},{e:'ImunoLab',q:'Prishtinë'},{e:'Avicena',q:'Prishtinë'},{e:'E-Lab',q:'Prishtinë'},{e:'Mikrobioanaliza',q:'Prishtinë'}],
     dentaret:[{e:'Melisa Dent',q:'Prishtinë'},{e:'Dental Clinic Stomatologjia',q:'Prishtinë'},{e:'Klinika Gjermane e Dhëmbit',q:'Prishtinë'},{e:'Mikro & Dent',q:'Prishtinë'},{e:'Top Dent',q:'Prishtinë'},{e:'Dent In',q:'Prishtinë'}],
@@ -231,46 +210,35 @@ const RRJETI = {
 };
 const ICN={h:'<svg viewBox="0 0 24 24"><path d="M3 21h18M9 8h6M12 8v6M9 21V8a3 3 0 0 1 3-3h0a3 3 0 0 1 3 3v13" stroke-linecap="round" stroke-linejoin="round"/></svg>',a:'<svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M12 11v6M9 14h6" stroke-linecap="round"/></svg>',t:'<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
 
-function tags(p){
-    let h='<div class="td-tags">';
-    const t=p.tags||{};
-    if(t.hospitalore) h+='<span class="tag">Hospitalizim '+t.hospitalore+'</span>';
-    if(t.ambulantore) h+='<span class="tag">Ambulantore: '+(t.ambulantore==='Nuk mbulohet'?'Nuk mbulohet - Zbritje':t.ambulantore)+'</span>';
-    if(t.tjera) h+='<span class="tag">Përfitime tjera: '+(t.tjera==='Rrjeti Mjekësor'?'Nuk mbulohen - Zbritje':t.tjera)+'</span>';
-    if(t.aksidente) h+='<span class="tag">Aksidente '+t.aksidente+'</span>';
-    return h+'</div>';
-}
-
-function sectionHTML(p,ei){
+function detailHTML(p,ei){
     let h='';
     // Hospitalore
     const hSame=p.hospitalore_pikat&&p.hospitalore_pikat.every(x=>x.vlera===p.hospitalore_pikat[0].vlera);
-    h+='<div class="section-hdr" onclick="tgl(this)"><div class="sh-left"><div class="sh-icon">'+ICN.h+'</div><div><div class="sh-title">Trajtimet Mjekësore Hospitalore</div><div class="sh-subtitle">Shtrirje në spital · Dhomë gjysëmprivate</div></div></div><div class="sh-right"><span class="sh-badge '+(p.hospitalore==='100%'?'green':'blue')+'">'+p.hospitalore+'</span><span class="sh-toggle">Shih mbulimet <span class="arr">▾</span></span></div></div><div class="section-body">';
-    if(hSame){h+='<div class="merged-summary"><span class="ms-badge">'+p.hospitalore_pikat[0].vlera+'</span><span class="ms-text">Të gjitha shërbimet hospitalore mbulohen</span></div><div class="merged-items">';p.hospitalore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';}
-    else p.hospitalore_pikat.forEach(x=>{h+='<div class="det-r"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
-    h+='</div>';
+    h+='<div class="sh"><div class="sh-left"><div class="sh-icon">'+ICN.h+'</div><div><div class="sh-t">Trajtimet Hospitalore</div><div class="sh-sub">Shtrirje në spital · Dhomë gjysëmprivate</div></div></div><span class="sh-badge g">'+p.hospitalore+'</span></div>';
+    if(hSame){h+='<div class="mi-wrap">';p.hospitalore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';}
+    else{p.hospitalore_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
     // Ambulantore
     const aSame=p.ambulantore_pikat&&p.ambulantore_pikat.every(x=>x.vlera===p.ambulantore_pikat[0].vlera);
-    let abCls='blue',abTxt=p.ambulantore;
-    if(p.ambulantore==='Nuk mbulohet'||p.ambulantore_zbritje){abCls='gray';abTxt='Zbritje';}
+    let abCls='b',abTxt=p.ambulantore;
+    if(p.ambulantore==='Nuk mbulohet'||p.ambulantore_zbritje){abCls='gr';abTxt='Zbritje';}
     if(abTxt.length>12) abTxt=abTxt.substring(0,10)+'…';
-    h+='<div class="section-hdr" onclick="tgl(this)"><div class="sh-left"><div class="sh-icon">'+ICN.a+'</div><div><div class="sh-title">Trajtimet Mjekësore Ambulantore</div><div class="sh-subtitle">Jo-shtrirje në spital</div></div></div><div class="sh-right"><span class="sh-badge '+abCls+'">'+abTxt+'</span><span class="sh-toggle">Shih mbulimet <span class="arr">▾</span></span></div></div><div class="section-body">';
-    if(p.ambulantore_zbritje){h+='<div class="not-covered-summary"><div class="nc-header"><span class="nc-badge">Nuk mbulohet</span><span class="nc-title">Zbritje brenda Rrjetit Mjekësor</span></div><div class="nc-desc">Përfitoni zbritje në institucionet partnere.</div></div><div class="nc-items">';p.ambulantore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';}
-    else if(aSame){h+='<div class="merged-summary"><span class="ms-badge">'+p.ambulantore_pikat[0].vlera+'</span><span class="ms-text">Të gjitha shërbimet ambulantore mbulohen</span></div><div class="merged-items">';p.ambulantore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';}
-    else p.ambulantore_pikat.forEach(x=>{h+='<div class="det-r"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
-    h+='</div>';
+    h+='<div class="sh"><div class="sh-left"><div class="sh-icon">'+ICN.a+'</div><div><div class="sh-t">Trajtimet Ambulantore</div><div class="sh-sub">Jo-shtrirje në spital</div></div></div><span class="sh-badge '+abCls+'">'+abTxt+'</span></div>';
+    if(p.ambulantore_zbritje){
+        h+='<div class="nc"><div class="nc-h"><span class="nc-badge">Nuk mbulohet</span><span class="nc-title">Zbritje brenda Rrjetit Mjekësor</span></div><div class="nc-desc">Përfitoni zbritje në institucionet partnere.</div></div>';
+        h+='<div class="nc-items">';p.ambulantore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';
+    } else if(aSame){
+        h+='<div class="mi-wrap">';p.ambulantore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';
+    } else{p.ambulantore_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
     // Tjera
     const tc=p.tjera_pikat.filter(x=>!x.zbritje),tn=p.tjera_pikat.filter(x=>x.zbritje);
-    let tCls='blue',tTxt='Mbulohet';if(tn.length>0&&tc.length<=3){tCls='gray';tTxt='Zbritje';}
-    h+='<div class="section-hdr" onclick="tgl(this)"><div class="sh-left"><div class="sh-icon">'+ICN.t+'</div><div><div class="sh-title">Trajtime Mjekësore tjera</div><div class="sh-subtitle">Shtatzëni · Dentar · Optik · Aksidente · Onkologji</div></div></div><div class="sh-right"><span class="sh-badge '+tCls+'">'+tTxt+'</span><span class="sh-toggle">Shih mbulimet <span class="arr">▾</span></span></div></div><div class="section-body">';
-    if(p.tjera_merged){h+='<div class="not-covered-summary"><div class="nc-header"><span class="nc-badge">Nuk mbulohet</span><span class="nc-title">Zbritje brenda Rrjetit Mjekësor</span></div><div class="nc-desc">Shërbimet e mëposhtme nuk mbulohen, por përfitoni zbritje.</div></div><div class="nc-items">';tn.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';tc.forEach(x=>{h+='<div class="det-r"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
-    else p.tjera_pikat.forEach(x=>{h+='<div class="det-r"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
-    h+='</div>';
-    // Primi
-    h+='<div class="primi-section"><div class="primi-r"><div class="dl">Primi'+(!ei&&p.primi_femije?' mujor (mbi 18 vjeç)':(ei?' vjetor':' mujor'))+'</div><div class="dv">€ '+p.primi_madh+p.primi_suffix+'</div></div>';
-    if(!ei&&p.primi_femije) h+='<div class="primi-r"><div class="dl">Primi mujor (fëmijë nën 18 vjeç)</div><div class="dv">€ '+p.primi_femije+'/muaj</div></div>';
-    h+='</div>';
-    h+='<div class="nota-spital">*Nëse shërbimet merren në spital publik pa pagesë, dëmshpërblehet 50% deri në 500€.</div>';
+    let tCls='b',tTxt='Mbulohet';if(tn.length>0&&tc.length<=3){tCls='gr';tTxt='Zbritje';}
+    h+='<div class="sh"><div class="sh-left"><div class="sh-icon">'+ICN.t+'</div><div><div class="sh-t">Trajtime Mjekësore tjera</div><div class="sh-sub">Shtatzëni · Dentar · Optik · Aksidente · Onkologji</div></div></div><span class="sh-badge '+tCls+'">'+tTxt+'</span></div>';
+    if(p.tjera_merged){
+        h+='<div class="nc"><div class="nc-h"><span class="nc-badge">Nuk mbulohet</span><span class="nc-title">Zbritje brenda Rrjetit Mjekësor</span></div><div class="nc-desc">Shërbimet e mëposhtme nuk mbulohen, por përfitoni zbritje në institucionet partnere.</div></div>';
+        h+='<div class="nc-items">';tn.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';
+        tc.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
+    } else{p.tjera_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
+    h+='<div class="nota">*Nëse shërbimet merren në spital publik pa pagesë, dëmshpërblehet 50% deri në 500€.</div>';
     return h;
 }
 
@@ -278,44 +246,63 @@ function renderDetail(){
     const p=pakotGlobal[activeTab];if(!p) return;
     const ei=ofertaData.lloji==='individ';
     const isSel=selectedPakot.has(p.id);
-    let h='<div class="td-header"><div class="td-info"><div class="td-name">'+p.emri+'</div><div class="td-zone">'+p.zona+'</div></div><div class="td-shuma"><div class="td-shuma-val">€ '+p.shuma+'</div><div class="td-shuma-label">Mbulim</div></div><div class="td-price"><div class="td-price-val">€ '+p.primi_madh+'</div><div class="td-price-per">'+(p.primi_suffix==='/vit'?'për vit':'për muaj')+'</div></div></div>';
-    h+=tags(p);
-    h+=sectionHTML(p,ei);
-    h+='<button class="btn-zgjedh'+(isSel?' active':'')+'" onclick="toggleZgjedh(\''+p.id+'\')">'+(isSel?'Hiq zgjedhjen':'Zgjedh '+p.emri)+'</button>';
+    // Summary bar values
+    const t=p.tags||{};
+    let ambVal=t.ambulantore||'—';if(ambVal==='Nuk mbulohet') ambVal='Zbritje';
+    let tjeraVal=t.tjera||'—';if(tjeraVal==='Rrjeti Mjekësor') tjeraVal='Zbritje';
+    let aksVal=t.aksidente||'—';
+    // Header
+    let h='<div class="td-hdr"><div class="td-info"><div class="td-name">'+p.emri+'</div><div class="td-zone">'+p.zona+'</div></div>';
+    h+='<div class="td-center"><div class="td-shuma">€ '+p.shuma+'</div><div class="td-shuma-lbl">Mbulim</div></div>';
+    h+='<div class="td-right"><div class="td-price">€ '+p.primi_madh+'</div><div class="td-per">'+(p.primi_suffix==='/vit'?'për vit':'për muaj')+'</div></div></div>';
+    // Primi row — lart me nën 18
+    h+='<div class="primi-row">';
+    h+='<span class="pr-item">Mbi 18 vjeç: <strong>€ '+p.primi_madh+p.primi_suffix+'</strong></span>';
+    if(!ei&&p.primi_femije) h+='<span class="pr-item">Nën 18 vjeç: <strong>€ '+p.primi_femije+'/muaj</strong></span>';
+    h+='</div>';
+    // Summary bar
+    h+='<div class="summary-bar">';
+    h+='<div class="sb-item"><div class="sb-label">Hospitalore</div><div class="sb-val">'+p.hospitalore+'</div></div>';
+    h+='<div class="sb-item"><div class="sb-label">Ambulantore</div><div class="sb-val'+(ambVal==='Zbritje'?' zbr':'')+'">'+ambVal+'</div></div>';
+    h+='<div class="sb-item"><div class="sb-label">Tjera</div><div class="sb-val'+(tjeraVal==='Zbritje'?' zbr':'')+'">'+tjeraVal+'</div></div>';
+    h+='<div class="sb-item"><div class="sb-label">Aksidente</div><div class="sb-val">'+aksVal+'</div></div>';
+    h+='</div>';
+    // Shih detajet toggle
+    h+='<div class="sb-link" id="detail-toggle" onclick="toggleDetail()">Shih detajet e plota ▾</div>';
+    // Detail body (hidden by default)
+    h+='<div class="detail-body" id="detail-body">'+detailHTML(p,ei)+'</div>';
+    // Zgjedh buton
+    h+='<button class="btn-z'+(isSel?' active':'')+'" onclick="toggleZgjedh(\''+p.id+'\')">'+(isSel?'Hiq zgjedhjen':'Zgjedh '+p.emri)+'</button>';
     document.getElementById('tab-detail').innerHTML=h;
 }
-
-function switchTab(i){
-    activeTab=i;
-    document.querySelectorAll('.tab-item').forEach((t,idx)=>{t.classList.toggle('active',idx===i);});
-    renderDetail();
+function toggleDetail(){
+    const b=document.getElementById('detail-body');
+    const t=document.getElementById('detail-toggle');
+    b.classList.toggle('open');
+    t.textContent=b.classList.contains('open')?'Mbyll detajet ▴':'Shih detajet e plota ▾';
+    t.style.color=b.classList.contains('open')?'#6b7a8d':'#0047AB';
 }
-
+function switchTab(i){activeTab=i;document.querySelectorAll('.tab-item').forEach((t,idx)=>{t.classList.toggle('active',idx===i);});renderDetail();}
 function toggleZgjedh(id){
-    if(selectedPakot.has(id)) selectedPakot.delete(id);
-    else selectedPakot.add(id);
+    if(selectedPakot.has(id)) selectedPakot.delete(id); else selectedPakot.add(id);
     renderDetail();
-    // Update tab visual
     document.querySelectorAll('.tab-item').forEach((t,idx)=>{
         const pid=pakotGlobal[idx]?.id;
-        if(selectedPakot.has(pid)) t.style.outline='2px solid #22c55e';
-        else t.style.outline='none';
+        t.classList.toggle('sel-mark',selectedPakot.has(pid));
     });
-}
-
-function tgl(el){el.classList.toggle('open');el.nextElementSibling.classList.toggle('open');}
-function optJete(){
-    return '<div class="opt-card" id="opt-jete" onclick="toggleOpt(\'jete\')"><div class="opt-preview"><input type="checkbox" id="cb-opt-jete" onclick="event.stopPropagation();toggleOpt(\'jete\')"><div class="opt-main"><div class="opt-title-row"><span class="opt-title">Jetë Plus Cash</span><span class="opt-badge rec">Rekomanduar</span></div><div class="opt-tagline">Mbështetje financiare e menjëhershme nëse diagnostikoheni me sëmundje të rëndë.</div><div class="opt-highlights"><span class="opt-hl feature">Tumor malinj</span><span class="opt-hl feature">Tumor beninj</span><span class="opt-hl zona">Gjithë bota</span><span class="opt-hl feature">Fëmijët nën 21 vjeç falas</span></div><div class="opt-select-hint">Zgjidhni për detaje ↓</div></div><div class="opt-price-side"><div class="ops-price">€ 2.50</div><div class="ops-per">nga/muaj</div></div></div><div class="opt-details"><div class="opt-det-hdr">Sëmundjet që mbulohen</div><div class="opt-det-r"><div class="dl">Tumor malinj invaziv</div><div class="dv">E mbuluar</div></div><div class="opt-det-r"><div class="dl">Tumor beninj në kokë</div><div class="dv">E mbuluar</div></div><div class="opt-det-r"><div class="dl">Opinion i dytë mjekësor për çdo diagnozë</div><div class="dv">E mbuluar</div></div><div class="opt-det-hdr">Shërbimet që mbulohen</div><div class="opt-det-r"><div class="dl">Gjetja e spitalit më të specializuar</div><div class="dv">E përfshirë</div></div><div class="opt-det-r"><div class="dl">Organizimi i akomodimit dhe udhëtimit</div><div class="dv">E përfshirë</div></div><div class="opt-det-r"><div class="dl">Shërbimi i përkthimit gjatë trajtimit</div><div class="dv">E përfshirë</div></div><div class="opt-note">Periudha e pritjes: 180 ditë për individët; 90 ditë për grupet mbi 50 persona.</div><div class="primi-section"><div class="primi-r"><div class="dl">Primi mujor (nga)</div><div class="dv">€ 2.50/muaj</div></div></div><div class="price-table-wrap"><div class="price-table-title">Çmimet sipas moshës (€/vit)</div><table class="price-table"><thead><tr><th>Mosha</th><th>Gjinia</th><th>€ 5K</th><th>€ 10K</th><th>€ 20K</th><th>€ 50K</th></tr></thead><tbody><tr><td rowspan="2" style="font-weight:700">21-30</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 30</td><td>€ 35</td><td>€ 50</td><td>€ 90</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 30</td><td>€ 40</td><td>€ 60</td><td>€ 100</td></tr><tr><td rowspan="2" style="font-weight:700">31-40</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 35</td><td>€ 45</td><td>€ 80</td><td>€ 120</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 45</td><td>€ 65</td><td>€ 90</td><td>€ 200</td></tr><tr><td rowspan="2" style="font-weight:700">41-50</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 50</td><td>€ 70</td><td>€ 90</td><td>€ 250</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 65</td><td>€ 80</td><td>€ 120</td><td>€ 350</td></tr><tr><td rowspan="2" style="font-weight:700">51-60</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr><tr><td rowspan="2" style="font-weight:700">61-70</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 200</td><td>€ 380</td><td>€ 750</td><td>€ 1,800</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 120</td><td>€ 250</td><td>€ 420</td><td>€ 1,000</td></tr><tr><td rowspan="2" style="font-weight:700">71-80</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 250</td><td>€ 380</td><td>€ 980</td><td>€ 2,400</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 150</td><td>€ 220</td><td>€ 520</td><td>€ 1,200</td></tr></tbody></table></div></div></div>';
-}
-function optOpinion(){
-    return '<div class="opt-card" id="opt-opinion" onclick="toggleOpt(\'opinion\')"><div class="opt-preview"><input type="checkbox" id="cb-opt-opinion" onclick="event.stopPropagation();toggleOpt(\'opinion\')"><div class="opt-main"><div class="opt-title-row"><span class="opt-title">Opinioni i Dytë Mjekësor</span><span class="opt-badge new">I ri</span></div><div class="opt-tagline">Mendim ndërkombëtar nga Qendrat Mjekësore Botërore përmes MediGuide.</div><div class="opt-highlights"><span class="opt-hl feature">3 Qendra Botërore</span><span class="opt-hl feature">Brenda 10 ditëve</span></div><div class="opt-select-hint">Zgjidhni për detaje ↓</div></div><div class="opt-price-side"><div class="ops-price">€ 1</div><div class="ops-per">për muaj</div></div></div><div class="opt-details"><div class="opt-det-hdr">Si funksionon</div><div class="opt-det-r"><div class="dl">12 orë: dërgohen formularët</div><div class="dv">Hapi 1</div></div><div class="opt-det-r"><div class="dl">3 ditë: 3 Qendra Botërore</div><div class="dv">Hapi 2</div></div><div class="opt-det-r"><div class="dl">Zgjidhni Qendrën, MediGuide mbledh të dhënat</div><div class="dv">Hapi 3</div></div><div class="opt-det-r"><div class="dl">10 ditë: analizë dhe rekomandime</div><div class="dv">Hapi 4</div></div><div class="opt-det-r"><div class="dl">Opinioni dërgohet ju dhe mjekut</div><div class="dv">Hapi 5</div></div><div class="opt-det-hdr">Gjetja e Qendrës</div><div class="opt-det-r"><div class="dl">Referim në rajonin tuaj</div><div class="dv">E përfshirë</div></div><div class="opt-det-r"><div class="dl">Kostot mbulohen nga SIGAL</div><div class="dv">E përfshirë</div></div><div class="opt-note">Shërbimet mjekësore në qendrë paguhen nga pacienti.</div><div class="primi-section"><div class="primi-r"><div class="dl">Primi</div><div class="dv">€ 1/muaj · € 12/vit</div></div></div></div></div>';
 }
 function toggleOpt(id){const c=document.getElementById('opt-'+id);const cb=document.getElementById('cb-opt-'+id);c.classList.toggle('selected');cb.checked=c.classList.contains('selected');}
 
+function optJete(){
+    return '<div class="opt-card" id="opt-jete" onclick="toggleOpt(\'jete\')"><div class="opt-preview"><input type="checkbox" id="cb-opt-jete" onclick="event.stopPropagation();toggleOpt(\'jete\')"><div class="opt-main"><div class="opt-title-row"><span class="opt-title">Jetë Plus Cash</span><span class="opt-badge rec">Rekomanduar</span></div><div class="opt-tagline">Mbështetje financiare e menjëhershme nëse diagnostikoheni me sëmundje të rëndë.</div><div class="opt-highlights"><span class="opt-hl feature">Tumor malinj</span><span class="opt-hl feature">Tumor beninj</span><span class="opt-hl zona">Gjithë bota</span><span class="opt-hl feature">Fëmijët nën 21 vjeç falas</span></div><div class="opt-select-hint">Zgjidhni për detaje ↓</div></div><div class="opt-price-side"><div class="ops-price">€ 2.50</div><div class="ops-per">nga/muaj</div></div></div><div class="opt-details"><div class="opt-det-hdr">Sëmundjet që mbulohen</div><div class="opt-det-r"><div class="dl">Tumor malinj invaziv</div><div class="dv">E mbuluar</div></div><div class="opt-det-r"><div class="dl">Tumor beninj në kokë</div><div class="dv">E mbuluar</div></div><div class="opt-det-r"><div class="dl">Opinion i dytë mjekësor për çdo diagnozë</div><div class="dv">E mbuluar</div></div><div class="opt-det-hdr">Shërbimet që mbulohen</div><div class="opt-det-r"><div class="dl">Gjetja e spitalit më të specializuar</div><div class="dv">E përfshirë</div></div><div class="opt-det-r"><div class="dl">Organizimi i akomodimit dhe udhëtimit</div><div class="dv">E përfshirë</div></div><div class="opt-det-r"><div class="dl">Shërbimi i përkthimit gjatë trajtimit</div><div class="dv">E përfshirë</div></div><div class="opt-note">Periudha e pritjes: 180 ditë për individët; 90 ditë për grupet mbi 50 persona.</div><div class="opt-primi"><div class="dl">Primi mujor (nga)</div><div class="dv">€ 2.50/muaj</div></div><div class="price-table-wrap"><div class="price-table-title">Çmimet sipas moshës (€/vit)</div><table class="price-table"><thead><tr><th>Mosha</th><th>Gjinia</th><th>€ 5K</th><th>€ 10K</th><th>€ 20K</th><th>€ 50K</th></tr></thead><tbody><tr><td rowspan="2" style="font-weight:700">21-30</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 30</td><td>€ 35</td><td>€ 50</td><td>€ 90</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 30</td><td>€ 40</td><td>€ 60</td><td>€ 100</td></tr><tr><td rowspan="2" style="font-weight:700">31-40</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 35</td><td>€ 45</td><td>€ 80</td><td>€ 120</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 45</td><td>€ 65</td><td>€ 90</td><td>€ 200</td></tr><tr><td rowspan="2" style="font-weight:700">41-50</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 50</td><td>€ 70</td><td>€ 90</td><td>€ 250</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 65</td><td>€ 80</td><td>€ 120</td><td>€ 350</td></tr><tr><td rowspan="2" style="font-weight:700">51-60</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr><tr><td rowspan="2" style="font-weight:700">61-70</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 200</td><td>€ 380</td><td>€ 750</td><td>€ 1,800</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 120</td><td>€ 250</td><td>€ 420</td><td>€ 1,000</td></tr><tr><td rowspan="2" style="font-weight:700">71-80</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 250</td><td>€ 380</td><td>€ 980</td><td>€ 2,400</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 150</td><td>€ 220</td><td>€ 520</td><td>€ 1,200</td></tr></tbody></table></div></div></div>';
+}
+function optOpinion(){
+    return '<div class="opt-card" id="opt-opinion" onclick="toggleOpt(\'opinion\')"><div class="opt-preview"><input type="checkbox" id="cb-opt-opinion" onclick="event.stopPropagation();toggleOpt(\'opinion\')"><div class="opt-main"><div class="opt-title-row"><span class="opt-title">Opinioni i Dytë Mjekësor</span><span class="opt-badge new">I ri</span></div><div class="opt-tagline">Mendim ndërkombëtar nga Qendrat Mjekësore Botërore përmes MediGuide.</div><div class="opt-highlights"><span class="opt-hl feature">3 Qendra Botërore</span><span class="opt-hl feature">Brenda 10 ditëve</span></div><div class="opt-select-hint">Zgjidhni për detaje ↓</div></div><div class="opt-price-side"><div class="ops-price">€ 1</div><div class="ops-per">për muaj</div></div></div><div class="opt-details"><div class="opt-det-hdr">Si funksionon</div><div class="opt-det-r"><div class="dl">12 orë: dërgohen formularët</div><div class="dv">Hapi 1</div></div><div class="opt-det-r"><div class="dl">3 ditë: 3 Qendra Botërore</div><div class="dv">Hapi 2</div></div><div class="opt-det-r"><div class="dl">Zgjidhni Qendrën, MediGuide mbledh të dhënat</div><div class="dv">Hapi 3</div></div><div class="opt-det-r"><div class="dl">10 ditë: analizë dhe rekomandime</div><div class="dv">Hapi 4</div></div><div class="opt-det-r"><div class="dl">Opinioni dërgohet ju dhe mjekut</div><div class="dv">Hapi 5</div></div><div class="opt-det-hdr">Gjetja e Qendrës</div><div class="opt-det-r"><div class="dl">Referim në rajonin tuaj</div><div class="dv">E përfshirë</div></div><div class="opt-det-r"><div class="dl">Kostot mbulohen nga SIGAL</div><div class="dv">E përfshirë</div></div><div class="opt-note">Shërbimet mjekësore në qendrë paguhen nga pacienti.</div><div class="opt-primi"><div class="dl">Primi</div><div class="dv">€ 1/muaj · € 12/vit</div></div></div></div>';
+}
 function hapRrjetin(){
     const ti=RRJETI.spitalet.length+RRJETI.laboratoret.length+RRJETI.dentaret.length+RRJETI.ordinanca.length;
     let h='<div class="net-popup-hdr"><h3>Rrjeti Mjekësor SIGAL ('+ti+')</h3><button class="net-close" onclick="mbyllRrjetin()">✕</button></div>';
-    h+='<div class="net-kartele"><div class="nk-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><div class="nk-text"><div class="nkt">Kartela SIGAL</div><div class="nkd">Paraqiteni kartelën për mbulim direkt pa pagesë</div></div></div>';
+    h+='<div class="nk"><div class="nk-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><div class="nk-text"><div class="nkt">Kartela SIGAL</div><div class="nkd">Paraqiteni kartelën për mbulim direkt pa pagesë</div></div></div>';
     h+='<div class="net-cat">Spitalet ('+RRJETI.spitalet.length+')</div>';RRJETI.spitalet.forEach(s=>{h+='<div class="net-item"><span class="net-dot"></span><span class="nn">'+s.e+'</span><span class="nl">'+s.q+'</span></div>';});
     h+='<div class="net-cat">Laboratoret ('+RRJETI.laboratoret.length+')</div>';RRJETI.laboratoret.forEach(s=>{h+='<div class="net-item"><span class="net-dot"></span><span class="nn">'+s.e+'</span><span class="nl">'+s.q+'</span></div>';});
     h+='<div class="net-cat">Dentarët ('+RRJETI.dentaret.length+')</div>';RRJETI.dentaret.forEach(s=>{h+='<div class="net-item"><span class="net-dot"></span><span class="nn">'+s.e+'</span><span class="nl">'+s.q+'</span></div>';});
@@ -323,7 +310,6 @@ function hapRrjetin(){
     document.getElementById('net-popup').innerHTML=h;document.getElementById('net-overlay').classList.add('active');document.body.style.overflow='hidden';
 }
 function mbyllRrjetin(){document.getElementById('net-overlay').classList.remove('active');document.body.style.overflow='';}
-
 function ngarko(){
     const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[];
     const oferta=ofertat[ofertaId];
@@ -336,26 +322,18 @@ function ngarko(){
     const cc=dm<=5?'countdown urgent':'countdown';
     const ti=RRJETI.spitalet.length+RRJETI.laboratoret.length+RRJETI.dentaret.length+RRJETI.ordinanca.length;
     let h='<div class="oferta-header"><h2>Ofertë për '+oferta.emri+'</h2><p>Zgjidhni paketën që ju përshtatet dhe konfirmoni zgjedhjen tuaj.</p><div class="oferta-meta"><span class="'+cc+'">Skadon për '+(dm>0?dm+' ditë':'Skaduar')+'</span><span>Krijuar: '+oferta.dataKrijimit+'</span></div></div>';
-    // Tab bar
     h+='<div class="section-title">Zgjidhni paketën</div><div class="tab-bar">';
-    pakotGlobal.forEach((p,i)=>{
-        h+='<div class="tab-item'+(i===0?' active':'')+'" onclick="switchTab('+i+')"><div class="ti-name">'+p.emri+'</div><div class="ti-price">€ '+p.primi_madh+'</div><div class="ti-per">'+(p.primi_suffix==='/vit'?'/vit':'/muaj')+'</div></div>';
-    });
+    pakotGlobal.forEach((p,i)=>{h+='<div class="tab-item'+(i===0?' active':'')+'" onclick="switchTab('+i+')"><div class="ti-name">'+p.emri+'</div><div class="ti-price">€ '+p.primi_madh+'</div><div class="ti-per">'+(p.primi_suffix==='/vit'?'/vit':'/muaj')+'</div></div>';});
     h+='</div><div class="tab-detail" id="tab-detail"></div>';
-    // Opsionale
     h+='<div class="section-title">Mbrojtje shtesë (opsionale)</div>'+optJete()+optOpinion();
-    // App
     h+='<div class="app-banner"><div class="app-logo"><img src="../sigal-app-icon.png" alt="" onerror="this.style.display=\'none\'"></div><div class="app-text"><div class="at-title">Sigal Kosova App</div><div class="at-free">FALAS: Paraqitja e rimbursimeve 100% online</div><div class="at-features">Aplikim online · Upload dokumentesh · Lexim automatik i faturave · Ndjekja e statusit</div><div class="app-stores"><a href="https://apps.apple.com/us/app/sigal-kosova/id6756305258" target="_blank" class="store-btn"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83"/><path d="M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg> App Store</a><a href="https://play.google.com/store/apps/details?id=com.sigalkosova.einsureapp" target="_blank" class="store-btn"><svg viewBox="0 0 24 24"><path d="M3 20.5V3.5c0-.59.34-1.11.84-1.35L13.69 12l-9.85 9.85c-.5-.24-.84-.76-.84-1.35zm13.81-5.38L6.05 21.34l8.49-8.49 2.27 2.27zm2.59-1.46c.37.22.6.63.6 1.04s-.23.82-.6 1.04l-1.94 1.13-2.5-2.5 2.5-2.5 1.94 1.13zM6.05 2.66l10.76 6.22-2.27 2.27-8.49-8.49z"/></svg> Google Play</a></div></div></div>';
-    // Rrjeti
     h+='<div class="net-trigger" onclick="hapRrjetin()"><div><h4>Rrjeti Mjekësor SIGAL <span class="net-count">'+ti+'</span></h4><div class="net-desc">Institucionet për Kartelën SIGAL. Prezantoni kartelën, përfitoni mbulim direkt.</div></div><span style="font-size:11px;color:#0047AB;font-weight:600">Shiko →</span></div>';
-    // Koment
     h+='<div class="koment-box"><h3>Koment (opsional)</h3><textarea id="koment" placeholder="Keni pyetje? Shkruani këtu..."></textarea></div>';
     h+='<div class="action-btns"><button class="btn-confirm" onclick="paraKonfirmimit()">Konfirmoj Zgjedhjen</button><button class="btn-change" onclick="kerkoNdryshim()">Kërko Ndryshim</button></div>';
     h+='<div class="oferta-footer">© '+new Date().getFullYear()+' SIGAL Insurance Group Kosovo<br><a href="https://sigal-ks.com">sigal-ks.com</a> · demet.shendetsore@sigal-ks.com · +383 38 240 241</div>';
     document.getElementById('container').innerHTML=h;
     renderDetail();
 }
-
 function getSelected(){return pakotGlobal.filter(p=>selectedPakot.has(p.id));}
 function paraKonfirmimit(){
     if(getSelected().length===0){alert('Ju lutem zgjidhni së paku një paketë!');return;}
