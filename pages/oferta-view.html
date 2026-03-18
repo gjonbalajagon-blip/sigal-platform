@@ -33,7 +33,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .tab-item.sel-mark{box-shadow:inset 0 -3px 0 #22c55e}
 .tab-detail{background:white;border-radius:10px;border:1px solid #e5e9f0;overflow:hidden}
 /* Opsioni A header — white + navy accent */
-.td-hdr{padding:16px;display:flex;align-items:flex-start;gap:8px;border-bottom:3px solid #002B5C}
+.td-hdr{padding:16px 16px 12px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:3px solid #002B5C}
 .td-info{flex:1}
 .td-name{font-size:20px;font-weight:800;color:#002B5C}
 .td-zone{font-size:10px;color:#6b7a8d;margin-top:3px}
@@ -41,10 +41,16 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .td-shuma{font-size:22px;font-weight:800;color:#002B5C}
 .td-shuma-lbl{font-size:9px;color:#6b7a8d;text-transform:uppercase}
 /* Primi pills */
-.td-primi{display:flex;gap:10px;padding:0 16px 12px;margin-top:-2px}
+.td-primi{display:flex;gap:10px;padding:10px 16px 12px;border-bottom:1px solid #f0f0f0}
 .td-pi{padding:6px 12px;background:#f0f4ff;border-radius:6px}
 .td-pi .pl{font-size:9px;color:#4a5568}
 .td-pi .pv{font-size:14px;font-weight:800;color:#002B5C}
+/* Floating pill C */
+.float-pill{position:fixed;bottom:20px;right:16px;z-index:100;background:#002B5C;color:white;border:none;padding:10px 18px;border-radius:24px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:none;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(0,43,92,0.3);transition:all 0.2s}
+.float-pill:hover{background:#0047AB;transform:translateY(-2px)}
+.float-pill.show{display:flex}
+.float-pill .fp-count{background:#22c55e;color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.float-pill svg{width:12px;height:12px;stroke:white;stroke-width:2.5;fill:none}
 /* Category headers */
 .cat-hdr{padding:10px 14px;background:#002B5C;color:white;display:flex;align-items:center;justify-content:space-between}
 .ch-left{display:flex;align-items:center;gap:8px;flex:1}
@@ -231,7 +237,9 @@ function renderDetail(){
 
 function toggleCat(k){openSections[k]=!openSections[k];renderDetail();}
 function switchTab(i){activeTab=i;document.querySelectorAll('.tab-item').forEach((t,idx)=>{t.classList.toggle('active',idx===i);});renderDetail();}
-function toggleZgjedh(id){if(selectedPakot.has(id))selectedPakot.delete(id);else selectedPakot.add(id);renderDetail();document.querySelectorAll('.tab-item').forEach((t,idx)=>{t.classList.toggle('sel-mark',selectedPakot.has(pakotGlobal[idx]?.id));});}
+function toggleZgjedh(id){if(selectedPakot.has(id))selectedPakot.delete(id);else selectedPakot.add(id);renderDetail();document.querySelectorAll('.tab-item').forEach((t,idx)=>{t.classList.toggle('sel-mark',selectedPakot.has(pakotGlobal[idx]?.id));});updateFloat();}
+function updateFloat(){const f=document.getElementById('float-pill');if(!f)return;const n=selectedPakot.size;if(n>0){f.classList.add('show');f.querySelector('.fp-count').textContent=n;}else{f.classList.remove('show');}}
+function scrollToConfirm(){document.getElementById('btn-konfirmo')?.scrollIntoView({behavior:'smooth',block:'center'});}
 function toggleOpt(id){const c=document.getElementById('opt-'+id),cb=document.getElementById('cb-opt-'+id);c.classList.toggle('selected');cb.checked=c.classList.contains('selected');}
 
 function optJete(){
@@ -266,7 +274,7 @@ function ngarko(){
     h+='<div class="app-banner"><div class="app-logo"><img src="../sigal-app-icon.png" alt="" onerror="this.style.display=\'none\'"></div><div class="app-text"><div class="at-title">Sigal Kosova App</div><div class="at-free">FALAS: Paraqitja e rimbursimeve 100% online</div><div class="at-features">Aplikim online · Upload dokumentesh · Lexim automatik · Ndjekja e statusit</div><div class="app-stores"><a href="https://apps.apple.com/us/app/sigal-kosova/id6756305258" target="_blank" class="store-btn"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83"/><path d="M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg> App Store</a><a href="https://play.google.com/store/apps/details?id=com.sigalkosova.einsureapp" target="_blank" class="store-btn"><svg viewBox="0 0 24 24"><path d="M3 20.5V3.5c0-.59.34-1.11.84-1.35L13.69 12l-9.85 9.85c-.5-.24-.84-.76-.84-1.35zm13.81-5.38L6.05 21.34l8.49-8.49 2.27 2.27zm2.59-1.46c.37.22.6.63.6 1.04s-.23.82-.6 1.04l-1.94 1.13-2.5-2.5 2.5-2.5 1.94 1.13zM6.05 2.66l10.76 6.22-2.27 2.27-8.49-8.49z"/></svg> Google Play</a></div></div></div>';
     h+='<div class="net-trigger" onclick="hapRrjetin()"><div><h4>Rrjeti Mjekësor SIGAL <span class="net-count">'+ti+'</span></h4><div class="net-desc">Institucionet për Kartelën SIGAL. Prezantoni kartelën, përfitoni mbulim direkt.</div></div><span style="font-size:11px;color:#0047AB;font-weight:600">Shiko →</span></div>';
     h+='<div class="koment-box"><h3>Koment (opsional)</h3><textarea id="koment" placeholder="Keni pyetje? Shkruani këtu..."></textarea></div>';
-    h+='<div class="action-btns"><button class="btn-confirm" onclick="paraKonfirmimit()">Konfirmoj Zgjedhjen</button></div>';
+    h+='<div class="action-btns"><button class="btn-confirm" id="btn-konfirmo" onclick="paraKonfirmimit()">Konfirmoj Zgjedhjen</button></div>';
     h+='<div class="oferta-footer">© '+new Date().getFullYear()+' SIGAL Insurance Group Kosovo<br><a href="https://sigal-ks.com">sigal-ks.com</a> · demet.shendetsore@sigal-ks.com · +383 38 240 241</div>';
     document.getElementById('container').innerHTML=h;renderDetail();
 }
@@ -289,5 +297,10 @@ async function dergoPako(){
 
 ngarko();
 </script>
+<button class="float-pill" id="float-pill" onclick="scrollToConfirm()">
+    <span class="fp-count">0</span>
+    Konfirmo
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
 </body>
 </html>
