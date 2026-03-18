@@ -231,7 +231,7 @@ function renderDetail(){
     h+=catHTML('amb',ICN.a,'Trajtimet Ambulantore','Jo-shtrirje në spital',abBadge,abCls,p);
     h+=catHTML('tjera',ICN.t,'Trajtime Mjekësore tjera','Shtatzëni · Dentar · Optik · Aksidente · Onkologji',tBadge,tCls,p);
     h+='<div class="nota">*Nëse shërbimet merren në spital publik pa pagesë, dëmshpërblehet 50% deri në 500€.</div>';
-    h+='<div class="btn-z-wrap"><button class="btn-z'+(isSel?' active':'')+'" onclick="toggleZgjedh(\''+p.id+'\')">'+(isSel?'Hiq zgjedhjen':'Zgjedh '+p.emri)+'</button><div class="btn-z-note">Mund të zgjidhni më shumë se një pako</div></div>';
+    h+='<div class="btn-z-wrap"><button class="btn-z'+(isSel?' active':'')+'" onclick="toggleZgjedh(\''+p.id+'\')">'+(isSel?'Hiq zgjedhjen':'Zgjedh '+p.emri)+'</button><div class="btn-z-note">Mund të zgjidhni më shumë se një pakë</div></div>';
     document.getElementById('tab-detail').innerHTML=h;
 }
 
@@ -290,10 +290,20 @@ async function dergoPako(){
     ofertat[ofertaId].pakaZgjedhur=zf;ofertat[ofertaId].komentKlient=document.getElementById('koment').value;
     ofertat[ofertaId].konfirmuar=true;ofertat[ofertaId].dataKonfirmimit=new Date().toISOString().split('T')[0];
     ofertat[ofertaId].notification={type:'konfirmim',msg:'Klienti konfirmoi: '+zf,data:new Date().toISOString().split('T')[0],lexuar:false};
+    ofertat[ofertaId].statusi='e_konfirmuar';
     localStorage.setItem('ofertat',JSON.stringify(ofertat));
+    trackKonfirmim(zf,ex,document.getElementById('koment').value);
     try{const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{method:'POST',signal:c.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({emriKlientit:oferta.emri,emailKlientit:oferta.email,pakaZgjedhur:zf,koment:document.getElementById('koment').value,emailAgjentit:oferta.krijuarNgaEmail||'gjonbalajagon@gmail.com'})});clearTimeout(t);}catch(e){}
     document.getElementById('container').innerHTML='<div class="success-msg"><div class="check" style="background:#22c55e"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><h2>Faleminderit!</h2><p>Zgjedhja juaj u regjistrua me sukses.<br>Agjenti do t\'ju kontaktojë së shpejti.</p></div>';
 }
+
+// === TRACKING ===
+const TAPI='https://sigal-platform-production.up.railway.app';
+let tStart=Date.now();
+function trackHapje(){try{fetch(TAPI+'/api/oferta-track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId,event:'hapje',data:{userAgent:navigator.userAgent}})});}catch(e){}}
+function trackKoha(){const s=Math.round((Date.now()-tStart)/1000);try{navigator.sendBeacon?navigator.sendBeacon(TAPI+'/api/oferta-track',new Blob([JSON.stringify({ofertaId,event:'koha',data:{sekonda:s}})],{type:'application/json'})):fetch(TAPI+'/api/oferta-track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId,event:'koha',data:{sekonda:s}}),keepalive:true});}catch(e){}}
+function trackKonfirmim(pakot,ops,kom){try{fetch(TAPI+'/api/oferta-track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId,event:'konfirmim',data:{pakot,opsionale:ops,koment:kom}})});}catch(e){}}
+if(ofertaId){trackHapje();window.addEventListener('beforeunload',trackKoha);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')trackKoha();});}
 
 ngarko();
 </script>

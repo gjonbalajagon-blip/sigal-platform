@@ -42,7 +42,66 @@ if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir);
 }
 
-// Endpoint per gjenerimin e kontrates
+// ============================================
+// TRACKING — in-memory storage
+// ============================================
+const ofertaTracking = {};
+
+// POST /api/oferta-track — oferta-view dërgon events
+app.post('/api/oferta-track', (req, res) => {
+    try {
+        const { ofertaId, event, data } = req.body;
+        if (!ofertaId || !event) return res.status(400).json({ error: 'Missing ofertaId or event' });
+        if (!ofertaTracking[ofertaId]) {
+            ofertaTracking[ofertaId] = { statusi: 'e_krijuar', hapjet: [], konfirmimi: null, kohaTotale: 0 };
+        }
+        const t = ofertaTracking[ofertaId];
+        const now = new Date().toISOString();
+        if (event === 'hapje') {
+            if (t.statusi === 'e_krijuar' || t.statusi === 'e_derguar') t.statusi = 'e_pare';
+            t.hapjet.push({ data: now, userAgent: data?.userAgent || '' });
+        } else if (event === 'koha') {
+            t.kohaTotale += (data?.sekonda || 0);
+        } else if (event === 'konfirmim') {
+            t.statusi = 'e_konfirmuar';
+            t.konfirmimi = { data: now, pakot: data?.pakot || '', opsionale: data?.opsionale || [], koment: data?.koment || '' };
+        }
+        res.json({ ok: true, statusi: t.statusi });
+    } catch (e) {
+        console.error('Track error:', e);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// GET /api/oferta-status/:id — platforma lexon statusin
+app.get('/api/oferta-status/:id', (req, res) => {
+    const t = ofertaTracking[req.params.id];
+    if (!t) return res.json({ statusi: 'e_krijuar', hapjet: 0, kohaTotale: 0, konfirmimi: null });
+    res.json({
+        statusi: t.statusi,
+        hapjet: t.hapjet.length,
+        hapjaFundit: t.hapjet.length > 0 ? t.hapjet[t.hapjet.length - 1].data : null,
+        kohaTotale: t.kohaTotale,
+        konfirmimi: t.konfirmimi
+    });
+});
+
+// POST /api/oferta-derguar — kur agjenti dërgon email/kopjon link
+app.post('/api/oferta-derguar', (req, res) => {
+    const { ofertaId } = req.body;
+    if (!ofertaId) return res.status(400).json({ error: 'Missing ofertaId' });
+    if (!ofertaTracking[ofertaId]) {
+        ofertaTracking[ofertaId] = { statusi: 'e_derguar', hapjet: [], konfirmimi: null, kohaTotale: 0 };
+    } else {
+        if (ofertaTracking[ofertaId].statusi === 'e_krijuar') ofertaTracking[ofertaId].statusi = 'e_derguar';
+    }
+    res.json({ ok: true });
+});
+
+// ============================================
+// EXISTING ENDPOINTS
+// ============================================
+
 app.post('/api/gjenero-kontrate', async (req, res) => {
     try {
         const klienti = req.body;
@@ -55,20 +114,16 @@ app.post('/api/gjenero-kontrate', async (req, res) => {
     }
 });
 
-// Endpoint per gjenerimin e ofertes
 app.post('/api/gjenero-oferte', async (req, res) => {
     try {
         const o = req.body;
         const PizZip = require('pizzip');
-        const fs = require('fs');
-        const path = require('path');
 
         const PAKO_FILES_INDIVID = {
             'Pako Bazë': 'PAKOT_INDIVID_BAZE.docx',
             'Pako Standard': 'PAKOT_INDIVID_STANDARD.docx',
             'Pako Standard Plus': 'PAKOT_INDIVID_STANDARD PLUS.docx',
         };
-
         const PAKO_FILES_FAMILJE_BIZNES = {
             'Pako Bazë': 'PAKOT_FAMILJE_DHE_BIZNES_BAZE.docx',
             'Pako Standard': 'PAKOT_FAMILJE_DHE_BIZNES_STANARD.docx',
@@ -77,7 +132,6 @@ app.post('/api/gjenero-oferte', async (req, res) => {
             'Pako Silver': 'PAKOT_FAMILJE_DHE_BIZNES_SILVER.docx',
             'Pako Gold': 'PAKOT_FAMILJE_DHE_BIZNES_GOLD.docx',
         };
-
         const PAKO_FILES = o.lloji === 'individ' ? PAKO_FILES_INDIVID : PAKO_FILES_FAMILJE_BIZNES;
         const renditja = ['Pako Bazë', 'Pako Standard', 'Pako Standard Plus', 'Pako Premium', 'Pako Silver', 'Pako Gold'];
         const pakotRenditura = renditja.filter(p => (o.pakot || []).includes(p));
@@ -86,7 +140,6 @@ app.post('/api/gjenero-oferte', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Nuk keni zgjedhur asnjë pako!' });
         }
 
-        // Merr dokumentin e pare si baze
         const firstFile = PAKO_FILES[pakotRenditura[0]];
         const firstPath = path.join(__dirname, 'templates', firstFile);
         if (!fs.existsSync(firstPath)) {
@@ -96,12 +149,10 @@ app.post('/api/gjenero-oferte', async (req, res) => {
         const mainZip = new PizZip(fs.readFileSync(firstPath));
         let mainXml = mainZip.file('word/document.xml').asText();
 
-        // Shto pakot e tjera
         for (let i = 1; i < pakotRenditura.length; i++) {
             const fileName = PAKO_FILES[pakotRenditura[i]];
             const filePath = path.join(__dirname, 'templates', fileName);
             if (!fs.existsSync(filePath)) continue;
-
             const pakoZip = new PizZip(fs.readFileSync(filePath));
             const pakoXml = pakoZip.file('word/document.xml').asText();
             const body = pakoXml.match(/<w:body>([\s\S]*?)<\/w:body>/);
@@ -116,11 +167,9 @@ app.post('/api/gjenero-oferte', async (req, res) => {
 
         mainZip.file('word/document.xml', mainXml);
         const outputBuf = mainZip.generate({ type: 'nodebuffer' });
-
         const outputName = `Oferta_${o.emri.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.docx`;
         const outputPath = path.join(__dirname, 'output', outputName);
         fs.writeFileSync(outputPath, outputBuf);
-
         res.json({ success: true, fileName: outputName });
     } catch (err) {
         console.error(err);
@@ -128,12 +177,9 @@ app.post('/api/gjenero-oferte', async (req, res) => {
     }
 });
 
-// Endpoint per konfirmimin e ofertes — dergon email te AGJENTI + KLIENTI
 app.post('/api/konfirmo-oferte', async (req, res) => {
     try {
         const { emriKlientit, emailKlientit, pakaZgjedhur, koment, emailAgjentit } = req.body;
-
-        // 1. Email te AGJENTI
         await dergoPosto(
             emailAgjentit || process.env.SENDER_EMAIL || 'gjonbalajagon@gmail.com',
             `Konfirmim Oferte - ${emriKlientit}`,
@@ -143,8 +189,6 @@ app.post('/api/konfirmo-oferte', async (req, res) => {
             <p><strong>Koment:</strong> ${koment || 'Pa koment'}</p>
             <p><strong>Data:</strong> ${new Date().toLocaleDateString('sq-AL')}</p>`
         );
-
-        // 2. Email te KLIENTI
         if (emailKlientit) {
             await dergoPosto(
                 emailKlientit,
@@ -157,7 +201,6 @@ app.post('/api/konfirmo-oferte', async (req, res) => {
                 <p>Me respekt,<br><strong>SIGAL KS Insurance Group</strong></p>`
             );
         }
-
         res.json({ success: true });
     } catch (err) {
         console.error(err);
@@ -165,7 +208,6 @@ app.post('/api/konfirmo-oferte', async (req, res) => {
     }
 });
 
-// Endpoint per shkarkimin e skedarit
 app.get('/api/shkarko/:fileName', (req, res) => {
     const filePath = path.join(__dirname, 'output', req.params.fileName);
     if (fs.existsSync(filePath)) {
