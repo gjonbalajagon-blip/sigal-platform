@@ -33,15 +33,15 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .tab-item.sel-mark{box-shadow:inset 0 -3px 0 #22c55e}
 .tab-detail{background:white;border-radius:10px;border:1px solid #e5e9f0;overflow:hidden}
 /* Opsioni A header — white + navy accent */
-.td-hdr{padding:16px 16px 12px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:3px solid #002B5C}
+.td-hdr{padding:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:3px solid #002B5C}
 .td-info{flex:1}
 .td-name{font-size:20px;font-weight:800;color:#002B5C}
 .td-zone{font-size:10px;color:#6b7a8d;margin-top:3px}
 .td-right{text-align:right;flex-shrink:0}
 .td-shuma{font-size:22px;font-weight:800;color:#002B5C}
 .td-shuma-lbl{font-size:9px;color:#6b7a8d;text-transform:uppercase}
-/* Primi pills */
-.td-primi{display:flex;gap:10px;padding:10px 16px 12px;border-bottom:1px solid #f0f0f0}
+/* Primi pills — brenda td-info */
+.td-primi{display:flex;gap:10px;margin-top:10px}
 .td-pi{padding:6px 12px;background:#f0f4ff;border-radius:6px}
 .td-pi .pl{font-size:9px;color:#4a5568}
 .td-pi .pv{font-size:14px;font-weight:800;color:#002B5C}
@@ -220,12 +220,11 @@ function renderDetail(){
     if(p.ambulantore==='Nuk mbulohet'||p.ambulantore_zbritje){abBadge='Zbritje';abCls='gr';}
     let tBadge='Mbulohet',tCls='b';
     if(p.tjera_pikat.filter(x=>x.zbritje).length>0&&p.tjera_pikat.filter(x=>!x.zbritje).length<=3){tBadge='Zbritje';tCls='gr';}
-    // Header me ngjyre
-    let h='<div class="td-hdr"><div class="td-info"><div class="td-name">'+p.emri+'</div><div class="td-zone">'+p.zona+'</div></div><div class="td-right"><div class="td-shuma">€ '+p.shuma+'</div><div class="td-shuma-lbl">Mbulim</div></div></div>';
-    // Primi brenda headerit
-    h+='<div class="td-primi"><div class="td-pi"><span class="pl">Primi'+(ei?' vjetor':' mujor')+' (mbi 18)</span><span class="pv">€ '+p.primi_madh+p.primi_suffix+'</span></div>';
-    if(!ei&&p.primi_femije) h+='<div class="td-pi"><span class="pl">Primi mujor (nën 18)</span><span class="pv">€ '+p.primi_femije+'/muaj</span></div>';
-    h+='</div>';
+    // Header — primi pills brenda, nen emrin
+    let primi='<div class="td-primi"><div class="td-pi"><span class="pl">Primi'+(ei?' vjetor':' mujor')+' (mbi 18)</span><span class="pv">€ '+p.primi_madh+p.primi_suffix+'</span></div>';
+    if(!ei&&p.primi_femije) primi+='<div class="td-pi"><span class="pl">Primi mujor (nën 18)</span><span class="pv">€ '+p.primi_femije+'/muaj</span></div>';
+    primi+='</div>';
+    let h='<div class="td-hdr"><div class="td-info"><div class="td-name">'+p.emri+'</div><div class="td-zone">'+p.zona+'</div>'+primi+'</div><div class="td-right"><div class="td-shuma">€ '+p.shuma+'</div><div class="td-shuma-lbl">Mbulim</div></div></div>';
     // Categories
     h+=catHTML('hosp',ICN.h,'Trajtimet Hospitalore','Shtrirje në spital · Dhomë gjysëmprivate',p.hospitalore,'g',p);
     h+=catHTML('amb',ICN.a,'Trajtimet Ambulantore','Jo-shtrirje në spital',abBadge,abCls,p);
