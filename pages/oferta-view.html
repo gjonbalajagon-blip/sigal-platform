@@ -33,8 +33,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .tab-item:hover:not(.active){background:#f8fafc}
 .tab-item.sel-mark{box-shadow:inset 0 -3px 0 #22c55e}
 .tab-detail{background:white;border-radius:10px;border:1px solid #e5e9f0;overflow:hidden}
-/* Header row */
-.td-hdr{padding:14px 16px;display:flex;align-items:center;gap:8px}
+.td-hdr{padding:14px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f0f0f0}
 .td-info{flex:1}
 .td-name{font-size:18px;font-weight:800;color:#002B5C}
 .td-zone{font-size:10px;color:#6b7a8d;margin-top:2px}
@@ -44,50 +43,42 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .td-right{text-align:right;flex-shrink:0}
 .td-price{font-size:18px;font-weight:800;color:#002B5C}
 .td-per{font-size:9px;color:#6b7a8d}
-/* Primi inline lart */
-.primi-row{padding:6px 16px 8px;display:flex;gap:12px;flex-wrap:wrap;border-bottom:1px solid #e5e9f0}
-.primi-row .pr-item{font-size:10px;color:#4a5568}
-.primi-row .pr-item strong{font-weight:800;color:#002B5C;font-size:12px}
-/* Summary bar */
-.summary-bar{display:flex;border-bottom:1px solid #e5e9f0}
-.sb-item{flex:1;padding:10px 8px;text-align:center;border-right:1px solid #e5e9f0}
-.sb-item:last-child{border-right:none}
-.sb-label{font-size:8px;color:#6b7a8d;text-transform:uppercase;font-weight:600;letter-spacing:0.3px}
-.sb-val{font-size:14px;font-weight:800;color:#002B5C;margin-top:2px}
-.sb-val.zbr{color:#9a3412;font-size:10px;font-weight:600}
-.sb-link{text-align:center;padding:8px;font-size:10px;color:#0047AB;font-weight:600;cursor:pointer;border-bottom:1px solid #e5e9f0}
-.sb-link:hover{background:#f8fafc}
-/* Detail sections */
-.detail-body{display:none}
-.detail-body.open{display:block}
-.sh{padding:10px 14px;background:#002B5C;color:white;display:flex;align-items:center;justify-content:space-between}
-.sh-left{display:flex;align-items:center;gap:8px;flex:1}
-.sh-icon{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sh-icon svg{width:13px;height:13px;stroke:white;stroke-width:2;fill:none}
-.sh-t{font-size:12px;font-weight:700}
-.sh-sub{font-size:9px;opacity:0.7;margin-top:1px}
-.sh-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
-.sh-badge.g{background:#22c55e;color:white}
-.sh-badge.b{background:#60a5fa;color:white}
-.sh-badge.gr{background:rgba(255,255,255,0.2);color:white}
-.mi-wrap{padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px}
-.mi{font-size:10px;color:#4a5568;background:white;padding:3px 8px;border-radius:4px;border:1px solid #e5e9f0}
-.nc{padding:10px 14px;background:#fff8f0;border-bottom:1px solid #f0e6d8}
-.nc-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.nc-badge{font-size:10px;font-weight:700;color:#9a3412;background:#ffedd5;padding:3px 8px;border-radius:6px}
-.nc-title{font-size:11px;font-weight:700;color:#78350f}
-.nc-desc{font-size:10px;color:#92400e;margin-top:2px}
-.nc-items{padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px}
+.td-price-child{font-size:10px;color:#6b7a8d;margin-top:2px}
+.td-price-child strong{color:#002B5C;font-weight:700}
+/* Category headers - gjithmone te hapura */
+.cat-hdr{padding:10px 14px;background:#002B5C;color:white;display:flex;align-items:center;justify-content:space-between}
+.cat-hdr .ch-left{display:flex;align-items:center;gap:8px;flex:1}
+.cat-hdr .ch-icon{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-hdr .ch-icon svg{width:13px;height:13px;stroke:white;stroke-width:2;fill:none}
+.cat-hdr .ch-t{font-size:12px;font-weight:700}
+.cat-hdr .ch-sub{font-size:9px;opacity:0.7;margin-top:1px}
+.cat-hdr .ch-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;flex-shrink:0}
+.ch-badge.g{background:#22c55e;color:white}
+.ch-badge.b{background:#60a5fa;color:white}
+.ch-badge.gr{background:rgba(255,255,255,0.2);color:white}
+/* Shih mbulimet toggle per kategori */
+.cat-toggle{text-align:center;padding:6px;font-size:9px;color:#0047AB;font-weight:600;cursor:pointer;border-bottom:1px solid #e5e9f0;background:#fafbfc}
+.cat-toggle:hover{background:#f0f4ff}
+/* Detajet foldable brenda kategorise */
+.cat-body{display:none}
+.cat-body.open{display:block}
+.mi-wrap{padding:6px 14px 8px;display:flex;flex-wrap:wrap;gap:4px}
+.mi{font-size:9px;color:#6b7a8d;background:white;padding:2px 7px;border-radius:4px;border:1px solid #e5e9f0}
+.nc{padding:8px 14px;background:#fff8f0;font-size:10px;color:#9a3412;font-weight:600;border-bottom:1px solid #f0e6d8}
+.nc-items{padding:6px 14px 8px;display:flex;flex-wrap:wrap;gap:4px}
 .nc-items .mi{color:#9a3412;background:#fff7ed;border-color:#fed7aa}
-.dr{display:flex;padding:7px 14px;font-size:12px;border-bottom:1px solid #f0f0f0}
+.dr{display:flex;padding:6px 14px;font-size:11px;border-bottom:1px solid #f0f0f0}
 .dr:last-child{border-bottom:none}
 .dr .dl{flex:1;color:#4a5568;line-height:1.3}
 .dr .dv{font-weight:600;color:#1a2332;text-align:right}
-.nota{padding:8px 14px;font-size:9px;color:#6b7a8d;background:#f8f9fa;border-top:1px solid #f0f0f0;font-style:italic;line-height:1.4}
-.btn-z{display:block;width:calc(100% - 28px);margin:12px 14px;padding:11px;text-align:center;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;font-family:inherit;border:2px solid #002B5C;background:white;color:#002B5C;transition:all 0.2s}
+.nota{padding:8px 14px;font-size:9px;color:#6b7a8d;background:#f8f9fa;border-top:1px solid #f0f0f0;font-style:italic}
+/* Zgjedh buton */
+.btn-z-wrap{padding:10px 14px;border-top:1px solid #e5e9f0}
+.btn-z{display:block;width:100%;padding:11px;text-align:center;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;font-family:inherit;border:2px solid #002B5C;background:white;color:#002B5C;transition:all 0.2s}
 .btn-z:hover{background:#f0f4ff}
 .btn-z.active{background:#002B5C;color:white}
 .btn-z.active:hover{background:#003570}
+.btn-z-note{text-align:center;font-size:9px;color:#6b7a8d;margin-top:6px}
 /* Opt cards */
 .opt-card{background:white;border:2px solid #e5e9f0;border-radius:10px;margin-bottom:8px;overflow:hidden;cursor:pointer;transition:all 0.2s}
 .opt-card:hover{border-color:#b0c4de}
@@ -129,7 +120,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .price-table td{padding:3px 6px;border-bottom:1px solid #f0f0f0;text-align:center}
 .price-table td:first-child{text-align:left;font-weight:600;color:#1a2332}
 .price-table tr:nth-child(even){background:#f8fafc}
-/* App */
 .app-banner{background:#002B5C;border-radius:10px;padding:14px 16px;margin:16px 0;display:flex;align-items:center;gap:12px}
 .app-logo{width:44px;height:44px;border-radius:10px;flex-shrink:0;overflow:hidden;background:white}
 .app-logo img{width:44px;height:44px;border-radius:10px;display:block}
@@ -140,11 +130,10 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .app-stores{display:flex;gap:6px;margin-top:6px}
 .store-btn{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.15);color:white;font-size:9px;font-weight:600;padding:4px 10px;border-radius:6px;text-decoration:none}
 .store-btn svg{width:12px;height:12px;fill:white}
-/* Rrjeti popup */
 .net-trigger{background:white;border-radius:10px;border:1px solid #e5e9f0;margin:12px 0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .net-trigger:hover{background:#f8fafc}
 .net-trigger h4{font-size:12px;font-weight:700;color:#002B5C;display:flex;align-items:center;gap:6px}
-.net-trigger .net-desc{font-size:10px;color:#6b7a8d;margin-top:2px;line-height:1.4}
+.net-trigger .net-desc{font-size:10px;color:#6b7a8d;margin-top:2px}
 .net-count{background:#002B5C;color:white;font-size:9px;padding:1px 7px;border-radius:10px}
 .net-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-end;justify-content:center}
 .net-overlay.active{display:flex}
@@ -199,97 +188,71 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 <div class="net-overlay" id="net-overlay" onclick="if(event.target===this)mbyllRrjetin()"><div class="net-popup" id="net-popup"></div></div>
 <script src="../js/pakot.js"></script>
 <script>
-const params=new URLSearchParams(window.location.search);
-const ofertaId=params.get('id');
-let ofertaData=null,pakotGlobal=[],activeTab=0,selectedPakot=new Set();
-const RRJETI={
-    spitalet:[{e:'Spitali Amerikan',q:'Prishtinë'},{e:'Spitali "Lindja"',q:'Prishtinë'},{e:'Klinika Kirurgjike "Aloka"',q:'Prishtinë'},{e:'Spitali Fati Im',q:'Prishtinë'},{e:'Spitali Bahçeçi',q:'Prishtinë–Shkup km9'},{e:'Spitali IHC',q:'Prishtinë–Ferizaj km5'},{e:'Klinika Gjermane e Syrit',q:'Prishtinë'},{e:'Olive Medical Group',q:'Prishtinë'},{e:'Spitali Royal Medical',q:'Prishtinë–Ferizaj km15'},{e:'United Hospital',q:'Prishtinë–Ferizaj km7'}],
-    laboratoret:[{e:'ProLab',q:'Prishtinë'},{e:'ImunoLab',q:'Prishtinë'},{e:'Avicena',q:'Prishtinë'},{e:'E-Lab',q:'Prishtinë'},{e:'Mikrobioanaliza',q:'Prishtinë'}],
-    dentaret:[{e:'Melisa Dent',q:'Prishtinë'},{e:'Dental Clinic Stomatologjia',q:'Prishtinë'},{e:'Klinika Gjermane e Dhëmbit',q:'Prishtinë'},{e:'Mikro & Dent',q:'Prishtinë'},{e:'Top Dent',q:'Prishtinë'},{e:'Dent In',q:'Prishtinë'}],
-    ordinanca:[{e:'Optika Neziri',q:'Prishtinë',z:'10-50%'},{e:'Optika Simoni',q:'Prishtinë',z:'20%'},{e:'DIDA & ROKA Eye Clinic',q:'Prishtinë',z:'10%'},{e:'Farmacia Ime',q:'Prishtinë',z:'10%'},{e:'VSO Clinic',q:'Prishtinë',z:'Paketë 30€'},{e:'Poliklinika Diagnoza',q:'Gjilan',z:'20%'},{e:'IDMG Swiss Clinique 2',q:'Gjilan',z:'20%'},{e:'Biolab',q:'Gjilan',z:'20%'},{e:'Physio Move',q:'Prishtinë',z:'20%'},{e:'Cambridge Clinical Lab',q:'Prishtinë',z:'20%'}]
-};
+const params=new URLSearchParams(window.location.search),ofertaId=params.get('id');
+let ofertaData=null,pakotGlobal=[],activeTab=0,selectedPakot=new Set(),openSections={};
+const RRJETI={spitalet:[{e:'Spitali Amerikan',q:'Prishtinë'},{e:'Spitali "Lindja"',q:'Prishtinë'},{e:'Klinika Kirurgjike "Aloka"',q:'Prishtinë'},{e:'Spitali Fati Im',q:'Prishtinë'},{e:'Spitali Bahçeçi',q:'Prishtinë–Shkup km9'},{e:'Spitali IHC',q:'Prishtinë–Ferizaj km5'},{e:'Klinika Gjermane e Syrit',q:'Prishtinë'},{e:'Olive Medical Group',q:'Prishtinë'},{e:'Spitali Royal Medical',q:'Prishtinë–Ferizaj km15'},{e:'United Hospital',q:'Prishtinë–Ferizaj km7'}],laboratoret:[{e:'ProLab',q:'Prishtinë'},{e:'ImunoLab',q:'Prishtinë'},{e:'Avicena',q:'Prishtinë'},{e:'E-Lab',q:'Prishtinë'},{e:'Mikrobioanaliza',q:'Prishtinë'}],dentaret:[{e:'Melisa Dent',q:'Prishtinë'},{e:'Dental Clinic Stomatologjia',q:'Prishtinë'},{e:'Klinika Gjermane e Dhëmbit',q:'Prishtinë'},{e:'Mikro & Dent',q:'Prishtinë'},{e:'Top Dent',q:'Prishtinë'},{e:'Dent In',q:'Prishtinë'}],ordinanca:[{e:'Optika Neziri',q:'Prishtinë',z:'10-50%'},{e:'Optika Simoni',q:'Prishtinë',z:'20%'},{e:'DIDA & ROKA Eye Clinic',q:'Prishtinë',z:'10%'},{e:'Farmacia Ime',q:'Prishtinë',z:'10%'},{e:'VSO Clinic',q:'Prishtinë',z:'Paketë 30€'},{e:'Poliklinika Diagnoza',q:'Gjilan',z:'20%'},{e:'IDMG Swiss Clinique 2',q:'Gjilan',z:'20%'},{e:'Biolab',q:'Gjilan',z:'20%'},{e:'Physio Move',q:'Prishtinë',z:'20%'},{e:'Cambridge Clinical Lab',q:'Prishtinë',z:'20%'}]};
 const ICN={h:'<svg viewBox="0 0 24 24"><path d="M3 21h18M9 8h6M12 8v6M9 21V8a3 3 0 0 1 3-3h0a3 3 0 0 1 3 3v13" stroke-linecap="round" stroke-linejoin="round"/></svg>',a:'<svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M12 11v6M9 14h6" stroke-linecap="round"/></svg>',t:'<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
 
-function detailHTML(p,ei){
-    let h='';
-    // Hospitalore
-    const hSame=p.hospitalore_pikat&&p.hospitalore_pikat.every(x=>x.vlera===p.hospitalore_pikat[0].vlera);
-    h+='<div class="sh"><div class="sh-left"><div class="sh-icon">'+ICN.h+'</div><div><div class="sh-t">Trajtimet Hospitalore</div><div class="sh-sub">Shtrirje në spital · Dhomë gjysëmprivate</div></div></div><span class="sh-badge g">'+p.hospitalore+'</span></div>';
-    if(hSame){h+='<div class="mi-wrap">';p.hospitalore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';}
-    else{p.hospitalore_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
-    // Ambulantore
-    const aSame=p.ambulantore_pikat&&p.ambulantore_pikat.every(x=>x.vlera===p.ambulantore_pikat[0].vlera);
-    let abCls='b',abTxt=p.ambulantore;
-    if(p.ambulantore==='Nuk mbulohet'||p.ambulantore_zbritje){abCls='gr';abTxt='Zbritje';}
-    if(abTxt.length>12) abTxt=abTxt.substring(0,10)+'…';
-    h+='<div class="sh"><div class="sh-left"><div class="sh-icon">'+ICN.a+'</div><div><div class="sh-t">Trajtimet Ambulantore</div><div class="sh-sub">Jo-shtrirje në spital</div></div></div><span class="sh-badge '+abCls+'">'+abTxt+'</span></div>';
-    if(p.ambulantore_zbritje){
-        h+='<div class="nc"><div class="nc-h"><span class="nc-badge">Nuk mbulohet</span><span class="nc-title">Zbritje brenda Rrjetit Mjekësor</span></div><div class="nc-desc">Përfitoni zbritje në institucionet partnere.</div></div>';
-        h+='<div class="nc-items">';p.ambulantore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';
-    } else if(aSame){
-        h+='<div class="mi-wrap">';p.ambulantore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';
-    } else{p.ambulantore_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
-    // Tjera
-    const tc=p.tjera_pikat.filter(x=>!x.zbritje),tn=p.tjera_pikat.filter(x=>x.zbritje);
-    let tCls='b',tTxt='Mbulohet';if(tn.length>0&&tc.length<=3){tCls='gr';tTxt='Zbritje';}
-    h+='<div class="sh"><div class="sh-left"><div class="sh-icon">'+ICN.t+'</div><div><div class="sh-t">Trajtime Mjekësore tjera</div><div class="sh-sub">Shtatzëni · Dentar · Optik · Aksidente · Onkologji</div></div></div><span class="sh-badge '+tCls+'">'+tTxt+'</span></div>';
-    if(p.tjera_merged){
-        h+='<div class="nc"><div class="nc-h"><span class="nc-badge">Nuk mbulohet</span><span class="nc-title">Zbritje brenda Rrjetit Mjekësor</span></div><div class="nc-desc">Shërbimet e mëposhtme nuk mbulohen, por përfitoni zbritje në institucionet partnere.</div></div>';
-        h+='<div class="nc-items">';tn.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';
-        tc.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
-    } else{p.tjera_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
-    h+='<div class="nota">*Nëse shërbimet merren në spital publik pa pagesë, dëmshpërblehet 50% deri në 500€.</div>';
+function catHTML(key,icon,title,sub,badge,badgeCls,p,ei){
+    let h='<div class="cat-hdr"><div class="ch-left"><div class="ch-icon">'+icon+'</div><div><div class="ch-t">'+title+'</div><div class="ch-sub">'+sub+'</div></div></div><span class="ch-badge '+badgeCls+'">'+badge+'</span></div>';
+    const isOpen=openSections[key];
+    h+='<div class="cat-toggle" onclick="toggleCat(\''+key+'\')">'+(isOpen?'Mbyll mbulimet ▴':'Shih mbulimet ▾')+'</div>';
+    h+='<div class="cat-body'+(isOpen?' open':'')+'" id="cat-'+key+'">';
+    if(key==='hosp'){
+        const hSame=p.hospitalore_pikat&&p.hospitalore_pikat.every(x=>x.vlera===p.hospitalore_pikat[0].vlera);
+        if(hSame){h+='<div class="mi-wrap">';p.hospitalore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';}
+        else p.hospitalore_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
+    } else if(key==='amb'){
+        if(p.ambulantore_zbritje){
+            h+='<div class="nc">Nuk mbulohet - Zbritje brenda Rrjetit Mjekësor</div>';
+            h+='<div class="nc-items">';p.ambulantore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';
+        } else {
+            const aSame=p.ambulantore_pikat&&p.ambulantore_pikat.every(x=>x.vlera===p.ambulantore_pikat[0].vlera);
+            if(aSame){h+='<div class="mi-wrap">';p.ambulantore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';}
+            else p.ambulantore_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
+        }
+    } else if(key==='tjera'){
+        const tc=p.tjera_pikat.filter(x=>!x.zbritje),tn=p.tjera_pikat.filter(x=>x.zbritje);
+        if(p.tjera_merged){
+            h+='<div class="nc">Nuk mbulohet - Zbritje brenda Rrjetit Mjekësor</div>';
+            h+='<div class="nc-items">';tn.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';
+            tc.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
+        } else p.tjera_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
+    }
+    h+='</div>';
     return h;
 }
 
 function renderDetail(){
     const p=pakotGlobal[activeTab];if(!p) return;
-    const ei=ofertaData.lloji==='individ';
-    const isSel=selectedPakot.has(p.id);
-    // Summary bar values
+    const ei=ofertaData.lloji==='individ',isSel=selectedPakot.has(p.id);
     const t=p.tags||{};
-    let ambVal=t.ambulantore||'—';if(ambVal==='Nuk mbulohet') ambVal='Zbritje';
-    let tjeraVal=t.tjera||'—';if(tjeraVal==='Rrjeti Mjekësor') tjeraVal='Zbritje';
-    let aksVal=t.aksidente||'—';
-    // Header
+    let abBadge=p.ambulantore,abCls='b';
+    if(p.ambulantore==='Nuk mbulohet'||p.ambulantore_zbritje){abBadge='Zbritje';abCls='gr';}
+    if(abBadge.length>12) abBadge=abBadge.substring(0,10)+'…';
+    let tBadge='Mbulohet',tCls='b';
+    const tn=p.tjera_pikat.filter(x=>x.zbritje),tc=p.tjera_pikat.filter(x=>!x.zbritje);
+    if(tn.length>0&&tc.length<=3){tBadge='Zbritje';tCls='gr';}
     let h='<div class="td-hdr"><div class="td-info"><div class="td-name">'+p.emri+'</div><div class="td-zone">'+p.zona+'</div></div>';
     h+='<div class="td-center"><div class="td-shuma">€ '+p.shuma+'</div><div class="td-shuma-lbl">Mbulim</div></div>';
-    h+='<div class="td-right"><div class="td-price">€ '+p.primi_madh+'</div><div class="td-per">'+(p.primi_suffix==='/vit'?'për vit':'për muaj')+'</div></div></div>';
-    // Primi row — lart me nën 18
-    h+='<div class="primi-row">';
-    h+='<span class="pr-item">Mbi 18 vjeç: <strong>€ '+p.primi_madh+p.primi_suffix+'</strong></span>';
-    if(!ei&&p.primi_femije) h+='<span class="pr-item">Nën 18 vjeç: <strong>€ '+p.primi_femije+'/muaj</strong></span>';
-    h+='</div>';
-    // Summary bar
-    h+='<div class="summary-bar">';
-    h+='<div class="sb-item"><div class="sb-label">Hospitalore</div><div class="sb-val">'+p.hospitalore+'</div></div>';
-    h+='<div class="sb-item"><div class="sb-label">Ambulantore</div><div class="sb-val'+(ambVal==='Zbritje'?' zbr':'')+'">'+ambVal+'</div></div>';
-    h+='<div class="sb-item"><div class="sb-label">Tjera</div><div class="sb-val'+(tjeraVal==='Zbritje'?' zbr':'')+'">'+tjeraVal+'</div></div>';
-    h+='<div class="sb-item"><div class="sb-label">Aksidente</div><div class="sb-val">'+aksVal+'</div></div>';
-    h+='</div>';
-    // Shih detajet toggle
-    h+='<div class="sb-link" id="detail-toggle" onclick="toggleDetail()">Shih detajet e plota ▾</div>';
-    // Detail body (hidden by default)
-    h+='<div class="detail-body" id="detail-body">'+detailHTML(p,ei)+'</div>';
-    // Zgjedh buton
-    h+='<button class="btn-z'+(isSel?' active':'')+'" onclick="toggleZgjedh(\''+p.id+'\')">'+(isSel?'Hiq zgjedhjen':'Zgjedh '+p.emri)+'</button>';
+    h+='<div class="td-right"><div class="td-price">€ '+p.primi_madh+'</div><div class="td-per">'+(p.primi_suffix==='/vit'?'për vit':'për muaj')+'</div>';
+    if(!ei&&p.primi_femije) h+='<div class="td-price-child">Nën 18: <strong>€ '+p.primi_femije+'/muaj</strong></div>';
+    h+='</div></div>';
+    // Categories - gjithmone te hapura
+    h+=catHTML('hosp',ICN.h,'Trajtimet Hospitalore','Shtrirje në spital · Dhomë gjysëmprivate',p.hospitalore,'g',p,ei);
+    h+=catHTML('amb',ICN.a,'Trajtimet Ambulantore','Jo-shtrirje në spital',abBadge,abCls,p,ei);
+    h+=catHTML('tjera',ICN.t,'Trajtime Mjekësore tjera','Shtatzëni · Dentar · Optik · Aksidente · Onkologji',tBadge,tCls,p,ei);
+    h+='<div class="nota">*Nëse shërbimet merren në spital publik pa pagesë, dëmshpërblehet 50% deri në 500€.</div>';
+    h+='<div class="btn-z-wrap"><button class="btn-z'+(isSel?' active':'')+'" onclick="toggleZgjedh(\''+p.id+'\')">'+(isSel?'Hiq zgjedhjen':'Zgjedh '+p.emri)+'</button><div class="btn-z-note">Mund të zgjidhni më shumë se një pakë</div></div>';
     document.getElementById('tab-detail').innerHTML=h;
 }
-function toggleDetail(){
-    const b=document.getElementById('detail-body');
-    const t=document.getElementById('detail-toggle');
-    b.classList.toggle('open');
-    t.textContent=b.classList.contains('open')?'Mbyll detajet ▴':'Shih detajet e plota ▾';
-    t.style.color=b.classList.contains('open')?'#6b7a8d':'#0047AB';
-}
+
+function toggleCat(key){openSections[key]=!openSections[key];renderDetail();}
 function switchTab(i){activeTab=i;document.querySelectorAll('.tab-item').forEach((t,idx)=>{t.classList.toggle('active',idx===i);});renderDetail();}
 function toggleZgjedh(id){
     if(selectedPakot.has(id)) selectedPakot.delete(id); else selectedPakot.add(id);
     renderDetail();
-    document.querySelectorAll('.tab-item').forEach((t,idx)=>{
-        const pid=pakotGlobal[idx]?.id;
-        t.classList.toggle('sel-mark',selectedPakot.has(pid));
-    });
+    document.querySelectorAll('.tab-item').forEach((t,idx)=>{t.classList.toggle('sel-mark',selectedPakot.has(pakotGlobal[idx]?.id));});
 }
 function toggleOpt(id){const c=document.getElementById('opt-'+id);const cb=document.getElementById('cb-opt-'+id);c.classList.toggle('selected');cb.checked=c.classList.contains('selected');}
 
@@ -310,16 +273,15 @@ function hapRrjetin(){
     document.getElementById('net-popup').innerHTML=h;document.getElementById('net-overlay').classList.add('active');document.body.style.overflow='hidden';
 }
 function mbyllRrjetin(){document.getElementById('net-overlay').classList.remove('active');document.body.style.overflow='';}
+
 function ngarko(){
-    const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[];
-    const oferta=ofertat[ofertaId];
+    const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[],oferta=ofertat[ofertaId];
     if(!oferta){document.getElementById('container').innerHTML='<div style="text-align:center;padding:60px"><h2 style="color:#002B5C">Oferta nuk u gjet.</h2><p style="color:#6b7a8d;margin-top:4px">Kontaktoni agentin tuaj.</p></div>';return;}
     ofertaData=oferta;
     const pakotList=oferta.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;
     pakotGlobal=pakotList.filter(p=>(oferta.pakot||[]).some(op=>(typeof op==='object'?op.id:op)===p.id||(typeof op==='string'&&op.toLowerCase().includes(p.emri.toLowerCase())))).map(p=>{const c=(oferta.pakot||[]).find(op=>typeof op==='object'&&op.id===p.id);return c?{...p,...c}:p;});
     if(pakotGlobal.length===0){document.getElementById('container').innerHTML='<div style="text-align:center;padding:60px"><h2>Nuk ka paketa.</h2></div>';return;}
-    const dm=Math.ceil((new Date(oferta.dataSkadon)-new Date())/86400000);
-    const cc=dm<=5?'countdown urgent':'countdown';
+    const dm=Math.ceil((new Date(oferta.dataSkadon)-new Date())/86400000),cc=dm<=5?'countdown urgent':'countdown';
     const ti=RRJETI.spitalet.length+RRJETI.laboratoret.length+RRJETI.dentaret.length+RRJETI.ordinanca.length;
     let h='<div class="oferta-header"><h2>Ofertë për '+oferta.emri+'</h2><p>Zgjidhni paketën që ju përshtatet dhe konfirmoni zgjedhjen tuaj.</p><div class="oferta-meta"><span class="'+cc+'">Skadon për '+(dm>0?dm+' ditë':'Skaduar')+'</span><span>Krijuar: '+oferta.dataKrijimit+'</span></div></div>';
     h+='<div class="section-title">Zgjidhni paketën</div><div class="tab-bar">';
@@ -331,19 +293,13 @@ function ngarko(){
     h+='<div class="koment-box"><h3>Koment (opsional)</h3><textarea id="koment" placeholder="Keni pyetje? Shkruani këtu..."></textarea></div>';
     h+='<div class="action-btns"><button class="btn-confirm" onclick="paraKonfirmimit()">Konfirmoj Zgjedhjen</button><button class="btn-change" onclick="kerkoNdryshim()">Kërko Ndryshim</button></div>';
     h+='<div class="oferta-footer">© '+new Date().getFullYear()+' SIGAL Insurance Group Kosovo<br><a href="https://sigal-ks.com">sigal-ks.com</a> · demet.shendetsore@sigal-ks.com · +383 38 240 241</div>';
-    document.getElementById('container').innerHTML=h;
-    renderDetail();
+    document.getElementById('container').innerHTML=h;renderDetail();
 }
 function getSelected(){return pakotGlobal.filter(p=>selectedPakot.has(p.id));}
-function paraKonfirmimit(){
-    if(getSelected().length===0){alert('Ju lutem zgjidhni së paku një paketë!');return;}
-    const oj=document.getElementById('cb-opt-jete'),oo=document.getElementById('cb-opt-opinion');
-    if(oj&&oo&&!oj.checked&&!oo.checked){document.getElementById('popup-optional').classList.add('active');return;}
-    dergoPako();
-}
+function paraKonfirmimit(){if(getSelected().length===0){alert('Ju lutem zgjidhni së paku një paketë!');return;}const oj=document.getElementById('cb-opt-jete'),oo=document.getElementById('cb-opt-opinion');if(oj&&oo&&!oj.checked&&!oo.checked){document.getElementById('popup-optional').classList.add('active');return;}dergoPako();}
 function vazhdo(shto){document.getElementById('popup-optional').classList.remove('active');if(shto){document.querySelector('.opt-card').scrollIntoView({behavior:'smooth'});return;}dergoPako();}
 async function dergoPako(){
-    const sel=getSelected();const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[];const oferta=ofertat[ofertaId];
+    const sel=getSelected(),ofertat=JSON.parse(localStorage.getItem('ofertat'))||[],oferta=ofertat[ofertaId];
     const pe=sel.map(p=>p.emri||p.id).join(', ');let ex=[];
     if(document.getElementById('cb-opt-jete')?.checked) ex.push('Jetë Plus Cash');
     if(document.getElementById('cb-opt-opinion')?.checked) ex.push('Opinioni i Dytë Mjekësor');
@@ -352,7 +308,7 @@ async function dergoPako(){
     ofertat[ofertaId].konfirmuar=true;ofertat[ofertaId].dataKonfirmimit=new Date().toISOString().split('T')[0];
     ofertat[ofertaId].notification={type:'konfirmim',msg:'Klienti konfirmoi: '+zf,data:new Date().toISOString().split('T')[0],lexuar:false};
     localStorage.setItem('ofertat',JSON.stringify(ofertat));
-    try{const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{method:'POST',signal:c.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({emriKlientit:oferta.emri,emailKlientit:oferta.email,pakaZgjedhur:zf,koment:document.getElementById('koment').value,emailAgjentit:oferta.krijuarNgaEmail||'gjonbalajagon@gmail.com'})});clearTimeout(t);}catch(e){}
+    try{const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{method:'POST',signal:c.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({emriKlientit:oferta.emri,emailKlientit:oferta.email,pakaZgjedhur:zf,koment:document.getElementById('koment').value,emailAgjentit:oferta.krijuarNgaEmail||'gjonbalajagon@gmail.com'})});clearTimeout(t);}catch(e){}
     document.getElementById('container').innerHTML='<div class="success-msg"><div class="check" style="background:#22c55e"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><h2>Faleminderit!</h2><p>Zgjedhja juaj u regjistrua me sukses.<br>Agjenti do t\'ju kontaktojë së shpejti.</p></div>';
 }
 function kerkoNdryshim(){
