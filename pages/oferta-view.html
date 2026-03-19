@@ -53,7 +53,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .float-pill .fp-count{background:#22c55e;color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
 .float-pill svg{width:12px;height:12px;stroke:white;stroke-width:2.5;fill:none}
 /* Category headers */
-.cat-hdr{padding:10px 14px;background:#002B5C;color:white;display:flex;align-items:center;justify-content:space-between}
+.cat-hdr{padding:10px 14px;background:#002B5C;color:white;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.cat-hdr:hover{background:#003570}
 .ch-left{display:flex;align-items:center;gap:8px;flex:1}
 .ch-icon{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ch-icon svg{width:13px;height:13px;stroke:white;stroke-width:2;fill:none}
@@ -64,15 +65,18 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .ch-badge.g{background:#22c55e;color:white}
 .ch-badge.b{background:#60a5fa;color:white}
 .ch-badge.gr{background:rgba(255,255,255,0.2);color:white}
-.ch-toggle{font-size:9px;opacity:0.6;cursor:pointer;white-space:nowrap}
-.ch-toggle:hover{opacity:0.9}
+.ch-toggle{font-size:9px;opacity:0.6;white-space:nowrap}
 .cat-body{display:none}
 .cat-body.open{display:block}
-.mi-wrap{padding:6px 14px 8px;display:flex;flex-wrap:wrap;gap:4px}
-.mi{font-size:9px;color:#6b7a8d;background:white;padding:2px 7px;border-radius:4px;border:1px solid #e5e9f0}
+.mi-wrap{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0 14px 4px}
+.mi-item{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:10px;color:#4a5568;border-bottom:1px solid #f0f0f0}
+.mi-item:nth-last-child(-n+2){border-bottom:none}
+.mi-dot{width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0}
+.mi-dot.b{background:#60a5fa}
 .nc{padding:8px 14px;background:#fff8f0;font-size:10px;color:#9a3412;font-weight:600;border-bottom:1px solid #f0e6d8}
-.nc-items{padding:6px 14px 8px;display:flex;flex-wrap:wrap;gap:4px}
-.nc-items .mi{color:#9a3412;background:#fff7ed;border-color:#fed7aa}
+.nc-items{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0 14px 4px}
+.nc-items .mi-item{color:#9a3412}
+.nc-items .mi-dot{background:#f59e0b}
 .dr{display:flex;padding:6px 14px;font-size:11px;border-bottom:1px solid #f0f0f0}
 .dr:last-child{border-bottom:none}
 .dr .dl{flex:1;color:#4a5568;line-height:1.3}
@@ -195,20 +199,21 @@ const ICN={h:'<svg viewBox="0 0 24 24"><path d="M3 21h18M9 8h6M12 8v6M9 21V8a3 3
 
 function catHTML(key,icon,title,sub,badge,badgeCls,p){
     const isOpen=openSections[key];
-    let h='<div class="cat-hdr"><div class="ch-left"><div class="ch-icon">'+icon+'</div><div><div class="ch-t">'+title+'</div><div class="ch-sub">'+sub+'</div></div></div><div class="ch-right"><span class="ch-badge '+badgeCls+'">'+badge+'</span><span class="ch-toggle" onclick="toggleCat(\''+key+'\')">'+(isOpen?'Mbyll ▴':'Shih mbulimet ▾')+'</span></div></div>';
+    let h='<div class="cat-hdr" onclick="toggleCat(\''+key+'\')"><div class="ch-left"><div class="ch-icon">'+icon+'</div><div><div class="ch-t">'+title+'</div><div class="ch-sub">'+sub+'</div></div></div><div class="ch-right"><span class="ch-badge '+badgeCls+'">'+badge+'</span><span class="ch-toggle">'+(isOpen?'Mbyll ▴':'Shih mbulimet ▾')+'</span></div></div>';
     h+='<div class="cat-body'+(isOpen?' open':'')+'">';
+    const dotCls=key==='hosp'?'':'b';
     if(key==='hosp'){
         const s=p.hospitalore_pikat&&p.hospitalore_pikat.every(x=>x.vlera===p.hospitalore_pikat[0].vlera);
-        if(s){h+='<div class="mi-wrap">';p.hospitalore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';}
+        if(s){h+='<div class="mi-wrap">';p.hospitalore_pikat.forEach(x=>{h+='<div class="mi-item"><span class="mi-dot"></span>'+x.emri+'</div>';});h+='</div>';}
         else p.hospitalore_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
     }else if(key==='amb'){
-        if(p.ambulantore_zbritje){h+='<div class="nc">Nuk mbulohet - Zbritje brenda Rrjetit Mjekësor</div><div class="nc-items">';p.ambulantore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';}
+        if(p.ambulantore_zbritje){h+='<div class="nc">Nuk mbulohet - Zbritje brenda Rrjetit Mjekësor</div><div class="nc-items">';p.ambulantore_pikat.forEach(x=>{h+='<div class="mi-item"><span class="mi-dot"></span>'+x.emri+'</div>';});h+='</div>';}
         else{const s=p.ambulantore_pikat&&p.ambulantore_pikat.every(x=>x.vlera===p.ambulantore_pikat[0].vlera);
-            if(s){h+='<div class="mi-wrap">';p.ambulantore_pikat.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';}
+            if(s){h+='<div class="mi-wrap">';p.ambulantore_pikat.forEach(x=>{h+='<div class="mi-item"><span class="mi-dot b"></span>'+x.emri+'</div>';});h+='</div>';}
             else p.ambulantore_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
     }else{
         const tc=p.tjera_pikat.filter(x=>!x.zbritje),tn=p.tjera_pikat.filter(x=>x.zbritje);
-        if(p.tjera_merged){h+='<div class="nc">Nuk mbulohet - Zbritje brenda Rrjetit Mjekësor</div><div class="nc-items">';tn.forEach(x=>{h+='<span class="mi">'+x.emri+'</span>';});h+='</div>';tc.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
+        if(p.tjera_merged){h+='<div class="nc">Nuk mbulohet - Zbritje brenda Rrjetit Mjekësor</div><div class="nc-items">';tn.forEach(x=>{h+='<div class="mi-item"><span class="mi-dot"></span>'+x.emri+'</div>';});h+='</div>';tc.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
         else p.tjera_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
     }
     h+='</div>';return h;
