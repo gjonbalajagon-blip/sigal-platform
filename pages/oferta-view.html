@@ -32,7 +32,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .tab-item:hover:not(.active){background:#f8fafc}
 .tab-item.sel-mark{box-shadow:inset 0 -3px 0 #22c55e}
 .tab-detail{background:white;border-radius:10px;border:1px solid #e5e9f0;overflow:hidden}
-/* Opsioni A header — white + navy accent */
 .td-hdr{padding:16px;border-bottom:3px solid #002B5C}
 .td-row1{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .td-info{flex:1;min-width:0}
@@ -41,18 +40,15 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .td-shuma-wrap{text-align:right;flex-shrink:0}
 .td-shuma{font-size:22px;font-weight:800;color:#002B5C}
 .td-shuma-lbl{font-size:9px;color:#6b7a8d;text-transform:uppercase}
-/* Primi pills — katrore, nen row1 */
 .td-primi{display:flex;gap:8px;margin-top:10px}
 .td-pi{padding:8px 10px;background:#f0f4ff;border-radius:8px;text-align:center;min-width:0}
 .td-pi .pl{font-size:8px;color:#4a5568;display:block;white-space:nowrap}
 .td-pi .pv{font-size:15px;font-weight:800;color:#002B5C;display:block;margin-top:2px}
-/* Floating pill C */
 .float-pill{position:fixed;bottom:20px;right:16px;z-index:100;background:#002B5C;color:white;border:none;padding:10px 18px;border-radius:24px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:none;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(0,43,92,0.3);transition:all 0.2s}
 .float-pill:hover{background:#0047AB;transform:translateY(-2px)}
 .float-pill.show{display:flex}
 .float-pill .fp-count{background:#22c55e;color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
 .float-pill svg{width:12px;height:12px;stroke:white;stroke-width:2.5;fill:none}
-/* Category headers */
 .cat-hdr{padding:10px 14px;background:#002B5C;color:white;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .cat-hdr:hover{background:#003570}
 .ch-left{display:flex;align-items:center;gap:8px;flex:1}
@@ -88,7 +84,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .btn-z.active{background:#002B5C;color:white}
 .btn-z-note{text-align:center;font-size:9px;color:#6b7a8d;margin-top:6px}
 /* F Banners — pakot opsionale */
-.f-banner{border-radius:12px;padding:16px;margin-bottom:10px;position:relative;overflow:hidden;cursor:pointer;display:flex;align-items:flex-start;gap:12px}
+.f-banner{border-radius:12px;padding:16px;margin-bottom:10px;position:relative;overflow:hidden;display:flex;align-items:flex-start;gap:12px}
 .f-banner.jete{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white}
 .f-banner.opinion{background:linear-gradient(135deg,#0f3460 0%,#1a365d 50%,#002B5C 100%);color:white}
 .f-glow{position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.05)}
@@ -99,7 +95,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .f-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
 .f-tag{font-size:8px;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.15)}
 .f-desc{font-size:10px;opacity:0.7;margin-top:6px;line-height:1.4}
-.f-link{font-size:10px;font-weight:600;margin-top:8px;opacity:0.8}
+.f-link{font-size:10px;font-weight:600;margin-top:8px;opacity:0.8;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.f-link:hover{opacity:1}
 .f-right{text-align:right;flex-shrink:0;padding-top:2px}
 .f-price{font-size:22px;font-weight:800}
 .f-per{font-size:9px;opacity:0.7}
@@ -111,9 +108,12 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .f-det-r .dl{flex:1}
 .f-det-r .dv{font-weight:600;text-align:right}
 .f-note{font-size:9px;opacity:0.6;font-style:italic;margin-top:6px}
-.f-btn{display:block;width:100%;padding:10px;text-align:center;font-size:12px;font-weight:700;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:transparent;color:white;cursor:pointer;margin-top:10px}
-.f-btn:hover{background:rgba(255,255,255,0.1)}
-.f-btn.sel{background:white;color:#002B5C;border-color:white}
+/* Zgjedh pakon button per opsionale */
+.f-zgjedh-wrap{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)}
+.f-zgjedh-btn{display:block;width:100%;padding:10px;text-align:center;font-size:12px;font-weight:700;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:transparent;color:white;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.f-zgjedh-btn:hover{background:rgba(255,255,255,0.1)}
+.f-zgjedh-btn.sel{background:white;color:#002B5C;border-color:white}
+.f-zgjedh-note{text-align:center;font-size:8px;opacity:0.5;margin-top:4px}
 /* App + Rrjeti grid */
 .ar-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .ar-card{border-radius:12px;padding:14px;position:relative;overflow:hidden;cursor:pointer}
@@ -128,7 +128,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .ar-link{font-size:9px;font-weight:600;margin-top:8px;opacity:0.8}
 .ar-stores{display:flex;gap:4px;margin-top:6px}
 .ar-stores a{font-size:8px;font-weight:600;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,0.15);color:white;text-decoration:none}
-/* Rrjeti R3 tabs inline */
 .net-card{background:white;border-radius:10px;border:1px solid #e5e9f0;overflow:hidden}
 .net-hdr{padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e5e9f0}
 .net-hdr-icon{width:28px;height:18px;border-radius:3px;background:#002B5C;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -151,7 +150,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .net-item:last-child{border-bottom:none}
 .net-dot{width:4px;height:4px;border-radius:50%;background:#0047AB;flex-shrink:0}
 .net-item .nn{font-weight:600;color:#1a2332;flex:1}.net-item .nl{font-size:9px;color:#6b7a8d}
-/* Price table */
 .price-table-wrap{padding:8px 0;margin-top:8px}
 .price-table-title{font-size:9px;font-weight:700;opacity:0.7;margin-bottom:2px}
 .price-table-sub{font-size:8px;opacity:0.5;margin-bottom:6px}
@@ -226,12 +224,10 @@ function renderDetail(){
     if(p.ambulantore==='Nuk mbulohet'||p.ambulantore_zbritje){abBadge='Zbritje';abCls='gr';}
     let tBadge='Mbulohet',tCls='b';
     if(p.tjera_pikat.filter(x=>x.zbritje).length>0&&p.tjera_pikat.filter(x=>!x.zbritje).length<=3){tBadge='Zbritje';tCls='gr';}
-    // Header — row1: emri+zona | shuma, pastaj primi katrore
     let primi='<div class="td-primi"><div class="td-pi"><span class="pl">Mbi 18 vjeç</span><span class="pv">€ '+p.primi_madh+p.primi_suffix+'</span></div>';
     if(!ei&&p.primi_femije) primi+='<div class="td-pi"><span class="pl">Nën 18 vjeç</span><span class="pv">€ '+p.primi_femije+'/muaj</span></div>';
     primi+='</div>';
     let h='<div class="td-hdr"><div class="td-row1"><div class="td-info"><div class="td-name">'+p.emri+'</div><div class="td-zone">'+p.zona+'</div></div><div class="td-shuma-wrap"><div class="td-shuma">€ '+p.shuma+'</div><div class="td-shuma-lbl">Mbulim</div></div></div>'+primi+'</div>';
-    // Categories
     h+=catHTML('hosp',ICN.h,'Trajtimet Hospitalore','Shtrirje në spital · Dhomë gjysëmprivate',p.hospitalore,'g',p);
     h+=catHTML('amb',ICN.a,'Trajtimet Ambulantore','Jo-shtrirje në spital',abBadge,abCls,p);
     h+=catHTML('tjera',ICN.t,'Trajtime Mjekësore tjera','Shtatzëni · Dentar · Optik · Aksidente · Onkologji',tBadge,tCls,p);
@@ -245,15 +241,86 @@ function switchTab(i){activeTab=i;document.querySelectorAll('.tab-item').forEach
 function toggleZgjedh(id){if(selectedPakot.has(id))selectedPakot.delete(id);else selectedPakot.add(id);renderDetail();document.querySelectorAll('.tab-item').forEach((t,idx)=>{t.classList.toggle('sel-mark',selectedPakot.has(pakotGlobal[idx]?.id));});updateFloat();}
 function updateFloat(){const f=document.getElementById('float-pill');if(!f)return;const n=selectedPakot.size;if(n>0){f.classList.add('show');f.querySelector('.fp-count').textContent=n;}else{f.classList.remove('show');}}
 function scrollToConfirm(){document.getElementById('btn-konfirmo')?.scrollIntoView({behavior:'smooth',block:'center'});}
-function toggleFBanner(id){document.getElementById('f-'+id).classList.toggle('open');}
-function toggleOptSel(id){const b=document.getElementById('f-'+id);b.classList.toggle('sel');const btn=b.querySelector('.f-btn');if(btn){btn.classList.toggle('sel');btn.textContent=b.classList.contains('sel')?'Hiq zgjedhjen':'Zgjedh';}}
+
+// === F-BANNER: vetëm expand/collapse + zgjedh pakon poshtë ===
+function toggleFBanner(id){
+    var banner=document.getElementById('f-'+id);
+    banner.classList.toggle('open');
+    var link=banner.querySelector('.f-link');
+    if(link){link.innerHTML=banner.classList.contains('open')?'Mbyll ▴':'Shih mbulimet ▾';}
+}
+function toggleOptSel(id){
+    var banner=document.getElementById('f-'+id);
+    banner.classList.toggle('sel');
+    var btn=banner.querySelector('.f-zgjedh-btn');
+    if(btn){
+        btn.classList.toggle('sel');
+        btn.textContent=banner.classList.contains('sel')?'Hiq zgjedhjen':'Zgjedh pakon';
+    }
+}
+
 let activeNetTab='spitalet';
 function switchNetTab(cat){activeNetTab=cat;document.querySelectorAll('.net-tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===cat));renderNetBody();}
 function renderNetBody(){const cats={spitalet:RRJETI.spitalet,laboratoret:RRJETI.laboratoret,dentaret:RRJETI.dentaret,ordinanca:RRJETI.ordinanca};const items=cats[activeNetTab]||[];let h='';items.forEach(s=>{h+='<div class="net-item"><span class="net-dot"></span><span class="nn">'+s.e+'</span><span class="nl">'+s.q+(s.z?' · '+s.z:'')+'</span></div>';});document.getElementById('net-body').innerHTML=h;}
 
 function optHTML(){
-    let h='<div class="f-banner jete" id="f-jete" onclick="toggleFBanner(\'jete\')"><div class="f-glow"></div><div class="f-info"><div class="f-title-row"><span class="f-title">Jetë Plus Cash</span><span class="f-badge">Rekomanduar</span></div><div class="f-tags"><span class="f-tag">Tumor malinj</span><span class="f-tag">Tumor beninj</span><span class="f-tag">Gjithë bota</span><span class="f-tag">Fëmijët nën 21 falas</span></div><div class="f-desc">Mbështetje financiare e menjëhershme nëse diagnostikoheni me sëmundje të rëndë.</div><div class="f-link">Shih detajet & Zgjedh →</div><div class="f-details" onclick="event.stopPropagation()"><div class="f-det-hdr">Sëmundjet që mbulohen</div><div class="f-det-r"><div class="dl">Tumor malinj invaziv</div><div class="dv">E mbuluar</div></div><div class="f-det-r"><div class="dl">Tumor beninj në kokë</div><div class="dv">E mbuluar</div></div><div class="f-det-r"><div class="dl">Opinion i dytë mjekësor</div><div class="dv">E mbuluar</div></div><div class="f-det-hdr">Shërbimet</div><div class="f-det-r"><div class="dl">Gjetja e spitalit specialist</div><div class="dv">E përfshirë</div></div><div class="f-det-r"><div class="dl">Organizimi i akomodimit</div><div class="dv">E përfshirë</div></div><div class="f-det-r"><div class="dl">Përkthimi gjatë trajtimit</div><div class="dv">E përfshirë</div></div><div class="f-note">Periudha e pritjes: 180 ditë për individët; 90 ditë për grupet mbi 50.</div><div class="price-table-wrap"><div class="price-table-title">Çmimet sipas moshës dhe gjinisë (€/vit)</div><div class="price-table-sub">Kolonat tregojnë shumën e mbulimit</div><table class="price-table"><thead><tr><th>Mosha</th><th>Gjinia</th><th>€ 5,000</th><th>€ 10,000</th><th>€ 20,000</th><th>€ 50,000</th></tr></thead><tbody><tr><td rowspan="2">21-30</td><td style="color:#60a5fa">M</td><td>€ 30</td><td>€ 35</td><td>€ 50</td><td>€ 90</td></tr><tr><td style="color:#f472b6">F</td><td>€ 30</td><td>€ 40</td><td>€ 60</td><td>€ 100</td></tr><tr><td rowspan="2">31-40</td><td style="color:#60a5fa">M</td><td>€ 35</td><td>€ 45</td><td>€ 80</td><td>€ 120</td></tr><tr><td style="color:#f472b6">F</td><td>€ 45</td><td>€ 65</td><td>€ 90</td><td>€ 200</td></tr><tr><td rowspan="2">41-50</td><td style="color:#60a5fa">M</td><td>€ 50</td><td>€ 70</td><td>€ 90</td><td>€ 250</td></tr><tr><td style="color:#f472b6">F</td><td>€ 65</td><td>€ 80</td><td>€ 120</td><td>€ 350</td></tr><tr><td rowspan="2">51-60</td><td style="color:#60a5fa">M</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr><tr><td style="color:#f472b6">F</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr><tr><td rowspan="2">61-70</td><td style="color:#60a5fa">M</td><td>€ 200</td><td>€ 380</td><td>€ 750</td><td>€ 1,800</td></tr><tr><td style="color:#f472b6">F</td><td>€ 120</td><td>€ 250</td><td>€ 420</td><td>€ 1,000</td></tr><tr><td rowspan="2">71-80</td><td style="color:#60a5fa">M</td><td>€ 250</td><td>€ 380</td><td>€ 980</td><td>€ 2,400</td></tr><tr><td style="color:#f472b6">F</td><td>€ 150</td><td>€ 220</td><td>€ 520</td><td>€ 1,200</td></tr></tbody></table></div><button class="f-btn" id="btn-jete" onclick="event.stopPropagation();toggleOptSel(\'jete\')">Zgjedh</button></div></div><div class="f-right"><div class="f-price">€ 2.50</div><div class="f-per">nga/muaj</div></div></div>';
-    h+='<div class="f-banner opinion" id="f-opinion" onclick="toggleFBanner(\'opinion\')"><div class="f-glow"></div><div class="f-info"><div class="f-title-row"><span class="f-title">Opinioni i Dytë Mjekësor</span><span class="f-badge">I ri</span></div><div class="f-tags"><span class="f-tag">3 Qendra Botërore</span><span class="f-tag">Brenda 10 ditëve</span></div><div class="f-desc">Mendim ndërkombëtar nga Qendrat Mjekësore Botërore përmes MediGuide.</div><div class="f-link">Shih detajet & Zgjedh →</div><div class="f-details" onclick="event.stopPropagation()"><div class="f-det-hdr">Si funksionon</div><div class="f-det-r"><div class="dl">Dërgohen formularët për plotësim</div><div class="dv">Hapi 1</div></div><div class="f-det-r"><div class="dl">Propozohen 3 Qendra Botërore</div><div class="dv">Hapi 2</div></div><div class="f-det-r"><div class="dl">Zgjidhni Qendrën, MediGuide mbledh të dhënat</div><div class="dv">Hapi 3</div></div><div class="f-det-r"><div class="dl">Analiza brenda 10 ditëve</div><div class="dv">Hapi 4</div></div><div class="f-det-r"><div class="dl">Opinioni dërgohet ju dhe mjekut</div><div class="dv">Hapi 5</div></div><div class="f-det-hdr">Gjetja e Qendrës</div><div class="f-det-r"><div class="dl">Rekomandim për trajtim mjekësor</div><div class="dv">E përfshirë</div></div><div class="f-det-r"><div class="dl">Kostot mbulohen nga SIGAL</div><div class="dv">E përfshirë</div></div><div class="f-note">Shërbimet mjekësore në qendrë paguhen nga pacienti.</div><button class="f-btn" id="btn-opinion" onclick="event.stopPropagation();toggleOptSel(\'opinion\')">Zgjedh</button></div></div><div class="f-right"><div class="f-price">€ 1</div><div class="f-per">/muaj</div></div></div>';
+    // === JETË PLUS CASH ===
+    var h='<div class="f-banner jete" id="f-jete">';
+    h+='<div class="f-glow"></div>';
+    h+='<div class="f-info">';
+    h+='<div class="f-title-row"><span class="f-title">Jetë Plus Cash</span><span class="f-badge">Rekomanduar</span></div>';
+    h+='<div class="f-tags"><span class="f-tag">Sëmundje të rënda</span><span class="f-tag">Mbulim global</span><span class="f-tag">Nën 21 falas</span></div>';
+    h+='<div class="f-desc">Mbështetje financiare e menjëhershme nëse diagnostikoheni me sëmundje të rëndë.</div>';
+    h+='<div class="f-link" onclick="toggleFBanner(\'jete\')">Shih mbulimet ▾</div>';
+    h+='<div class="f-details">';
+    h+='<div class="f-det-hdr">Sëmundjet që mbulohen</div>';
+    h+='<div class="f-det-r"><div class="dl">Tumor malinj invaziv</div><div class="dv">E mbuluar</div></div>';
+    h+='<div class="f-det-r"><div class="dl">Tumor beninj në kokë</div><div class="dv">E mbuluar</div></div>';
+    h+='<div class="f-det-r"><div class="dl">Opinion i dytë mjekësor</div><div class="dv">E mbuluar</div></div>';
+    h+='<div class="f-det-hdr">Shërbimet</div>';
+    h+='<div class="f-det-r"><div class="dl">Gjetja e spitalit specialist</div><div class="dv">E përfshirë</div></div>';
+    h+='<div class="f-det-r"><div class="dl">Organizimi i akomodimit</div><div class="dv">E përfshirë</div></div>';
+    h+='<div class="f-det-r"><div class="dl">Përkthimi gjatë trajtimit</div><div class="dv">E përfshirë</div></div>';
+    h+='<div class="f-note">Periudha e pritjes: 180 ditë për individët; 90 ditë për grupet mbi 50.</div>';
+    h+='<div class="price-table-wrap"><div class="price-table-title">Çmimet sipas moshës dhe gjinisë (€/vit)</div><div class="price-table-sub">Kolonat tregojnë shumën e mbulimit</div><table class="price-table"><thead><tr><th>Mosha</th><th>Gjinia</th><th>€ 5,000</th><th>€ 10,000</th><th>€ 20,000</th><th>€ 50,000</th></tr></thead><tbody>';
+    h+='<tr><td rowspan="2">21-30</td><td style="color:#60a5fa">M</td><td>€ 30</td><td>€ 35</td><td>€ 50</td><td>€ 90</td></tr><tr><td style="color:#f472b6">F</td><td>€ 30</td><td>€ 40</td><td>€ 60</td><td>€ 100</td></tr>';
+    h+='<tr><td rowspan="2">31-40</td><td style="color:#60a5fa">M</td><td>€ 35</td><td>€ 45</td><td>€ 80</td><td>€ 120</td></tr><tr><td style="color:#f472b6">F</td><td>€ 45</td><td>€ 65</td><td>€ 90</td><td>€ 200</td></tr>';
+    h+='<tr><td rowspan="2">41-50</td><td style="color:#60a5fa">M</td><td>€ 50</td><td>€ 70</td><td>€ 90</td><td>€ 250</td></tr><tr><td style="color:#f472b6">F</td><td>€ 65</td><td>€ 80</td><td>€ 120</td><td>€ 350</td></tr>';
+    h+='<tr><td rowspan="2">51-60</td><td style="color:#60a5fa">M</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr><tr><td style="color:#f472b6">F</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr>';
+    h+='<tr><td rowspan="2">61-70</td><td style="color:#60a5fa">M</td><td>€ 200</td><td>€ 380</td><td>€ 750</td><td>€ 1,800</td></tr><tr><td style="color:#f472b6">F</td><td>€ 120</td><td>€ 250</td><td>€ 420</td><td>€ 1,000</td></tr>';
+    h+='<tr><td rowspan="2">71-80</td><td style="color:#60a5fa">M</td><td>€ 250</td><td>€ 380</td><td>€ 980</td><td>€ 2,400</td></tr><tr><td style="color:#f472b6">F</td><td>€ 150</td><td>€ 220</td><td>€ 520</td><td>€ 1,200</td></tr>';
+    h+='</tbody></table></div>';
+    h+='<div class="f-zgjedh-wrap"><button class="f-zgjedh-btn" onclick="event.stopPropagation();toggleOptSel(\'jete\')">Zgjedh pakon</button><div class="f-zgjedh-note">Opsionale — shtohet mbi paketën bazë</div></div>';
+    h+='</div>'; // mbyll f-details
+    h+='</div>'; // mbyll f-info
+    h+='<div class="f-right"><div class="f-price">€ 2.50</div><div class="f-per">nga/muaj</div></div>';
+    h+='</div>'; // mbyll f-banner jete
+
+    // === OPINIONI I DYTË MJEKËSOR ===
+    h+='<div class="f-banner opinion" id="f-opinion">';
+    h+='<div class="f-glow"></div>';
+    h+='<div class="f-info">';
+    h+='<div class="f-title-row"><span class="f-title">Opinioni i Dytë Mjekësor</span><span class="f-badge">I ri</span></div>';
+    h+='<div class="f-tags"><span class="f-tag">MediGuide</span><span class="f-tag">Përgjigje brenda 10 ditëve</span><span class="f-tag">Mbuluar nga SIGAL</span></div>';
+    h+='<div class="f-desc">Mendim ndërkombëtar nga Qendrat Mjekësore Botërore përmes MediGuide.</div>';
+    h+='<div class="f-link" onclick="toggleFBanner(\'opinion\')">Shih mbulimet ▾</div>';
+    h+='<div class="f-details">';
+    h+='<div class="f-det-hdr">Si funksionon</div>';
+    h+='<div class="f-det-r"><div class="dl">Dërgohen formularët për plotësim</div><div class="dv">Hapi 1</div></div>';
+    h+='<div class="f-det-r"><div class="dl">Propozohen 3 Qendra Botërore</div><div class="dv">Hapi 2</div></div>';
+    h+='<div class="f-det-r"><div class="dl">Zgjidhni Qendrën, MediGuide mbledh të dhënat</div><div class="dv">Hapi 3</div></div>';
+    h+='<div class="f-det-r"><div class="dl">Analiza brenda 10 ditëve</div><div class="dv">Hapi 4</div></div>';
+    h+='<div class="f-det-r"><div class="dl">Opinioni dërgohet ju dhe mjekut</div><div class="dv">Hapi 5</div></div>';
+    h+='<div class="f-det-hdr">Gjetja e Qendrës</div>';
+    h+='<div class="f-det-r"><div class="dl">Rekomandim për trajtim mjekësor</div><div class="dv">E përfshirë</div></div>';
+    h+='<div class="f-det-r"><div class="dl">Kostot mbulohen nga SIGAL</div><div class="dv">E përfshirë</div></div>';
+    h+='<div class="f-note">Shërbimet mjekësore në qendrë paguhen nga pacienti.</div>';
+    h+='<div class="f-zgjedh-wrap"><button class="f-zgjedh-btn" onclick="event.stopPropagation();toggleOptSel(\'opinion\')">Zgjedh pakon</button><div class="f-zgjedh-note">Opsionale — shtohet mbi paketën bazë</div></div>';
+    h+='</div>'; // mbyll f-details
+    h+='</div>'; // mbyll f-info
+    h+='<div class="f-right"><div class="f-price">€ 1</div><div class="f-per">/muaj</div></div>';
+    h+='</div>'; // mbyll f-banner opinion
+
     return h;
 }
 
@@ -263,7 +330,6 @@ function appRrjetiHTML(){
     h+='<div class="ar-card app"><div class="ar-glow"></div><div class="ar-logo"><img src="../sigal-app-icon.png" alt="" onerror="this.parentElement.innerHTML=\'<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;#002B5C&quot; stroke-width=&quot;2&quot; style=&quot;width:20px;height:20px&quot;><rect x=&quot;5&quot; y=&quot;2&quot; width=&quot;14&quot; height=&quot;20&quot; rx=&quot;2&quot;/></svg>\'"></div><div class="ar-title">Sigal Kosova App</div><div class="ar-val" style="color:#22c55e">FALAS</div><div class="ar-sub">Rimbursime 100% online<br>Lexim automatik faturave</div><div class="ar-stores"><a href="https://apps.apple.com/us/app/sigal-kosova/id6756305258" target="_blank">App Store</a><a href="https://play.google.com/store/apps/details?id=com.sigalkosova.einsureapp" target="_blank">Google Play</a></div></div>';
     h+='<div class="ar-card net" onclick="document.getElementById(\'rrjeti-section\').style.display=document.getElementById(\'rrjeti-section\').style.display===\'none\'?\'block\':\'none\'"><div class="ar-glow"></div><div class="ar-logo"><svg viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="2" style="width:20px;height:20px"><path d="M3 21h18M9 8h6M12 8v6M9 21V8a3 3 0 0 1 3-3h0a3 3 0 0 1 3 3v13" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ar-title">Rrjeti Mjekësor</div><div class="ar-val">'+ti+'</div><div class="ar-sub">institucione partnere<br>Kartela SIGAL</div><div class="ar-link">Shiko listën →</div></div>';
     h+='</div>';
-    // R3 tabs rrjeti (fillimisht fshehur)
     h+='<div id="rrjeti-section" style="display:none;margin-top:10px"><div class="net-card"><div class="net-hdr"><div class="net-hdr-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><span class="net-hdr-title">Rrjeti Mjekësor SIGAL</span><span class="net-hdr-count">'+ti+'</span></div>';
     h+='<div class="net-kartele"><div class="net-kartele-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><span class="net-kartele-text">Kartela SIGAL — mbulim direkt pa pagesë</span></div>';
     h+='<div class="net-tabs"><div class="net-tab active" data-cat="spitalet" onclick="switchNetTab(\'spitalet\')">Spitalet <span class="net-tab-count">('+RRJETI.spitalet.length+')</span></div><div class="net-tab" data-cat="laboratoret" onclick="switchNetTab(\'laboratoret\')">Laboratoret <span class="net-tab-count">('+RRJETI.laboratoret.length+')</span></div><div class="net-tab" data-cat="dentaret" onclick="switchNetTab(\'dentaret\')">Dentarët <span class="net-tab-count">('+RRJETI.dentaret.length+')</span></div><div class="net-tab" data-cat="ordinanca" onclick="switchNetTab(\'ordinanca\')">Ordinanca <span class="net-tab-count">('+RRJETI.ordinanca.length+')</span></div></div>';
