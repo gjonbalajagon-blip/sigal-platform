@@ -22,6 +22,7 @@ function shtoOferte(){
     document.getElementById('m-agjenti').value='';
     document.getElementById('field-agjenti').style.display='none';
     document.getElementById('version-panel').style.display='none';
+    const tb=document.getElementById('tracking-bar');if(tb)tb.remove();
     spSelectedPakot.clear();
     spFoldOpen=false;
     zgjidhLlojin('individ',document.querySelectorAll('.drawer-lloji-btn')[0]);
