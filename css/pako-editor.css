@@ -1,0 +1,205 @@
+/* ============================================
+   PAKO EDITOR — Inline Editing Cards
+   Shto këtë CSS në faqen oferte.html
+   (zëvendëso stilet e vjetra .drawer-pako-editor)
+   ============================================ */
+
+/* Karta e pakos */
+.pe-card {
+    background: white;
+    border: 2px solid #e5e9f0;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+.pe-card.selected {
+    border-color: #002B5C;
+    box-shadow: 0 2px 12px rgba(0,43,92,0.1);
+}
+.pe-card.collapsed .pe-card-body {
+    display: none !important;
+}
+
+/* Header i kartës */
+.pe-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    background: #fafbfc;
+    border-bottom: 1px solid #e5e9f0;
+    transition: background 0.15s;
+}
+.pe-card-header:hover {
+    background: #f0f4ff;
+}
+.pe-card.selected .pe-card-header {
+    background: #002B5C;
+    border-bottom-color: #002B5C;
+}
+.pe-card.selected .pe-card-name,
+.pe-card.selected .pe-card-shuma,
+.pe-card.selected .pe-card-chevron {
+    color: white;
+}
+.pe-card-header input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #002B5C;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.pe-card-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #002B5C;
+    flex: 1;
+}
+.pe-card-shuma {
+    font-size: 13px;
+    font-weight: 800;
+    color: #002B5C;
+}
+.pe-card-chevron {
+    font-size: 10px;
+    color: #6b7a8d;
+    transition: transform 0.2s;
+}
+.pe-card.collapsed .pe-card-chevron {
+    transform: rotate(-90deg);
+}
+
+/* Body i kartës */
+.pe-card-body {
+    display: none;
+    padding: 12px 14px;
+}
+
+/* Rreshti top: Zona + Shuma */
+.pe-row-top {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.pe-row-top .pe-inline-field {
+    flex: 1;
+}
+
+/* Seksionet */
+.pe-section {
+    margin-bottom: 8px;
+}
+.pe-section-hdr {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #002B5C;
+    padding: 4px 0;
+    border-bottom: 1px solid #e5e9f0;
+    margin-bottom: 4px;
+}
+.pe-section-icon {
+    display: flex;
+    align-items: center;
+    opacity: 0.6;
+}
+
+/* Inline field: label + vlerë klikueshme */
+.pe-inline-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 0;
+    min-height: 28px;
+}
+.pe-inline-field.pe-full {
+    width: 100%;
+}
+.pe-field-label {
+    font-size: 11px;
+    color: #6b7a8d;
+    flex-shrink: 0;
+    min-width: 70px;
+}
+.pe-field-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a2332;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: #f4f6f9;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 60px;
+    flex: 1;
+}
+.pe-field-value:hover {
+    background: #e8f0fe;
+    border-color: #002B5C;
+}
+
+/* Input kur editohet */
+.pe-inline-input {
+    width: 100%;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    color: #002B5C;
+    border: 2px solid #002B5C;
+    border-radius: 6px;
+    background: white;
+    outline: none;
+}
+
+/* Grid për trajtimet tjera — 2 kolona */
+.pe-tjera-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 12px;
+}
+.pe-tjera-grid .pe-half {
+    min-width: 0;
+}
+
+/* Primi row */
+.pe-primi-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e5e9f0;
+}
+.pe-primi-row .pe-inline-field {
+    flex: 1;
+}
+.pe-primi-val {
+    font-weight: 800 !important;
+    color: #002B5C !important;
+    font-size: 14px !important;
+}
+.pe-primi-suffix {
+    font-size: 10px;
+    color: #6b7a8d;
+    flex-shrink: 0;
+}
+
+/* Responsive — 1 kolonë për ekrane të vogla */
+@media (max-width: 520px) {
+    .pe-tjera-grid {
+        grid-template-columns: 1fr;
+    }
+    .pe-row-top {
+        flex-direction: column;
+        gap: 4px;
+    }
+    .pe-primi-row {
+        flex-direction: column;
+        gap: 4px;
+    }
+}

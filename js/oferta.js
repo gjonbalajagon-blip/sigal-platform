@@ -46,6 +46,8 @@ function mbyllDrawer() {
 }
 function mbyllModal() { mbyllDrawer(); }
 
+// ====== INLINE EDITING: Pako Card System ======
+
 function zgjidhLlojin(lloji, btn) {
     document.getElementById('m-lloji').value = lloji;
     document.querySelectorAll('.drawer-lloji-btn').forEach(b => b.classList.remove('active'));
@@ -55,45 +57,159 @@ function zgjidhLlojin(lloji, btn) {
     const eshteIndivid = lloji === 'individ';
     const container = document.getElementById('pakot-container');
 
-    container.innerHTML = pakotList.map(p => `
-        <div class="drawer-pako-editor" id="pe-${p.id}">
-            <div class="drawer-pako-editor-header">
-                <input type="checkbox" class="pako-check-input" value="${p.id}" onchange="togglePakoEditor('${p.id}', this.checked)">
-                <strong>${p.emri}</strong>
+    container.innerHTML = pakotList.map(p => {
+        const tjeraFields = [
+            {key:'shtatzania', label:'Shtatzënia'},
+            {key:'dentar', label:'Dentar'},
+            {key:'optik', label:'Optik'},
+            {key:'degim', label:'Dëgim'},
+            {key:'psikiatrik', label:'Psikiatrik'},
+            {key:'fizioterapi', label:'Fizioterapi'},
+            {key:'autoambulanca', label:'Autoambulanca'},
+            {key:'aksidentit', label:'Aksidenti'},
+            {key:'onkologjike', label:'Onkologjike'}
+        ];
+
+        const tjeraHTML = tjeraFields.map(f =>
+            `<div class="pe-inline-field pe-half">
+                <span class="pe-field-label">${f.label}</span>
+                <span class="pe-field-value" data-pako="${p.id}" data-field="${f.key}" onclick="inlineEdit(this)" title="Kliko për të edituar">${p[f.key] || '-'}</span>
+            </div>`
+        ).join('');
+
+        return `
+        <div class="pe-card" id="pe-${p.id}">
+            <div class="pe-card-header" onclick="togglePakoCard('${p.id}')">
+                <input type="checkbox" class="pako-check-input" value="${p.id}" onclick="event.stopPropagation();togglePakoEditor('${p.id}', this.checked)">
+                <span class="pe-card-name">${p.emri}</span>
+                <span class="pe-card-shuma">€ ${p.shuma}</span>
+                <span class="pe-card-chevron">▾</span>
             </div>
-            <div class="drawer-pako-editor-body" id="peb-${p.id}">
-                <table>
-                    <tr><td>Zona e mbuluar</td><td><input class="pako-input" data-pako="${p.id}" data-field="zona" value="${p.zona}"></td></tr>
-                    <tr><td>Shuma e Siguruar (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="shuma" value="${p.shuma}"></td></tr>
-                    <tr><td colspan="2" class="pako-section-hdr">Hospitalore</td></tr>
-                    <tr><td>Mbulimi</td><td><input class="pako-input" data-pako="${p.id}" data-field="hospitalore" value="${p.hospitalore}"></td></tr>
-                    <tr><td colspan="2" class="pako-section-hdr">Ambulantore</td></tr>
-                    <tr><td>Mbulimi</td><td><input class="pako-input" data-pako="${p.id}" data-field="ambulatore" value="${p.ambulatore}"></td></tr>
-                    <tr><td colspan="2" class="pako-section-hdr">Trajtime tjera</td></tr>
-                    <tr><td>Shtatzania</td><td><input class="pako-input" data-pako="${p.id}" data-field="shtatzania" value="${p.shtatzania}"></td></tr>
-                    <tr><td>Dentar</td><td><input class="pako-input" data-pako="${p.id}" data-field="dentar" value="${p.dentar}"></td></tr>
-                    <tr><td>Optik</td><td><input class="pako-input" data-pako="${p.id}" data-field="optik" value="${p.optik}"></td></tr>
-                    <tr><td>Dëgim</td><td><input class="pako-input" data-pako="${p.id}" data-field="degim" value="${p.degim}"></td></tr>
-                    <tr><td>Psikiatrik</td><td><input class="pako-input" data-pako="${p.id}" data-field="psikiatrik" value="${p.psikiatrik}"></td></tr>
-                    <tr><td>Fizioterapi</td><td><input class="pako-input" data-pako="${p.id}" data-field="fizioterapi" value="${p.fizioterapi}"></td></tr>
-                    <tr><td>Autoambulanca</td><td><input class="pako-input" data-pako="${p.id}" data-field="autoambulanca" value="${p.autoambulanca}"></td></tr>
-                    <tr><td>Aksidenti</td><td><input class="pako-input" data-pako="${p.id}" data-field="aksidentit" value="${p.aksidentit}"></td></tr>
-                    <tr><td>Onkologjike</td><td><input class="pako-input" data-pako="${p.id}" data-field="onkologjike" value="${p.onkologjike}"></td></tr>
-                    <tr><td colspan="2" class="pako-section-hdr">Primet ${eshteIndivid ? 'vjetore' : 'mujore'}</td></tr>
-                    <tr><td>Primi mbi 18 vjeç (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="primi_madh" value="${p.primi_madh}"></td></tr>
-                    ${!eshteIndivid ? `<tr><td>Primi fëmijë (€)</td><td><input class="pako-input" data-pako="${p.id}" data-field="primi_femije" value="${p.primi_femije}"></td></tr>` : ''}
-                </table>
+            <div class="pe-card-body" id="peb-${p.id}">
+                <div class="pe-row-top">
+                    <div class="pe-inline-field">
+                        <span class="pe-field-label">Zona</span>
+                        <span class="pe-field-value" data-pako="${p.id}" data-field="zona" onclick="inlineEdit(this)">${p.zona}</span>
+                    </div>
+                    <div class="pe-inline-field">
+                        <span class="pe-field-label">Shuma e siguruar</span>
+                        <span class="pe-field-value" data-pako="${p.id}" data-field="shuma" onclick="inlineEdit(this)">€ ${p.shuma}</span>
+                    </div>
+                </div>
+
+                <div class="pe-section">
+                    <div class="pe-section-hdr">
+                        <span class="pe-section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M9 8h6M12 8v6M9 21V8a3 3 0 0 1 3-3h0a3 3 0 0 1 3 3v13"/></svg></span>
+                        Hospitalore
+                    </div>
+                    <div class="pe-inline-field pe-full">
+                        <span class="pe-field-label">Mbulimi</span>
+                        <span class="pe-field-value" data-pako="${p.id}" data-field="hospitalore" onclick="inlineEdit(this)">${p.hospitalore || '100%'}</span>
+                    </div>
+                </div>
+
+                <div class="pe-section">
+                    <div class="pe-section-hdr">
+                        <span class="pe-section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M12 11v6M9 14h6"/></svg></span>
+                        Ambulantore
+                    </div>
+                    <div class="pe-inline-field pe-full">
+                        <span class="pe-field-label">Mbulimi</span>
+                        <span class="pe-field-value" data-pako="${p.id}" data-field="ambulatore" onclick="inlineEdit(this)">${p.ambulatore || '-'}</span>
+                    </div>
+                </div>
+
+                <div class="pe-section">
+                    <div class="pe-section-hdr">
+                        <span class="pe-section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+                        Trajtime tjera
+                    </div>
+                    <div class="pe-tjera-grid">${tjeraHTML}</div>
+                </div>
+
+                <div class="pe-primi-row">
+                    <div class="pe-inline-field">
+                        <span class="pe-field-label">Primi mbi 18 vjeç (€)</span>
+                        <span class="pe-field-value pe-primi-val" data-pako="${p.id}" data-field="primi_madh" onclick="inlineEdit(this)">${p.primi_madh}</span>
+                        <span class="pe-primi-suffix">${eshteIndivid ? '/vit' : '/muaj'}</span>
+                    </div>
+                    ${!eshteIndivid ? `<div class="pe-inline-field">
+                        <span class="pe-field-label">Primi fëmijë (€)</span>
+                        <span class="pe-field-value pe-primi-val" data-pako="${p.id}" data-field="primi_femije" onclick="inlineEdit(this)">${p.primi_femije || '-'}</span>
+                        <span class="pe-primi-suffix">/muaj</span>
+                    </div>` : ''}
+                </div>
             </div>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
+}
+
+function togglePakoCard(id) {
+    const card = document.getElementById('pe-' + id);
+    const cb = card.querySelector('.pako-check-input');
+    // Toggle checkbox nëse nuk është checked, ose thjesht toggle expand/collapse
+    if (!cb.checked) {
+        cb.checked = true;
+        togglePakoEditor(id, true);
+    } else {
+        // Toggle collapse/expand
+        card.classList.toggle('collapsed');
+    }
 }
 
 function togglePakoEditor(id, checked) {
     const body = document.getElementById('peb-' + id);
     const card = document.getElementById('pe-' + id);
-    body.style.display = checked ? 'block' : 'none';
-    if (checked) card.classList.add('selected');
-    else card.classList.remove('selected');
+    if (checked) {
+        card.classList.add('selected');
+        card.classList.remove('collapsed');
+        body.style.display = 'block';
+    } else {
+        card.classList.remove('selected');
+        body.style.display = 'none';
+    }
+}
+
+// Inline edit: kliko vlerën → bëhet input → ruaje me blur/enter
+function inlineEdit(el) {
+    if (el.querySelector('input')) return; // tashmë në editim
+    const currentVal = el.textContent.trim();
+    const field = el.dataset.field;
+
+    // Largo "€ " prefix nëse ka (vetëm për shuma)
+    let editVal = currentVal;
+    if (field === 'shuma') editVal = currentVal.replace(/^€\s*/, '');
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'pe-inline-input';
+    input.value = editVal;
+
+    el.textContent = '';
+    el.appendChild(input);
+    input.focus();
+    input.select();
+
+    const finalize = () => {
+        const newVal = input.value.trim() || '-';
+        if (field === 'shuma') {
+            el.textContent = '€ ' + newVal;
+            // Përditëso edhe header-in e kartës
+            const card = el.closest('.pe-card');
+            if (card) {
+                const shumaDisp = card.querySelector('.pe-card-shuma');
+                if (shumaDisp) shumaDisp.textContent = '€ ' + newVal;
+            }
+        } else {
+            el.textContent = newVal;
+        }
+    };
+
+    input.addEventListener('blur', finalize);
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+        if (e.key === 'Escape') { el.textContent = currentVal; }
+    });
 }
 
 function tregoBoxAgjenti() {
@@ -186,8 +302,12 @@ function riktheVersion(vIdx) {
             if (isSelected) {
                 const customPako = (v.pakot || []).find(p => typeof p === 'object' && p.id === cb.value);
                 if (customPako) {
-                    document.querySelectorAll(`.pako-input[data-pako="${cb.value}"]`).forEach(inp => {
-                        if (customPako[inp.dataset.field] !== undefined) inp.value = customPako[inp.dataset.field];
+                    // Set inline values
+                    document.querySelectorAll(`.pe-field-value[data-pako="${cb.value}"]`).forEach(el => {
+                        const field = el.dataset.field;
+                        if (customPako[field] !== undefined) {
+                            el.textContent = field === 'shuma' ? '€ ' + customPako[field] : customPako[field];
+                        }
                     });
                 }
             }
@@ -195,6 +315,7 @@ function riktheVersion(vIdx) {
     }, 50);
 }
 
+// ====== RUAJ — lexo vlerat nga inline spans ======
 function ruajOferte() {
     const emri = document.getElementById('m-emri').value.trim();
     if (!emri) { alert('Ju lutem shkruani emrin e klientit!'); return; }
@@ -203,10 +324,18 @@ function ruajOferte() {
     skadon.setDate(skadon.getDate() + 30);
     const kerkuarNga = document.getElementById('m-kerkuar-nga').value;
     const agjenti = document.getElementById('m-agjenti').value.trim();
+
+    // Lexo pakot nga inline editing spans
     const pakotAktuale = Array.from(document.querySelectorAll('.pako-check-input:checked')).map(cb => {
         const pakoId = cb.value;
         const vlerat = {};
-        document.querySelectorAll(`.pako-input[data-pako="${pakoId}"]`).forEach(inp => { vlerat[inp.dataset.field] = inp.value; });
+        document.querySelectorAll(`.pe-field-value[data-pako="${pakoId}"]`).forEach(el => {
+            let val = el.textContent.trim();
+            const field = el.dataset.field;
+            // Largo "€ " prefix për shuma
+            if (field === 'shuma') val = val.replace(/^€\s*/, '');
+            vlerat[field] = val;
+        });
         return { id: pakoId, ...vlerat };
     });
     if (pakotAktuale.length === 0) { alert('Ju lutem zgjidhni së paku një paketë!'); return; }
@@ -258,12 +387,14 @@ function editoOferte(index) {
     const btns = document.querySelectorAll('.drawer-lloji-btn');
     const llojiMap = { 'individ': 0, 'familje': 1, 'biznes': 2 };
     zgjidhLlojin(o.lloji, btns[llojiMap[o.lloji] || 0]);
+
     const pakotIds = (o.pakot || []).map(p => {
         if (typeof p === 'object') return p.id;
         const pakotList = o.lloji === 'individ' ? PAKOT.individ : PAKOT.familje_biznes;
         const found = pakotList.find(pk => pk.emri === p || `Pako ${pk.emri}` === p || pk.id === p);
         return found ? found.id : p;
     });
+
     setTimeout(() => {
         document.querySelectorAll('.pako-check-input').forEach(cb => {
             const isSelected = pakotIds.includes(cb.value);
@@ -272,13 +403,23 @@ function editoOferte(index) {
             if (isSelected) {
                 const customPako = (o.pakot || []).find(p => typeof p === 'object' && p.id === cb.value);
                 if (customPako) {
-                    document.querySelectorAll(`.pako-input[data-pako="${cb.value}"]`).forEach(inp => {
-                        if (customPako[inp.dataset.field] !== undefined) inp.value = customPako[inp.dataset.field];
+                    document.querySelectorAll(`.pe-field-value[data-pako="${cb.value}"]`).forEach(el => {
+                        const field = el.dataset.field;
+                        if (customPako[field] !== undefined) {
+                            el.textContent = field === 'shuma' ? '€ ' + customPako[field] : customPako[field];
+                        }
                     });
+                    // Përditëso edhe header shuma
+                    const card = document.getElementById('pe-' + cb.value);
+                    if (card && customPako.shuma) {
+                        const shumaDisp = card.querySelector('.pe-card-shuma');
+                        if (shumaDisp) shumaDisp.textContent = '€ ' + customPako.shuma;
+                    }
                 }
             }
         });
     }, 50);
+
     const vPanel = document.getElementById('version-panel');
     if (o.versione && o.versione.length > 0) { vPanel.style.display = 'block'; renderVersions(o.versione, o); }
     else { vPanel.style.display = 'none'; }
@@ -309,7 +450,6 @@ function dergoEmail(index) {
     const subject = encodeURIComponent('Ofertë nga SIGAL Insurance Group - ' + o.emri);
     const body = encodeURIComponent('I nderuar ' + o.emri + ',\n\nJu dërgojmë ofertën tonë për sigurim shëndetësor.\n\nJu lutem klikoni linkun më poshtë për të parë paketën dhe për të konfirmuar zgjedhjen tuaj:\n\n' + link + '\n\nValiditeti: 30 ditë nga ' + o.dataKrijimit + '\n\nMe respekt,\nSIGAL Insurance Group');
     window.open('mailto:' + o.email + '?subject=' + subject + '&body=' + body);
-    // Track: shëno si e dërguar
     ofertat[index].statusi = ofertat[index].statusi === 'e_krijuar' ? 'e_derguar' : ofertat[index].statusi;
     ruajNeStorage();
     try { fetch(TAPI+'/api/oferta-derguar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId:String(index)})}); } catch(e){}
@@ -346,7 +486,6 @@ function kopjoLink(index) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(link).then(() => tregoToast('Linku u kopjua!')).catch(() => kopjoFallback(link));
     } else { kopjoFallback(link); }
-    // Track: shëno si e dërguar
     ofertat[index].statusi = ofertat[index].statusi === 'e_krijuar' ? 'e_derguar' : ofertat[index].statusi;
     ruajNeStorage();
     try { fetch(TAPI+'/api/oferta-derguar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId:String(index)})}); } catch(e){}
@@ -416,12 +555,10 @@ function renderTabela() {
         const kerkuar = o.kerkuarNga === 'agjenti' ? 'Agjenti: ' + o.agjenti : (kerkuarLabels[o.kerkuarNga] || '-');
         const vCount = (o.versione || []).length;
         const vBadge = vCount > 0 ? ` <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;" title="${vCount} versione">${vCount}v</span>` : '';
-        // Skadon me dot ngjyrash
         let dotColor = '#22c55e';
         if (ditet.klasa === 'skadon-warning') dotColor = '#f59e0b';
         if (ditet.klasa === 'skadon-expired') dotColor = '#ef4444';
         const skadonHtml = '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:'+dotColor+';flex-shrink:0"></span>' + ditet.teksti + '</span>';
-        // Tracking status
         const trackStatus = getTrackStatus(o);
         return '<tr>' +
             '<td>' + o.emri + vBadge + '</td>' +
