@@ -1,9 +1,9 @@
-/* ============================================
+﻿/* ============================================
    OFERTE POPUP + PAKO SPREADSHEET EDITOR
-   Zëvendëso drawer-overlay stilet e vjetra
+   ZÃ«vendÃ«so drawer-overlay stilet e vjetra
    ============================================ */
 
-/* === POPUP MODAL (zëvendëson drawer) === */
+/* === POPUP MODAL (zÃ«vendÃ«son drawer) === */
 .drawer-overlay {
     display: none;
     position: fixed;
@@ -19,8 +19,8 @@
 .drawer-panel {
     background: white;
     border-radius: 12px;
-    width: 92vw;
-    max-width: 860px;
+    width: 95vw;
+    max-width: 1300px;
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0,0,0,0.25);
@@ -270,7 +270,7 @@
     border-bottom: none;
 }
 
-/* Çelula editoeshme */
+/* Ã‡elula editoeshme */
 .sp-cell {
     text-align: center;
     border-left: 1px solid #f0f0f0;
@@ -329,17 +329,17 @@
     gap: 4px;
 }
 
-/* Buttons poshtë */
+/* Buttons poshtÃ« */
 .sp-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 8px;
     padding: 12px 0 0;
     border-top: 1px solid #e5e9f0;
     margin-top: 12px;
 }
 .sp-btn {
-    padding: 9px 20px;
+    padding: 10px 32px;
     border-radius: 6px;
     font-size: 13px;
     font-weight: 600;
