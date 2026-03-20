@@ -225,14 +225,65 @@ function spEditCell(td){
 }
 
 // ====== VERSIONING ======
-function toggleVersions(){document.getElementById('version-body').classList.toggle('open');}
+let historyOpen=false;
+function toggleVersions(){
+    historyOpen=!historyOpen;
+    const body=document.getElementById('version-body');
+    const arrow=document.getElementById('history-arrow');
+    body.style.display=historyOpen?'block':'none';
+    if(arrow) arrow.textContent=historyOpen?'▾':'▸';
+}
 function renderVersions(versione,oferta){
     if(!versione||versione.length===0)return;
     const body=document.getElementById('version-body');
     document.getElementById('version-count').textContent=versione.length;
+    document.getElementById('history-label').textContent='Historiku i ndryshimeve';
+
     body.innerHTML=versione.map((v,i)=>{
         const pakotTxt=(v.pakot||[]).map(p=>typeof p==='object'?(p.emri||p.id):p).join(', ');
-        return'<div class="version-item-block"><div class="version-item" onclick="this.nextElementSibling.classList.toggle(\'open\')"><span class="version-dot"></span><span class="v-date">'+(v.data||'-')+'</span><span class="v-pakot">'+(pakotTxt||'-')+'</span><div style="margin-left:auto;display:flex;gap:6px;align-items:center;"><span class="v-detail-toggle">Detajet ▾</span><button class="v-restore" onclick="event.stopPropagation();riktheVersion('+i+')">Rikthe</button></div></div><div class="v-details-panel"><div style="padding:8px 12px;font-size:11px;color:#6b7a8d;">Pakot: '+pakotTxt+'</div></div></div>';
+        // Detaje për çdo pakë
+        let detaje='';
+        (v.pakot||[]).forEach(p=>{
+            if(typeof p!=='object')return;
+            const emri=p.emri||p.id||'?';
+            let rows='';
+            // Fushat bazë
+            if(p.zona) rows+='<tr><td>Zona</td><td>'+p.zona+'</td></tr>';
+            if(p.shuma) rows+='<tr><td>Shuma</td><td>€ '+p.shuma+'</td></tr>';
+            if(p.hospitalore) rows+='<tr><td>Hospitalore</td><td>'+p.hospitalore+'</td></tr>';
+            if(p.ambulatore) rows+='<tr><td>Ambulantore</td><td>'+p.ambulatore+'</td></tr>';
+            // Trajtime tjera — formati i ri (tjera_0..tjera_8)
+            const tjeraLabels=['Shtatzënia','Dentar','Optik','Dëgim','Psikiatrik','Fizioterapi','Autoambulanca','Aksidenti','Onkologjike'];
+            tjeraLabels.forEach((lbl,idx)=>{
+                const key='tjera_'+idx;
+                if(p[key]&&p[key]!=='—') rows+='<tr><td>'+lbl+'</td><td>'+p[key]+'</td></tr>';
+            });
+            // Formati i vjetër (shtatzania, dentar etj. direkt)
+            const oldKeys=[{k:'shtatzania',l:'Shtatzënia'},{k:'dentar',l:'Dentar'},{k:'optik',l:'Optik'},{k:'degim',l:'Dëgim'},{k:'psikiatrik',l:'Psikiatrik'},{k:'fizioterapi',l:'Fizioterapi'},{k:'autoambulanca',l:'Autoambulanca'},{k:'aksidentit',l:'Aksidenti'},{k:'onkologjike',l:'Onkologjike'}];
+            oldKeys.forEach(ok=>{
+                if(p[ok.k]&&p[ok.k]!=='-'&&p[ok.k]!=='—') rows+='<tr><td>'+ok.l+'</td><td>'+p[ok.k]+'</td></tr>';
+            });
+            if(p.primi_madh) rows+='<tr><td>Primi</td><td>€ '+p.primi_madh+'</td></tr>';
+            if(p.primi_femije) rows+='<tr><td>Primi fëmijë</td><td>€ '+p.primi_femije+'</td></tr>';
+
+            if(rows){
+                detaje+='<div style="margin:6px 0;"><div style="font-size:11px;font-weight:700;color:#002B5C;padding:4px 0;border-bottom:1px solid #e5e9f0;">'+emri+'</div>';
+                detaje+='<table style="width:100%;font-size:11px;border-collapse:collapse;">'+rows+'</table></div>';
+            }
+        });
+
+        return '<div style="border:1px solid #e5e9f0;border-radius:6px;margin-bottom:6px;overflow:hidden;">'+
+            '<div style="display:flex;align-items:center;padding:8px 12px;cursor:pointer;background:#fafbfc;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">'+
+                '<span style="width:8px;height:8px;border-radius:50%;background:#002B5C;margin-right:8px;flex-shrink:0;"></span>'+
+                '<span style="font-size:11px;color:#6b7a8d;min-width:80px;">'+(v.data||'-')+'</span>'+
+                '<span style="font-size:11px;font-weight:600;color:#1a2332;flex:1;">'+pakotTxt+'</span>'+
+                '<span style="font-size:10px;color:#0047AB;margin-right:8px;">Detajet ▾</span>'+
+                '<button style="font-size:10px;padding:3px 10px;border:1px solid #e5e9f0;border-radius:4px;background:white;cursor:pointer;color:#002B5C;font-weight:600;" onclick="event.stopPropagation();riktheVersion('+i+')">Rikthe</button>'+
+            '</div>'+
+            '<div style="display:none;padding:8px 12px;border-top:1px solid #e5e9f0;background:white;">'+
+                (detaje||'<div style="font-size:11px;color:#aaa;">Pa detaje</div>')+
+            '</div>'+
+        '</div>';
     }).reverse().join('');
 }
 function riktheVersion(vIdx){
