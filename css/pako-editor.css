@@ -1,36 +1,46 @@
-﻿/* ============================================
+/* ============================================
    OFERTE POPUP + PAKO SPREADSHEET EDITOR
-   ZÃ«vendÃ«so drawer-overlay stilet e vjetra
+   !important overrides theme.css drawer styles
    ============================================ */
 
-/* === POPUP MODAL (zÃ«vendÃ«son drawer) === */
+/* === POPUP — override theme.css drawer === */
 .drawer-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,0.5) !important;
+    z-index: 1000 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    right: auto !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
 }
 .drawer-overlay.active {
-    display: flex;
+    display: flex !important;
 }
 .drawer-panel {
-    background: white;
-    border-radius: 12px;
-    width: 95vw;
-    max-width: 1300px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-    position: relative;
+    background: white !important;
+    border-radius: 12px !important;
+    width: 96vw !important;
+    max-width: 1400px !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25) !important;
+    position: relative !important;
+    margin: auto !important;
+    right: auto !important;
+    left: auto !important;
+    transform: none !important;
 }
 .drawer-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 14px 20px;
     border-bottom: 1px solid #e5e9f0;
     position: sticky;
     top: 0;
@@ -38,340 +48,112 @@
     z-index: 2;
     border-radius: 12px 12px 0 0;
 }
-.drawer-panel-header h2 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #002B5C;
-    margin: 0;
-}
-.drawer-close {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #f4f6f9;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6b7a8d;
-}
-.drawer-close:hover {
-    background: #e5e9f0;
-}
-.drawer-body {
-    padding: 16px 20px 20px;
-}
+.drawer-panel-header h2 { font-size: 16px; font-weight: 700; color: #002B5C; margin: 0; }
+.drawer-close { width: 32px; height: 32px; border-radius: 50%; background: #f4f6f9; border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7a8d; }
+.drawer-close:hover { background: #e5e9f0; }
+.drawer-body { padding: 16px 20px 20px; }
 
-/* === Formular rreshti top === */
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-.form-row.three {
-    grid-template-columns: 1fr 1fr 1fr;
-}
-.form-group label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: #6b7a8d;
-    margin-bottom: 3px;
-}
-.form-group input,
-.form-group select {
-    width: 100%;
-    padding: 7px 10px;
-    border: 1px solid #e5e9f0;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 12px;
-    color: #1a2332;
-}
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #002B5C;
-    box-shadow: 0 0 0 2px rgba(0,43,92,0.1);
-}
+/* === Form === */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.form-group label { display: block; font-size: 11px; font-weight: 600; color: #6b7a8d; margin-bottom: 3px; }
+.form-group input, .form-group select { width: 100%; padding: 7px 10px; border: 1px solid #e5e9f0; border-radius: 6px; font-family: inherit; font-size: 12px; color: #1a2332; }
+.form-group input:focus, .form-group select:focus { outline: none; border-color: #002B5C; box-shadow: 0 0 0 2px rgba(0,43,92,0.1); }
 
-/* === Lloji buttons === */
-.drawer-lloji-row {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 14px;
-}
-.drawer-lloji-btn {
-    flex: 1;
-    padding: 7px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid #e5e9f0;
-    border-radius: 6px;
-    cursor: pointer;
-    background: white;
-    color: #6b7a8d;
-    font-family: inherit;
-    transition: all 0.15s;
-}
-.drawer-lloji-btn.active {
-    background: #002B5C;
-    color: white;
-    border-color: #002B5C;
-}
+/* === Lloji === */
+.drawer-lloji-row { display: flex; gap: 6px; margin-bottom: 14px; }
+.drawer-lloji-btn { flex: 1; padding: 7px; text-align: center; font-size: 12px; font-weight: 600; border: 1px solid #e5e9f0; border-radius: 6px; cursor: pointer; background: white; color: #6b7a8d; font-family: inherit; }
+.drawer-lloji-btn.active { background: #002B5C; color: white; border-color: #002B5C; }
 
-/* === SPREADSHEET PAKO EDITOR === */
-.sp-container {
-    margin-top: 8px;
-}
-.sp-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 6px;
-}
-.sp-toolbar-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.sp-select-all {
-    font-size: 11px;
-    color: #0047AB;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-weight: 600;
-}
-.sp-select-all input {
-    width: 14px;
-    height: 14px;
-    accent-color: #002B5C;
-}
-.sp-hint {
-    font-size: 10px;
-    color: #aaa;
-}
+/* === SPREADSHEET === */
+.sp-container { margin-top: 8px; }
+.sp-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.sp-select-all { font-size: 11px; color: #0047AB; cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 600; }
+.sp-select-all input { width: 14px; height: 14px; accent-color: #002B5C; }
+.sp-hint { font-size: 10px; color: #aaa; }
+.sp-table-wrap { border: 1px solid #e5e9f0; border-radius: 8px; overflow: hidden; }
+.sp-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.sp-table thead td { padding: 0; background: #f8f9fb; border-bottom: 1px solid #e5e9f0; }
+.sp-table thead td:first-child { width: 110px; min-width: 110px; }
+.sp-pako-hdr { padding: 6px 4px; text-align: center; border-left: 1px solid #e5e9f0; cursor: pointer; }
+.sp-pako-hdr:hover { background: #f0f4ff; }
+.sp-pako-hdr.selected { background: #002B5C; }
+.sp-pako-hdr.selected .sp-ph-name, .sp-pako-hdr.selected .sp-ph-shuma { color: white; }
+.sp-ph-name { font-size: 11px; font-weight: 700; color: #002B5C; display: flex; align-items: center; justify-content: center; gap: 3px; }
+.sp-ph-name input { width: 13px; height: 13px; accent-color: #002B5C; }
+.sp-pako-hdr.selected .sp-ph-name input { accent-color: white; }
+.sp-ph-shuma { font-size: 10px; color: #6b7a8d; margin-top: 1px; }
+.sp-section-row td { padding: 3px 8px; background: #f4f6f9; font-size: 10px; font-weight: 700; color: #6b7a8d; text-transform: uppercase; letter-spacing: 0.3px; }
+.sp-fold-row td { padding: 3px 8px; background: #f4f6f9; font-size: 10px; font-weight: 700; color: #6b7a8d; text-transform: uppercase; cursor: pointer; user-select: none; }
+.sp-fold-row:hover td { background: #eef1f6; }
+.sp-fold-arrow { display: inline-block; transition: transform 0.15s; font-size: 9px; }
+.sp-fold-arrow.open { transform: rotate(90deg); }
+.sp-table tbody td { padding: 3px 8px; border-bottom: 1px solid #f0f0f0; color: #1a2332; }
+.sp-table tbody td:first-child { color: #6b7a8d; font-size: 10px; border-right: 1px solid #e5e9f0; background: #fafbfc; }
+.sp-table tbody tr:last-child td { border-bottom: none; }
 
-/* Spreadsheet tabela */
-.sp-table-wrap {
-    border: 1px solid #e5e9f0;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 6px;
-}
-.sp-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 11px;
-    table-layout: fixed;
-}
-
-/* Header row me pakot */
-.sp-table thead td {
-    padding: 0;
-    background: #f8f9fb;
-    border-bottom: 1px solid #e5e9f0;
-}
-.sp-table thead td:first-child {
-    width: 105px;
-}
-.sp-pako-hdr {
-    padding: 6px 4px;
-    text-align: center;
-    border-left: 1px solid #e5e9f0;
-    cursor: pointer;
-    transition: background 0.1s;
-}
-.sp-pako-hdr:hover {
-    background: #f0f4ff;
-}
-.sp-pako-hdr.selected {
-    background: #002B5C;
-}
-.sp-pako-hdr.selected .sp-ph-name,
-.sp-pako-hdr.selected .sp-ph-shuma {
-    color: white;
-}
-.sp-ph-name {
-    font-size: 11px;
-    font-weight: 700;
-    color: #002B5C;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-}
-.sp-ph-name input {
-    width: 13px;
-    height: 13px;
-    accent-color: #002B5C;
-}
-.sp-pako-hdr.selected .sp-ph-name input {
-    accent-color: white;
-}
-.sp-ph-shuma {
-    font-size: 10px;
-    color: #6b7a8d;
-    margin-top: 1px;
-}
-
-/* Section headers */
-.sp-section-row td {
-    padding: 3px 8px;
-    background: #f4f6f9;
-    font-size: 10px;
-    font-weight: 700;
-    color: #6b7a8d;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-/* Foldable section header */
-.sp-fold-row td {
-    padding: 3px 8px;
-    background: #f4f6f9;
-    font-size: 10px;
-    font-weight: 700;
-    color: #6b7a8d;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-}
-.sp-fold-row:hover td {
-    background: #eef1f6;
-}
-.sp-fold-arrow {
-    display: inline-block;
-    transition: transform 0.15s;
-    font-size: 9px;
-}
-.sp-fold-arrow.open {
-    transform: rotate(90deg);
-}
-
-/* Data rows */
-.sp-table tbody td {
-    padding: 3px 8px;
-    border-bottom: 1px solid #f0f0f0;
-    color: #1a2332;
-}
-.sp-table tbody td:first-child {
-    color: #6b7a8d;
-    font-size: 10px;
-    border-right: 1px solid #e5e9f0;
-}
-.sp-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-/* Ã‡elula editoeshme */
+/* Çelula — me word-wrap për zona të gjata */
 .sp-cell {
     text-align: center;
     border-left: 1px solid #f0f0f0;
     cursor: pointer;
     font-weight: 500;
-    transition: background 0.1s;
-    padding: 3px 4px !important;
-}
-.sp-cell:hover {
-    background: #e8f0fe;
-}
-.sp-cell.empty {
-    color: #ccc;
-    font-weight: 400;
-}
-.sp-cell.unselected {
-    color: #ccc;
-    background: #fafafa;
-}
-
-/* Input kur editohet */
-.sp-cell input {
-    width: 100%;
-    padding: 1px 4px;
+    padding: 4px 5px !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.3;
     font-size: 11px;
-    font-weight: 600;
-    font-family: inherit;
-    color: #002B5C;
-    border: 2px solid #002B5C;
-    border-radius: 4px;
-    background: white;
-    outline: none;
-    text-align: center;
-    box-sizing: border-box;
+    vertical-align: middle;
 }
+.sp-cell:hover { background: #e8f0fe; }
+.sp-cell.empty { color: #ccc; font-weight: 400; }
+.sp-cell.unselected { color: #d0d0d0; background: #fafafa; cursor: default; }
+.sp-cell.unselected:hover { background: #fafafa; }
+.sp-cell input { width: 100%; padding: 1px 3px; font-size: 11px; font-weight: 600; font-family: inherit; color: #002B5C; border: 2px solid #002B5C; border-radius: 3px; background: white; outline: none; text-align: center; box-sizing: border-box; }
+.sp-primi-row td { border-top: 2px solid #e5e9f0 !important; padding: 5px 8px !important; }
+.sp-primi-row td:first-child { font-weight: 600 !important; color: #002B5C !important; }
+.sp-primi-row .sp-cell { font-size: 12px; font-weight: 700; padding: 5px 4px !important; color: #002B5C; }
 
-/* Primi row */
-.sp-primi-row td {
-    border-top: 2px solid #e5e9f0 !important;
-    padding: 5px 8px !important;
-}
-.sp-primi-row .sp-cell {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 5px 4px !important;
-}
-
-/* Row grupi 2 */
-.sp-group-label {
-    font-size: 10px;
-    font-weight: 600;
-    color: #002B5C;
-    padding: 8px 8px 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-/* Buttons poshtÃ« */
+/* === BUTONAT — qendër, madhësi normale === */
 .sp-actions {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 0 0;
-    border-top: 1px solid #e5e9f0;
-    margin-top: 12px;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    padding: 14px 0 0 !important;
+    border-top: 1px solid #e5e9f0 !important;
+    margin-top: 14px !important;
+    width: 100% !important;
+    position: static !important;
+    right: auto !important;
+    flex-direction: row !important;
 }
 .sp-btn {
-    padding: 10px 32px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    border: 1px solid #e5e9f0;
-    background: white;
-    color: #6b7a8d;
+    padding: 10px 32px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    font-family: inherit !important;
+    border: 1px solid #e5e9f0 !important;
+    background: white !important;
+    color: #6b7a8d !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: auto !important;
+    display: inline-block !important;
+    position: static !important;
 }
-.sp-btn:hover {
-    background: #f4f6f9;
-}
+.sp-btn:hover { background: #f4f6f9 !important; }
 .sp-btn.primary {
-    background: #002B5C;
-    color: white;
-    border-color: #002B5C;
+    background: #002B5C !important;
+    color: white !important;
+    border-color: #002B5C !important;
+    padding: 10px 48px !important;
 }
-.sp-btn.primary:hover {
-    background: #0047AB;
-}
+.sp-btn.primary:hover { background: #0047AB !important; }
 
-/* Responsive */
-@media (max-width: 600px) {
-    .drawer-panel {
-        width: 98vw;
-        max-height: 95vh;
-        border-radius: 8px;
-    }
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-    .sp-table {
-        font-size: 10px;
-    }
+@media (max-width: 700px) {
+    .drawer-panel { width: 98vw !important; max-height: 95vh !important; }
+    .form-row { grid-template-columns: 1fr !important; }
 }
