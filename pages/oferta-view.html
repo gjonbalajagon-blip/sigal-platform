@@ -378,16 +378,26 @@ function ngarko(){
     h+='<div class="oferta-footer">© '+new Date().getFullYear()+' SIGAL Insurance Group Kosovo<br><a href="https://sigal-ks.com">sigal-ks.com</a> · demet.shendetsore@sigal-ks.com · +383 38 240 241</div>';
     document.getElementById('container').innerHTML=h;renderDetail();
 }
-function getSelected(){return pakotGlobal.filter(p=>selectedPakot.has(p.id));}
-function isOptSelected(id){var c=document.getElementById('opt-'+id);return c&&c.classList.contains('selected');}
-function paraKonfirmimit(){if(!getSelected().length){alert('Ju lutem zgjidhni së paku një paketë!');return;}if(!isOptSelected('jete')&&!isOptSelected('opinion')){document.getElementById('popup-optional').classList.add('active');return;}dergoPako();}
-function vazhdo(shto){document.getElementById('popup-optional').classList.remove('active');if(shto){document.querySelector('.opt-card').scrollIntoView({behavior:'smooth'});return;}dergoPako();}
 async function dergoPako(){
     const sel=getSelected(),ofertat=JSON.parse(localStorage.getItem('ofertat'))||[],oferta=ofertat[ofertaId];
     const pe=sel.map(p=>p.emri||p.id).join(', ');let ex=[];
     if(isOptSelected('jete'))ex.push('Jetë Plus Cash');
     if(isOptSelected('opinion'))ex.push('Opinioni i Dytë Mjekësor');
     const zf=pe+(ex.length?' + '+ex.join(', '):'');
+
+    // Krijo version automatik me zgjedhjen e klientit
+    const versione=ofertat[ofertaId].versione||[];
+    versione.push({
+        data:new Date().toISOString().split('T')[0],
+        lloji:oferta.lloji,
+        pakot:oferta.pakot,
+        emri:oferta.emri,
+        burim:'konfirmim_klient',
+        pakaZgjedhur:zf,
+        koment:document.getElementById('koment').value
+    });
+    ofertat[ofertaId].versione=versione;
+
     ofertat[ofertaId].pakaZgjedhur=zf;ofertat[ofertaId].komentKlient=document.getElementById('koment').value;
     ofertat[ofertaId].konfirmuar=true;ofertat[ofertaId].dataKonfirmimit=new Date().toISOString().split('T')[0];
     ofertat[ofertaId].notification={type:'konfirmim',msg:'Klienti konfirmoi: '+zf,data:new Date().toISOString().split('T')[0],lexuar:false};
@@ -397,7 +407,6 @@ async function dergoPako(){
     try{const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{method:'POST',signal:c.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({emriKlientit:oferta.emri,emailKlientit:oferta.email,pakaZgjedhur:zf,koment:document.getElementById('koment').value,emailAgjentit:oferta.krijuarNgaEmail||'gjonbalajagon@gmail.com'})});clearTimeout(t);}catch(e){}
     document.getElementById('container').innerHTML='<div class="success-msg"><div class="check" style="background:#22c55e"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><h2>Faleminderit!</h2><p>Zgjedhja juaj u regjistrua me sukses.<br>Agjenti do t\'ju kontaktojë së shpejti.</p></div>';
 }
-
 // === TRACKING ===
 const TAPI='https://sigal-platform-production.up.railway.app';
 let tStart=Date.now();
