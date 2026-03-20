@@ -493,49 +493,48 @@
     </div>
 
     <!-- ====== DRAWER MODAL (Pika 6) ====== -->
-    <div class="drawer-overlay" id="drawer-overlay" onclick="mbyllDrawer()">
-        <div class="drawer" onclick="event.stopPropagation()">
-            <div class="drawer-header">
-                <h2 id="modal-title">Ofertë e Re</h2>
-                <button class="drawer-close" onclick="mbyllDrawer()">✕</button>
+<div class="drawer-overlay" id="drawer-overlay" onclick="if(event.target===this)mbyllDrawer()">
+      <div class="drawer-panel">
+        <div class="drawer-panel-header">
+          <h2 id="modal-title">Ofertë e Re</h2>
+          <button class="drawer-close" onclick="mbyllDrawer()">✕</button>
+        </div>
+        <div class="drawer-body">
+          <div class="form-row">
+            <div class="form-group"><label>Emri Mbiemri</label><input id="m-emri" placeholder="Emri Mbiemri / Kompania"></div>
+            <div class="form-group"><label>Email</label><input id="m-email" type="email" placeholder="email@example.com"></div>
+          </div>
+          <div class="form-row three">
+            <div class="form-group"><label>Kërkuar nga</label>
+              <select id="m-kerkuar-nga" onchange="tregoBoxAgjenti()">
+                <option value="direkt">Direkt</option>
+                <option value="online">Online</option>
+                <option value="agjenti">Agjenti</option>
+              </select>
             </div>
-            <div class="drawer-body">
-                <!-- Lloji selector -->
-                <div class="drawer-lloji-selector">
-                    <button class="drawer-lloji-btn active" onclick="zgjidhLlojin('individ', this)">Individuale</button>
-                    <button class="drawer-lloji-btn" onclick="zgjidhLlojin('familje', this)">Familjare</button>
-                    <button class="drawer-lloji-btn" onclick="zgjidhLlojin('biznes', this)">Biznese</button>
-                </div>
-                <input type="hidden" id="m-lloji" value="individ">
-
-                <!-- Form fields -->
-                <div class="drawer-form-grid">
-                    <div class="full-width">
-                        <label>Emri Mbiemri</label>
-                        <input type="text" id="m-emri" placeholder="Emri Mbiemri / Kompania">
-                    </div>
-                    <div>
-                        <label>Email</label>
-                        <input type="email" id="m-email" placeholder="email@example.com">
-                    </div>
-                    <div>
-                        <label>Kërkuar nga</label>
-                        <select id="m-kerkuar-nga" onchange="tregoBoxAgjenti()">
-                            <option value="direkt">Direkt</option>
-                            <option value="online">Online</option>
-                            <option value="agjenti">Agjenti</option>
-                        </select>
-                    </div>
-                    <div id="field-agjenti" style="display:none">
-                        <label>Emri i Agjentit</label>
-                        <input type="text" id="m-agjenti" placeholder="Emri i agjentit">
-                    </div>
-                    <div class="full-width">
-                        <label>Pakot e Zgjedhura</label>
-                        <div class="drawer-pakot-grid" id="pakot-container"></div>
-                    </div>
-                </div>
-
+            <div class="form-group" id="field-agjenti" style="display:none"><label>Emri i Agjentit</label><input id="m-agjenti" placeholder="Emri i agjentit"></div>
+          </div>
+          <input type="hidden" id="m-lloji" value="individ">
+          <div class="drawer-lloji-row">
+            <button class="drawer-lloji-btn active" onclick="zgjidhLlojin('individ',this)">Individuale</button>
+            <button class="drawer-lloji-btn" onclick="zgjidhLlojin('familje',this)">Familjare</button>
+            <button class="drawer-lloji-btn" onclick="zgjidhLlojin('biznes',this)">Biznese</button>
+          </div>
+          <div id="pakot-container"></div>
+          <div id="version-panel" style="display:none">
+            <div style="display:flex;align-items:center;gap:6px;margin-top:12px;cursor:pointer" onclick="toggleVersions()">
+              <span style="font-size:12px;font-weight:600;color:#002B5C;">Versionet</span>
+              <span id="version-count" style="font-size:10px;background:#e5e9f0;padding:1px 6px;border-radius:8px;">0</span>
+            </div>
+            <div id="version-body"></div>
+          </div>
+          <div class="sp-actions">
+            <button class="sp-btn" onclick="mbyllDrawer()">Anulo</button>
+            <button class="sp-btn primary" onclick="ruajOferte()">Ruaj</button>
+          </div>
+        </div>
+      </div>
+    </div>
                 <!-- Versioning panel (Pika 5) - shfaqet vetem kur editon -->
                 <div class="version-panel" id="version-panel" style="display:none">
                     <div class="version-panel-header" onclick="toggleVersions()">

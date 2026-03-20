@@ -1,205 +1,377 @@
 /* ============================================
-   PAKO EDITOR — Inline Editing Cards
-   Shto këtë CSS në faqen oferte.html
-   (zëvendëso stilet e vjetra .drawer-pako-editor)
+   OFERTE POPUP + PAKO SPREADSHEET EDITOR
+   Zëvendëso drawer-overlay stilet e vjetra
    ============================================ */
 
-/* Karta e pakos */
-.pe-card {
-    background: white;
-    border: 2px solid #e5e9f0;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    overflow: hidden;
-    transition: all 0.2s;
-}
-.pe-card.selected {
-    border-color: #002B5C;
-    box-shadow: 0 2px 12px rgba(0,43,92,0.1);
-}
-.pe-card.collapsed .pe-card-body {
-    display: none !important;
-}
-
-/* Header i kartës */
-.pe-card-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    cursor: pointer;
-    background: #fafbfc;
-    border-bottom: 1px solid #e5e9f0;
-    transition: background 0.15s;
-}
-.pe-card-header:hover {
-    background: #f0f4ff;
-}
-.pe-card.selected .pe-card-header {
-    background: #002B5C;
-    border-bottom-color: #002B5C;
-}
-.pe-card.selected .pe-card-name,
-.pe-card.selected .pe-card-shuma,
-.pe-card.selected .pe-card-chevron {
-    color: white;
-}
-.pe-card-header input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #002B5C;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-.pe-card-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: #002B5C;
-    flex: 1;
-}
-.pe-card-shuma {
-    font-size: 13px;
-    font-weight: 800;
-    color: #002B5C;
-}
-.pe-card-chevron {
-    font-size: 10px;
-    color: #6b7a8d;
-    transition: transform 0.2s;
-}
-.pe-card.collapsed .pe-card-chevron {
-    transform: rotate(-90deg);
-}
-
-/* Body i kartës */
-.pe-card-body {
+/* === POPUP MODAL (zëvendëson drawer) === */
+.drawer-overlay {
     display: none;
-    padding: 12px 14px;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
 }
-
-/* Rreshti top: Zona + Shuma */
-.pe-row-top {
+.drawer-overlay.active {
     display: flex;
-    gap: 12px;
-    margin-bottom: 10px;
 }
-.pe-row-top .pe-inline-field {
-    flex: 1;
+.drawer-panel {
+    background: white;
+    border-radius: 12px;
+    width: 92vw;
+    max-width: 860px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    position: relative;
 }
-
-/* Seksionet */
-.pe-section {
-    margin-bottom: 8px;
-}
-.pe-section-hdr {
+.drawer-panel-header {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 11px;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e9f0;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 2;
+    border-radius: 12px 12px 0 0;
+}
+.drawer-panel-header h2 {
+    font-size: 16px;
     font-weight: 700;
     color: #002B5C;
-    padding: 4px 0;
-    border-bottom: 1px solid #e5e9f0;
-    margin-bottom: 4px;
+    margin: 0;
 }
-.pe-section-icon {
+.drawer-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f4f6f9;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    opacity: 0.6;
+    justify-content: center;
+    color: #6b7a8d;
+}
+.drawer-close:hover {
+    background: #e5e9f0;
+}
+.drawer-body {
+    padding: 16px 20px 20px;
 }
 
-/* Inline field: label + vlerë klikueshme */
-.pe-inline-field {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 0;
-    min-height: 28px;
+/* === Formular rreshti top === */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
 }
-.pe-inline-field.pe-full {
-    width: 100%;
+.form-row.three {
+    grid-template-columns: 1fr 1fr 1fr;
 }
-.pe-field-label {
+.form-group label {
+    display: block;
     font-size: 11px;
+    font-weight: 600;
     color: #6b7a8d;
-    flex-shrink: 0;
-    min-width: 70px;
+    margin-bottom: 3px;
 }
-.pe-field-value {
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #e5e9f0;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 12px;
+    color: #1a2332;
+}
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #002B5C;
+    box-shadow: 0 0 0 2px rgba(0,43,92,0.1);
+}
+
+/* === Lloji buttons === */
+.drawer-lloji-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+.drawer-lloji-btn {
+    flex: 1;
+    padding: 7px;
+    text-align: center;
     font-size: 12px;
     font-weight: 600;
-    color: #1a2332;
-    padding: 2px 8px;
+    border: 1px solid #e5e9f0;
     border-radius: 6px;
-    background: #f4f6f9;
-    border: 1px solid transparent;
     cursor: pointer;
+    background: white;
+    color: #6b7a8d;
+    font-family: inherit;
     transition: all 0.15s;
-    min-width: 60px;
-    flex: 1;
 }
-.pe-field-value:hover {
-    background: #e8f0fe;
+.drawer-lloji-btn.active {
+    background: #002B5C;
+    color: white;
     border-color: #002B5C;
+}
+
+/* === SPREADSHEET PAKO EDITOR === */
+.sp-container {
+    margin-top: 8px;
+}
+.sp-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.sp-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sp-select-all {
+    font-size: 11px;
+    color: #0047AB;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+}
+.sp-select-all input {
+    width: 14px;
+    height: 14px;
+    accent-color: #002B5C;
+}
+.sp-hint {
+    font-size: 10px;
+    color: #aaa;
+}
+
+/* Spreadsheet tabela */
+.sp-table-wrap {
+    border: 1px solid #e5e9f0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+.sp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    table-layout: fixed;
+}
+
+/* Header row me pakot */
+.sp-table thead td {
+    padding: 0;
+    background: #f8f9fb;
+    border-bottom: 1px solid #e5e9f0;
+}
+.sp-table thead td:first-child {
+    width: 105px;
+}
+.sp-pako-hdr {
+    padding: 6px 4px;
+    text-align: center;
+    border-left: 1px solid #e5e9f0;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+.sp-pako-hdr:hover {
+    background: #f0f4ff;
+}
+.sp-pako-hdr.selected {
+    background: #002B5C;
+}
+.sp-pako-hdr.selected .sp-ph-name,
+.sp-pako-hdr.selected .sp-ph-shuma {
+    color: white;
+}
+.sp-ph-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #002B5C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+.sp-ph-name input {
+    width: 13px;
+    height: 13px;
+    accent-color: #002B5C;
+}
+.sp-pako-hdr.selected .sp-ph-name input {
+    accent-color: white;
+}
+.sp-ph-shuma {
+    font-size: 10px;
+    color: #6b7a8d;
+    margin-top: 1px;
+}
+
+/* Section headers */
+.sp-section-row td {
+    padding: 3px 8px;
+    background: #f4f6f9;
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7a8d;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Foldable section header */
+.sp-fold-row td {
+    padding: 3px 8px;
+    background: #f4f6f9;
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7a8d;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+}
+.sp-fold-row:hover td {
+    background: #eef1f6;
+}
+.sp-fold-arrow {
+    display: inline-block;
+    transition: transform 0.15s;
+    font-size: 9px;
+}
+.sp-fold-arrow.open {
+    transform: rotate(90deg);
+}
+
+/* Data rows */
+.sp-table tbody td {
+    padding: 3px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #1a2332;
+}
+.sp-table tbody td:first-child {
+    color: #6b7a8d;
+    font-size: 10px;
+    border-right: 1px solid #e5e9f0;
+}
+.sp-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Çelula editoeshme */
+.sp-cell {
+    text-align: center;
+    border-left: 1px solid #f0f0f0;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.1s;
+    padding: 3px 4px !important;
+}
+.sp-cell:hover {
+    background: #e8f0fe;
+}
+.sp-cell.empty {
+    color: #ccc;
+    font-weight: 400;
+}
+.sp-cell.unselected {
+    color: #ccc;
+    background: #fafafa;
 }
 
 /* Input kur editohet */
-.pe-inline-input {
+.sp-cell input {
     width: 100%;
-    padding: 2px 6px;
-    font-size: 12px;
+    padding: 1px 4px;
+    font-size: 11px;
     font-weight: 600;
     font-family: inherit;
     color: #002B5C;
     border: 2px solid #002B5C;
-    border-radius: 6px;
+    border-radius: 4px;
     background: white;
     outline: none;
-}
-
-/* Grid për trajtimet tjera — 2 kolona */
-.pe-tjera-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2px 12px;
-}
-.pe-tjera-grid .pe-half {
-    min-width: 0;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 /* Primi row */
-.pe-primi-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #e5e9f0;
+.sp-primi-row td {
+    border-top: 2px solid #e5e9f0 !important;
+    padding: 5px 8px !important;
 }
-.pe-primi-row .pe-inline-field {
-    flex: 1;
-}
-.pe-primi-val {
-    font-weight: 800 !important;
-    color: #002B5C !important;
-    font-size: 14px !important;
-}
-.pe-primi-suffix {
-    font-size: 10px;
-    color: #6b7a8d;
-    flex-shrink: 0;
+.sp-primi-row .sp-cell {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 4px !important;
 }
 
-/* Responsive — 1 kolonë për ekrane të vogla */
-@media (max-width: 520px) {
-    .pe-tjera-grid {
+/* Row grupi 2 */
+.sp-group-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #002B5C;
+    padding: 8px 8px 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Buttons poshtë */
+.sp-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 0 0;
+    border-top: 1px solid #e5e9f0;
+    margin-top: 12px;
+}
+.sp-btn {
+    padding: 9px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    border: 1px solid #e5e9f0;
+    background: white;
+    color: #6b7a8d;
+}
+.sp-btn:hover {
+    background: #f4f6f9;
+}
+.sp-btn.primary {
+    background: #002B5C;
+    color: white;
+    border-color: #002B5C;
+}
+.sp-btn.primary:hover {
+    background: #0047AB;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .drawer-panel {
+        width: 98vw;
+        max-height: 95vh;
+        border-radius: 8px;
+    }
+    .form-row {
         grid-template-columns: 1fr;
     }
-    .pe-row-top {
-        flex-direction: column;
-        gap: 4px;
-    }
-    .pe-primi-row {
-        flex-direction: column;
-        gap: 4px;
+    .sp-table {
+        font-size: 10px;
     }
 }
