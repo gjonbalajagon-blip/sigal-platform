@@ -378,6 +378,11 @@ function ngarko(){
     h+='<div class="oferta-footer">© '+new Date().getFullYear()+' SIGAL Insurance Group Kosovo<br><a href="https://sigal-ks.com">sigal-ks.com</a> · demet.shendetsore@sigal-ks.com · +383 38 240 241</div>';
     document.getElementById('container').innerHTML=h;renderDetail();
 }
+function getSelected(){return pakotGlobal.filter(p=>selectedPakot.has(p.id));}
+function isOptSelected(id){var c=document.getElementById('opt-'+id);return c&&c.classList.contains('selected');}
+function paraKonfirmimit(){if(!getSelected().length){alert('Ju lutem zgjidhni së paku një paketë!');return;}if(!isOptSelected('jete')&&!isOptSelected('opinion')){document.getElementById('popup-optional').classList.add('active');return;}dergoPako();}
+function vazhdo(shto){document.getElementById('popup-optional').classList.remove('active');if(shto){document.querySelector('.opt-card').scrollIntoView({behavior:'smooth'});return;}dergoPako();}
+
 async function dergoPako(){
     const sel=getSelected(),ofertat=JSON.parse(localStorage.getItem('ofertat'))||[],oferta=ofertat[ofertaId];
     const pe=sel.map(p=>p.emri||p.id).join(', ');let ex=[];
