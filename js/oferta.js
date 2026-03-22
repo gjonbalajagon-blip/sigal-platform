@@ -452,10 +452,18 @@ function editoOferte(index){
     const btns=document.querySelectorAll('.drawer-lloji-btn');
     const llojiMap={'individ':0,'familje':1,'biznes':2};
     spSelectedPakot.clear();
-    (o.pakot||[]).forEach(p=>spSelectedPakot.add(typeof p==='object'?p.id:p));
+
+    // Nëse oferta është konfirmuar, ngarko pakot e konfirmuara nga klienti
+    let pakotPerSpreadsheet=o.pakot||[];
+    if(o.konfirmuar&&o.versione&&o.versione.length>0){
+        const vKlient=[...o.versione].reverse().find(v=>v.burim==='konfirmim_klient');
+        if(vKlient&&vKlient.pakot) pakotPerSpreadsheet=vKlient.pakot;
+    }
+
+    pakotPerSpreadsheet.forEach(p=>spSelectedPakot.add(typeof p==='object'?p.id:p));
     spFoldOpen=false;
     zgjidhLlojin(o.lloji,btns[llojiMap[o.lloji]||0]);
-    setTimeout(()=>{applyCustomValues(o.pakot||[]);},80);
+    setTimeout(()=>{applyCustomValues(pakotPerSpreadsheet);},80);
 
     const vPanel=document.getElementById('version-panel');
     if(o.versione&&o.versione.length>0){vPanel.style.display='block';renderVersions(o.versione,o);}
