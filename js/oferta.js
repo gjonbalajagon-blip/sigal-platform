@@ -22,9 +22,13 @@ function shtoOferte(){
     document.getElementById('m-agjenti').value='';
     document.getElementById('field-agjenti').style.display='none';
     document.getElementById('version-panel').style.display='none';
+    // Fshij banner konfirmimi nëse ekziston
+    const oldBanner=document.getElementById('konfirmim-banner');
+    if(oldBanner)oldBanner.remove();
     const tb=document.getElementById('tracking-bar');if(tb)tb.remove();
     spSelectedPakot.clear();
     spFoldOpen=false;
+    spLocked=false;
     zgjidhLlojin('individ',document.querySelectorAll('.drawer-lloji-btn')[0]);
     document.getElementById('drawer-overlay').classList.add('active');
 }
@@ -33,7 +37,6 @@ function mbyllModal(){mbyllDrawer();}
 function tregoBoxAgjenti(){document.getElementById('field-agjenti').style.display=document.getElementById('m-kerkuar-nga').value==='agjenti'?'block':'none';}
 
 // ====== SPREADSHEET — lexo limitet nga tjera_pikat ======
-// Rreshtat e spreadsheet-it: lexohen nga PAKOT direkt
 const SP_TJERA_LABELS=[
     {label:'Shtatzënia',idx:0},
     {label:'Dentar',idx:1},
@@ -48,12 +51,12 @@ const SP_TJERA_LABELS=[
 
 let spSelectedPakot=new Set();
 let spFoldOpen=false;
+let spLocked=false;
 
 function zgjidhLlojin(lloji,btn){
     document.getElementById('m-lloji').value=lloji;
     document.querySelectorAll('.drawer-lloji-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    // Nuk e pastrojmë selektimin nëse jemi duke edituar
     if(editIndex<0){
         spSelectedPakot.clear();
     }
@@ -69,27 +72,43 @@ function renderSpreadsheet(){
     const colCount=pakotList.length+1;
 
     let h='<div class="sp-container">';
+
+    // Locked banner brenda spreadsheet
+    if(spLocked){
+        h+='<div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">';
+        h+='<span style="font-size:11px;color:#92400e;font-weight:600;">🔒 Spreadsheet i kyçur — oferta është konfirmuar nga klienti</span>';
+        h+='<button onclick="spZhblloko()" style="font-size:10px;padding:4px 12px;border:1px solid #f59e0b;border-radius:4px;background:white;cursor:pointer;color:#92400e;font-weight:600;">Zhblloko</button>';
+        h+='</div>';
+    }
+
     h+='<div class="sp-toolbar"><div class="sp-toolbar-left">';
-    h+='<label class="sp-select-all"><input type="checkbox" id="sp-sel-all" onchange="spToggleAll(this.checked)"> Selekto të gjitha</label>';
-    h+='</div><span class="sp-hint">Kliko çelulën për edit</span></div>';
+    if(!spLocked){
+        h+='<label class="sp-select-all"><input type="checkbox" id="sp-sel-all" onchange="spToggleAll(this.checked)"> Selekto të gjitha</label>';
+    }
+    h+='</div><span class="sp-hint">'+(spLocked?'Kyçur — klienti konfirmoi':'Kliko çelulën për edit')+'</span></div>';
 
     h+='<div class="sp-table-wrap"><table class="sp-table"><thead><tr>';
     h+='<td></td>';
     pakotList.forEach(p=>{
         const sel=spSelectedPakot.has(p.id);
-        h+='<td><div class="sp-pako-hdr'+(sel?' selected':'')+'" onclick="spTogglePako(\''+p.id+'\')">';
-        h+='<div class="sp-ph-name"><input type="checkbox" '+(sel?'checked':'')+' onclick="event.stopPropagation();spTogglePako(\''+p.id+'\')"> '+p.emri+'</div>';
+        h+='<td><div class="sp-pako-hdr'+(sel?' selected':'')+'"'+(spLocked?'':' onclick="spTogglePako(\''+p.id+'\')"')+'>';
+        h+='<div class="sp-ph-name">';
+        if(!spLocked) h+='<input type="checkbox" '+(sel?'checked':'')+' onclick="event.stopPropagation();spTogglePako(\''+p.id+'\')">';
+        else if(sel) h+='<span style="color:#22c55e;font-weight:700;margin-right:4px;">✓</span>';
+        h+=' '+p.emri+'</div>';
         h+='<div class="sp-ph-shuma">€ '+p.shuma+'</div>';
         h+='</div></td>';
     });
     h+='</tr></thead><tbody>';
+
+    const cellClick=spLocked?'':'onclick="spEditCell(this)"';
 
     // Zona
     h+='<tr><td>Zona</td>';
     pakotList.forEach(p=>{
         const sel=spSelectedPakot.has(p.id);
         const cls=sel?'sp-cell':'sp-cell unselected';
-        h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="zona" onclick="spEditCell(this)">'+p.zona+'</td>';
+        h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="zona" '+cellClick+'>'+p.zona+'</td>';
     });
     h+='</tr>';
 
@@ -98,7 +117,7 @@ function renderSpreadsheet(){
     pakotList.forEach(p=>{
         const sel=spSelectedPakot.has(p.id);
         const cls=sel?'sp-cell':'sp-cell unselected';
-        h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="shuma" onclick="spEditCell(this)">'+p.shuma+'</td>';
+        h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="shuma" '+cellClick+'>'+p.shuma+'</td>';
     });
     h+='</tr>';
 
@@ -108,7 +127,7 @@ function renderSpreadsheet(){
     pakotList.forEach(p=>{
         const sel=spSelectedPakot.has(p.id);
         const cls=sel?'sp-cell':'sp-cell unselected';
-        h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="hospitalore" onclick="spEditCell(this)">'+p.hospitalore+'</td>';
+        h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="hospitalore" '+cellClick+'>'+p.hospitalore+'</td>';
     });
     h+='</tr>';
 
@@ -119,11 +138,11 @@ function renderSpreadsheet(){
         const sel=spSelectedPakot.has(p.id);
         const val=p.ambulantore||'—';
         const cls=sel?'sp-cell':'sp-cell unselected';
-        h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="ambulantore" onclick="spEditCell(this)">'+val+'</td>';
+        h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="ambulantore" '+cellClick+'>'+val+'</td>';
     });
     h+='</tr>';
 
-    // Trajtime tjera — foldable, lexo nga tjera_pikat
+    // Trajtime tjera — foldable
     h+='<tr class="sp-fold-row" onclick="spToggleFold()"><td colspan="'+colCount+'"><span class="sp-fold-arrow'+(spFoldOpen?' open':'')+'">▸</span> Trajtime tjera ('+SP_TJERA_LABELS.length+')</td></tr>';
 
     if(spFoldOpen){
@@ -131,16 +150,14 @@ function renderSpreadsheet(){
             h+='<tr><td>'+t.label+'</td>';
             pakotList.forEach(p=>{
                 const sel=spSelectedPakot.has(p.id);
-                // Lexo vlerën nga tjera_pikat[idx]
                 let val='—';
                 if(p.tjera_pikat&&p.tjera_pikat[t.idx]){
                     val=p.tjera_pikat[t.idx].vlera||'—';
                 }
                 const isEmpty=val==='—'||val==='Nuk mbulohet';
                 const cls=sel?(isEmpty?'sp-cell empty':'sp-cell'):'sp-cell unselected';
-                // Shkurto "Nuk mbulohet" → "—" për hapësirë
                 const display=val==='Nuk mbulohet'?'—':val;
-                h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="tjera_'+t.idx+'" onclick="spEditCell(this)">'+display+'</td>';
+                h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="tjera_'+t.idx+'" '+cellClick+'>'+display+'</td>';
             });
             h+='</tr>';
         });
@@ -152,7 +169,7 @@ function renderSpreadsheet(){
         const sel=spSelectedPakot.has(p.id);
         const suffix=eshteIndivid?'/vit':'/muaj';
         const cls=sel?'sp-cell':'sp-cell unselected';
-        h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="primi_madh" onclick="spEditCell(this)">€ '+p.primi_madh+suffix+'</td>';
+        h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="primi_madh" '+cellClick+'>€ '+p.primi_madh+suffix+'</td>';
     });
     h+='</tr>';
 
@@ -162,7 +179,7 @@ function renderSpreadsheet(){
             const sel=spSelectedPakot.has(p.id);
             const val=p.primi_femije||'';
             const cls=sel?(val?'sp-cell':'sp-cell empty'):'sp-cell unselected';
-            h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="primi_femije" onclick="spEditCell(this)">'+(val?'€ '+val+'/muaj':'—')+'</td>';
+            h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="primi_femije" '+cellClick+'>'+(val?'€ '+val+'/muaj':'—')+'</td>';
         });
         h+='</tr>';
     }
@@ -173,11 +190,13 @@ function renderSpreadsheet(){
 }
 
 function spTogglePako(id){
+    if(spLocked)return;
     if(spSelectedPakot.has(id))spSelectedPakot.delete(id);
     else spSelectedPakot.add(id);
     renderSpreadsheet();
 }
 function spToggleAll(checked){
+    if(spLocked)return;
     const lloji=document.getElementById('m-lloji').value;
     const pakotList=lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;
     spSelectedPakot.clear();
@@ -192,7 +211,14 @@ function spUpdateSelectAll(){
 }
 function spToggleFold(){spFoldOpen=!spFoldOpen;renderSpreadsheet();}
 
+function spZhblloko(){
+    if(!confirm('Zhblloko spreadsheet-in për editim?\nKjo lejon ndryshime në ofertën e konfirmuar.'))return;
+    spLocked=false;
+    renderSpreadsheet();
+}
+
 function spEditCell(td){
+    if(spLocked)return;
     if(td.querySelector('input'))return;
     if(td.classList.contains('unselected'))return;
     const field=td.dataset.field;
@@ -242,6 +268,9 @@ function renderVersions(versione,oferta){
 
     body.innerHTML=versione.map((v,i)=>{
         const pakotTxt=(v.pakot||[]).map(p=>typeof p==='object'?(p.emri||p.id):p).join(', ');
+        const isKlient=v.burim==='konfirmim_klient';
+        const burimBadge=isKlient?'<span style="background:#dcfce7;color:#059669;font-size:8px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:6px;">Klient</span>':'<span style="background:#dbeafe;color:#0047AB;font-size:8px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:6px;">Agjent</span>';
+
         // Detaje për çdo pakë
         let detaje='';
         (v.pakot||[]).forEach(p=>{
@@ -252,7 +281,9 @@ function renderVersions(versione,oferta){
             if(p.zona) rows+='<tr><td>Zona</td><td>'+p.zona+'</td></tr>';
             if(p.shuma) rows+='<tr><td>Shuma</td><td>€ '+p.shuma+'</td></tr>';
             if(p.hospitalore) rows+='<tr><td>Hospitalore</td><td>'+p.hospitalore+'</td></tr>';
-            if(p.ambulatore) rows+='<tr><td>Ambulantore</td><td>'+p.ambulatore+'</td></tr>';
+            // Ambulantore — kontrollo dy emra (ambulantore dhe ambulatore)
+            const ambVal=p.ambulantore||p.ambulatore;
+            if(ambVal) rows+='<tr><td>Ambulantore</td><td>'+ambVal+'</td></tr>';
             // Trajtime tjera — formati i ri (tjera_0..tjera_8)
             const tjeraLabels=['Shtatzënia','Dentar','Optik','Dëgim','Psikiatrik','Fizioterapi','Autoambulanca','Aksidenti','Onkologjike'];
             tjeraLabels.forEach((lbl,idx)=>{
@@ -264,6 +295,16 @@ function renderVersions(versione,oferta){
             oldKeys.forEach(ok=>{
                 if(p[ok.k]&&p[ok.k]!=='-'&&p[ok.k]!=='—') rows+='<tr><td>'+ok.l+'</td><td>'+p[ok.k]+'</td></tr>';
             });
+            // Tjera_pikat array format (nga konfirmimi i klientit)
+            if(p.tjera_pikat&&Array.isArray(p.tjera_pikat)){
+                p.tjera_pikat.forEach((tp,idx)=>{
+                    if(tp&&typeof tp==='object'&&tp.vlera&&tp.vlera!=='Nuk mbulohet'&&tp.vlera!=='—'){
+                        const lbl=tjeraLabels[idx]||('Tjera '+idx);
+                        // Mos shto duplikat nëse tashmë ekziston nga formati tjera_0..tjera_8
+                        if(!p['tjera_'+idx]) rows+='<tr><td>'+lbl+'</td><td>'+tp.vlera+'</td></tr>';
+                    }
+                });
+            }
             if(p.primi_madh) rows+='<tr><td>Primi</td><td>€ '+p.primi_madh+'</td></tr>';
             if(p.primi_femije) rows+='<tr><td>Primi fëmijë</td><td>€ '+p.primi_femije+'</td></tr>';
 
@@ -273,15 +314,17 @@ function renderVersions(versione,oferta){
             }
         });
 
-        return '<div style="border:1px solid #e5e9f0;border-radius:6px;margin-bottom:6px;overflow:hidden;">'+
-            '<div style="display:flex;align-items:center;padding:8px 12px;cursor:pointer;background:#fafbfc;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">'+
-                '<span style="width:8px;height:8px;border-radius:50%;background:#002B5C;margin-right:8px;flex-shrink:0;"></span>'+
+        return '<div style="border:1px solid '+(isKlient?'#bbf7d0':'#e5e9f0')+';border-radius:6px;margin-bottom:6px;overflow:hidden;">'+
+            '<div style="display:flex;align-items:center;padding:8px 12px;cursor:pointer;background:'+(isKlient?'#f0fdf4':'#fafbfc')+';" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">'+
+                '<span style="width:8px;height:8px;border-radius:50%;background:'+(isKlient?'#22c55e':'#002B5C')+';margin-right:8px;flex-shrink:0;"></span>'+
                 '<span style="font-size:11px;color:#6b7a8d;min-width:80px;">'+(v.data||'-')+'</span>'+
-                '<span style="font-size:11px;font-weight:600;color:#1a2332;flex:1;">'+pakotTxt+'</span>'+
+                burimBadge+
+                '<span style="font-size:11px;font-weight:600;color:#1a2332;flex:1;margin-left:6px;">'+pakotTxt+'</span>'+
                 '<span style="font-size:10px;color:#0047AB;margin-right:8px;">Detajet ▾</span>'+
                 '<button style="font-size:10px;padding:3px 10px;border:1px solid #e5e9f0;border-radius:4px;background:white;cursor:pointer;color:#002B5C;font-weight:600;" onclick="event.stopPropagation();riktheVersion('+i+')">Rikthe</button>'+
             '</div>'+
             '<div style="display:none;padding:8px 12px;border-top:1px solid #e5e9f0;background:white;">'+
+                (v.koment?'<div style="font-size:10px;color:#6b7a8d;margin-bottom:6px;font-style:italic;">💬 '+v.koment+'</div>':'')+
                 (detaje||'<div style="font-size:11px;color:#aaa;">Pa detaje</div>')+
             '</div>'+
         '</div>';
@@ -291,6 +334,7 @@ function riktheVersion(vIdx){
     if(editIndex<0)return;
     const o=ofertat[editIndex],v=o.versione[vIdx];
     if(!v||!confirm('Rikthe versionin e dates '+(v.data||'?')+'?'))return;
+    spLocked=false; // Zhblloko kur rikthehet version
     const btns=document.querySelectorAll('.drawer-lloji-btn');
     const llojiMap={'individ':0,'familje':1,'biznes':2};
     spSelectedPakot.clear();
@@ -334,7 +378,6 @@ function ruajOferte(){
             if(val==='—')val='';
             vlerat[field]=val;
         });
-        // Shto emrin e pakos
         const pakotList=lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;
         const found=pakotList.find(pk=>pk.id===pakoId);
         if(found) vlerat.emri=found.emri;
@@ -384,6 +427,28 @@ function editoOferte(index){
     document.getElementById('m-kerkuar-nga').value=o.kerkuarNga||'direkt';
     document.getElementById('m-agjenti').value=o.agjenti||'';
     tregoBoxAgjenti();
+
+    // Locked state — nëse oferta është konfirmuar nga klienti
+    spLocked=!!o.konfirmuar;
+
+    // Banner konfirmimi
+    const oldBanner=document.getElementById('konfirmim-banner');
+    if(oldBanner)oldBanner.remove();
+    if(o.konfirmuar){
+        const bannerHTML='<div id="konfirmim-banner" style="background:#dcfce7;border:1px solid #86efac;border-radius:8px;padding:10px 14px;margin:0 0 12px 0;display:flex;align-items:center;justify-content:space-between;">'
+            +'<div style="display:flex;align-items:center;gap:8px;">'
+            +'<span style="font-size:18px;">✅</span>'
+            +'<div><div style="font-size:12px;font-weight:700;color:#166534;">Klienti konfirmoi'+(o.pakaZgjedhur?' — '+o.pakaZgjedhur:'')+'</div>'
+            +'<div style="font-size:10px;color:#15803d;">'+(o.dataKonfirmimit||'')+(o.komentKlient?' · 💬 '+o.komentKlient:'')+'</div></div>'
+            +'</div>'
+            +'<button onclick="spZhblloko()" style="font-size:10px;padding:5px 14px;border:1px solid #86efac;border-radius:6px;background:white;cursor:pointer;color:#166534;font-weight:600;white-space:nowrap;">🔓 Zhblloko</button>'
+            +'</div>';
+        // Vendos banner-in menjëherë pas modal-title
+        const modalTitle=document.getElementById('modal-title');
+        if(modalTitle&&modalTitle.parentElement){
+            modalTitle.insertAdjacentHTML('afterend',bannerHTML);
+        }
+    }
 
     const btns=document.querySelectorAll('.drawer-lloji-btn');
     const llojiMap={'individ':0,'familje':1,'biznes':2};
@@ -481,9 +546,11 @@ function renderTabela(){
         const kerkuar=o.kerkuarNga==='agjenti'?'Agjenti: '+o.agjenti:(kerkuarLabels[o.kerkuarNga]||'-');
         const vCount=(o.versione||[]).length;
         const vBadge=vCount>0?' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">'+vCount+'v</span>':'';
+        // Notification dot kur klienti ka konfirmuar dhe nuk është lexuar
+        const notifDot=(o.notification&&!o.notification.lexuar)?' <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;margin-left:4px;" title="'+o.notification.msg+'"></span>':'';
         let dotColor='#22c55e';if(ditet.klasa==='skadon-warning')dotColor='#f59e0b';if(ditet.klasa==='skadon-expired')dotColor='#ef4444';
         const skadonHtml='<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:'+dotColor+';flex-shrink:0"></span>'+ditet.teksti+'</span>';
-        return'<tr><td>'+o.emri+vBadge+'</td><td><span class="badge-lloji '+o.lloji+'">'+(llojiLabels[o.lloji]||o.lloji)+'</span></td><td>'+((o.pakot||[]).map(p=>typeof p==='object'?p.emri||p.id:p).join(', ')||'-')+'</td><td>'+(o.krijuarNgaEmri||o.krijuarNga||'-')+'</td><td>'+kerkuar+'</td><td>'+(o.dataKrijimit||'-')+'</td><td>'+skadonHtml+'</td><td>'+trackBadge(getTrackStatus(o))+'</td><td><div class="action-btns"><button class="btn-edit" onclick="editoOferte('+idx+')" title="Edito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-word" onclick="gjeneroWord('+idx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg> Word</button><button class="btn-email" onclick="dergoEmail('+idx+')" title="Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button class="btn-kontrate" onclick="krijoKontrate('+idx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Kontrate</button><button class="btn-delete" onclick="fshijOferte('+idx+')" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button><button class="btn-link" onclick="kopjoLink('+idx+')" title="Kopjo Link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button></div></td></tr>';
+        return'<tr><td>'+o.emri+vBadge+notifDot+'</td><td><span class="badge-lloji '+o.lloji+'">'+(llojiLabels[o.lloji]||o.lloji)+'</span></td><td>'+((o.pakot||[]).map(p=>typeof p==='object'?p.emri||p.id:p).join(', ')||'-')+'</td><td>'+(o.krijuarNgaEmri||o.krijuarNga||'-')+'</td><td>'+kerkuar+'</td><td>'+(o.dataKrijimit||'-')+'</td><td>'+skadonHtml+'</td><td>'+trackBadge(getTrackStatus(o))+'</td><td><div class="action-btns"><button class="btn-edit" onclick="editoOferte('+idx+')" title="Edito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-word" onclick="gjeneroWord('+idx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg> Word</button><button class="btn-email" onclick="dergoEmail('+idx+')" title="Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button class="btn-kontrate" onclick="krijoKontrate('+idx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Kontrate</button><button class="btn-delete" onclick="fshijOferte('+idx+')" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button><button class="btn-link" onclick="kopjoLink('+idx+')" title="Kopjo Link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button></div></td></tr>';
     }).join('');
 }
 
