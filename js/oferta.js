@@ -73,19 +73,11 @@ function renderSpreadsheet(){
 
     let h='<div class="sp-container">';
 
-    // Locked banner brenda spreadsheet
-    if(spLocked){
-        h+='<div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">';
-        h+='<span style="font-size:11px;color:#92400e;font-weight:600;">🔒 Spreadsheet i kyçur — oferta është konfirmuar nga klienti</span>';
-        h+='<button onclick="spZhblloko()" style="font-size:10px;padding:4px 12px;border:1px solid #f59e0b;border-radius:4px;background:white;cursor:pointer;color:#92400e;font-weight:600;">Zhblloko</button>';
-        h+='</div>';
-    }
-
     h+='<div class="sp-toolbar"><div class="sp-toolbar-left">';
     if(!spLocked){
         h+='<label class="sp-select-all"><input type="checkbox" id="sp-sel-all" onchange="spToggleAll(this.checked)"> Selekto të gjitha</label>';
     }
-    h+='</div><span class="sp-hint">'+(spLocked?'Kyçur — klienti konfirmoi':'Kliko çelulën për edit')+'</span></div>';
+    h+='</div><span class="sp-hint">'+(spLocked?'🔒 Kyçur':'Kliko çelulën për edit')+'</span></div>';
 
     h+='<div class="sp-table-wrap"><table class="sp-table"><thead><tr>';
     h+='<td></td>';
@@ -264,7 +256,7 @@ function renderVersions(versione,oferta){
     if(!versione||versione.length===0)return;
     const body=document.getElementById('version-body');
     document.getElementById('version-count').textContent=versione.length;
-    document.getElementById('history-label').textContent='Historiku i ndryshimeve';
+    document.getElementById('history-label').textContent='Historiku i ofertës';
 
     body.innerHTML=versione.map((v,i)=>{
         const pakotTxt=(v.pakot||[]).map(p=>typeof p==='object'?(p.emri||p.id):p).join(', ');
@@ -362,6 +354,7 @@ function applyCustomValues(pakotArr){
 
 // ====== RUAJ ======
 function ruajOferte(){
+    if(spLocked){alert('Oferta është e kyçur. Zhbllokoni para se të ruani.');return;}
     const emri=document.getElementById('m-emri').value.trim();
     if(!emri){alert('Ju lutem shkruani emrin e klientit!');return;}
     if(spSelectedPakot.size===0){alert('Ju lutem zgjidhni së paku një paketë!');return;}
@@ -421,6 +414,12 @@ function ruajOferte(){
 function editoOferte(index){
     editIndex=index;
     const o=ofertat[index];
+    // Shëno notification si lexuar
+    if(o.notification&&!o.notification.lexuar){
+        ofertat[index].notification.lexuar=true;
+        ruajNeStorage();
+        renderTabela();
+    }
     document.getElementById('modal-title').textContent='Edito Ofertën';
     document.getElementById('m-emri').value=o.emri;
     document.getElementById('m-email').value=o.email||'';
@@ -543,14 +542,19 @@ function renderTabela(){
 
     tbody.innerHTML=filtered.map(o=>{
         const idx=ofertat.indexOf(o);const ditet=llogaritDitet(o.dataSkadon);
-        const kerkuar=o.kerkuarNga==='agjenti'?'Agjenti: '+o.agjenti:(kerkuarLabels[o.kerkuarNga]||'-');
+        const kerkuar=o.kerkuarNga==='agjenti'?(o.agjenti||'-'):(kerkuarLabels[o.kerkuarNga]||'-');
         const vCount=(o.versione||[]).length;
         const vBadge=vCount>0?' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">'+vCount+'v</span>':'';
         // Notification dot kur klienti ka konfirmuar dhe nuk është lexuar
         const notifDot=(o.notification&&!o.notification.lexuar)?' <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;margin-left:4px;" title="'+o.notification.msg+'"></span>':'';
+        // Pakot — shkurto max 2 emra
+        const pakotArr=(o.pakot||[]).map(p=>typeof p==='object'?(p.emri||p.id):p);
+        let pakotTxt='-';
+        if(pakotArr.length<=2) pakotTxt=pakotArr.join(', ');
+        else pakotTxt=pakotArr.slice(0,2).join(', ')+' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">+'+(pakotArr.length-2)+'</span>';
         let dotColor='#22c55e';if(ditet.klasa==='skadon-warning')dotColor='#f59e0b';if(ditet.klasa==='skadon-expired')dotColor='#ef4444';
         const skadonHtml='<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:'+dotColor+';flex-shrink:0"></span>'+ditet.teksti+'</span>';
-        return'<tr><td>'+o.emri+vBadge+notifDot+'</td><td><span class="badge-lloji '+o.lloji+'">'+(llojiLabels[o.lloji]||o.lloji)+'</span></td><td>'+((o.pakot||[]).map(p=>typeof p==='object'?p.emri||p.id:p).join(', ')||'-')+'</td><td>'+(o.krijuarNgaEmri||o.krijuarNga||'-')+'</td><td>'+kerkuar+'</td><td>'+(o.dataKrijimit||'-')+'</td><td>'+skadonHtml+'</td><td>'+trackBadge(getTrackStatus(o))+'</td><td><div class="action-btns"><button class="btn-edit" onclick="editoOferte('+idx+')" title="Edito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-word" onclick="gjeneroWord('+idx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg> Word</button><button class="btn-email" onclick="dergoEmail('+idx+')" title="Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button class="btn-kontrate" onclick="krijoKontrate('+idx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Kontrate</button><button class="btn-delete" onclick="fshijOferte('+idx+')" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button><button class="btn-link" onclick="kopjoLink('+idx+')" title="Kopjo Link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button></div></td></tr>';
+        return'<tr><td>'+o.emri+vBadge+notifDot+'</td><td><span class="badge-lloji '+o.lloji+'">'+(llojiLabels[o.lloji]||o.lloji)+'</span></td><td>'+pakotTxt+'</td><td>'+(o.krijuarNgaEmri||o.krijuarNga||'-')+'</td><td>'+kerkuar+'</td><td>'+(o.dataKrijimit||'-')+'</td><td>'+skadonHtml+'</td><td>'+trackBadge(getTrackStatus(o))+'</td><td><div class="action-btns"><button class="btn-edit" onclick="editoOferte('+idx+')" title="Edito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-word" onclick="gjeneroWord('+idx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg> Word</button><button class="btn-email" onclick="dergoEmail('+idx+')" title="Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button class="btn-kontrate" onclick="krijoKontrate('+idx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Kontrate</button><button class="btn-delete" onclick="fshijOferte('+idx+')" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button><button class="btn-link" onclick="kopjoLink('+idx+')" title="Kopjo Link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button></div></td></tr>';
     }).join('');
 }
 
