@@ -395,7 +395,7 @@ async function dergoPako(){
     versione.push({
         data:new Date().toISOString().split('T')[0],
         lloji:oferta.lloji,
-        pakot:oferta.pakot,
+        pakot:sel.map(p=>({id:p.id,emri:p.emri,zona:p.zona,shuma:p.shuma,hospitalore:p.hospitalore,ambulantore:p.ambulantore||p.ambulatore,primi_madh:p.primi_madh,primi_femije:p.primi_femije,tjera_pikat:p.tjera_pikat})),
         emri:oferta.emri,
         burim:'konfirmim_klient',
         pakaZgjedhur:zf,
