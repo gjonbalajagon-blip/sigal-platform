@@ -201,28 +201,7 @@ function spUpdateSelectAll(){
     const cb=document.getElementById('sp-sel-all');
     if(cb)cb.checked=spSelectedPakot.size===pakotList.length&&pakotList.length>0;
 }
-function spToggleFold(){
-    spFoldOpen=!spFoldOpen;
-    renderSpreadsheet();
-    if(editIndex>=0){
-        const o=ofertat[editIndex];
-        let pakotApply=o.pakot||[];
-        if(o.konfirmuar&&o.versione){
-            const vK=[...o.versione].reverse().find(v=>v.burim==='konfirmim_klient');
-            if(vK&&vK.pakot){
-                pakotApply=vK.pakot.map(p=>{
-                    if(typeof p!=='object'||!p.tjera_pikat)return p;
-                    const fixed={...p};
-                    p.tjera_pikat.forEach((tp,idx)=>{
-                        if(tp&&tp.vlera&&!fixed['tjera_'+idx]) fixed['tjera_'+idx]=tp.vlera;
-                    });
-                    return fixed;
-                });
-            }
-        }
-        setTimeout(()=>{applyCustomValues(pakotApply);},30);
-    }
-}
+function spToggleFold(){spFoldOpen=!spFoldOpen;renderSpreadsheet();}
 
 function spZhblloko(){
     if(!confirm('Zhblloko spreadsheet-in për editim?\nKjo lejon ndryshime në ofertën e konfirmuar.'))return;
@@ -331,9 +310,9 @@ function renderVersions(versione,oferta){
             }
         });
 
-        return '<div style="border:1px solid '+(false?'#bbf7d0':'#e5e9f0')+';border-radius:6px;margin-bottom:6px;overflow:hidden;">'+
-            '<div style="display:flex;align-items:center;padding:8px 12px;cursor:pointer;background:'+(false?'#f0fdf4':'#fafbfc')+';" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">'+
-                '<span style="width:8px;height:8px;border-radius:50%;background:'+(false?'#22c55e':'#002B5C')+';margin-right:8px;flex-shrink:0;"></span>'+
+        return '<div style="border:1px solid '+(isKlient?'#bbf7d0':'#e5e9f0')+';border-radius:6px;margin-bottom:6px;overflow:hidden;">'+
+            '<div style="display:flex;align-items:center;padding:8px 12px;cursor:pointer;background:'+(isKlient?'#f0fdf4':'#fafbfc')+';" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">'+
+                '<span style="width:8px;height:8px;border-radius:50%;background:'+(isKlient?'#22c55e':'#002B5C')+';margin-right:8px;flex-shrink:0;"></span>'+
                 '<span style="font-size:11px;color:#6b7a8d;min-width:80px;">'+(v.data||'-')+'</span>'+
                 burimBadge+
                 '<span style="font-size:11px;font-weight:600;color:#1a2332;flex:1;margin-left:6px;">'+pakotTxt+'</span>'+
@@ -424,7 +403,7 @@ function ruajOferte(){
         oferta.statusi=ofertat[editIndex].statusi;
         oferta.notification=ofertat[editIndex].notification;
         const ve=ofertat[editIndex].versione||[];
-        ve.push({data:new Date().toISOString().split('T')[0],lloji:ofertat[editIndex].lloji,pakot:ofertat[editIndex].pakot,emri:ofertat[editIndex].emri,burim:'editim_agjent'});
+        ve.push({data:ofertat[editIndex].dataKrijimit||new Date().toISOString().split('T')[0],lloji:ofertat[editIndex].lloji,pakot:ofertat[editIndex].pakot,emri:ofertat[editIndex].emri});
         oferta.versione=ve;
         oferta.dataKrijimit=ofertat[editIndex].dataKrijimit;
         ofertat[editIndex]=oferta;
@@ -490,16 +469,7 @@ function editoOferte(index){
     let pakotPerSpreadsheet=o.pakot||[];
     if(o.konfirmuar&&o.versione&&o.versione.length>0){
         const vKlient=[...o.versione].reverse().find(v=>v.burim==='konfirmim_klient');
-        if(vKlient&&vKlient.pakot){
-            pakotPerSpreadsheet=vKlient.pakot.map(p=>{
-                if(typeof p!=='object'||!p.tjera_pikat)return p;
-                const fixed={...p};
-                p.tjera_pikat.forEach((tp,idx)=>{
-                    if(tp&&tp.vlera&&!fixed['tjera_'+idx]) fixed['tjera_'+idx]=tp.vlera;
-                });
-                return fixed;
-            });
-        }
+        if(vKlient&&vKlient.pakot) pakotPerSpreadsheet=vKlient.pakot;
     }
 
     pakotPerSpreadsheet.forEach(p=>spSelectedPakot.add(typeof p==='object'?p.id:p));
@@ -539,21 +509,22 @@ function dergoEmail(index){
 function krijoKontrate(index){
     if(!confirm('A jeni i sigurt qe doni te krijoni kontrate?\nOferta eshte pranuar?'))return;
     const o=ofertat[index];ofertat[index].realizuar=true;ofertat[index].statusi='kontrate';ruajNeStorage();
-    localStorage.setItem('oferta_per_kontrate',JSON.stringify({emri:o.emri,lloji:o.lloji,email:o.email||'',pakot:o.pakot||[],ngaOferta:true}));
+    // Përdor pakot e konfirmuara nëse ka
+    let pakotPerKontrate=o.pakot||[];
+    if(o.konfirmuar&&o.versione){
+        const vK=[...o.versione].reverse().find(v=>v.burim==='konfirmim_klient');
+        if(vK&&vK.pakot) pakotPerKontrate=vK.pakot;
+    }
+    // Konverto në emra për checkbox-at e kontratës
+    const pakotEmra=pakotPerKontrate.map(p=>typeof p==='object'?'Pako '+(p.emri||p.id):p);
+    localStorage.setItem('oferta_per_kontrate',JSON.stringify({emri:o.emri,lloji:o.lloji,email:o.email||'',pakot:pakotPerKontrate,pakotEmra:pakotEmra,ngaOferta:true}));
     window.location.href='kontratat.html?nga_oferta=true';
 }
 async function gjeneroWord(index){
     const o=ofertat[index];
     try{
-        // Nëse konfirmuar, përdor pakot e konfirmuara nga klienti
-        let pakotPerWord=o.pakot||[];
-        if(o.konfirmuar&&o.versione){
-            const vK=[...o.versione].reverse().find(v=>v.burim==='konfirmim_klient');
-            if(vK&&vK.pakot) pakotPerWord=vK.pakot;
-        }
-        const pakotEmra=pakotPerWord.map(p=>{if(typeof p==='object'){const pl=o.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;const f=pl.find(pk=>pk.id===p.id);return f?'Pako '+f.emri:p.id;}return p;});
-        const pakotData=pakotPerWord.filter(p=>typeof p==='object');
-        const r=await fetch(TAPI+'/api/gjenero-oferte',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emri:o.emri,lloji:o.lloji==='familje'||o.lloji==='biznes'?'familje_biznes':o.lloji,pakot:pakotEmra,pakotData:pakotData})});
+        const pakotEmra=(o.pakot||[]).map(p=>{if(typeof p==='object'){const pl=o.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;const f=pl.find(pk=>pk.id===p.id);return f?'Pako '+f.emri:p.id;}return p;});
+        const r=await fetch(TAPI+'/api/gjenero-oferte',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emri:o.emri,lloji:o.lloji==='familje'||o.lloji==='biznes'?'familje_biznes':o.lloji,pakot:pakotEmra})});
         const d=await r.json();if(d.success)window.open(TAPI+'/api/shkarko/'+d.fileName,'_blank');else alert('Gabim: '+d.error);
     }catch(err){alert('Serveri nuk eshte aktiv!');}
 }

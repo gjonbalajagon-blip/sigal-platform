@@ -7,6 +7,65 @@
     <link rel="stylesheet" href="../css/theme.css">
     <script src="../js/auth.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Tabs */
+        .tabs-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .tabs { display: flex; gap: 0; background: #e5e9f0; border-radius: 8px; padding: 2px; }
+        .tab-btn { padding: 7px 18px; font-size: 12px; font-weight: 600; color: #6b7a8d; border-radius: 6px; cursor: pointer; border: none; background: none; font-family: inherit; transition: all 0.15s; }
+        .tab-btn.active { background: white; color: #002B5C; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .tab-btn .tab-count { font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: 4px; font-weight: 700; background: #e5e9f0; color: #6b7a8d; }
+        .tab-btn.active .tab-count { background: #002B5C; color: white; }
+        .period-filter { display: flex; align-items: center; gap: 6px; }
+        .period-filter label { font-size: 11px; color: #6b7a8d; font-weight: 600; }
+        .period-select { font-family: inherit; font-size: 12px; padding: 5px 10px; border: 1px solid #e5e9f0; border-radius: 6px; background: white; color: #1a2332; font-weight: 600; cursor: pointer; }
+
+        /* Navy Strip */
+        .stats-strip { background: #002B5C; border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
+        .strip-top { padding: 16px 24px; display: flex; align-items: flex-end; justify-content: space-between; }
+        .strip-metrics { display: flex; gap: 0; }
+        .strip-metric { padding: 0 20px; border-right: 1px solid rgba(255,255,255,0.08); }
+        .strip-metric:first-child { padding-left: 0; }
+        .strip-metric:last-child { border-right: none; }
+        .strip-metric .sm-num { font-size: 28px; font-weight: 800; color: white; line-height: 1; }
+        .strip-metric .sm-lbl { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+        .strip-metric.aktive .sm-num { color: #4ade80; }
+        .strip-metric.skadon-shpejt .sm-num { color: #fbbf24; }
+        .strip-metric.skaduar .sm-num { color: #fca5a5; }
+        .strip-llojet { display: flex; gap: 5px; padding-bottom: 4px; }
+        .strip-chip { font-size: 10px; padding: 5px 10px; border-radius: 10px; font-weight: 500; color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.07); display: flex; align-items: center; gap: 6px; line-height: 1; }
+        .strip-chip .sc-num { font-weight: 800; font-size: 13px; color: white; }
+        .strip-bottom { background: rgba(0,0,0,0.15); padding: 10px 24px; display: flex; align-items: center; gap: 14px; }
+        .strip-bar { flex: 1; display: flex; gap: 2px; height: 6px; border-radius: 3px; overflow: hidden; }
+        .strip-bar-seg { height: 100%; transition: width 0.4s ease; }
+        .strip-legend { display: flex; gap: 10px; flex-shrink: 0; }
+        .strip-legend span { font-size: 9px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px; }
+        .strip-legend .sl-dot { width: 5px; height: 5px; border-radius: 1.5px; }
+
+        /* Filters */
+        .filters-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+        .filters-row select, .filters-row input { font-family: inherit; font-size: 11px; padding: 6px 10px; border: 1px solid #e5e9f0; border-radius: 6px; background: white; color: #1a2332; }
+        .filters-row input { flex: 1; max-width: 220px; }
+        .sort-btns { display: flex; gap: 4px; margin-left: auto; }
+        .sort-btn { font-family: inherit; font-size: 10px; padding: 5px 10px; border: 1px solid #e5e9f0; border-radius: 6px; background: white; color: #6b7a8d; cursor: pointer; font-weight: 600; }
+        .sort-btn.active { background: #002B5C; color: white; border-color: #002B5C; }
+
+        /* Tabela kompakte */
+        .table-container table th { font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; }
+        .table-container table td { padding: 8px 12px; font-size: 12px; }
+        .klient-name { font-weight: 600; font-size: 12px; color: #1a2332; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+        .klient-sub { font-size: 10px; color: #b0b8c4; margin-top: 1px; }
+        .skadon-cell { display: flex; align-items: center; gap: 4px; font-size: 11px; }
+        .skadon-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .action-icon-btns { display: flex; gap: 3px; }
+        .action-icon-btns button { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e5e9f0; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.1s; }
+        .action-icon-btns button:hover { background: #f0f4ff; border-color: #0047AB; }
+        .action-icon-btns button svg { width: 13px; height: 13px; stroke: #6b7a8d; stroke-width: 2; fill: none; }
+        .action-icon-btns button:hover svg { stroke: #0047AB; }
+        .action-icon-btns .btn-text { width: auto; padding: 0 8px; gap: 3px; font-size: 10px; font-weight: 600; font-family: inherit; }
+        .action-icon-btns .btn-text svg { width: 12px; height: 12px; }
+        .action-icon-btns .btn-word { color: #0047AB; border-color: #dbeafe; background: #f0f4ff; }
+        .action-icon-btns .btn-word:hover { background: #dbeafe; }
+    </style>
 </head>
 <body>
 
@@ -19,52 +78,19 @@
             </div>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item">
-                <span class="nav-icon"><i data-lucide="layout-dashboard"></i></span>
-                <span class="nav-label">Dashboard</span>
-            </a>
-            <a href="oferta.html" class="nav-item">
-                <span class="nav-icon"><i data-lucide="clipboard-list"></i></span>
-                <span class="nav-label">Oferta</span>
-            </a>
-            <a href="kontratat.html" class="nav-item active">
-                <span class="nav-icon"><i data-lucide="file-text"></i></span>
-                <span class="nav-label">Kontratat</span>
-            </a>
-            <a href="faturimi.html" class="nav-item">
-                <span class="nav-icon"><i data-lucide="receipt"></i></span>
-                <span class="nav-label">Faturimi</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i data-lucide="refresh-cw"></i></span>
-                <span class="nav-label">Rinovimet</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i data-lucide="wallet"></i></span>
-                <span class="nav-label">Debitorët</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i data-lucide="bar-chart-3"></i></span>
-                <span class="nav-label">Raportet</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i data-lucide="check-circle"></i></span>
-                <span class="nav-label">Detyrat</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i data-lucide="folder-open"></i></span>
-                <span class="nav-label">Dokumentet</span>
-            </a>
-            <a href="stafi.html" class="nav-item">
-                <span class="nav-icon"><i data-lucide="users"></i></span>
-                <span class="nav-label">Stafi</span>
-            </a>
+            <a href="dashboard.html" class="nav-item"><span class="nav-icon"><i data-lucide="layout-dashboard"></i></span><span class="nav-label">Dashboard</span></a>
+            <a href="oferta.html" class="nav-item"><span class="nav-icon"><i data-lucide="clipboard-list"></i></span><span class="nav-label">Oferta</span></a>
+            <a href="kontratat.html" class="nav-item active"><span class="nav-icon"><i data-lucide="file-text"></i></span><span class="nav-label">Kontratat</span></a>
+            <a href="faturimi.html" class="nav-item"><span class="nav-icon"><i data-lucide="receipt"></i></span><span class="nav-label">Faturimi</span></a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="refresh-cw"></i></span><span class="nav-label">Rinovimet</span></a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="wallet"></i></span><span class="nav-label">Debitorët</span></a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="bar-chart-3"></i></span><span class="nav-label">Raportet</span></a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="check-circle"></i></span><span class="nav-label">Detyrat</span></a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="folder-open"></i></span><span class="nav-label">Dokumentet</span></a>
+            <a href="stafi.html" class="nav-item"><span class="nav-icon"><i data-lucide="users"></i></span><span class="nav-label">Stafi</span></a>
         </nav>
         <div class="sidebar-footer">
-            <a href="../index.html" class="nav-item logout">
-                <span class="nav-icon"><i data-lucide="log-out"></i></span>
-                <span class="nav-label">Dilni</span>
-            </a>
+            <a href="../index.html" class="nav-item logout"><span class="nav-icon"><i data-lucide="log-out"></i></span><span class="nav-label">Dilni</span></a>
         </div>
     </div>
 
@@ -77,60 +103,67 @@
         </div>
 
         <div class="content-area">
-            <div class="filter-bar">
+            <!-- Tabs + Period -->
+            <div class="tabs-row">
+                <div class="tabs">
+                    <button class="tab-btn active" id="tab-aktive" onclick="ndryshoTab('aktive')">Aktive <span class="tab-count" id="tab-count-aktive">0</span></button>
+                    <button class="tab-btn" id="tab-skadon" onclick="ndryshoTab('skadon')">Skadon shpejt <span class="tab-count" id="tab-count-skadon">0</span></button>
+                    <button class="tab-btn" id="tab-skaduar" onclick="ndryshoTab('skaduar')">Skaduar <span class="tab-count" id="tab-count-skaduar">0</span></button>
+                </div>
+                <div class="period-filter">
+                    <label>Viti:</label>
+                    <select class="period-select" id="filter-viti" onchange="filtro()">
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                    </select>
+                    <label style="margin-left:8px;">Muaji:</label>
+                    <select class="period-select" id="filter-muaji" onchange="filtro()">
+                        <option value="all">Total</option>
+                        <option value="01">Janar</option>
+                        <option value="02">Shkurt</option>
+                        <option value="03">Mars</option>
+                        <option value="04">Prill</option>
+                        <option value="05">Maj</option>
+                        <option value="06">Qershor</option>
+                        <option value="07">Korrik</option>
+                        <option value="08">Gusht</option>
+                        <option value="09">Shtator</option>
+                        <option value="10">Tetor</option>
+                        <option value="11">Nëntor</option>
+                        <option value="12">Dhjetor</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Navy Strip -->
+            <div class="stats-strip">
+                <div class="strip-top">
+                    <div class="strip-metrics">
+                        <div class="strip-metric"><div class="sm-num" id="st-total">0</div><div class="sm-lbl">Total</div></div>
+                        <div class="strip-metric aktive"><div class="sm-num" id="st-aktive">0</div><div class="sm-lbl">Aktive</div></div>
+                        <div class="strip-metric skadon-shpejt"><div class="sm-num" id="st-skadon">0</div><div class="sm-lbl">Skadon shpejt</div></div>
+                        <div class="strip-metric skaduar"><div class="sm-num" id="st-skaduar">0</div><div class="sm-lbl">Skaduar</div></div>
+                    </div>
+                    <div class="strip-llojet" id="st-llojet"></div>
+                </div>
+                <div class="strip-bottom">
+                    <div class="strip-bar" id="st-bar"></div>
+                    <div class="strip-legend" id="st-legend"></div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-row">
                 <select id="filter-lloji" onchange="filtro()">
                     <option value="all">Të gjitha llojet</option>
                     <option value="individ">Individ</option>
-                    <option value="biznes">Biznes</option>
                     <option value="familje">Familje</option>
-                </select>
-                <select id="filter-statusi" onchange="filtro()">
-                    <option value="all">Të gjitha statuset</option>
-                    <option value="aktive">Aktive</option>
-                    <option value="skaduar">Skaduar</option>
-                    <option value="ne-pritje">Në Pritje</option>
+                    <option value="biznes">Biznes</option>
                 </select>
                 <input type="text" id="search-kontrate" placeholder="Kërko kontratë..." onkeyup="filtro()">
-                <select id="filter-viti" onchange="filtro()">
-                    <option value="all">Të gjitha vitet</option>
-                    <option value="2026">2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                </select>
-            </div>
-
-            <div class="stats-container">
-                <div class="stats-row">
-                    <div class="fstat-card small aktive-card">
-                        <span id="count-aktive">0</span>
-                        <p>Aktive</p>
-                    </div>
-                    <div class="fstat-card small skadon-card">
-                        <span id="count-skadon">0</span>
-                        <p>Skadon së shpejti</p>
-                    </div>
-                    <div class="fstat-card small skaduar-card">
-                        <span id="count-skaduar">0</span>
-                        <p>Skaduar</p>
-                    </div>
-                    <div class="fstat-card big total-card">
-                        <span id="count-total">0</span>
-                        <p>Total</p>
-                    </div>
-                </div>
-                <div class="stats-row">
-                    <div class="fstat-card small individ-card">
-                        <span id="count-individ">0</span>
-                        <p>Individ</p>
-                    </div>
-                    <div class="fstat-card small familje-card">
-                        <span id="count-familje">0</span>
-                        <p>Familje</p>
-                    </div>
-                    <div class="fstat-card small biznes-card">
-                        <span id="count-biznes">0</span>
-                        <p>Biznese</p>
-                    </div>
+                <div class="sort-btns">
+                    <button class="sort-btn active" id="sort-skadon" onclick="ndryshoSort('skadon')">Skadon shpejt</button>
+                    <button class="sort-btn" id="sort-re" onclick="ndryshoSort('re')">Më e re</button>
                 </div>
             </div>
 
@@ -138,16 +171,14 @@
                 <table>
                     <thead>
                         <tr>
-<th>Klienti</th>
-                            <th>Nr. ID / NRB</th>
-                            <th>Lloji</th>
+                            <th>Klienti</th>
+                            <th style="width:70px;">Nr. ID</th>
+                            <th style="width:80px;">Lloji</th>
                             <th>Pakot</th>
-                            <th>Krijuar Nga</th>
-                            <th>Fillimi</th>
-                            <th>Mbarimi</th>
-                            <th>Skadon</th>
-                            <th>Statusi</th>
-                            <th>Veprimet</th>
+                            <th style="width:75px;">Fillimi</th>
+                            <th style="width:60px;">Skadon</th>
+                            <th style="width:70px;">Statusi</th>
+                            <th style="width:160px;">Veprimet</th>
                         </tr>
                     </thead>
                     <tbody id="kontratat-tbody"></tbody>
@@ -156,6 +187,7 @@
         </div>
     </div>
 
+    <!-- Modal -->
     <div class="modal-overlay" id="modal-overlay" onclick="mbyllModal()">
         <div class="modal modal-large" onclick="event.stopPropagation()">
             <div class="modal-header">
