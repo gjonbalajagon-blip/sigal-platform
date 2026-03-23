@@ -470,8 +470,12 @@ function editoOferte(index){
     setTimeout(()=>{applyCustomValues(pakotPerSpreadsheet);},80);
 
     const vPanel=document.getElementById('version-panel');
-    const agjentV=(o.versione||[]).filter(v=>v.burim!=='konfirmim_klient');
-    if(agjentV.length>0){vPanel.style.display='block';renderVersions(o.versione,o);}
+    historyOpen=false;
+    document.getElementById('version-body').style.display='none';
+    const ha=document.getElementById('history-arrow');if(ha)ha.textContent='▸';
+    const hasVersione=(o.versione||[]).length>0;
+    const hasAgjentV=(o.versione||[]).filter(v=>v.burim!=='konfirmim_klient').length>0;
+    if(hasVersione){vPanel.style.display='block';renderVersions(o.versione,o);}
     else{vPanel.style.display='none';}
     document.getElementById('drawer-overlay').classList.add('active');
 }
