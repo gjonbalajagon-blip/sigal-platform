@@ -310,9 +310,9 @@ function renderVersions(versione,oferta){
             }
         });
 
-        return '<div style="border:1px solid '+(isKlient?'#bbf7d0':'#e5e9f0')+';border-radius:6px;margin-bottom:6px;overflow:hidden;">'+
-            '<div style="display:flex;align-items:center;padding:8px 12px;cursor:pointer;background:'+(isKlient?'#f0fdf4':'#fafbfc')+';" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">'+
-                '<span style="width:8px;height:8px;border-radius:50%;background:'+(isKlient?'#22c55e':'#002B5C')+';margin-right:8px;flex-shrink:0;"></span>'+
+        return '<div style="border:1px solid '+(false?'#bbf7d0':'#e5e9f0')+';border-radius:6px;margin-bottom:6px;overflow:hidden;">'+
+            '<div style="display:flex;align-items:center;padding:8px 12px;cursor:pointer;background:'+(false?'#f0fdf4':'#fafbfc')+';" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">'+
+                '<span style="width:8px;height:8px;border-radius:50%;background:'+(false?'#22c55e':'#002B5C')+';margin-right:8px;flex-shrink:0;"></span>'+
                 '<span style="font-size:11px;color:#6b7a8d;min-width:80px;">'+(v.data||'-')+'</span>'+
                 burimBadge+
                 '<span style="font-size:11px;font-weight:600;color:#1a2332;flex:1;margin-left:6px;">'+pakotTxt+'</span>'+
