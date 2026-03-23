@@ -514,56 +514,183 @@ function kopjoFallback(text){const ta=document.createElement('textarea');ta.valu
 function tregoToast(msg){let t=document.getElementById('toast-msg');if(!t){t=document.createElement('div');t.id='toast-msg';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#002B5C;color:white;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity 0.3s;';document.body.appendChild(t);}t.textContent=msg;t.style.opacity='1';setTimeout(()=>{t.style.opacity='0';},2000);}
 function filtro(){renderTabela();}
 
+// ====== TABS, SORT, PERIOD ======
+let activeTab='aktive'; // 'aktive' ose 'skaduar'
+let activeSort='skadon'; // 'skadon' ose 're'
+
+function ndryshoTab(tab){
+    activeTab=tab;
+    document.getElementById('tab-aktive').classList.toggle('active',tab==='aktive');
+    document.getElementById('tab-skaduar').classList.toggle('active',tab==='skaduar');
+    renderTabela();
+}
+function ndryshoSort(sort){
+    activeSort=sort;
+    document.getElementById('sort-skadon').classList.toggle('active',sort==='skadon');
+    document.getElementById('sort-re').classList.toggle('active',sort==='re');
+    renderTabela();
+}
+function ndryshoViti(){
+    // Auto-selekto muajin aktual nëse viti = viti aktual
+    const viti=document.getElementById('filter-viti').value;
+    const now=new Date();
+    if(parseInt(viti)===now.getFullYear()){
+        document.getElementById('filter-muaji').value=String(now.getMonth()+1).padStart(2,'0');
+    } else {
+        document.getElementById('filter-muaji').value='all';
+    }
+}
+
+// Logjika e re e skadimit: skadon VETËM nëse nuk është konfirmuar/realizuar
+function eshteSkaduar(o){
+    if(!o.dataSkadon)return false;
+    const st=getTrackStatus(o);
+    if(st==='e_konfirmuar'||st==='kontrate')return false; // nuk skadon kurrë
+    return new Date()>new Date(o.dataSkadon);
+}
+
 function renderTabela(){
     const filterLloji=document.getElementById('filter-lloji').value;
     const filterStatusi=document.getElementById('filter-statusi').value;
     const search=document.getElementById('search-oferte').value.toLowerCase();
-    const filterViti=document.getElementById('filter-viti')?document.getElementById('filter-viti').value:'all';
-    const ofertatFiltruara=filtroSipasRolit(ofertat,'krijuarNga');
-    const filtered=ofertatFiltruara.filter(o=>{
+    const filterViti=document.getElementById('filter-viti').value;
+    const filterMuaji=document.getElementById('filter-muaji').value;
+    const ofertatRolit=filtroSipasRolit(ofertat,'krijuarNga');
+
+    // Filtro sipas periudhës (dataKrijimit)
+    const perioda=ofertatRolit.filter(o=>{
+        const dk=o.dataKrijimit||'';
+        if(!dk.startsWith(filterViti))return false;
+        if(filterMuaji!=='all'){
+            const muaji=dk.substring(5,7);
+            if(muaji!==filterMuaji)return false;
+        }
+        return true;
+    });
+
+    // Ndaj aktive / skaduar
+    const aktive=perioda.filter(o=>!eshteSkaduar(o));
+    const skaduar=perioda.filter(o=>eshteSkaduar(o));
+
+    // Tab counts
+    document.getElementById('tab-count-aktive').textContent=aktive.length;
+    document.getElementById('tab-count-skaduar').textContent=skaduar.length;
+
+    // Zgjidh listën sipas tab-it
+    const bazaList=activeTab==='aktive'?aktive:skaduar;
+
+    // Filtro më tej
+    const filtered=bazaList.filter(o=>{
         const llojiOk=filterLloji==='all'||o.lloji===filterLloji;
-        const statusi=llogaritStatus(o.dataSkadon);
-        const statusOk=filterStatusi==='all'||statusi===filterStatusi;
+        const st=getTrackStatus(o);
+        const statusOk=filterStatusi==='all'||st===filterStatusi;
         const searchOk=o.emri.toLowerCase().includes(search);
-        const vitiOk=filterViti==='all'||(o.dataKrijimit||'').startsWith(filterViti);
-        return llojiOk&&statusOk&&searchOk&&vitiOk;
-    }).sort((a,b)=>{if(!a.dataSkadon)return 1;if(!b.dataSkadon)return-1;return new Date(a.dataSkadon)-new Date(b.dataSkadon);});
+        return llojiOk&&statusOk&&searchOk;
+    });
 
-    document.getElementById('count-aktive').textContent=ofertatFiltruara.filter(o=>llogaritStatus(o.dataSkadon)==='aktive').length;
-    document.getElementById('count-skaduar').textContent=ofertatFiltruara.filter(o=>llogaritStatus(o.dataSkadon)==='skaduar').length;
-    document.getElementById('count-total').textContent=ofertat.length;
-    document.getElementById('count-realizuara').textContent=ofertatFiltruara.filter(o=>o.realizuar).length;
-    document.getElementById('count-individ').textContent=ofertatFiltruara.filter(o=>o.lloji==='individ').length;
-    document.getElementById('count-familje').textContent=ofertatFiltruara.filter(o=>o.lloji==='familje').length;
-    document.getElementById('count-biznes').textContent=ofertatFiltruara.filter(o=>o.lloji==='biznes').length;
-    const rI=ofertatFiltruara.filter(o=>o.lloji==='individ'&&o.realizuar).length;
-    const rF=ofertatFiltruara.filter(o=>o.lloji==='familje'&&o.realizuar).length;
-    const rB=ofertatFiltruara.filter(o=>o.lloji==='biznes'&&o.realizuar).length;
-    document.getElementById('count-individ-r').textContent=rI>0?rI+' realizuar':'';
-    document.getElementById('count-familje-r').textContent=rF>0?rF+' realizuar':'';
-    document.getElementById('count-biznes-r').textContent=rB>0?rB+' realizuar':'';
+    // Sort
+    const sorted=[...filtered].sort((a,b)=>{
+        if(activeSort==='re'){
+            return(b.dataKrijimit||'').localeCompare(a.dataKrijimit||'');
+        }
+        // skadon shpejt
+        if(!a.dataSkadon)return 1;
+        if(!b.dataSkadon)return-1;
+        return new Date(a.dataSkadon)-new Date(b.dataSkadon);
+    });
 
+    // ====== STATS ======
+    const stTotal=aktive.length;
+    const stPresin=aktive.filter(o=>{const s=getTrackStatus(o);return s==='e_derguar'||s==='e_pare'||s==='e_krijuar';}).length;
+    const stKonfirmuar=aktive.filter(o=>getTrackStatus(o)==='e_konfirmuar').length;
+    const stRealizuar=aktive.filter(o=>getTrackStatus(o)==='kontrate').length;
+
+    document.getElementById('st-total').textContent=stTotal;
+    document.getElementById('st-presin').textContent=stPresin;
+    document.getElementById('st-konfirmuar').textContent=stKonfirmuar;
+    document.getElementById('st-realizuar').textContent=stRealizuar;
+
+    // Llojet me conversion
+    const llojetData=['individ','familje','biznes'].map(ll=>{
+        const total=aktive.filter(o=>o.lloji===ll).length;
+        const real=aktive.filter(o=>o.lloji===ll&&getTrackStatus(o)==='kontrate').length;
+        return{ll,total,real};
+    });
+    const llojiNames={individ:'Individ',familje:'Familje',biznes:'Biznes'};
+    document.getElementById('st-llojet').innerHTML=llojetData.filter(d=>d.total>0).map(d=>
+        '<span class="strip-chip"><span class="sc-num">'+d.total+'</span> '+llojiNames[d.ll]+' <span class="sc-real">'+d.real+' ✓</span></span>'
+    ).join('');
+
+    // Funnel bar
+    const barEl=document.getElementById('st-bar');
+    const legEl=document.getElementById('st-legend');
+    if(stTotal>0){
+        const pReal=Math.round(stRealizuar/stTotal*100);
+        const pKonf=Math.round(stKonfirmuar/stTotal*100);
+        const pPres=100-pReal-pKonf;
+        barEl.innerHTML=
+            '<div class="strip-bar-seg" style="width:'+pReal+'%;background:#93c5fd;border-radius:3px 0 0 3px;"></div>'+
+            '<div class="strip-bar-seg" style="width:'+pKonf+'%;background:#4ade80;"></div>'+
+            '<div class="strip-bar-seg" style="width:'+pPres+'%;background:#fbbf24;border-radius:0 3px 3px 0;"></div>';
+        legEl.innerHTML=
+            '<span><span class="sl-dot" style="background:#93c5fd;"></span>Realizuar</span>'+
+            '<span><span class="sl-dot" style="background:#4ade80;"></span>Konfirmuar</span>'+
+            '<span><span class="sl-dot" style="background:#fbbf24;"></span>Presin</span>';
+    } else {
+        barEl.innerHTML='<div class="strip-bar-seg" style="width:100%;background:rgba(255,255,255,0.08);border-radius:3px;"></div>';
+        legEl.innerHTML='';
+    }
+
+    // ====== TABELA ======
     const llojiLabels={'individ':'Individuale','familje':'Familjare','biznes':'Biznese'};
-    const kerkuarLabels={'direkt':'Direkt','online':'Online','agjenti':'Agjenti'};
     const tbody=document.getElementById('ofertat-tbody');
-    if(filtered.length===0){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:40px;color:#888;">Nuk ka oferta.</td></tr>';return;}
+    if(sorted.length===0){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:40px;color:#888;">Nuk ka oferta.</td></tr>';return;}
 
-    tbody.innerHTML=filtered.map(o=>{
-        const idx=ofertat.indexOf(o);const ditet=llogaritDitet(o.dataSkadon);
-        const kerkuar=o.kerkuarNga==='agjenti'?(o.agjenti||'-'):(kerkuarLabels[o.kerkuarNga]||'-');
+    tbody.innerHTML=sorted.map(o=>{
+        const idx=ofertat.indexOf(o);
+        const ditet=llogaritDitet(o.dataSkadon);
+        const st=getTrackStatus(o);
+        const kerkuar=o.kerkuarNga==='agjenti'?(o.agjenti||''):'';
+        const kerkuarTxt=kerkuar||((o.kerkuarNga==='direkt')?'Direkt':(o.kerkuarNga==='online'?'Online':''));
         const vCount=(o.versione||[]).length;
         const vBadge=vCount>0?' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">'+vCount+'v</span>':'';
-        // Notification dot kur klienti ka konfirmuar dhe nuk është lexuar
-        const notifDot=(o.notification&&!o.notification.lexuar)?' <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;margin-left:4px;" title="'+o.notification.msg+'"></span>':'';
-        // Pakot — shkurto max 2 emra
+        const notifDot=(o.notification&&!o.notification.lexuar)?' <span style="width:7px;height:7px;border-radius:50%;background:#ef4444;display:inline-block;vertical-align:middle;margin-left:3px;"></span>':'';
+        // Pakot shkurto
         const pakotArr=(o.pakot||[]).map(p=>typeof p==='object'?(p.emri||p.id):p);
         let pakotTxt='-';
-        if(pakotArr.length<=2) pakotTxt=pakotArr.join(', ');
+        if(pakotArr.length<=2)pakotTxt=pakotArr.join(', ');
         else pakotTxt=pakotArr.slice(0,2).join(', ')+' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">+'+(pakotArr.length-2)+'</span>';
-        let dotColor='#22c55e';if(ditet.klasa==='skadon-warning')dotColor='#f59e0b';if(ditet.klasa==='skadon-expired')dotColor='#ef4444';
-        const skadonHtml='<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:'+dotColor+';flex-shrink:0"></span>'+ditet.teksti+'</span>';
-        return'<tr><td>'+o.emri+vBadge+notifDot+'</td><td><span class="badge-lloji '+o.lloji+'">'+(llojiLabels[o.lloji]||o.lloji)+'</span></td><td>'+pakotTxt+'</td><td>'+(o.krijuarNgaEmri||o.krijuarNga||'-')+'</td><td>'+kerkuar+'</td><td>'+(o.dataKrijimit||'-')+'</td><td>'+skadonHtml+'</td><td>'+trackBadge(getTrackStatus(o))+'</td><td><div class="action-btns"><button class="btn-edit" onclick="editoOferte('+idx+')" title="Edito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-word" onclick="gjeneroWord('+idx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg> Word</button><button class="btn-email" onclick="dergoEmail('+idx+')" title="Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button class="btn-kontrate" onclick="krijoKontrate('+idx+')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Kontrate</button><button class="btn-delete" onclick="fshijOferte('+idx+')" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button><button class="btn-link" onclick="kopjoLink('+idx+')" title="Kopjo Link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button></div></td></tr>';
+        // Skadon
+        let dotColor='#22c55e';
+        if(ditet.klasa==='skadon-warning')dotColor='#f59e0b';
+        if(ditet.klasa==='skadon-expired')dotColor='#ef4444';
+        const skadonTxt=ditet.teksti.replace(' dite','d').replace(' ditë','d');
+        // Kontratë button vetëm kur konfirmuar (jo realizuar, jo krijuar)
+        const showKontrate=st==='e_konfirmuar';
+
+        return '<tr>'+
+            '<td><div class="klient-name">'+o.emri+vBadge+notifDot+' <span class="badge-lloji '+o.lloji+'">'+(llojiLabels[o.lloji]||o.lloji)+'</span></div><div class="klient-sub">'+kerkuarTxt+'</div></td>'+
+            '<td><span class="pakot-cell">'+pakotTxt+'</span></td>'+
+            '<td><div class="skadon-cell"><span class="skadon-dot" style="background:'+dotColor+';"></span>'+skadonTxt+'</div></td>'+
+            '<td>'+trackBadge(st)+'</td>'+
+            '<td><div class="action-icon-btns">'+
+                '<button onclick="editoOferte('+idx+')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>'+
+                '<button onclick="gjeneroWord('+idx+')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></button>'+
+                '<button onclick="dergoEmail('+idx+')" title="Email"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button>'+
+                '<button onclick="kopjoLink('+idx+')" title="Kopjo Link"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>'+
+                (showKontrate?'<button class="btn-kontrate-icon" onclick="krijoKontrate('+idx+')" title="Kontratë"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></button>':'')+
+                '<button onclick="fshijOferte('+idx+')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>'+
+            '</div></td>'+
+        '</tr>';
     }).join('');
 }
 
-document.addEventListener('DOMContentLoaded',renderTabela);
+document.addEventListener('DOMContentLoaded',function(){
+    // Auto-selekto muajin aktual
+    const now=new Date();
+    const vitiEl=document.getElementById('filter-viti');
+    const muajiEl=document.getElementById('filter-muaji');
+    vitiEl.value=String(now.getFullYear());
+    muajiEl.value=String(now.getMonth()+1).padStart(2,'0');
+    renderTabela();
+});
