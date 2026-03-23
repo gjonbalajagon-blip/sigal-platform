@@ -516,7 +516,8 @@ async function gjeneroWord(index){
     const o=ofertat[index];
     try{
         const pakotEmra=(o.pakot||[]).map(p=>{if(typeof p==='object'){const pl=o.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;const f=pl.find(pk=>pk.id===p.id);return f?'Pako '+f.emri:p.id;}return p;});
-        const r=await fetch(TAPI+'/api/gjenero-oferte',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emri:o.emri,lloji:o.lloji==='familje'||o.lloji==='biznes'?'familje_biznes':o.lloji,pakot:pakotEmra})});
+        const pakotData=(o.pakot||[]).filter(p=>typeof p==='object');
+        const r=await fetch(TAPI+'/api/gjenero-oferte',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emri:o.emri,lloji:o.lloji==='familje'||o.lloji==='biznes'?'familje_biznes':o.lloji,pakot:pakotEmra,pakotData:pakotData})});
         const d=await r.json();if(d.success)window.open(TAPI+'/api/shkarko/'+d.fileName,'_blank');else alert('Gabim: '+d.error);
     }catch(err){alert('Serveri nuk eshte aktiv!');}
 }
