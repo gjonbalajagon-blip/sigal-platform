@@ -469,7 +469,16 @@ function editoOferte(index){
     let pakotPerSpreadsheet=o.pakot||[];
     if(o.konfirmuar&&o.versione&&o.versione.length>0){
         const vKlient=[...o.versione].reverse().find(v=>v.burim==='konfirmim_klient');
-        if(vKlient&&vKlient.pakot) pakotPerSpreadsheet=vKlient.pakot;
+        if(vKlient&&vKlient.pakot){
+            pakotPerSpreadsheet=vKlient.pakot.map(p=>{
+                if(typeof p!=='object'||!p.tjera_pikat)return p;
+                const fixed={...p};
+                p.tjera_pikat.forEach((tp,idx)=>{
+                    if(tp&&tp.vlera&&!fixed['tjera_'+idx]) fixed['tjera_'+idx]=tp.vlera;
+                });
+                return fixed;
+            });
+        }
     }
 
     pakotPerSpreadsheet.forEach(p=>spSelectedPakot.add(typeof p==='object'?p.id:p));
@@ -515,8 +524,14 @@ function krijoKontrate(index){
 async function gjeneroWord(index){
     const o=ofertat[index];
     try{
-        const pakotEmra=(o.pakot||[]).map(p=>{if(typeof p==='object'){const pl=o.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;const f=pl.find(pk=>pk.id===p.id);return f?'Pako '+f.emri:p.id;}return p;});
-        const pakotData=(o.pakot||[]).filter(p=>typeof p==='object');
+        // Nëse konfirmuar, përdor pakot e konfirmuara nga klienti
+        let pakotPerWord=o.pakot||[];
+        if(o.konfirmuar&&o.versione){
+            const vK=[...o.versione].reverse().find(v=>v.burim==='konfirmim_klient');
+            if(vK&&vK.pakot) pakotPerWord=vK.pakot;
+        }
+        const pakotEmra=pakotPerWord.map(p=>{if(typeof p==='object'){const pl=o.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;const f=pl.find(pk=>pk.id===p.id);return f?'Pako '+f.emri:p.id;}return p;});
+        const pakotData=pakotPerWord.filter(p=>typeof p==='object');
         const r=await fetch(TAPI+'/api/gjenero-oferte',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emri:o.emri,lloji:o.lloji==='familje'||o.lloji==='biznes'?'familje_biznes':o.lloji,pakot:pakotEmra,pakotData:pakotData})});
         const d=await r.json();if(d.success)window.open(TAPI+'/api/shkarko/'+d.fileName,'_blank');else alert('Gabim: '+d.error);
     }catch(err){alert('Serveri nuk eshte aktiv!');}
