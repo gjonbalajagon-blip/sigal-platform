@@ -408,7 +408,15 @@ function ruajOferte(){
         oferta.dataKrijimit=ofertat[editIndex].dataKrijimit;
         ofertat[editIndex]=oferta;
     }else{
-        oferta.realizuar=false;oferta.versione=[];oferta.statusi='e_krijuar';
+        oferta.realizuar=false;oferta.statusi='e_krijuar';
+        // Ruaj version 0 — oferta origjinale e dërguar
+        oferta.versione=[{
+            data:oferta.dataKrijimit,
+            lloji:oferta.lloji,
+            pakot:pakotAktuale,
+            emri:oferta.emri,
+            burim:'krijim_fillestar'
+        }];
         ofertat.push(oferta);
     }
     ruajNeStorage();mbyllDrawer();renderTabela();
