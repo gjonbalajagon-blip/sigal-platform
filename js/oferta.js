@@ -255,13 +255,17 @@ function toggleVersions(){
 function renderVersions(versione,oferta){
     if(!versione||versione.length===0)return;
     const body=document.getElementById('version-body');
-    document.getElementById('version-count').textContent=versione.length;
+    // Filtro: shfaq vetëm versionet e agjentit, jo konfirmimin e klientit
+    const agjentVersione=versione.filter(v=>v.burim!=='konfirmim_klient');
+    document.getElementById('version-count').textContent=agjentVersione.length;
     document.getElementById('history-label').textContent='Historiku i ofertës';
+    if(agjentVersione.length===0){body.innerHTML='<div style="padding:10px 14px;font-size:11px;color:#aaa;">Nuk ka versione të mëparshme.</div>';return;}
 
-    body.innerHTML=versione.map((v,i)=>{
+    body.innerHTML=agjentVersione.map((v,i)=>{
+        // Gjej indexin origjinal në versione[] për rikthim
+        const origIdx=versione.indexOf(v);
         const pakotTxt=(v.pakot||[]).map(p=>typeof p==='object'?(p.emri||p.id):p).join(', ');
-        const isKlient=v.burim==='konfirmim_klient';
-        const burimBadge=isKlient?'<span style="background:#dcfce7;color:#059669;font-size:8px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:6px;">Klient</span>':'<span style="background:#dbeafe;color:#0047AB;font-size:8px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:6px;">Agjent</span>';
+        const burimBadge='<span style="background:#dbeafe;color:#0047AB;font-size:8px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:6px;">Agjent</span>';
 
         // Detaje për çdo pakë
         let detaje='';
@@ -313,7 +317,7 @@ function renderVersions(versione,oferta){
                 burimBadge+
                 '<span style="font-size:11px;font-weight:600;color:#1a2332;flex:1;margin-left:6px;">'+pakotTxt+'</span>'+
                 '<span style="font-size:10px;color:#0047AB;margin-right:8px;">Detajet ▾</span>'+
-                '<button style="font-size:10px;padding:3px 10px;border:1px solid #e5e9f0;border-radius:4px;background:white;cursor:pointer;color:#002B5C;font-weight:600;" onclick="event.stopPropagation();riktheVersion('+i+')">Rikthe</button>'+
+                '<button style="font-size:10px;padding:3px 10px;border:1px solid #e5e9f0;border-radius:4px;background:white;cursor:pointer;color:#002B5C;font-weight:600;" onclick="event.stopPropagation();riktheVersion('+origIdx+')">Rikthe</button>'+
             '</div>'+
             '<div style="display:none;padding:8px 12px;border-top:1px solid #e5e9f0;background:white;">'+
                 (v.koment?'<div style="font-size:10px;color:#6b7a8d;margin-bottom:6px;font-style:italic;">💬 '+v.koment+'</div>':'')+
@@ -466,7 +470,8 @@ function editoOferte(index){
     setTimeout(()=>{applyCustomValues(pakotPerSpreadsheet);},80);
 
     const vPanel=document.getElementById('version-panel');
-    if(o.versione&&o.versione.length>0){vPanel.style.display='block';renderVersions(o.versione,o);}
+    const agjentV=(o.versione||[]).filter(v=>v.burim!=='konfirmim_klient');
+    if(agjentV.length>0){vPanel.style.display='block';renderVersions(o.versione,o);}
     else{vPanel.style.display='none';}
     document.getElementById('drawer-overlay').classList.add('active');
 }
