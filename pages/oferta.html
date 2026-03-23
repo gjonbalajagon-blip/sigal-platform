@@ -68,6 +68,13 @@
         .action-icon-btns button.btn-kontrate-icon { background: #002B5C; border-color: #002B5C; }
         .action-icon-btns button.btn-kontrate-icon svg { stroke: white; }
         .action-icon-btns button.btn-kontrate-icon:hover { background: #0047AB; }
+        .action-icon-btns .btn-text { width: auto; padding: 0 8px; gap: 3px; font-size: 10px; font-weight: 600; font-family: inherit; }
+        .action-icon-btns .btn-text svg { width: 12px; height: 12px; }
+        .action-icon-btns .btn-word { color: #0047AB; border-color: #dbeafe; background: #f0f4ff; }
+        .action-icon-btns .btn-word:hover { background: #dbeafe; }
+        .action-icon-btns .btn-kontrate-text { background: #002B5C; border-color: #002B5C; color: white; }
+        .action-icon-btns .btn-kontrate-text svg { stroke: white; }
+        .action-icon-btns .btn-kontrate-text:hover { background: #0047AB; }
 
         /* ====== VERSIONING PANEL ====== */
         .version-panel { margin-top: 20px; border: 1px solid #e5e9f0; border-radius: 8px; overflow: hidden; }
@@ -178,6 +185,9 @@
                     <option value="e_konfirmuar">Konfirmuar</option>
                     <option value="kontrate">Kontratë</option>
                 </select>
+                <select id="filter-krijuar" onchange="filtro()">
+                    <option value="all">Të gjithë agjentët</option>
+                </select>
                 <input type="text" id="search-oferte" placeholder="Kërko ofertë..." onkeyup="filtro()">
                 <div class="sort-btns">
                     <button class="sort-btn active" id="sort-skadon" onclick="ndryshoSort('skadon')">Skadon shpejt</button>
@@ -190,11 +200,11 @@
                     <thead>
                         <tr>
                             <th>Klienti</th>
-                            <th>Lloji</th>
+                            <th style="width:90px;">Lloji</th>
                             <th>Pakot</th>
-                            <th style="width:70px;">Skadon</th>
+                            <th style="width:60px;">Skadon</th>
                             <th style="width:80px;">Statusi</th>
-                            <th style="width:120px;"></th>
+                            <th style="width:180px;">Veprimet</th>
                         </tr>
                     </thead>
                     <tbody id="ofertat-tbody"></tbody>

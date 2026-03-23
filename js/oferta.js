@@ -644,9 +644,24 @@ function renderTabela(){
     // ====== TABELA ======
     const llojiLabels={'individ':'Individuale','familje':'Familjare','biznes':'Biznese'};
     const tbody=document.getElementById('ofertat-tbody');
-    if(sorted.length===0){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:40px;color:#888;">Nuk ka oferta.</td></tr>';return;}
 
-    tbody.innerHTML=sorted.map(o=>{
+    // Populo filtrin "Krijuar nga" dinamikisht
+    const krijuarSet=new Set();
+    ofertatRolit.forEach(o=>{if(o.krijuarNgaEmri||o.krijuarNga)krijuarSet.add(o.krijuarNgaEmri||o.krijuarNga);});
+    const krijuarEl=document.getElementById('filter-krijuar');
+    const krijuarVal=krijuarEl.value;
+    krijuarEl.innerHTML='<option value="all">Të gjithë agjentët</option>'+[...krijuarSet].map(k=>'<option value="'+k+'"'+(k===krijuarVal?' selected':'')+'>'+k+'</option>').join('');
+
+    // Apliko filtrin krijuar nga
+    const filterKrijuar=document.getElementById('filter-krijuar').value;
+    const sortedFinal=sorted.filter(o=>{
+        if(filterKrijuar==='all')return true;
+        return(o.krijuarNgaEmri||o.krijuarNga)===filterKrijuar;
+    });
+
+    if(sortedFinal.length===0){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:40px;color:#888;">Nuk ka oferta.</td></tr>';return;}
+
+    tbody.innerHTML=sortedFinal.map(o=>{
         const idx=ofertat.indexOf(o);
         const ditet=llogaritDitet(o.dataSkadon);
         const st=getTrackStatus(o);
@@ -665,20 +680,21 @@ function renderTabela(){
         if(ditet.klasa==='skadon-warning')dotColor='#f59e0b';
         if(ditet.klasa==='skadon-expired')dotColor='#ef4444';
         const skadonTxt=ditet.teksti.replace(' dite','d').replace(' ditë','d');
-        // Kontratë button vetëm kur konfirmuar (jo realizuar, jo krijuar)
+        // Kontratë button vetëm kur konfirmuar
         const showKontrate=st==='e_konfirmuar';
 
         return '<tr>'+
-            '<td><div class="klient-name">'+o.emri+vBadge+notifDot+' <span class="badge-lloji '+o.lloji+'">'+(llojiLabels[o.lloji]||o.lloji)+'</span></div><div class="klient-sub">'+kerkuarTxt+'</div></td>'+
+            '<td><div class="klient-name">'+o.emri+vBadge+notifDot+'</div><div class="klient-sub">'+kerkuarTxt+'</div></td>'+
+            '<td><span class="badge-lloji '+o.lloji+'">'+(llojiLabels[o.lloji]||o.lloji)+'</span></td>'+
             '<td><span class="pakot-cell">'+pakotTxt+'</span></td>'+
             '<td><div class="skadon-cell"><span class="skadon-dot" style="background:'+dotColor+';"></span>'+skadonTxt+'</div></td>'+
             '<td>'+trackBadge(st)+'</td>'+
             '<td><div class="action-icon-btns">'+
                 '<button onclick="editoOferte('+idx+')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>'+
-                '<button onclick="gjeneroWord('+idx+')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></button>'+
+                '<button class="btn-text btn-word" onclick="gjeneroWord('+idx+')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> Word</button>'+
                 '<button onclick="dergoEmail('+idx+')" title="Email"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button>'+
                 '<button onclick="kopjoLink('+idx+')" title="Kopjo Link"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>'+
-                (showKontrate?'<button class="btn-kontrate-icon" onclick="krijoKontrate('+idx+')" title="Kontratë"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></button>':'')+
+                (showKontrate?'<button class="btn-text btn-kontrate-text" onclick="krijoKontrate('+idx+')" title="Kontratë"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Kontratë</button>':'')+
                 '<button onclick="fshijOferte('+idx+')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>'+
             '</div></td>'+
         '</tr>';
