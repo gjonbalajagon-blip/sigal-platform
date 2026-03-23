@@ -142,7 +142,13 @@ function applyCustomValues(docXml, pakoData) {
     // Përdor regex për të gjetur dhe zëvendësuar vlerat në kolonën e dytë të tabelës
     // Kjo qasje punon me XML-në e word/document.xml direkt
     // Nuk ndryshon strukturën — vetëm tekstin brenda çelulës së dytë
-
+ // Konverto tjera_pikat array → tjera_0..tjera_8 nëse mungojnë
+    if(pakoData.tjera_pikat && Array.isArray(pakoData.tjera_pikat)){
+        pakoData.tjera_pikat.forEach((tp,idx)=>{
+            const key='tjera_'+idx;
+            if(!pakoData[key] && tp && tp.vlera) pakoData[key]=tp.vlera;
+        });
+    }
     // Parse tabelën — gjej të gjitha rreshtat <w:tr>
     const trRegex = /<w:tr\b[^>]*>([\s\S]*?)<\/w:tr>/g;
     let rowIndex = 0;
