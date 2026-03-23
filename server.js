@@ -1,6 +1,6 @@
 const express = require('express');
 
-// ===== BREVO EMAIL (zëvendëson Resend) =====
+// ===== BREVO EMAIL =====
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
 async function dergoPosto(to, subject, html) {
@@ -36,18 +36,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
 
-// Krijo output folder nese nuk ekziston
 const outputDir = path.join(__dirname, 'output');
 if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir);
 }
 
 // ============================================
-// TRACKING — in-memory storage
+// TRACKING
 // ============================================
 const ofertaTracking = {};
 
-// POST /api/oferta-track — oferta-view dërgon events
 app.post('/api/oferta-track', (req, res) => {
     try {
         const { ofertaId, event, data } = req.body;
@@ -73,7 +71,6 @@ app.post('/api/oferta-track', (req, res) => {
     }
 });
 
-// GET /api/oferta-status/:id — platforma lexon statusin
 app.get('/api/oferta-status/:id', (req, res) => {
     const t = ofertaTracking[req.params.id];
     if (!t) return res.json({ statusi: 'e_krijuar', hapjet: 0, kohaTotale: 0, konfirmimi: null });
@@ -86,7 +83,6 @@ app.get('/api/oferta-status/:id', (req, res) => {
     });
 });
 
-// POST /api/oferta-derguar — kur agjenti dërgon email/kopjon link
 app.post('/api/oferta-derguar', (req, res) => {
     const { ofertaId } = req.body;
     if (!ofertaId) return res.status(400).json({ error: 'Missing ofertaId' });
@@ -99,9 +95,8 @@ app.post('/api/oferta-derguar', (req, res) => {
 });
 
 // ============================================
-// EXISTING ENDPOINTS
+// KONTRATE
 // ============================================
-
 app.post('/api/gjenero-kontrate', async (req, res) => {
     try {
         const klienti = req.body;
@@ -113,6 +108,134 @@ app.post('/api/gjenero-kontrate', async (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 });
+
+// ============================================
+// GJENERO OFERTE — me zëvendësim të limiteve
+// ============================================
+
+// Mapping: rreshti i tabelës → fusha në pakotData
+// Rreshtat 3,11,18,28 janë HEADER (nuk zëvendësohen)
+const ROW_MAP = {
+    1: 'zona',
+    2: 'shuma',
+    // Hospitalore pikat (4-10) — zëvendësohen vetëm nëse ka fushë 'hospitalore'
+    // Ambulantore pikat (12-17) — zëvendësohen vetëm nëse ka fushë 'ambulantore'
+    19: 'tjera_0',
+    20: 'tjera_1',
+    21: 'tjera_2',
+    22: 'tjera_3',
+    23: 'tjera_4',
+    24: 'tjera_5',
+    25: 'tjera_6',
+    26: 'tjera_7',
+    27: 'tjera_8',
+    29: 'primi_madh',
+    30: 'primi_femije',
+};
+
+// Rreshtat hospitalore (4-10): nëse oferta ka vlerë custom 'hospitalore', zëvendëso të gjitha
+const HOSP_ROWS = [4, 5, 6, 7, 8, 9, 10];
+// Rreshtat ambulantore (12-17): nëse oferta ka vlerë custom 'ambulantore', zëvendëso të gjitha
+const AMB_ROWS = [12, 13, 14, 15, 16, 17];
+
+function applyCustomValues(docXml, pakoData) {
+    // Përdor regex për të gjetur dhe zëvendësuar vlerat në kolonën e dytë të tabelës
+    // Kjo qasje punon me XML-në e word/document.xml direkt
+    // Nuk ndryshon strukturën — vetëm tekstin brenda çelulës së dytë
+
+    // Parse tabelën — gjej të gjitha rreshtat <w:tr>
+    const trRegex = /<w:tr\b[^>]*>([\s\S]*?)<\/w:tr>/g;
+    let rowIndex = 0;
+    let result = docXml;
+    const rows = [];
+    let match;
+
+    while ((match = trRegex.exec(docXml)) !== null) {
+        rows.push({ full: match[0], content: match[1], index: rowIndex, start: match.index });
+        rowIndex++;
+    }
+
+    // Për çdo rresht që ka mapping
+    for (let i = rows.length - 1; i >= 0; i--) {
+        const row = rows[i];
+        const ri = row.index;
+        let newValue = null;
+
+        // Kontrollo nëse ka vlerë custom
+        if (ROW_MAP[ri] && pakoData[ROW_MAP[ri]] !== undefined && pakoData[ROW_MAP[ri]] !== '') {
+            newValue = pakoData[ROW_MAP[ri]];
+            // Shto prefix për shuma
+            if (ri === 2 && newValue && !newValue.startsWith('€')) newValue = '€ ' + newValue;
+            if (ri === 29 && newValue && !newValue.startsWith('€')) newValue = '€ ' + newValue + ',00';
+            if (ri === 30 && newValue && !newValue.startsWith('€')) newValue = '€ ' + newValue + ',00';
+        }
+
+        // Hospitalore: nëse ka custom 'hospitalore', zëvendëso gjithë rreshtat 4-10
+        if (HOSP_ROWS.includes(ri) && pakoData.hospitalore && pakoData.hospitalore !== '') {
+            newValue = pakoData.hospitalore;
+        }
+
+        // Ambulantore: nëse ka custom 'ambulantore', zëvendëso gjithë rreshtat 12-17
+        if (AMB_ROWS.includes(ri) && pakoData.ambulantore && pakoData.ambulantore !== '') {
+            newValue = pakoData.ambulantore;
+        }
+
+        if (newValue !== null) {
+            // Gjej kolonën e dytë (<w:tc>) në këtë rresht
+            const tcRegex = /<w:tc\b[^>]*>([\s\S]*?)<\/w:tc>/g;
+            let tcMatch;
+            let tcCount = 0;
+            let newRow = row.full;
+
+            // Reset regex
+            tcRegex.lastIndex = 0;
+            while ((tcMatch = tcRegex.exec(row.full)) !== null) {
+                tcCount++;
+                if (tcCount === 2) {
+                    // Kjo është kolona e dytë — zëvendëso tekstin
+                    const oldTc = tcMatch[0];
+                    // Gjej <w:t> brenda kësaj çelule
+                    const newTc = replaceTextInCell(oldTc, newValue);
+                    newRow = newRow.replace(oldTc, newTc);
+                    break;
+                }
+            }
+            result = result.replace(row.full, newRow);
+        }
+    }
+
+    return result;
+}
+
+function replaceTextInCell(tcXml, newText) {
+    // Gjej të gjitha <w:t> brenda çelulës dhe zëvendëso me vlerën e re
+    // Mbaj formatin e parë <w:r> por ndrysho tekstin
+    const wRunRegex = /<w:r\b[^>]*>([\s\S]*?)<\/w:r>/g;
+    let runs = [];
+    let m;
+    while ((m = wRunRegex.exec(tcXml)) !== null) {
+        runs.push({ full: m[0], content: m[1], index: m.index });
+    }
+
+    if (runs.length === 0) return tcXml;
+
+    // Mbaj vetëm run-in e parë, zëvendëso tekstin, fshi të tjerët
+    let firstRun = runs[0].full;
+    // Zëvendëso <w:t>...</w:t> me vlerën e re
+    firstRun = firstRun.replace(/<w:t[^>]*>[^<]*<\/w:t>/, '<w:t xml:space="preserve">' + escapeXml(newText) + '</w:t>');
+
+    let newTc = tcXml;
+    // Fshi të gjitha run-et ekzistuese
+    for (let i = runs.length - 1; i >= 0; i--) {
+        newTc = newTc.replace(runs[i].full, i === 0 ? firstRun : '');
+    }
+
+    return newTc;
+}
+
+function escapeXml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 app.post('/api/gjenero-oferte', async (req, res) => {
     try {
@@ -140,6 +263,16 @@ app.post('/api/gjenero-oferte', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Nuk keni zgjedhur asnjë pako!' });
         }
 
+        // Mapping emri i pakos → data custom (nëse ka)
+        const pakotDataMap = {};
+        if (o.pakotData && Array.isArray(o.pakotData)) {
+            o.pakotData.forEach(pd => {
+                if (pd && pd.emri) {
+                    pakotDataMap['Pako ' + pd.emri] = pd;
+                }
+            });
+        }
+
         const firstFile = PAKO_FILES[pakotRenditura[0]];
         const firstPath = path.join(__dirname, 'templates', firstFile);
         if (!fs.existsSync(firstPath)) {
@@ -149,12 +282,25 @@ app.post('/api/gjenero-oferte', async (req, res) => {
         const mainZip = new PizZip(fs.readFileSync(firstPath));
         let mainXml = mainZip.file('word/document.xml').asText();
 
+        // Apliko vlerat custom për pakën e parë
+        const firstPakoData = pakotDataMap[pakotRenditura[0]];
+        if (firstPakoData) {
+            mainXml = applyCustomValues(mainXml, firstPakoData);
+        }
+
         for (let i = 1; i < pakotRenditura.length; i++) {
             const fileName = PAKO_FILES[pakotRenditura[i]];
             const filePath = path.join(__dirname, 'templates', fileName);
             if (!fs.existsSync(filePath)) continue;
             const pakoZip = new PizZip(fs.readFileSync(filePath));
-            const pakoXml = pakoZip.file('word/document.xml').asText();
+            let pakoXml = pakoZip.file('word/document.xml').asText();
+
+            // Apliko vlerat custom për këtë pako
+            const pakoData = pakotDataMap[pakotRenditura[i]];
+            if (pakoData) {
+                pakoXml = applyCustomValues(pakoXml, pakoData);
+            }
+
             const body = pakoXml.match(/<w:body>([\s\S]*?)<\/w:body>/);
             if (body) {
                 let content = body[1];
