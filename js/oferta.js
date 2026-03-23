@@ -403,7 +403,7 @@ function ruajOferte(){
         oferta.statusi=ofertat[editIndex].statusi;
         oferta.notification=ofertat[editIndex].notification;
         const ve=ofertat[editIndex].versione||[];
-        ve.push({data:ofertat[editIndex].dataKrijimit||new Date().toISOString().split('T')[0],lloji:ofertat[editIndex].lloji,pakot:ofertat[editIndex].pakot,emri:ofertat[editIndex].emri});
+        ve.push({data:new Date().toISOString().split('T')[0],lloji:ofertat[editIndex].lloji,pakot:ofertat[editIndex].pakot,emri:ofertat[editIndex].emri,burim:'editim_agjent'});
         oferta.versione=ve;
         oferta.dataKrijimit=ofertat[editIndex].dataKrijimit;
         ofertat[editIndex]=oferta;

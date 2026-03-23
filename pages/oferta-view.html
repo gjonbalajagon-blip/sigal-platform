@@ -362,7 +362,21 @@ function ngarko(){
     if(!oferta){document.getElementById('container').innerHTML='<div style="text-align:center;padding:60px"><h2 style="color:#002B5C">Oferta nuk u gjet.</h2><p style="color:#6b7a8d;margin-top:4px">Kontaktoni agentin tuaj.</p></div>';return;}
     ofertaData=oferta;
     const pakotList=oferta.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;
-    pakotGlobal=pakotList.filter(p=>(oferta.pakot||[]).some(op=>(typeof op==='object'?op.id:op)===p.id||(typeof op==='string'&&op.toLowerCase().includes(p.emri.toLowerCase())))).map(p=>{const c=(oferta.pakot||[]).find(op=>typeof op==='object'&&op.id===p.id);return c?{...p,...c}:p;});
+        pakotGlobal=pakotList.filter(p=>(oferta.pakot||[]).some(op=>(typeof op==='object'?op.id:op)===p.id||(typeof op==='string'&&op.toLowerCase().includes(p.emri.toLowerCase())))).map(p=>{
+        const c=(oferta.pakot||[]).find(op=>typeof op==='object'&&op.id===p.id);
+        if(!c)return p;
+        const merged={...p,...c};
+        // Apliko tjera_0..tjera_8 mbi tjera_pikat
+        if(merged.tjera_pikat){
+            for(let ti=0;ti<9;ti++){
+                const key='tjera_'+ti;
+                if(c[key]!==undefined&&c[key]!==''){
+                    merged.tjera_pikat[ti]={...merged.tjera_pikat[ti],vlera:c[key]};
+                }
+            }
+        }
+        return merged;
+    });
     if(!pakotGlobal.length){document.getElementById('container').innerHTML='<div style="text-align:center;padding:60px"><h2>Nuk ka paketa.</h2></div>';return;}
     const dm=Math.ceil((new Date(oferta.dataSkadon)-new Date())/86400000),cc=dm<=5?'countdown urgent':'countdown';
     const ti=RRJETI.spitalet.length+RRJETI.laboratoret.length+RRJETI.dentaret.length+RRJETI.ordinanca.length;
