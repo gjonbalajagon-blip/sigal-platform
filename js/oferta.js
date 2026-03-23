@@ -201,7 +201,28 @@ function spUpdateSelectAll(){
     const cb=document.getElementById('sp-sel-all');
     if(cb)cb.checked=spSelectedPakot.size===pakotList.length&&pakotList.length>0;
 }
-function spToggleFold(){spFoldOpen=!spFoldOpen;renderSpreadsheet();}
+function spToggleFold(){
+    spFoldOpen=!spFoldOpen;
+    renderSpreadsheet();
+    if(editIndex>=0){
+        const o=ofertat[editIndex];
+        let pakotApply=o.pakot||[];
+        if(o.konfirmuar&&o.versione){
+            const vK=[...o.versione].reverse().find(v=>v.burim==='konfirmim_klient');
+            if(vK&&vK.pakot){
+                pakotApply=vK.pakot.map(p=>{
+                    if(typeof p!=='object'||!p.tjera_pikat)return p;
+                    const fixed={...p};
+                    p.tjera_pikat.forEach((tp,idx)=>{
+                        if(tp&&tp.vlera&&!fixed['tjera_'+idx]) fixed['tjera_'+idx]=tp.vlera;
+                    });
+                    return fixed;
+                });
+            }
+        }
+        setTimeout(()=>{applyCustomValues(pakotApply);},30);
+    }
+}
 
 function spZhblloko(){
     if(!confirm('Zhblloko spreadsheet-in për editim?\nKjo lejon ndryshime në ofertën e konfirmuar.'))return;
