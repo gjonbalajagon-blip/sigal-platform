@@ -36,7 +36,6 @@ function llogaritDitet(mbarimi) {
     return { teksti: `${dite}d`, klasa: 'skadon-ok' };
 }
 
-// ====== TABS / SORT ======
 function ndryshoTab(tab) {
     activeTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -50,7 +49,6 @@ function ndryshoSort(sort) {
     filtro();
 }
 
-// ====== LLOJI / FATURIMI ======
 function zgjidhLlojin(lloji, btn) {
     document.getElementById('m-lloji').value = lloji;
     document.querySelectorAll('.lloji-btn').forEach(b => b.classList.remove('active'));
@@ -83,7 +81,6 @@ function zgjidhFaturimin(lloji, btn) {
     btn.classList.add('active');
 }
 
-// ====== SHTO / EDITO / RUAJ ======
 function shtoKontrate() {
     editIndex = -1;
     document.getElementById('modal-title').textContent = 'Kontratë e Re';
@@ -97,21 +94,20 @@ function shtoKontrate() {
     document.querySelectorAll('.pako-check input').forEach(cb => cb.checked = false);
     document.getElementById('m-fillimi').value = '';
     document.getElementById('m-mbarimi').value = '';
+    if (document.getElementById('m-email')) document.getElementById('m-email').value = '';
     zgjidhLlojin('individ', document.querySelectorAll('.lloji-btn')[0]);
 
-    // Transfer nga oferta
     const params = new URLSearchParams(window.location.search);
     if (params.get('nga_oferta') === 'true') {
         const data = JSON.parse(localStorage.getItem('oferta_per_kontrate') || '{}');
         if (data.emri) {
             document.getElementById('m-emri').value = data.emri;
-            if (data.email) document.getElementById('m-email').value = data.email;
+            if (data.email && document.getElementById('m-email')) document.getElementById('m-email').value = data.email;
             const btns = document.querySelectorAll('.lloji-btn');
             const llojiMap = { individ: 0, biznes: 1, familje: 2 };
             zgjidhLlojin(data.lloji || 'individ', btns[llojiMap[data.lloji] || 0]);
-            // Tick pakot — mbështet edhe objekte edhe string
             setTimeout(() => {
-                const pakotEmra = (data.pakot || []).map(p => typeof p === 'object' ? 'Pako ' + (p.emri || p.id) : p);
+                const pakotEmra = (data.pakotEmra || data.pakot || []).map(p => typeof p === 'object' ? 'Pako ' + (p.emri || p.id) : p);
                 document.querySelectorAll('.pako-check input').forEach(cb => {
                     cb.checked = pakotEmra.some(pe => pe === cb.value || cb.value.includes(pe));
                 });
@@ -150,7 +146,6 @@ function ruajKontrate() {
         kontratat[editIndex] = kontrata;
     } else {
         kontratat.push(kontrata);
-        // Transfer automatik në Faturimi
         const faturimi = JSON.parse(localStorage.getItem('faturimi_klientet')) || [];
         faturimi.push({
             emri: kontrata.emri,
@@ -187,6 +182,7 @@ function editoKontrate(index) {
     document.querySelectorAll('.pako-check input').forEach(cb => { cb.checked = (k.pakot || []).includes(cb.value); });
     document.getElementById('m-fillimi').value = k.fillimi || '';
     document.getElementById('m-mbarimi').value = k.mbarimi || '';
+    if (document.getElementById('m-email')) document.getElementById('m-email').value = k.email || '';
     const btns = document.querySelectorAll('.lloji-btn');
     const llojiMap = { individ: 0, biznes: 1, familje: 2 };
     zgjidhLlojin(k.lloji, btns[llojiMap[k.lloji] || 0]);
@@ -237,57 +233,42 @@ async function gjeneroWord(index) {
 
 function filtro() { renderTabela(); }
 
+let skadVitetOpen = {};
+
+function toggleSkadViti(viti) {
+    skadVitetOpen[viti] = !skadVitetOpen[viti];
+    renderTabela();
+}
+
 function renderTabela() {
     const filterLloji = document.getElementById('filter-lloji').value;
     const search = document.getElementById('search-kontrate').value.toLowerCase();
-    const filterViti = document.getElementById('filter-viti').value;
-    const filterMuaji = document.getElementById('filter-muaji').value;
     const kontratatRolit = filtroSipasRolit(kontratat, 'krijuarNga');
 
-    // Filtro sipas periudhës
-    const perioda = kontratatRolit.filter(k => {
-        if (k.arkivuar) return false;
-        const dk = k.fillimi || k.dataKrijimit || '';
-        // Prano dy formate: yyyy-mm-dd ose dd/mm/yyyy
-        let viti, muaji;
-        if (dk.includes('-')) { viti = dk.substring(0, 4); muaji = dk.substring(5, 7); }
-        else if (dk.includes('/')) { const parts = dk.split('/'); viti = parts[2]; muaji = parts[1]; }
-        else return false;
-        if (viti !== filterViti) return false;
-        if (filterMuaji !== 'all' && muaji !== filterMuaji) return false;
-        return true;
-    });
+    const aktive = kontratatRolit.filter(k => !k.arkivuar && llogaritStatus(k.mbarimi) !== 'skaduar');
+    const skaduar = kontratatRolit.filter(k => llogaritStatus(k.mbarimi) === 'skaduar' || k.arkivuar);
 
-    // Ndaj sipas statusit
-    const aktive = perioda.filter(k => llogaritStatus(k.mbarimi) === 'aktive');
-    const skadon = perioda.filter(k => llogaritStatus(k.mbarimi) === 'skadon');
-    const skaduar = perioda.filter(k => llogaritStatus(k.mbarimi) === 'skaduar');
-
-    // Tab counts
     document.getElementById('tab-count-aktive').textContent = aktive.length;
-    document.getElementById('tab-count-skadon').textContent = skadon.length;
     document.getElementById('tab-count-skaduar').textContent = skaduar.length;
 
-    // Stats
-    const stTotal = perioda.length;
-    const stAktive = aktive.length;
-    const stSkadon = skadon.length;
-    const stSkaduar = skaduar.length;
+    const joArkivuar = kontratatRolit.filter(k => !k.arkivuar);
+    const stTotal = joArkivuar.length;
+    const stAktive = joArkivuar.filter(k => llogaritStatus(k.mbarimi) === 'aktive').length;
+    const stSkadon = joArkivuar.filter(k => llogaritStatus(k.mbarimi) === 'skadon').length;
+    const stSkaduar = joArkivuar.filter(k => llogaritStatus(k.mbarimi) === 'skaduar').length;
 
     document.getElementById('st-total').textContent = stTotal;
     document.getElementById('st-aktive').textContent = stAktive;
     document.getElementById('st-skadon').textContent = stSkadon;
     document.getElementById('st-skaduar').textContent = stSkaduar;
 
-    // Llojet
     const llojiNames = { individ: 'Individ', familje: 'Familje', biznes: 'Biznes' };
     document.getElementById('st-llojet').innerHTML = ['individ', 'familje', 'biznes']
-        .map(ll => ({ ll, total: perioda.filter(k => k.lloji === ll).length }))
+        .map(ll => ({ ll, total: joArkivuar.filter(k => k.lloji === ll).length }))
         .filter(d => d.total > 0)
         .map(d => '<span class="strip-chip"><span class="sc-num">' + d.total + '</span> ' + llojiNames[d.ll] + '</span>')
         .join('');
 
-    // Funnel bar
     const barEl = document.getElementById('st-bar');
     const legEl = document.getElementById('st-legend');
     if (stTotal > 0) {
@@ -307,76 +288,107 @@ function renderTabela() {
         legEl.innerHTML = '';
     }
 
-    // Lista sipas tab-it
-    let bazaList;
-    if (activeTab === 'aktive') bazaList = aktive;
-    else if (activeTab === 'skadon') bazaList = skadon;
-    else bazaList = skaduar;
+    const tbody = document.getElementById('kontratat-tbody');
 
-    // Filtro
-    const filtered = bazaList.filter(k => {
+    if (activeTab === 'aktive') {
+        const filtered = aktive.filter(k => {
+            const llojiOk = filterLloji === 'all' || k.lloji === filterLloji;
+            const searchOk = k.emri.toLowerCase().includes(search) || (k.nrPersonal || '').toLowerCase().includes(search) || (k.nrBiznesit || '').toLowerCase().includes(search);
+            return llojiOk && searchOk;
+        });
+        const sorted = [...filtered].sort((a, b) => {
+            if (activeSort === 're') return (b.dataKrijimit || '').localeCompare(a.dataKrijimit || '');
+            if (!a.mbarimi) return 1;
+            if (!b.mbarimi) return -1;
+            return parseDate(a.mbarimi) - parseDate(b.mbarimi);
+        });
+        if (sorted.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#888;">Nuk ka kontrata aktive.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = sorted.map(k => renderRow(k)).join('');
+        return;
+    }
+
+    // Tab Skaduar — grupim foldable sipas vitit
+    const filtered = skaduar.filter(k => {
         const llojiOk = filterLloji === 'all' || k.lloji === filterLloji;
         const searchOk = k.emri.toLowerCase().includes(search) || (k.nrPersonal || '').toLowerCase().includes(search) || (k.nrBiznesit || '').toLowerCase().includes(search);
         return llojiOk && searchOk;
     });
 
-    // Sort
-    const sorted = [...filtered].sort((a, b) => {
-        if (activeSort === 're') return (b.dataKrijimit || '').localeCompare(a.dataKrijimit || '');
-        if (!a.mbarimi) return 1;
-        if (!b.mbarimi) return -1;
-        return parseDate(a.mbarimi) - parseDate(b.mbarimi);
-    });
-
-    // Render
-    const llojiLabels = { individ: 'Individ', biznes: 'Biznes', familje: 'Familje' };
-    const statusLabels = { aktive: 'Aktive', skaduar: 'Skaduar', 'ne-pritje': 'Në Pritje', skadon: 'Skadon' };
-    const tbody = document.getElementById('kontratat-tbody');
-
-    if (sorted.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#888;">Nuk ka kontrata.</td></tr>';
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#888;">Nuk ka kontrata të skaduara.</td></tr>';
         return;
     }
 
-    tbody.innerHTML = sorted.map(k => {
-        const idx = kontratat.indexOf(k);
-        const statusi = llogaritStatus(k.mbarimi);
-        const ditet = llogaritDitet(k.mbarimi);
-        const nrId = k.lloji === 'biznes' ? (k.nrBiznesit || '-') : (k.nrPersonal || '-');
-        let dotColor = '#22c55e';
-        if (ditet.klasa === 'skadon-warning') dotColor = '#f59e0b';
-        if (ditet.klasa === 'skadon-expired') dotColor = '#ef4444';
-        // Pakot shkurto
-        const pakotArr = k.pakot || [];
-        let pakotTxt = '-';
-        if (pakotArr.length <= 2) pakotTxt = pakotArr.join(', ');
-        else pakotTxt = pakotArr.slice(0, 2).join(', ') + ' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">+' + (pakotArr.length - 2) + '</span>';
+    const sipasVitit = {};
+    filtered.forEach(k => {
+        let viti = '?';
+        const mb = k.mbarimi || '';
+        if (mb.includes('-')) viti = mb.substring(0, 4);
+        else if (mb.includes('/')) { const parts = mb.split('/'); viti = parts[2] || '?'; }
+        if (!sipasVitit[viti]) sipasVitit[viti] = [];
+        sipasVitit[viti].push(k);
+    });
 
-        return '<tr>' +
-            '<td><div class="klient-name">' + k.emri + '</div><div class="klient-sub">' + (k.adresa || '') + '</div></td>' +
-            '<td style="font-size:11px;color:#6b7a8d;">' + nrId + '</td>' +
-            '<td><span class="badge-lloji ' + k.lloji + '">' + (llojiLabels[k.lloji] || k.lloji) + '</span></td>' +
-            '<td style="font-size:11px;color:#6b7a8d;">' + pakotTxt + '</td>' +
-            '<td style="font-size:11px;color:#6b7a8d;">' + formatData(k.fillimi) + '</td>' +
-            '<td><div class="skadon-cell"><span class="skadon-dot" style="background:' + dotColor + ';"></span>' + ditet.teksti + '</div></td>' +
-            '<td><span class="badge-status ' + statusi + '">' + (statusLabels[statusi] || statusi) + '</span></td>' +
-            '<td><div class="action-icon-btns">' +
-                '<button onclick="rinovoKontrate(' + idx + ')" title="Rinovo"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>' +
-                '<button onclick="editoKontrate(' + idx + ')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>' +
-                '<button class="btn-text btn-word" onclick="gjeneroWord(' + idx + ')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> Word</button>' +
-                '<button onclick="fshijKontrate(' + idx + ')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>' +
-            '</div></td>' +
-        '</tr>';
-    }).join('');
+    const vitetSorted = Object.keys(sipasVitit).sort((a, b) => b.localeCompare(a));
+
+    let html = '';
+    vitetSorted.forEach(viti => {
+        const lista = sipasVitit[viti];
+        const isOpen = skadVitetOpen[viti] !== false;
+        html += '<tr><td colspan="8" style="padding:0;border:none;">' +
+            '<div onclick="toggleSkadViti(\'' + viti + '\')" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f0f4ff;cursor:pointer;border-bottom:1px solid #e5e9f0;user-select:none;">' +
+            '<span style="font-size:10px;color:#002B5C;">' + (isOpen ? '▾' : '▸') + '</span>' +
+            '<span style="font-size:12px;font-weight:700;color:#002B5C;">' + viti + '</span>' +
+            '<span style="font-size:10px;background:#002B5C;color:white;padding:1px 8px;border-radius:10px;font-weight:700;">' + lista.length + '</span>' +
+            '</div></td></tr>';
+        if (isOpen) {
+            const sorted = [...lista].sort((a, b) => {
+                if (!a.mbarimi) return 1;
+                if (!b.mbarimi) return -1;
+                return parseDate(b.mbarimi) - parseDate(a.mbarimi);
+            });
+            html += sorted.map(k => renderRow(k)).join('');
+        }
+    });
+    tbody.innerHTML = html;
+}
+
+function renderRow(k) {
+    const idx = kontratat.indexOf(k);
+    const statusi = llogaritStatus(k.mbarimi);
+    const ditet = llogaritDitet(k.mbarimi);
+    const nrId = k.lloji === 'biznes' ? (k.nrBiznesit || '-') : (k.nrPersonal || '-');
+    const llojiLabels = { individ: 'Individ', biznes: 'Biznes', familje: 'Familje' };
+    const statusLabels = { aktive: 'Aktive', skaduar: 'Skaduar', 'ne-pritje': 'Në Pritje', skadon: 'Skadon' };
+    let dotColor = '#22c55e';
+    if (ditet.klasa === 'skadon-warning') dotColor = '#f59e0b';
+    if (ditet.klasa === 'skadon-expired') dotColor = '#ef4444';
+    const pakotArr = k.pakot || [];
+    let pakotTxt = '-';
+    if (pakotArr.length <= 2) pakotTxt = pakotArr.join(', ');
+    else pakotTxt = pakotArr.slice(0, 2).join(', ') + ' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">+' + (pakotArr.length - 2) + '</span>';
+
+    return '<tr>' +
+        '<td><div class="klient-name">' + k.emri + (k.arkivuar ? ' <span style="font-size:9px;color:#94a3b8;font-weight:600;">RINOVUAR</span>' : '') + '</div><div class="klient-sub">' + (k.adresa || '') + '</div></td>' +
+        '<td style="font-size:11px;color:#6b7a8d;">' + nrId + '</td>' +
+        '<td><span class="badge-lloji ' + k.lloji + '">' + (llojiLabels[k.lloji] || k.lloji) + '</span></td>' +
+        '<td style="font-size:11px;color:#6b7a8d;">' + pakotTxt + '</td>' +
+        '<td style="font-size:11px;color:#6b7a8d;">' + formatData(k.fillimi) + '</td>' +
+        '<td><div class="skadon-cell"><span class="skadon-dot" style="background:' + dotColor + ';"></span>' + ditet.teksti + '</div></td>' +
+        '<td><span class="badge-status ' + statusi + '">' + (statusLabels[statusi] || statusi) + '</span></td>' +
+        '<td><div class="action-icon-btns">' +
+            '<button onclick="rinovoKontrate(' + idx + ')" title="Rinovo"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>' +
+            '<button onclick="editoKontrate(' + idx + ')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>' +
+            '<button class="btn-text btn-word" onclick="gjeneroWord(' + idx + ')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> Word</button>' +
+            '<button onclick="fshijKontrate(' + idx + ')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>' +
+        '</div></td>' +
+    '</tr>';
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Auto-selekto viti/muaji aktual
-    const now = new Date();
-    document.getElementById('filter-viti').value = String(now.getFullYear());
-    document.getElementById('filter-muaji').value = String(now.getMonth() + 1).padStart(2, '0');
-
-    // Date auto-format
     document.getElementById('m-fillimi').addEventListener('input', function () {
         let v = this.value.replace(/\D/g, '').slice(0, 8);
         if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
@@ -407,7 +419,6 @@ document.addEventListener('DOMContentLoaded', function () {
     renderTabela();
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    // Hap modal nëse vjen nga oferta
     const params = new URLSearchParams(window.location.search);
     if (params.get('nga_oferta') === 'true') {
         shtoKontrate();
