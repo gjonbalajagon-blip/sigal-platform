@@ -524,7 +524,8 @@ function krijoKontrate(index){
     }
     // Konverto në emra për checkbox-at e kontratës
     const pakotEmra=pakotPerKontrate.map(p=>typeof p==='object'?'Pako '+(p.emri||p.id):p);
-    localStorage.setItem('oferta_per_kontrate',JSON.stringify({emri:o.emri,lloji:o.lloji,email:o.email||'',pakot:pakotPerKontrate,pakotEmra:pakotEmra,ngaOferta:true}));
+    const pakotFixed=pakotPerKontrate.map(p=>{if(typeof p!=='object')return p;const f={...p};if(p.tjera_pikat&&Array.isArray(p.tjera_pikat))p.tjera_pikat.forEach((tp,idx)=>{if(tp&&tp.vlera&&!f['tjera_'+idx])f['tjera_'+idx]=tp.vlera;});return f;});
+    localStorage.setItem('oferta_per_kontrate',JSON.stringify({emri:o.emri,lloji:o.lloji,email:o.email||'',pakot:pakotFixed,pakotEmra:pakotEmra,ngaOferta:true}));
     window.location.href='kontratat.html?nga_oferta=true';
 }
 async function gjeneroWord(index){
