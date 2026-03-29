@@ -219,9 +219,10 @@ function editoKontrate(index){
     document.getElementById('m-mbarimi').value=k.mbarimi||'';
     if(document.getElementById('m-faturimi-lloji'))document.getElementById('m-faturimi-lloji').value=k.faturimiLloji||'mujor';
 
-    spLocked=false;spSelectedPakot.clear();spFoldOpen=false;
-    // Selekto pakot nga kontrata
+    spSelectedPakot.clear();spFoldOpen=false;
+    // Selekto pakot nga kontrata — lock nëse ka pakotData
     const pakotData=k.pakotData||[];
+    spLocked=pakotData.length>0;
     pakotData.forEach(p=>{if(typeof p==='object'&&p.id)spSelectedPakot.add(p.id);});
     // Nëse nuk ka pakotData, provo me emrat
     if(pakotData.length===0&&k.pakot){
