@@ -29,7 +29,7 @@ async function dergoPosto(to, subject, html) {
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const { gjenerKontrate } = require('./gjenero-kontrate');
+const { gjenerKontrate } = require('./js/gjenero-kontrate');
 
 const app = express();
 app.use(cors());
