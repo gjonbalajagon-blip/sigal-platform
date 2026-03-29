@@ -250,7 +250,7 @@ function extractBodyContent(xml) {
 // GJENER KONTRATE — kryesore
 // ============================================
 function gjenerKontrate(k, outputDir) {
-    const templatesDir = path.join(__dirname, 'templates');
+    const templatesDir = path.join(__dirname, '..', 'templates');
 
     // --- HAPI 1: Template kontrate me docxtemplater ---
     const templateFile = k.lloji === 'individ' ? 'kontrata-individ.docx' :
