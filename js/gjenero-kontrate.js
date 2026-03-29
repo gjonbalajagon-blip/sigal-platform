@@ -29,7 +29,7 @@ function formatData(dateStr) {
 }
 
 // ============================================
-// PAKO TEMPLATE MAPPING (njësoj si te oferta)
+// PAKO TEMPLATE MAPPING
 // ============================================
 const PAKO_FILES_INDIVID = {
     'Pako Bazë': 'PAKOT_INDIVID_BAZE.docx',
@@ -48,7 +48,6 @@ const PAKO_RENDITJA = ['Pako Bazë', 'Pako Standard', 'Pako Standard Plus', 'Pak
 
 // ============================================
 // APPLY CUSTOM VALUES — zëvendëson limite në XML
-// (kopje e njëjtë si te server.js /api/gjenero-oferte)
 // ============================================
 const ROW_MAP = {
     1: 'zona', 2: 'shuma',
@@ -83,7 +82,6 @@ function replaceTextInCell(tcXml, newText) {
 }
 
 function applyCustomValues(docXml, pakoData) {
-    // Konverto tjera_pikat array → tjera_0..tjera_8 nëse mungojnë
     if (pakoData.tjera_pikat && Array.isArray(pakoData.tjera_pikat)) {
         pakoData.tjera_pikat.forEach((tp, idx) => {
             const key = 'tjera_' + idx;
@@ -93,7 +91,6 @@ function applyCustomValues(docXml, pakoData) {
 
     const trRegex = /<w:tr\b[^>]*>([\s\S]*?)<\/w:tr>/g;
     let rowIndex = 0;
-    let result = docXml;
     const rows = [];
     let match;
 
@@ -102,6 +99,7 @@ function applyCustomValues(docXml, pakoData) {
         rowIndex++;
     }
 
+    let result = docXml;
     for (let i = rows.length - 1; i >= 0; i--) {
         const row = rows[i];
         const ri = row.index;
@@ -143,6 +141,109 @@ function applyCustomValues(docXml, pakoData) {
     }
 
     return result;
+}
+
+// ============================================
+// MERGE HELPER — kopjon media + relationships nga source zip në target zip
+// Kthen mapping { oldRid → newRid } për XML rewrite
+// ============================================
+function mergeMediaAndRels(sourceZip, targetZip) {
+    const ridMap = {};
+
+    // Lexo relationships nga source
+    const sourceRelsFile = sourceZip.file('word/_rels/document.xml.rels');
+    if (!sourceRelsFile) return ridMap;
+    const sourceRels = sourceRelsFile.asText();
+
+    // Lexo relationships nga target
+    const targetRelsFile = targetZip.file('word/_rels/document.xml.rels');
+    if (!targetRelsFile) return ridMap;
+    let targetRels = targetRelsFile.asText();
+
+    // Gjej max rId në target
+    const ridNums = [];
+    const ridRegex = /Id="rId(\d+)"/g;
+    let rm;
+    while ((rm = ridRegex.exec(targetRels)) !== null) {
+        ridNums.push(parseInt(rm[1]));
+    }
+    let nextRid = ridNums.length > 0 ? Math.max(...ridNums) + 1 : 100;
+
+    // Gjej të gjitha relationships me media/image/embed/oleObject në source
+    const relRegex = /<Relationship\s+([^>]+?)\/>/g;
+    let relMatch;
+    while ((relMatch = relRegex.exec(sourceRels)) !== null) {
+        const attrs = relMatch[1];
+        const idMatch = attrs.match(/Id="([^"]+)"/);
+        const targetMatch = attrs.match(/Target="([^"]+)"/);
+        const typeMatch = attrs.match(/Type="([^"]+)"/);
+        if (!idMatch || !targetMatch || !typeMatch) continue;
+
+        const oldRid = idMatch[1];
+        const relTarget = targetMatch[1];
+        const type = typeMatch[1];
+
+        // Kopjo image, oleObject, package relationships
+        if (!type.includes('image') && !type.includes('oleObject') && !type.includes('package')) continue;
+
+        // Kopjo skedarin nga source në target me emër unik
+        const sourcePath = 'word/' + relTarget;
+        const sourceFile = sourceZip.file(sourcePath);
+        if (!sourceFile) continue;
+
+        const ext = path.extname(relTarget);
+        const baseName = relTarget.includes('/') ? relTarget.split('/').pop() : relTarget;
+        const newFileName = relTarget.includes('/') ?
+            relTarget.replace(baseName, 'merged_' + nextRid + ext) :
+            'media/merged_' + nextRid + ext;
+
+        // Kopjo binary content
+        targetZip.file('word/' + newFileName, sourceFile.asUint8Array());
+
+        // Shto relationship të re në target
+        const newRid = 'rId' + nextRid;
+        const modeAttr = attrs.includes('TargetMode') ? ' TargetMode="External"' : '';
+        const newRel = `<Relationship Id="${newRid}" Type="${type}" Target="${newFileName}"${modeAttr}/>`;
+        targetRels = targetRels.replace('</Relationships>', newRel + '</Relationships>');
+
+        ridMap[oldRid] = newRid;
+        nextRid++;
+    }
+
+    // Ruaj relationships të përditësuara
+    targetZip.file('word/_rels/document.xml.rels', targetRels);
+
+    return ridMap;
+}
+
+// Zëvendëson rId references në XML content
+function remapRids(xmlContent, ridMap) {
+    let result = xmlContent;
+    // Zëvendëso nga rId me numër më të madh për të shmangur konflikte
+    const sortedOldRids = Object.keys(ridMap).sort((a, b) => {
+        const na = parseInt(a.replace('rId', ''));
+        const nb = parseInt(b.replace('rId', ''));
+        return nb - na;
+    });
+    for (const oldRid of sortedOldRids) {
+        const newRid = ridMap[oldRid];
+        result = result.replace(new RegExp('r:embed="' + oldRid + '"', 'g'), 'r:embed="' + newRid + '"');
+        result = result.replace(new RegExp('r:id="' + oldRid + '"', 'g'), 'r:id="' + newRid + '"');
+        result = result.replace(new RegExp('r:link="' + oldRid + '"', 'g'), 'r:link="' + newRid + '"');
+    }
+    return result;
+}
+
+// Nxjerr body content nga XML (pa sectPr, pa paragrafë boshe në fund)
+function extractBodyContent(xml) {
+    const body = xml.match(/<w:body>([\s\S]*?)<\/w:body>/);
+    if (!body) return '';
+    let content = body[1];
+    // Heq sectPr
+    content = content.replace(/<w:sectPr[\s\S]*?<\/w:sectPr>/g, '');
+    // Heq paragrafë boshe në fund — me ose pa pPr, me ose pa atribute
+    content = content.replace(/(\s*<w:p\b[^>]*>(\s*<w:pPr>[\s\S]*?<\/w:pPr>)?\s*<\/w:p>)+\s*$/g, '');
+    return content.trim();
 }
 
 // ============================================
@@ -215,14 +316,20 @@ function gjenerKontrate(k, outputDir) {
             pakoXml = applyCustomValues(pakoXml, { ...pakoData });
         }
 
-        // Nxirr body content (pa sectPr, pa paragrafë boshe në fund)
-        const body = pakoXml.match(/<w:body>([\s\S]*?)<\/w:body>/);
-        if (body) {
-            let content = body[1];
-            content = content.replace(/<w:sectPr[\s\S]*?<\/w:sectPr>/g, '');
-            content = content.replace(/(<w:p[^>]*>\s*<\/w:p>\s*)+$/g, '');
+        // Kopjo media files nga pako në main zip
+        const ridMap = mergeMediaAndRels(pakoZip, renderedZip);
+
+        // Nxirr body content
+        let pakoContent = extractBodyContent(pakoXml);
+
+        // Remap rId references
+        if (Object.keys(ridMap).length > 0) {
+            pakoContent = remapRids(pakoContent, ridMap);
+        }
+
+        if (pakoContent) {
             const pageBreak = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
-            mainXml = mainXml.replace(/<\/w:body>/, pageBreak + content + '</w:body>');
+            mainXml = mainXml.replace(/<\/w:body>/, pageBreak + pakoContent + '</w:body>');
         }
     });
 
@@ -231,13 +338,21 @@ function gjenerKontrate(k, outputDir) {
     if (fs.existsSync(aneksPath)) {
         const aneksZip = new PizZip(fs.readFileSync(aneksPath));
         const aneksXml = aneksZip.file('word/document.xml').asText();
-        const body = aneksXml.match(/<w:body>([\s\S]*?)<\/w:body>/);
-        if (body) {
-            let content = body[1];
-            content = content.replace(/<w:sectPr[\s\S]*?<\/w:sectPr>/g, '');
-            content = content.replace(/(<w:p[^>]*>\s*<\/w:p>\s*)+$/g, '');
+
+        // Kopjo media + relationships nga aneksi2 në main zip
+        const ridMap = mergeMediaAndRels(aneksZip, renderedZip);
+
+        // Nxirr body content
+        let aneksContent = extractBodyContent(aneksXml);
+
+        // Remap rId references
+        if (Object.keys(ridMap).length > 0) {
+            aneksContent = remapRids(aneksContent, ridMap);
+        }
+
+        if (aneksContent) {
             const pageBreak = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
-            mainXml = mainXml.replace(/<\/w:body>/, pageBreak + content + '</w:body>');
+            mainXml = mainXml.replace(/<\/w:body>/, pageBreak + aneksContent + '</w:body>');
         }
     }
 
