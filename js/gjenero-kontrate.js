@@ -5,18 +5,13 @@ const path = require('path');
 
 // ============================================
 // FORMAT DATA — fix NaN.NaN.NaN
-// Pranon: dd/mm/yyyy, yyyy-mm-dd, ose ISO string
 // ============================================
 function formatData(dateStr) {
     if (!dateStr) return '__.__.____';
-
-    // Format dd/mm/yyyy
     if (dateStr.includes('/')) {
         const [d, m, y] = dateStr.split('/');
         if (d && m && y) return `${d.padStart(2,'0')}.${m.padStart(2,'0')}.${y}`;
     }
-
-    // Format yyyy-mm-dd ose ISO
     if (dateStr.includes('-')) {
         const parts = dateStr.split('T')[0].split('-');
         if (parts.length === 3) {
@@ -24,7 +19,6 @@ function formatData(dateStr) {
             return `${d.padStart(2,'0')}.${m.padStart(2,'0')}.${y}`;
         }
     }
-
     return dateStr;
 }
 
@@ -47,7 +41,7 @@ const PAKO_FILES_FAMILJE_BIZNES = {
 const PAKO_RENDITJA = ['Pako Bazë', 'Pako Standard', 'Pako Standard Plus', 'Pako Premium', 'Pako Silver', 'Pako Gold'];
 
 // ============================================
-// APPLY CUSTOM VALUES — zëvendëson limite në XML
+// APPLY CUSTOM VALUES
 // ============================================
 const ROW_MAP = {
     1: 'zona', 2: 'shuma',
@@ -64,16 +58,13 @@ function escapeXml(str) {
 
 function replaceTextInCell(tcXml, newText) {
     const wRunRegex = /<w:r\b[^>]*>([\s\S]*?)<\/w:r>/g;
-    let runs = [];
-    let m;
+    let runs = [], m;
     while ((m = wRunRegex.exec(tcXml)) !== null) {
         runs.push({ full: m[0], content: m[1], index: m.index });
     }
     if (runs.length === 0) return tcXml;
-
     let firstRun = runs[0].full;
     firstRun = firstRun.replace(/<w:t[^>]*>[^<]*<\/w:t>/, '<w:t xml:space="preserve">' + escapeXml(newText) + '</w:t>');
-
     let newTc = tcXml;
     for (let i = runs.length - 1; i >= 0; i--) {
         newTc = newTc.replace(runs[i].full, i === 0 ? firstRun : '');
@@ -88,44 +79,34 @@ function applyCustomValues(docXml, pakoData) {
             if (!pakoData[key] && tp && tp.vlera) pakoData[key] = tp.vlera;
         });
     }
-
     const trRegex = /<w:tr\b[^>]*>([\s\S]*?)<\/w:tr>/g;
     let rowIndex = 0;
     const rows = [];
     let match;
-
     while ((match = trRegex.exec(docXml)) !== null) {
         rows.push({ full: match[0], content: match[1], index: rowIndex, start: match.index });
         rowIndex++;
     }
-
     let result = docXml;
     for (let i = rows.length - 1; i >= 0; i--) {
         const row = rows[i];
         const ri = row.index;
         let newValue = null;
-
         if (ROW_MAP[ri] && pakoData[ROW_MAP[ri]] !== undefined && pakoData[ROW_MAP[ri]] !== '') {
             newValue = pakoData[ROW_MAP[ri]];
             if (ri === 2 && newValue && !newValue.startsWith('€')) newValue = '€ ' + newValue;
             if (ri === 29 && newValue && !newValue.startsWith('€')) newValue = '€ ' + newValue + ',00';
             if (ri === 30 && newValue && !newValue.startsWith('€')) newValue = '€ ' + newValue + ',00';
         }
-
         if (HOSP_ROWS.includes(ri) && pakoData.hospitalore && pakoData.hospitalore !== '') {
             newValue = pakoData.hospitalore;
         }
-
         if (AMB_ROWS.includes(ri) && pakoData.ambulantore && pakoData.ambulantore !== '') {
             newValue = pakoData.ambulantore;
         }
-
         if (newValue !== null) {
             const tcRegex = /<w:tc\b[^>]*>([\s\S]*?)<\/w:tc>/g;
-            let tcMatch;
-            let tcCount = 0;
-            let newRow = row.full;
-
+            let tcMatch, tcCount = 0, newRow = row.full;
             tcRegex.lastIndex = 0;
             while ((tcMatch = tcRegex.exec(row.full)) !== null) {
                 tcCount++;
@@ -139,28 +120,21 @@ function applyCustomValues(docXml, pakoData) {
             result = result.replace(row.full, newRow);
         }
     }
-
     return result;
 }
 
 // ============================================
-// MERGE HELPER — kopjon media + relationships nga source zip në target zip
-// Kthen mapping { oldRid → newRid } për XML rewrite
+// MERGE MEDIA — kopjon vetëm images (jo OLE/embedded docs)
 // ============================================
 function mergeMediaAndRels(sourceZip, targetZip) {
     const ridMap = {};
-
-    // Lexo relationships nga source
     const sourceRelsFile = sourceZip.file('word/_rels/document.xml.rels');
     if (!sourceRelsFile) return ridMap;
     const sourceRels = sourceRelsFile.asText();
-
-    // Lexo relationships nga target
     const targetRelsFile = targetZip.file('word/_rels/document.xml.rels');
     if (!targetRelsFile) return ridMap;
     let targetRels = targetRelsFile.asText();
 
-    // Gjej max rId në target
     const ridNums = [];
     const ridRegex = /Id="rId(\d+)"/g;
     let rm;
@@ -169,7 +143,6 @@ function mergeMediaAndRels(sourceZip, targetZip) {
     }
     let nextRid = ridNums.length > 0 ? Math.max(...ridNums) + 1 : 100;
 
-    // Gjej të gjitha relationships me media/image/embed/oleObject në source
     const relRegex = /<Relationship\s+([^>]+?)\/>/g;
     let relMatch;
     while ((relMatch = relRegex.exec(sourceRels)) !== null) {
@@ -183,47 +156,34 @@ function mergeMediaAndRels(sourceZip, targetZip) {
         const relTarget = targetMatch[1];
         const type = typeMatch[1];
 
-        // Kopjo image, oleObject, package relationships
-        if (!type.includes('image') && !type.includes('oleObject') && !type.includes('package')) continue;
+        // Kopjo VETËM images — jo package/oleObject (që prishin dokumentin)
+        if (!type.includes('image')) continue;
 
-        // Kopjo skedarin nga source në target me emër unik
         const sourcePath = 'word/' + relTarget;
         const sourceFile = sourceZip.file(sourcePath);
         if (!sourceFile) continue;
 
         const ext = path.extname(relTarget);
-        const baseName = relTarget.includes('/') ? relTarget.split('/').pop() : relTarget;
-        const newFileName = relTarget.includes('/') ?
-            relTarget.replace(baseName, 'merged_' + nextRid + ext) :
-            'media/merged_' + nextRid + ext;
+        const newFileName = 'media/merged_' + nextRid + ext;
 
-        // Kopjo binary content
         targetZip.file('word/' + newFileName, sourceFile.asUint8Array());
 
-        // Shto relationship të re në target
         const newRid = 'rId' + nextRid;
-        const modeAttr = attrs.includes('TargetMode') ? ' TargetMode="External"' : '';
-        const newRel = `<Relationship Id="${newRid}" Type="${type}" Target="${newFileName}"${modeAttr}/>`;
+        const newRel = `<Relationship Id="${newRid}" Type="${type}" Target="${newFileName}"/>`;
         targetRels = targetRels.replace('</Relationships>', newRel + '</Relationships>');
 
         ridMap[oldRid] = newRid;
         nextRid++;
     }
 
-    // Ruaj relationships të përditësuara
     targetZip.file('word/_rels/document.xml.rels', targetRels);
-
     return ridMap;
 }
 
-// Zëvendëson rId references në XML content
 function remapRids(xmlContent, ridMap) {
     let result = xmlContent;
-    // Zëvendëso nga rId me numër më të madh për të shmangur konflikte
     const sortedOldRids = Object.keys(ridMap).sort((a, b) => {
-        const na = parseInt(a.replace('rId', ''));
-        const nb = parseInt(b.replace('rId', ''));
-        return nb - na;
+        return parseInt(b.replace('rId', '')) - parseInt(a.replace('rId', ''));
     });
     for (const oldRid of sortedOldRids) {
         const newRid = ridMap[oldRid];
@@ -234,14 +194,11 @@ function remapRids(xmlContent, ridMap) {
     return result;
 }
 
-// Nxjerr body content nga XML (pa sectPr, pa paragrafë boshe në fund)
 function extractBodyContent(xml) {
     const body = xml.match(/<w:body>([\s\S]*?)<\/w:body>/);
     if (!body) return '';
     let content = body[1];
-    // Heq sectPr
     content = content.replace(/<w:sectPr[\s\S]*?<\/w:sectPr>/g, '');
-    // Heq paragrafë boshe në fund — me ose pa pPr, me ose pa atribute
     content = content.replace(/(\s*<w:p\b[^>]*>(\s*<w:pPr>[\s\S]*?<\/w:pPr>)?\s*<\/w:p>)+\s*$/g, '');
     return content.trim();
 }
@@ -259,11 +216,16 @@ function gjenerKontrate(k, outputDir) {
     const templatePath = path.join(templatesDir, templateFile);
     const content = fs.readFileSync(templatePath, 'binary');
     const mainZip = new PizZip(content);
-    const doc = new Docxtemplater(mainZip, { paragraphLoop: true, linebreaks: true });
+
+    // Render me docxtemplater — por shto {~pakot} si null që mos dalë "undefined"
+    const doc = new Docxtemplater(mainZip, {
+        paragraphLoop: true,
+        linebreaks: true,
+        nullGetter: function() { return ''; }
+    });
 
     const kontraktuesEmri = k.lloji === 'individ' ? k.emri : k.perfaqesuesi;
     const pozitaKlientit = k.lloji === 'biznes' ? k.pozita : 'Kontraktues';
-    const pakotTeksti = (k.pakot || []).join(', ');
 
     doc.render({
         EMRI: k.emri || '',
@@ -278,17 +240,33 @@ function gjenerKontrate(k, outputDir) {
         KONTRAKTUESI_EMRI: kontraktuesEmri || '',
         EMRI_KLIENTIT: kontraktuesEmri || '',
         POZITA_KLIENTIT: pozitaKlientit,
-        PAKOT_TEKSTI: pakotTeksti,
     });
 
-    // Merr ZIP-in pas renderit
     const renderedZip = doc.getZip();
     let mainXml = renderedZip.file('word/document.xml').asText();
 
-    // --- HAPI 2: Bashko pako template-at si aneks ---
+    // --- HAPI 2: Gjej pozicionin e {~pakot} placeholder ---
+    // Docxtemplater e ka zëvendësuar {~pakot} me '' (bosh) falë nullGetter
+    // Duhet gjetur paragrafën bosh ku ishte {~pakot} — mes "dhe Primet" dhe tabelës së nënshkrimit
+    // Strategjia: gjej paragrafën bosh pas "dhe Primet" dhe zëvendëso me pakot content
+
+    // Gjej pozicionin ku do insertohen pakot:
+    // Kërko "dhe Primet" ose "Aneksi 1" në XML, pastaj inserto pakot pas asaj paragrafe
+    const PAKOT_MARKER = 'dhe Primet';
+    const markerIdx = mainXml.lastIndexOf(PAKOT_MARKER);
+    let insertPoint = -1;
+
+    if (markerIdx > 0) {
+        // Gjej fundin e paragrafës që përmban "dhe Primet"
+        const afterMarker = mainXml.indexOf('</w:p>', markerIdx);
+        if (afterMarker > 0) {
+            insertPoint = afterMarker + '</w:p>'.length;
+        }
+    }
+
+    // --- HAPI 3: Ndërto pako content ---
     const PAKO_FILES = k.lloji === 'individ' ? PAKO_FILES_INDIVID : PAKO_FILES_FAMILJE_BIZNES;
 
-    // Ndërto mapping emri → pakotData
     const pakotDataMap = {};
     if (k.pakotData && Array.isArray(k.pakotData)) {
         k.pakotData.forEach(pd => {
@@ -297,11 +275,12 @@ function gjenerKontrate(k, outputDir) {
         });
     }
 
-    // Rendit pakot sipas radhës standarde
     const pakotEmra = k.pakot || [];
     const pakotRenditura = PAKO_RENDITJA.filter(p => pakotEmra.includes(p));
 
-    pakotRenditura.forEach(pakoEmri => {
+    let allPakoContent = '';
+
+    pakotRenditura.forEach((pakoEmri, pakoIdx) => {
         const fileName = PAKO_FILES[pakoEmri];
         if (!fileName) return;
         const filePath = path.join(templatesDir, fileName);
@@ -310,45 +289,59 @@ function gjenerKontrate(k, outputDir) {
         const pakoZip = new PizZip(fs.readFileSync(filePath));
         let pakoXml = pakoZip.file('word/document.xml').asText();
 
-        // Apliko custom values nëse ka
         const pakoData = pakotDataMap[pakoEmri];
         if (pakoData) {
             pakoXml = applyCustomValues(pakoXml, { ...pakoData });
         }
 
-        // Kopjo media files nga pako në main zip
         const ridMap = mergeMediaAndRels(pakoZip, renderedZip);
-
-        // Nxirr body content
         let pakoContent = extractBodyContent(pakoXml);
-
-        // Remap rId references
         if (Object.keys(ridMap).length > 0) {
             pakoContent = remapRids(pakoContent, ridMap);
         }
 
         if (pakoContent) {
-            const pageBreak = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
-            mainXml = mainXml.replace(/<\/w:body>/, pageBreak + pakoContent + '</w:body>');
+            // Page break para çdo pakos (përveç të parës nëse insertohet direkt pas titullit)
+            if (pakoIdx > 0) {
+                allPakoContent += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+            }
+            allPakoContent += pakoContent;
         }
     });
 
-    // --- HAPI 3: Bashko aneksi2.docx (vetëm 1 herë, në fund) ---
+    // --- HAPI 4: Inserto pakot në pozicionin e saktë ---
+    if (insertPoint > 0 && allPakoContent) {
+        // Heq paragrafën bosh pas markerit (ku ishte {~pakot})
+        // Gjej paragrafën bosh menjëherë pas insertPoint
+        const nextParagraph = mainXml.substring(insertPoint).match(/^\s*<w:p\b[^>]*>(\s*<w:r>\s*<w:t>\s*<\/w:t>\s*<\/w:r>\s*)?<\/w:p>/);
+        if (nextParagraph) {
+            // Zëvendëso paragrafën bosh me pakot content
+            mainXml = mainXml.substring(0, insertPoint) + allPakoContent + mainXml.substring(insertPoint + nextParagraph[0].length);
+        } else {
+            // Inserto direkt pas markerit
+            mainXml = mainXml.substring(0, insertPoint) + allPakoContent + mainXml.substring(insertPoint);
+        }
+    } else if (allPakoContent) {
+        // Fallback: inserto para </w:body> (si para)
+        mainXml = mainXml.replace(/<\/w:body>/, allPakoContent + '</w:body>');
+    }
+
+    // --- HAPI 5: Bashko aneksi2.docx (vetëm 1 herë, në fund, para nënshkrimit nuk ka sens — pas gjithçkaje) ---
     const aneksPath = path.join(templatesDir, 'aneksi2.docx');
     if (fs.existsSync(aneksPath)) {
         const aneksZip = new PizZip(fs.readFileSync(aneksPath));
         const aneksXml = aneksZip.file('word/document.xml').asText();
 
-        // Kopjo media + relationships nga aneksi2 në main zip
+        // Kopjo vetëm images (jo embedded docs)
         const ridMap = mergeMediaAndRels(aneksZip, renderedZip);
-
-        // Nxirr body content
         let aneksContent = extractBodyContent(aneksXml);
-
-        // Remap rId references
         if (Object.keys(ridMap).length > 0) {
             aneksContent = remapRids(aneksContent, ridMap);
         }
+
+        // Heq OLE objects / embedded docs nga aneks content (prishin Word-in)
+        aneksContent = aneksContent.replace(/<w:object\b[\s\S]*?<\/w:object>/g, '');
+        aneksContent = aneksContent.replace(/<o:OLEObject[\s\S]*?\/>/g, '');
 
         if (aneksContent) {
             const pageBreak = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
@@ -356,11 +349,11 @@ function gjenerKontrate(k, outputDir) {
         }
     }
 
-    // --- HAPI 4: Ruaj dokumentin final ---
+    // --- HAPI 6: Ruaj ---
     renderedZip.file('word/document.xml', mainXml);
     const buf = renderedZip.generate({ type: 'nodebuffer' });
     const outputName = `Kontrata_${(k.emri || 'klient').replace(/\s+/g, '_')}_${formatData(k.dataKontrates).replace(/\./g, '-')}.docx`;
-    const outputPath = path.join(outputDir || path.join(__dirname, 'output'), outputName);
+    const outputPath = path.join(outputDir || path.join(__dirname, '..', 'output'), outputName);
     fs.writeFileSync(outputPath, buf);
 
     return outputPath;

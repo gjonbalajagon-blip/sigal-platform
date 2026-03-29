@@ -8,6 +8,7 @@ let activeSort='skadon';
 let spSelectedPakot=new Set();
 let spFoldOpen=false;
 let spLocked=false;
+let spCustomValues=null;
 const SP_TJERA_LABELS=[
     {label:'Shtatzënia',idx:0},{label:'Dentar',idx:1},{label:'Optik',idx:2},
     {label:'Dëgim',idx:3},{label:'Psikiatrik',idx:4},{label:'Fizioterapi',idx:5},
@@ -84,6 +85,7 @@ function renderSpreadsheet(){
     container.innerHTML=h;
     const cb=document.getElementById('sp-sel-all');
     if(cb){const pakotList2=lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;cb.checked=spSelectedPakot.size===pakotList2.length&&pakotList2.length>0;}
+    if(spLocked&&spCustomValues)setTimeout(()=>{applyCustomValues();},10);
 }
 
 function spTogglePako(id){if(spLocked)return;if(spSelectedPakot.has(id))spSelectedPakot.delete(id);else spSelectedPakot.add(id);renderSpreadsheet();}
@@ -101,13 +103,15 @@ function spEditCell(td){
 }
 
 function applyCustomValues(pakotArr){
+    if(pakotArr)spCustomValues=pakotArr;
+    if(!spCustomValues)return;
     const lloji=document.getElementById('m-lloji').value;
-    (pakotArr||[]).forEach(p=>{if(typeof p!=='object')return;document.querySelectorAll('td.sp-cell[data-pako="'+p.id+'"]').forEach(td=>{const field=td.dataset.field;if(p[field]!==undefined&&p[field]!==''){if(field==='primi_madh')td.textContent='€ '+p[field]+(lloji==='individ'?'/vit':'/muaj');else if(field==='primi_femije')td.textContent=p[field]?'€ '+p[field]+'/muaj':'—';else td.textContent=p[field];td.classList.toggle('empty',!p[field]);}});});
+    (spCustomValues||[]).forEach(p=>{if(typeof p!=='object')return;if(p.tjera_pikat&&Array.isArray(p.tjera_pikat))p.tjera_pikat.forEach((tp,idx)=>{if(tp&&tp.vlera&&!p['tjera_'+idx])p['tjera_'+idx]=tp.vlera;});document.querySelectorAll('td.sp-cell[data-pako="'+p.id+'"]').forEach(td=>{const field=td.dataset.field;if(p[field]!==undefined&&p[field]!==''){if(field==='primi_madh')td.textContent='€ '+p[field]+(lloji==='individ'?'/vit':'/muaj');else if(field==='primi_femije')td.textContent=p[field]?'€ '+p[field]+'/muaj':'—';else td.textContent=p[field];td.classList.toggle('empty',!p[field]);}});});
 }
 
 // ====== SHTO / EDITO / RUAJ ======
 function shtoKontrate(){
-    editIndex=-1;spLocked=false;spSelectedPakot.clear();spFoldOpen=false;
+    editIndex=-1;spLocked=false;spSelectedPakot.clear();spFoldOpen=false;spCustomValues=null;spCustomValues=null;spCustomValues=null;
     document.getElementById('modal-title').textContent='Kontratë e Re';
     document.getElementById('m-emri').value='';
     if(document.getElementById('m-email'))document.getElementById('m-email').value='';
@@ -223,6 +227,7 @@ function editoKontrate(index){
     // Selekto pakot nga kontrata — lock nëse ka pakotData
     const pakotData=k.pakotData||[];
     spLocked=pakotData.length>0;
+    spCustomValues=pakotData.length>0?pakotData:null;
     pakotData.forEach(p=>{if(typeof p==='object'&&p.id)spSelectedPakot.add(p.id);});
     // Nëse nuk ka pakotData, provo me emrat
     if(pakotData.length===0&&k.pakot){
