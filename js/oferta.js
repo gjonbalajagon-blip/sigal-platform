@@ -29,6 +29,8 @@ function shtoOferte(){
     spSelectedPakot.clear();
     spFoldOpen=false;
     spLocked=false;
+    spCustomValues=null;
+    spCustomValues=null;
     zgjidhLlojin('individ',document.querySelectorAll('.drawer-lloji-btn')[0]);
     document.getElementById('drawer-overlay').classList.add('active');
 }
@@ -52,6 +54,7 @@ const SP_TJERA_LABELS=[
 let spSelectedPakot=new Set();
 let spFoldOpen=false;
 let spLocked=false;
+let spCustomValues=null;
 
 function zgjidhLlojin(lloji,btn){
     document.getElementById('m-lloji').value=lloji;
@@ -179,6 +182,7 @@ function renderSpreadsheet(){
     h+='</tbody></table></div></div>';
     container.innerHTML=h;
     spUpdateSelectAll();
+    if(spLocked&&spCustomValues)setTimeout(()=>{applyCustomValues();},10);
 }
 
 function spTogglePako(id){
@@ -341,8 +345,10 @@ function riktheVersion(vIdx){
 
 // Vendos vlerat custom nga oferta e ruajtur mbi spreadsheet-in
 function applyCustomValues(pakotArr){
+    if(pakotArr)spCustomValues=pakotArr;
+    if(!spCustomValues)return;
     const lloji=document.getElementById('m-lloji').value;
-    pakotArr.forEach(p=>{
+    spCustomValues.forEach(p=>{
         if(typeof p!=='object')return;
         if(p.tjera_pikat&&Array.isArray(p.tjera_pikat))p.tjera_pikat.forEach((tp,idx)=>{if(tp&&tp.vlera&&!p['tjera_'+idx])p['tjera_'+idx]=tp.vlera;});
         document.querySelectorAll('td.sp-cell[data-pako="'+p.id+'"]').forEach(td=>{
