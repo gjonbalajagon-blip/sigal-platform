@@ -172,6 +172,8 @@ function ruajKontrate(){
             if(val==='—')val='';
             vlerat[field]=val;
         });
+        // Nëse fold mbyllur, merr tjera_0..8 nga spCustomValues
+        if(spCustomValues){const cv=spCustomValues.find(c=>typeof c==='object'&&c.id===pakoId);if(cv){for(let ti=0;ti<9;ti++){const key='tjera_'+ti;if(!vlerat[key]&&cv[key])vlerat[key]=cv[key];}}}
         const pakotList=lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;
         const found=pakotList.find(pk=>pk.id===pakoId);
         if(found)vlerat.emri=found.emri;
