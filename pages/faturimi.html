@@ -5,8 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sigal Health | Faturimi</title>
     <link rel="stylesheet" href="../css/theme.css">
-<script src="../js/auth.js"></script>
+    <script src="../js/auth.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+    /* ====== NAVY STRIP (identik si te oferta/kontratat) ====== */
+    .stats-strip{background:#002B5C;border-radius:10px;padding:14px 18px;margin-bottom:12px;display:flex;align-items:center;gap:0;flex-wrap:wrap;}
+    .strip-num-group{display:flex;align-items:baseline;gap:18px;flex:1;}
+    .strip-num{text-align:center;min-width:40px;}
+    .strip-num .sn-val{font-size:26px;font-weight:800;color:white;line-height:1;}
+    .strip-num .sn-label{font-size:9px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;white-space:nowrap;}
+    .strip-num.total .sn-val{font-size:32px;}
+    .strip-div{width:1px;height:32px;background:rgba(255,255,255,0.12);margin:0 10px;}
+    .strip-right{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+    .strip-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+    .strip-chip{font-size:10px;color:rgba(255,255,255,0.85);display:inline-flex;align-items:center;gap:4px;}
+    .strip-chip .sc-num{font-weight:800;color:white;font-size:12px;}
+    .strip-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;width:180px;display:flex;overflow:hidden;}
+    .strip-bar-seg{height:100%;transition:width 0.3s;}
+    .strip-legend{display:flex;gap:10px;margin-top:2px;}
+    .strip-legend span{font-size:8px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:3px;}
+    .sl-dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+
+    /* ====== TABS ====== */
+    .tabs-bar{display:flex;gap:0;margin-bottom:12px;}
+    .tab-btn{padding:8px 20px;font-size:12px;font-weight:700;border:1px solid #e5e9f0;background:white;color:#6b7a8d;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+    .tab-btn:first-child{border-radius:6px 0 0 6px;}
+    .tab-btn:last-child{border-radius:0 6px 6px 0;}
+    .tab-btn.active{background:#002B5C;color:white;border-color:#002B5C;}
+    .tab-btn .tab-count{font-size:10px;background:rgba(255,255,255,0.2);padding:1px 7px;border-radius:10px;margin-left:4px;font-weight:700;}
+    .tab-btn.active .tab-count{background:rgba(255,255,255,0.25);}
+    .tab-btn:not(.active) .tab-count{background:#e5e9f0;color:#6b7a8d;}
+
+    /* ====== FILTER BAR ====== */
+    .filter-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+    .filter-row select,.filter-row input{font-size:11px;padding:6px 10px;border:1px solid #e5e9f0;border-radius:6px;font-family:inherit;background:white;color:#1a2332;}
+    .filter-row input{flex:1;min-width:140px;}
+
+    /* ====== TABELA ====== */
+    .table-container{background:white;border-radius:10px;border:1px solid #e5e9f0;overflow:hidden;}
+    .table-container table{width:100%;border-collapse:collapse;font-size:12px;}
+    .table-container th{background:#f8fafc;color:#6b7a8d;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;padding:10px 12px;text-align:left;border-bottom:2px solid #e5e9f0;}
+    .table-container td{padding:10px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle;}
+    .table-container tbody tr:nth-child(even){background:#f8fafc;}
+    .table-container tbody tr:hover{background:#f0f4ff;}
+    .klient-name{font-weight:700;color:#1a2332;font-size:12px;}
+    .klient-sub{font-size:10px;color:#6b7a8d;margin-top:1px;}
+
+    /* ====== SKADON CELL ====== */
+    .skadon-cell{display:flex;align-items:center;gap:5px;font-size:11px;white-space:nowrap;}
+    .skadon-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+    .skadon-expired{color:#ef4444;font-weight:600;}
+    .skadon-warning{color:#f59e0b;font-weight:600;}
+    .skadon-ok{color:#6b7a8d;}
+
+    /* ====== STATUS CIRCLES ====== */
+    .status-circles{display:flex;gap:4px;align-items:center;}
+    .status-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;}
+    .status-dot:hover{transform:scale(1.15);box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+
+    /* ====== ACTION BTNS ====== */
+    .action-icon-btns{display:flex;gap:2px;align-items:center;}
+    .action-icon-btns button{width:28px;height:28px;border-radius:6px;border:1px solid #e5e9f0;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;padding:0;}
+    .action-icon-btns button:hover{background:#f0f4ff;border-color:#b0c4de;}
+    .action-icon-btns button svg{width:14px;height:14px;stroke:#6b7a8d;stroke-width:2;fill:none;}
+
+    /* ====== MUAJI SELECT ====== */
+    .muaji-select{font-size:10px;padding:3px 6px;border:1px solid #e5e9f0;border-radius:4px;background:white;font-family:inherit;}
+
+    /* ====== BADGE LLOJI ====== */
+    .badge-lloji{font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;white-space:nowrap;}
+    .badge-lloji.mujor{background:#dbeafe;color:#1e40af;}
+    .badge-lloji.vjetor{background:#fef3c7;color:#92400e;}
+
+    /* ====== MODAL (keep existing) ====== */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;}
+    .modal-overlay.active{display:flex;}
+    .modal{background:white;border-radius:12px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto;}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e5e9f0;}
+    .modal-header h2{font-size:16px;color:#002B5C;}
+    .modal-header button{width:28px;height:28px;border:none;background:#f4f6f9;border-radius:6px;cursor:pointer;font-size:16px;color:#6b7a8d;}
+    .modal-body{padding:16px 20px;}
+    .form-group{margin-bottom:12px;}
+    .form-group label{display:block;font-size:11px;font-weight:600;color:#6b7a8d;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px;}
+    .form-group input,.form-group select{width:100%;padding:8px 10px;border:1px solid #e5e9f0;border-radius:6px;font-size:12px;font-family:inherit;}
+    .modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid #e5e9f0;}
+    .lloji-selector{display:flex;gap:0;}
+    .lloji-btn{flex:1;padding:8px;font-size:11px;font-weight:700;border:1px solid #e5e9f0;background:white;color:#6b7a8d;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+    .lloji-btn:first-child{border-radius:6px 0 0 6px;}
+    .lloji-btn:last-child{border-radius:0 6px 6px 0;}
+    .lloji-btn.active{background:#002B5C;color:white;border-color:#002B5C;}
+    .btn-primary{padding:8px 18px;background:#002B5C;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
+    .btn-secondary{padding:8px 18px;background:white;color:#6b7a8d;border:1px solid #e5e9f0;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
+    </style>
 </head>
 <body>
 
@@ -19,75 +109,61 @@
             </div>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item">
-                <span class="nav-icon"><i data-lucide="layout-dashboard"></i></span>
-                <span class="nav-label">Dashboard</span>
-            </a>
-            <a href="oferta.html" class="nav-item">
-                <span class="nav-icon"><i data-lucide="clipboard-list"></i></span>
-                <span class="nav-label">Oferta</span>
-            </a>
-            <a href="kontratat.html" class="nav-item">
-                <span class="nav-icon"><i data-lucide="file-text"></i></span>
-                <span class="nav-label">Kontratat</span>
-            </a>
-            <a href="faturimi.html" class="nav-item active">
-                <span class="nav-icon"><i data-lucide="receipt"></i></span>
-                <span class="nav-label">Faturimi</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i data-lucide="refresh-cw"></i></span>
-                <span class="nav-label">Rinovimet</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i data-lucide="wallet"></i></span>
-                <span class="nav-label">Debitorët</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i data-lucide="bar-chart-3"></i></span>
-                <span class="nav-label">Raportet</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i data-lucide="check-circle"></i></span>
-                <span class="nav-label">Detyrat</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i data-lucide="folder-open"></i></span>
-                <span class="nav-label">Dokumentet</span>
-            </a>
-            <a href="stafi.html" class="nav-item">
-                <span class="nav-icon"><i data-lucide="users"></i></span>
-                <span class="nav-label">Stafi</span>
-            </a>
+            <a href="dashboard.html" class="nav-item"><span class="nav-icon"><i data-lucide="layout-dashboard"></i></span><span class="nav-label">Dashboard</span></a>
+            <a href="oferta.html" class="nav-item"><span class="nav-icon"><i data-lucide="clipboard-list"></i></span><span class="nav-label">Oferta</span></a>
+            <a href="kontratat.html" class="nav-item"><span class="nav-icon"><i data-lucide="file-text"></i></span><span class="nav-label">Kontratat</span></a>
+            <a href="faturimi.html" class="nav-item active"><span class="nav-icon"><i data-lucide="receipt"></i></span><span class="nav-label">Faturimi</span></a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="refresh-cw"></i></span><span class="nav-label">Rinovimet</span></a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="wallet"></i></span><span class="nav-label">Debitorët</span></a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="bar-chart-3"></i></span><span class="nav-label">Raportet</span></a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="check-circle"></i></span><span class="nav-label">Detyrat</span></a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="folder-open"></i></span><span class="nav-label">Dokumentet</span></a>
+            <a href="stafi.html" class="nav-item"><span class="nav-icon"><i data-lucide="users"></i></span><span class="nav-label">Stafi</span></a>
         </nav>
         <div class="sidebar-footer">
-            <a href="../index.html" class="nav-item logout">
-                <span class="nav-icon"><i data-lucide="log-out"></i></span>
-                <span class="nav-label">Dilni</span>
-            </a>
+            <a href="../index.html" class="nav-item logout"><span class="nav-icon"><i data-lucide="log-out"></i></span><span class="nav-label">Dilni</span></a>
         </div>
     </div>
 
     <div class="main-content">
         <div class="topbar">
-            <h1>Faturimi Mujor</h1>
+            <h1>Faturimi</h1>
             <div style="display:flex;gap:8px;align-items:center;">
                 <button class="btn-secondary" id="btn-dergo-email" style="display:none" onclick="dergoEmailZgjedhurve()">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                     Dërgo Email (<span id="count-zgjedhur">0</span>)
                 </button>
-                <button class="btn-primary" onclick="shtoKlient()">
-                    <i data-lucide="plus" style="width:15px;height:15px;"></i> Shto Klient
-                </button>
+                <button class="btn-primary" onclick="shtoKlient()">+ Shto Klient</button>
             </div>
         </div>
 
         <div class="content-area">
-            <div class="faturimi-tabs">
-                <button class="tab-btn active" id="tab-mujor" onclick="ndryshoTab('mujor')">Mujor</button>
-                <button class="tab-btn" id="tab-vjetor" onclick="ndryshoTab('vjetor')">Vjetor</button>
+            <!-- TABS -->
+            <div class="tabs-bar">
+                <button class="tab-btn active" id="tab-mujor" onclick="ndryshoTab('mujor')">Mujor <span class="tab-count" id="tab-count-mujor">0</span></button>
+                <button class="tab-btn" id="tab-vjetor" onclick="ndryshoTab('vjetor')">Vjetor <span class="tab-count" id="tab-count-vjetor">0</span></button>
             </div>
-            <div class="filter-bar">
+
+            <!-- NAVY STRIP STATS -->
+            <div class="stats-strip">
+                <div class="strip-num-group">
+                    <div class="strip-num total"><div class="sn-val" id="st-total">0</div><div class="sn-label">Total</div></div>
+                    <div class="strip-div"></div>
+                    <div class="strip-num"><div class="sn-val" id="st-asgje">0</div><div class="sn-label">Asgjë</div></div>
+                    <div class="strip-num"><div class="sn-val" id="st-kerkesa">0</div><div class="sn-label">Kërkesë</div></div>
+                    <div class="strip-num"><div class="sn-val" id="st-process">0</div><div class="sn-label">Në Proces</div></div>
+                    <div class="strip-num"><div class="sn-val" id="st-leshuar">0</div><div class="sn-label">E Lëshuar</div></div>
+                </div>
+                <div class="strip-div"></div>
+                <div class="strip-right">
+                    <div class="strip-chips" id="st-llojet"></div>
+                    <div class="strip-bar" id="st-bar"></div>
+                    <div class="strip-legend" id="st-legend"></div>
+                </div>
+            </div>
+
+            <!-- FILTER ROW -->
+            <div class="filter-row">
                 <select id="filter-status" onchange="filtroKlientet()">
                     <option value="all">Të gjithë statuset</option>
                     <option value="asgje">Asgjë</option>
@@ -96,7 +172,6 @@
                     <option value="leshuar">Faturë e Lëshuar</option>
                 </select>
                 <select id="filter-muaji" onchange="filtroKlientet()">
-                    <option value="all">Të gjithë muajt</option>
                     <option value="1">Janar</option>
                     <option value="2">Shkurt</option>
                     <option value="3">Mars</option>
@@ -110,6 +185,9 @@
                     <option value="11">Nëntor</option>
                     <option value="12">Dhjetor</option>
                 </select>
+                <select id="filter-krijuar" onchange="filtroKlientet()">
+                    <option value="all">Të gjithë agjentët</option>
+                </select>
                 <input type="text" id="search-klient" placeholder="Kërko klient..." onkeyup="filtroKlientet()">
                 <select id="filter-viti" onchange="filtroKlientet()">
                     <option value="all">Të gjitha vitet</option>
@@ -119,52 +197,15 @@
                 </select>
             </div>
 
-            <div class="stats-container">
-                <div class="stats-row">
-                    <div class="fstat-card small asgje">
-                        <span id="count-asgje">0</span>
-                        <p>Asgjë</p>
-                    </div>
-                    <div class="fstat-card small kerkesa">
-                        <span id="count-kerkesa">0</span>
-                        <p>Kërkesë</p>
-                    </div>
-                    <div class="fstat-card small process">
-                        <span id="count-process">0</span>
-                        <p>Në Proces</p>
-                    </div>
-                    <div class="fstat-card small leshuar">
-                        <span id="count-leshuar">0</span>
-                        <p>E Lëshuar</p>
-                    </div>
-                    <div class="fstat-card big total-card">
-                        <span id="count-total">0</span>
-                        <p>Total</p>
-                    </div>
-                </div>
-                <div class="stats-row">
-                    <div class="fstat-card small individ-card">
-                        <span id="count-mujor">0</span>
-                        <p>Mujor</p>
-                    </div>
-                    <div class="fstat-card small biznes-card">
-                        <span id="count-vjetor">0</span>
-                        <p>Vjetor</p>
-                    </div>
-                </div>
-            </div>
-
+            <!-- TABELA -->
             <div class="table-container">
-                <table id="faturimi-table">
+                <table>
                     <thead>
                         <tr>
                             <th style="width:30px"><input type="checkbox" id="select-all" onchange="zgjidhTeGjitha(this.checked)"></th>
                             <th>Klienti</th>
-                            <th>Krijuar Nga</th>
                             <th>Nr. ID / NRB</th>
                             <th>Kontrata</th>
-                            <th>Dërgesa</th>
-                            <th>Email</th>
                             <th>Skadon</th>
                             <th>Muaji</th>
                             <th>Statusi</th>
@@ -177,6 +218,7 @@
         </div>
     </div>
 
+    <!-- MODAL SHTO/EDITO -->
     <div class="modal-overlay" id="modal-overlay" onclick="mbyllModal()">
         <div class="modal" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -184,51 +226,12 @@
                 <button onclick="mbyllModal()">✕</button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Emri i Klientit / Biznesit</label>
-                    <input type="text" id="m-emri" placeholder="p.sh. Kompania ABC">
-                </div>
-                <div class="form-group">
-                    <label>Nr. ID / NRB</label>
-                    <input type="text" id="m-kontrata-nr" placeholder="Nr. Personal ose Nr. Biznesit">
-                </div>
-                <div class="form-group">
-                    <label>Data Fillimit Kontratës</label>
-                    <input type="text" id="m-data-fillimit" placeholder="dd/mm/yyyy" maxlength="10">
-                </div>
-                <div class="form-group">
-                    <label>Data Mbarimit Kontratës</label>
-                    <input type="text" id="m-data-mbarimit" placeholder="dd/mm/yyyy" maxlength="10">
-                </div>
-                <div class="form-group">
-                    <label>Mënyra e Dërgesës</label>
-                    <select id="m-dergesa">
-                        <option value="email">Email</option>
-                        <option value="direkt">Direkt</option>
-                        <option value="poste">Postë</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Email i Klientit</label>
-                    <input type="email" id="m-email" placeholder="klienti@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Muaji i Faturimit</label>
-                    <select id="m-muaji">
-                        <option value="1">Janar</option>
-                        <option value="2">Shkurt</option>
-                        <option value="3">Mars</option>
-                        <option value="4">Prill</option>
-                        <option value="5">Maj</option>
-                        <option value="6">Qershor</option>
-                        <option value="7">Korrik</option>
-                        <option value="8">Gusht</option>
-                        <option value="9">Shtator</option>
-                        <option value="10">Tetor</option>
-                        <option value="11">Nëntor</option>
-                        <option value="12">Dhjetor</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Emri i Klientit / Biznesit</label><input type="text" id="m-emri" placeholder="p.sh. Kompania ABC"></div>
+                <div class="form-group"><label>Nr. ID / NRB</label><input type="text" id="m-kontrata-nr" placeholder="Nr. Personal ose Nr. Biznesit"></div>
+                <div class="form-group"><label>Data Fillimit Kontratës</label><input type="text" id="m-data-fillimit" placeholder="dd/mm/yyyy" maxlength="10"></div>
+                <div class="form-group"><label>Data Mbarimit Kontratës</label><input type="text" id="m-data-mbarimit" placeholder="dd/mm/yyyy" maxlength="10"></div>
+                <div class="form-group"><label>Mënyra e Dërgesës</label><select id="m-dergesa"><option value="email">Email</option><option value="direkt">Direkt</option><option value="poste">Postë</option></select></div>
+                <div class="form-group"><label>Email i Klientit</label><input type="email" id="m-email" placeholder="klienti@email.com"></div>
                 <div class="form-group">
                     <label>Mënyra e Faturimit</label>
                     <div class="lloji-selector" style="margin-bottom:0">
@@ -245,25 +248,8 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="status-overlay" onclick="mbyllStatusModal()">
-        <div class="modal modal-small" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h2>Ndrysho Statusin</h2>
-                <button onclick="mbyllStatusModal()">✕</button>
-            </div>
-            <div class="modal-body">
-                <p id="status-klienti" style="font-weight:600; margin-bottom:16px;"></p>
-                <div class="status-options">
-                    <button class="status-btn kerkesa" onclick="vendosStatus('kerkesa')">Kërkesë Dërguar</button>
-                    <button class="status-btn process" onclick="vendosStatus('process')">Në Proces</button>
-                    <button class="status-btn leshuar" onclick="vendosStatus('leshuar')">Faturë e Lëshuar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="../js/main.js"></script>
     <script src="../js/faturimi.js"></script>
-    <script>lucide.createIcons();</script>
+    <script>if(typeof lucide!=='undefined')lucide.createIcons();</script>
 </body>
 </html>
