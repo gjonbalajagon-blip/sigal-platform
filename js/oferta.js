@@ -526,7 +526,7 @@ async function gjeneroWord(index){
         const pakotEmra=(o.pakot||[]).map(p=>{if(typeof p==='object'){const pl=o.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;const f=pl.find(pk=>pk.id===p.id);return f?'Pako '+f.emri:p.id;}return p;});
         // Merr pakotData nga versioni konfirmim_klient nëse ka
         let pakotData=[];
-        if(o.verspiket){const konfV=o.verspiket.find(v=>v.burim==='konfirmim_klient');if(konfV&&konfV.pakot)pakotData=konfV.pakot.filter(p=>typeof p==='object').map(p=>{const pl=o.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;const f=pl.find(pk=>pk.id===p.id);const out={...p};if(f)out.emri=f.emri;if(p.tjera_pikat&&Array.isArray(p.tjera_pikat))p.tjera_pikat.forEach((tp,idx)=>{if(tp&&tp.vlera&&!out['tjera_'+idx])out['tjera_'+idx]=tp.vlera;});return out;});}
+        if(o.versione){const konfV=[...o.versione].reverse().find(v=>v.burim==='konfirmim_klient');if(konfV&&konfV.pakot)pakotData=konfV.pakot.filter(p=>typeof p==='object').map(p=>{const pl=o.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;const f=pl.find(pk=>pk.id===p.id);const out={...p};if(f)out.emri=f.emri;if(p.tjera_pikat&&Array.isArray(p.tjera_pikat))p.tjera_pikat.forEach((tp,idx)=>{if(tp&&tp.vlera&&!out['tjera_'+idx])out['tjera_'+idx]=tp.vlera;});return out;});}
         const r=await fetch(TAPI+'/api/gjenero-oferte',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emri:o.emri,lloji:o.lloji==='familje'||o.lloji==='biznes'?'familje_biznes':o.lloji,pakot:pakotEmra,pakotData:pakotData})});
         const d=await r.json();if(d.success)window.open(TAPI+'/api/shkarko/'+d.fileName,'_blank');else alert('Gabim: '+d.error);
     }catch(err){alert('Serveri nuk eshte aktiv!');}
