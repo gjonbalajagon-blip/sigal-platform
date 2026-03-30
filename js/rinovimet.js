@@ -1,342 +1,317 @@
 // ============================================================
-// RINOVIMET.JS — Moduli i Rinovimeve
+// RINOVIMET.JS — v2 komplet
 // ============================================================
 
-// ===== STORAGE KEY =====
-const RIN_STORAGE_KEY = 'rinovimet_data';
-const RIN_IMPORT_KEY  = 'rinovimet_imports';
+const RIN_KEY = 'rinovimet_data';
+const RIN_IMP_KEY = 'rinovimet_imports';
+const MUAJT = ['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','Gusht','Shtator','Tetor','Nëntor','Dhjetor'];
 
-// ===== STATUS CONFIG =====
 const STATUSET = {
-    pa_filluar:  { emri: 'Pa filluar',  ngjyra: '#94a3b8' },
-    kontaktuar:  { emri: 'Kontaktuar',  ngjyra: '#f59e0b' },
-    negociata:   { emri: 'Negociata',   ngjyra: '#3b82f6' },
-    rinovuar:    { emri: 'Rinovuar',    ngjyra: '#22c55e' },
-    humbur:      { emri: 'Humbur',      ngjyra: '#ef4444' },
-    anuluar:     { emri: 'Anuluar',     ngjyra: '#6b7280' }
+    pa_filluar:  { emri: 'Pa filluar',  ngjyra: '#94a3b8', bar: '#94a3b8' },
+    kontaktuar:  { emri: 'Kontaktuar',  ngjyra: '#f59e0b', bar: '#fbbf24' },
+    rinovuar:    { emri: 'Rinovuar',    ngjyra: '#22c55e', bar: '#4ade80' },
+    humbur:      { emri: 'Humbur',      ngjyra: '#ef4444', bar: '#fca5a5' }
 };
 
-// ===== STATE =====
-let rinovimet = [];          // Array e të gjitha rinovimeve
-let filteredList = [];       // Pas filtrimit
-let currentFilter = 'total'; // Filtri aktual i statusit
-let currentDrawerId = null;  // ID e rinovimit të hapur në drawer
-let importParsedData = null; // Të dhënat e parsuara nga importi
-let importStep = 1;
+const ARSYET_HUMBJES = [
+    'Çmimi shumë i lartë',
+    'Klienti zgjodhi sigurim tjetër',
+    'Klienti nuk dëshiron më sigurim',
+    'Mbulesa jo e mjaftueshme',
+    'I pakënaqur me shërbimet',
+    'I pakënaqur me vlerësimin e dëmeve',
+    'Tjetër'
+];
 
-// ===== COLUMN MAP — maps Excel header names to our fields =====
 const COLUMN_MAP = {
-    'nr.':               'nr_rreshti',
-    'lloji i polices':   'lloji',
-    'dega':              'dega',
-    'agjenti':           'agjenti',
-    'id':                'kontraktues_id',
-    'kontraktuesi':      'kontraktuesi',
-    'nr i kontrates':    'nr_kontrates',
-    'nr i pro-fatures':  'nr_profatures',
-    'data e fatures':    'data_fatures',
-    'fillon':            'data_fillimit',
-    'mbaron':            'data_mbarimit',
-    'primi(v)':          'primi',
-    'tvsh(v)':           'tvsh',
-    'total(v)':          'total_primi',
-    'valuta':            'valuta'
+    'nr.':'nr_rreshti','lloji i polices':'lloji','dega':'dega','agjenti':'agjenti',
+    'id':'kontraktues_id','kontraktuesi':'kontraktuesi','nr i kontrates':'nr_kontrates',
+    'nr i pro-fatures':'nr_profatures','data e fatures':'data_fatures',
+    'fillon':'data_fillimit','mbaron':'data_mbarimit',
+    'primi(v)':'primi','tvsh(v)':'tvsh','total(v)':'total_primi','valuta':'valuta'
 };
-
-// Dëme kolonat (positional after 'valuta') — header ka 'nr','paguar','nr','pezull'
 const DEME_COLS = ['deme_nr_paguar','deme_vlera_paguar','deme_nr_pezull','deme_vlera_pezull'];
 
+// ===== STATE =====
+let rinovimet = [];
+let filteredList = [];
+let currentMuaj = null;    // 'maj_2026' format
+let currentSort = 'primi';
+let currentDrawerId = null;
+let importParsedData = null;
+let importStep = 1;
 
-// ==============================================================
-// INIT
-// ==============================================================
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', function() {
     ngarkoTedhena();
-    renderTabela();
-    perditesoStats();
-    perditesoSubtitle();
+    renderTabs();
+    aplikoFiltrat();
     populoFiltrat();
+    populoImportMuajt();
 });
 
-
-// ==============================================================
-// STORAGE
-// ==============================================================
+// ===== STORAGE =====
 function ngarkoTedhena() {
+    try { rinovimet = JSON.parse(localStorage.getItem(RIN_KEY) || '[]'); } catch(e) { rinovimet = []; }
+}
+function ruajTedhena() { localStorage.setItem(RIN_KEY, JSON.stringify(rinovimet)); }
+function merrImports() { try { return JSON.parse(localStorage.getItem(RIN_IMP_KEY) || '[]'); } catch(e) { return []; } }
+function ruajImportMeta(m) { const a = merrImports(); a.push(m); localStorage.setItem(RIN_IMP_KEY, JSON.stringify(a)); }
+
+// ===== ROLE-BASED FILTERING =====
+function merrUser() {
     try {
-        const data = localStorage.getItem(RIN_STORAGE_KEY);
-        rinovimet = data ? JSON.parse(data) : [];
-    } catch(e) {
-        console.error('Gabim në ngarkim:', e);
-        rinovimet = [];
-    }
+        const u = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        return { username: u.username||'', emri: u.emriPlote||u.username||'System', roli: u.roli||'staff', dega: u.dega||'' };
+    } catch(e) { return { username:'', emri:'System', roli:'superadmin', dega:'' }; }
 }
 
-function ruajTedhena() {
-    localStorage.setItem(RIN_STORAGE_KEY, JSON.stringify(rinovimet));
+function filtroSipasRolit(list) {
+    const user = merrUser();
+    const r = (user.roli || '').toLowerCase();
+    if (r === 'superadmin' || r === 'management' || r === 'dep_management') return list;
+    // staff and staff_hq see only their branch
+    const dega = (user.dega || '').toLowerCase();
+    if (!dega) return list;
+    return list.filter(x => (x.dega || '').toLowerCase() === dega);
 }
 
-function ruajImportMeta(meta) {
-    try {
-        let imports = JSON.parse(localStorage.getItem(RIN_IMPORT_KEY) || '[]');
-        imports.push(meta);
-        localStorage.setItem(RIN_IMPORT_KEY, JSON.stringify(imports));
-    } catch(e) { console.error(e); }
+// ===== MONTH TABS =====
+function getMuajt() {
+    const muajSet = new Set();
+    rinovimet.forEach(r => { if (r.muaji) muajSet.add(r.muaji); });
+    return [...muajSet].sort((a, b) => {
+        const [ma, ya] = a.split('_'); const [mb, yb] = b.split('_');
+        return (parseInt(ya) - parseInt(yb)) || (MUAJT.indexOf(capitalizeFirst(ma)) - MUAJT.indexOf(capitalizeFirst(mb)));
+    });
 }
 
-function merrLastImport() {
-    try {
-        let imports = JSON.parse(localStorage.getItem(RIN_IMPORT_KEY) || '[]');
-        return imports.length > 0 ? imports[imports.length - 1] : null;
-    } catch(e) { return null; }
-}
-
-
-// ==============================================================
-// SUBTITLE
-// ==============================================================
-function perditesoSubtitle() {
-    const el = document.getElementById('rinSubtitle');
-    if (rinovimet.length === 0) {
-        el.textContent = 'Asnjë import ende';
+function renderTabs() {
+    const container = document.getElementById('rinTabs');
+    const muajt = getMuajt();
+    if (muajt.length === 0) {
+        container.innerHTML = '<span style="padding:7px 18px;font-size:12px;color:#94a3b8;">Asnjë import ende</span>';
+        currentMuaj = null;
         return;
     }
-    const lastImport = merrLastImport();
-    if (lastImport) {
-        el.textContent = `${lastImport.periudha || ''} · ${rinovimet.length} kontrata · Importuar ${lastImport.data}`;
-    } else {
-        el.textContent = `${rinovimet.length} kontrata`;
-    }
-}
+    if (!currentMuaj || !muajt.includes(currentMuaj)) currentMuaj = muajt[muajt.length - 1];
 
-
-// ==============================================================
-// STATS
-// ==============================================================
-function perditesoStats() {
-    const counts = { total: rinovimet.length };
-    Object.keys(STATUSET).forEach(s => counts[s] = 0);
-    rinovimet.forEach(r => {
-        if (counts[r.statusi] !== undefined) counts[r.statusi]++;
+    let html = '';
+    muajt.forEach(m => {
+        const count = filtroSipasRolit(rinovimet.filter(r => r.muaji === m)).length;
+        const label = formatMuajLabel(m);
+        const active = m === currentMuaj ? 'active' : '';
+        html += `<button class="tab-btn ${active}" onclick="ndryshoMuaj('${m}')">${label} <span class="tab-count">${count}</span></button>`;
     });
-
-    document.getElementById('statTotal').textContent = counts.total;
-    document.getElementById('statPaFilluar').textContent = counts.pa_filluar || 0;
-    document.getElementById('statKontaktuar').textContent = counts.kontaktuar || 0;
-    document.getElementById('statNegociata').textContent = counts.negociata || 0;
-    document.getElementById('statRinovuar').textContent = counts.rinovuar || 0;
-    document.getElementById('statHumbur').textContent = (counts.humbur || 0) + (counts.anuluar || 0);
+    container.innerHTML = html;
 }
 
-
-// ==============================================================
-// FILTERS
-// ==============================================================
-function filtroStatus(status) {
-    currentFilter = status;
-
-    // Update active stat card
-    document.querySelectorAll('.rin-stat-card').forEach(c => c.classList.remove('active'));
-    const card = document.querySelector(`.rin-stat-card[data-status="${status}"]`);
-    if (card) card.classList.add('active');
-
+function ndryshoMuaj(m) {
+    currentMuaj = m;
+    renderTabs();
     aplikoFiltrat();
 }
 
+function formatMuajLabel(key) {
+    if (!key) return '';
+    const [m, y] = key.split('_');
+    return capitalizeFirst(m) + ' ' + y;
+}
+
+function capitalizeFirst(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+// ===== STATS STRIP =====
+function perditesoStats() {
+    const data = filtroSipasRolit(rinovimet.filter(r => r.muaji === currentMuaj));
+    const counts = {};
+    Object.keys(STATUSET).forEach(s => counts[s] = 0);
+    let totalPrimi = 0, totalDeme = 0;
+    data.forEach(r => {
+        if (counts[r.statusi] !== undefined) counts[r.statusi]++;
+        totalPrimi += (r.primi_vjetor || 0);
+        totalDeme += (r.deme_total_vlera || 0);
+    });
+    const total = data.length;
+    const avgLR = totalPrimi > 0 ? (totalDeme / totalPrimi * 100) : 0;
+
+    // Metrics
+    document.getElementById('stripMetrics').innerHTML = `
+        <div class="strip-metric"><div class="sm-num">${total}</div><div class="sm-lbl">Total</div></div>
+        <div class="strip-metric s-pafilluar"><div class="sm-num">${counts.pa_filluar}</div><div class="sm-lbl">Pa filluar</div></div>
+        <div class="strip-metric s-kontaktuar"><div class="sm-num">${counts.kontaktuar}</div><div class="sm-lbl">Kontaktuar</div></div>
+        <div class="strip-metric s-rinovuar"><div class="sm-num">${counts.rinovuar}</div><div class="sm-lbl">Rinovuar</div></div>
+        <div class="strip-metric s-humbur"><div class="sm-num">${counts.humbur}</div><div class="sm-lbl">Humbur</div></div>
+    `;
+
+    // Chips
+    document.getElementById('stripChips').innerHTML = `
+        <div class="strip-chip">Primi <span class="sc-num">${formatMoneyShort(totalPrimi)}</span></div>
+        <div class="strip-chip">Dëme <span class="sc-num">${formatMoneyShort(totalDeme)}</span></div>
+        <div class="strip-chip">LR <span class="sc-num">${avgLR.toFixed(1)}%</span></div>
+    `;
+
+    // Bar
+    const bar = document.getElementById('stripBar');
+    const legend = document.getElementById('stripLegend');
+    if (total > 0) {
+        let barHtml = '', legHtml = '';
+        Object.keys(STATUSET).forEach(s => {
+            const pct = (counts[s] / total * 100).toFixed(1);
+            barHtml += `<div class="strip-bar-seg" style="width:${pct}%;background:${STATUSET[s].bar}"></div>`;
+            legHtml += `<span><span class="sl-dot" style="background:${STATUSET[s].bar}"></span>${STATUSET[s].emri} ${counts[s]}</span>`;
+        });
+        bar.innerHTML = barHtml;
+        legend.innerHTML = legHtml;
+    } else {
+        bar.innerHTML = '<div class="strip-bar-seg" style="width:100%;background:rgba(255,255,255,.1)"></div>';
+        legend.innerHTML = '';
+    }
+}
+
+// ===== FILTERS =====
 function aplikoFiltrat() {
-    const search = document.getElementById('rinSearch').value.toLowerCase().trim();
+    let data = rinovimet.filter(r => r.muaji === currentMuaj);
+    data = filtroSipasRolit(data);
+
+    const status = document.getElementById('rinFilterStatus').value;
     const agjent = document.getElementById('rinFilterAgjent').value;
     const dega   = document.getElementById('rinFilterDega').value;
+    const search = document.getElementById('rinSearch').value.toLowerCase().trim();
 
-    filteredList = rinovimet.filter(r => {
-        // Status filter
-        if (currentFilter !== 'total') {
-            if (currentFilter === 'humbur') {
-                if (r.statusi !== 'humbur' && r.statusi !== 'anuluar') return false;
-            } else {
-                if (r.statusi !== currentFilter) return false;
-            }
-        }
-        // Search
-        if (search && !r.kontraktuesi.toLowerCase().includes(search) &&
-            !r.nr_kontrates.toLowerCase().includes(search)) return false;
-        // Agjent
-        if (agjent && r.agjenti !== agjent) return false;
-        // Dega
-        if (dega && r.dega !== dega) return false;
+    if (status) data = data.filter(r => r.statusi === status);
+    if (agjent) data = data.filter(r => r.agjenti === agjent);
+    if (dega)   data = data.filter(r => r.dega === dega);
+    if (search)  data = data.filter(r =>
+        (r.kontraktuesi||'').toLowerCase().includes(search) ||
+        (r.nr_kontrates||'').toLowerCase().includes(search)
+    );
 
-        return true;
-    });
-
+    filteredList = data;
     renderTabela();
+    perditesoStats();
 }
 
 function populoFiltrat() {
-    const agjentet = [...new Set(rinovimet.map(r => r.agjenti).filter(Boolean))].sort();
-    const deget    = [...new Set(rinovimet.map(r => r.dega).filter(Boolean))].sort();
+    const data = filtroSipasRolit(rinovimet);
+    const agjentet = [...new Set(data.map(r => r.agjenti).filter(Boolean))].sort();
+    const deget    = [...new Set(data.map(r => r.dega).filter(Boolean))].sort();
 
-    const selAgjent = document.getElementById('rinFilterAgjent');
-    selAgjent.innerHTML = '<option value="">Të gjithë agjentët</option>';
-    agjentet.forEach(a => {
-        selAgjent.innerHTML += `<option value="${a}">${a}</option>`;
-    });
+    const selA = document.getElementById('rinFilterAgjent');
+    selA.innerHTML = '<option value="">Të gjithë agjentët</option>';
+    agjentet.forEach(a => { selA.innerHTML += `<option value="${esc(a)}">${esc(a)}</option>`; });
 
-    const selDega = document.getElementById('rinFilterDega');
-    selDega.innerHTML = '<option value="">Të gjitha degët</option>';
-    deget.forEach(d => {
-        selDega.innerHTML += `<option value="${d}">${d}</option>`;
+    const selD = document.getElementById('rinFilterDega');
+    selD.innerHTML = '<option value="">Të gjitha degët</option>';
+    deget.forEach(d => { selD.innerHTML += `<option value="${esc(d)}">${esc(d)}</option>`; });
+}
+
+// ===== SORT =====
+function ndryshoSort(type) {
+    currentSort = type;
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sort-' + type)?.classList.add('active');
+    renderTabela();
+}
+
+function sortoListen(list) {
+    return [...list].sort((a, b) => {
+        if (currentSort === 'primi') return (b.primi_vjetor || 0) - (a.primi_vjetor || 0);
+        if (currentSort === 'lr') return (b.lr_percent || 0) - (a.lr_percent || 0);
+        if (currentSort === 'skadon') return parseDateStr(a.data_mbarimit) - parseDateStr(b.data_mbarimit);
+        return 0;
     });
 }
 
-
-// ==============================================================
-// TABLE RENDER
-// ==============================================================
+// ===== TABLE =====
 function renderTabela() {
     const tbody = document.getElementById('rinTableBody');
 
-    // Nëse s'ka të dhëna
-    if (rinovimet.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8">
-            <div class="rin-empty">
-                <div class="rin-empty-icon">📋</div>
-                <div class="rin-empty-title">Asnjë rinovim ende</div>
-                <div class="rin-empty-sub">Kliko "Importo Excel" për të filluar</div>
-            </div></td></tr>`;
+    if (!currentMuaj || rinovimet.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8"><div class="rin-empty"><div class="rin-empty-icon">📋</div><div class="rin-empty-title">Asnjë rinovim ende</div><div class="rin-empty-sub">Kliko "Importo" për të filluar</div></div></td></tr>';
         return;
-    }
-
-    // Apliko filtrat nëse nuk janë aplikuar
-    if (filteredList.length === 0 && currentFilter === 'total' &&
-        !document.getElementById('rinSearch').value &&
-        !document.getElementById('rinFilterAgjent').value &&
-        !document.getElementById('rinFilterDega').value) {
-        filteredList = [...rinovimet];
     }
 
     if (filteredList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8">
-            <div class="rin-no-results">Asnjë rezultat nuk u gjet me këto filtra</div>
-        </td></tr>`;
+        tbody.innerHTML = '<tr><td colspan="8"><div class="rin-no-results">Asnjë rezultat me këto filtra</div></td></tr>';
         return;
     }
 
-    // Sort: pa_filluar first, then by data_mbarimit (soonest first)
-    const statusOrder = { pa_filluar: 0, kontaktuar: 1, negociata: 2, rinovuar: 3, humbur: 4, anuluar: 5 };
-    const sorted = [...filteredList].sort((a, b) => {
-        const sa = statusOrder[a.statusi] ?? 9;
-        const sb = statusOrder[b.statusi] ?? 9;
-        if (sa !== sb) return sa - sb;
-        return parseDateStr(a.data_mbarimit) - parseDateStr(b.data_mbarimit);
-    });
-
+    const sorted = sortoListen(filteredList);
     let html = '';
     sorted.forEach(r => {
-        const primi = formatMoney(r.primi_vjetor || r.total_primi || r.primi);
-        const deme  = r.deme_total_vlera ? formatMoney(r.deme_total_vlera) : null;
-        const cr    = r.cr_percent;
+        const primi = r.primi_vjetor || 0;
+        const deme = r.deme_total_vlera || 0;
+        const lr = r.lr_percent;
+        const cr = r.cr_percent;
+        const lrClass = lr > 80 ? 'rin-lr-bad' : lr > 50 ? 'rin-lr-warn' : lr > 0 ? 'rin-lr-good' : 'rin-deme-none';
+        const crClass = cr > 80 ? 'rin-lr-bad' : cr > 50 ? 'rin-lr-warn' : cr > 0 ? 'rin-lr-good' : 'rin-deme-none';
         const mbaron = formatDateShort(r.data_mbarimit);
-        const urgent = isUrgent(r.data_mbarimit);
 
-        let crClass = 'rin-deme-none';
-        if (cr !== null && cr !== undefined && !isNaN(cr)) {
-            crClass = cr > 80 ? 'rin-cr-bad' : cr > 50 ? 'rin-cr-warn' : 'rin-cr-good';
-        }
-
-        html += `<tr onclick="hapDrawer('${r.id}')">
-            <td>
-                <div class="rin-kontraktues-name">${escHtml(r.kontraktuesi)}</div>
-                <div class="rin-kontraktues-sub">${escHtml(r.dega)} · ${escHtml(r.agjenti)}</div>
-            </td>
-            <td>${escHtml(r.nr_kontrates)}</td>
-            <td>${escHtml(r.agjenti)}</td>
-            <td class="right rin-primi">${primi}</td>
-            <td class="right ${deme ? 'rin-deme-val' : 'rin-deme-none'}">${deme || '—'}</td>
-            <td class="right ${crClass}">${cr !== null && cr !== undefined && !isNaN(cr) ? cr.toFixed(1) + '%' : '—'}</td>
-            <td><span class="rin-badge rin-badge-${r.statusi}">${STATUSET[r.statusi]?.emri || r.statusi}</span></td>
-            <td class="center ${urgent ? 'rin-mbaron-urgent' : ''}">${mbaron}</td>
+        html += `<tr onclick="hapDrawer('${r.id}')" style="cursor:pointer">
+            <td><div class="klient-name">${esc(r.kontraktuesi)}</div><div class="klient-sub">${esc(r.dega)} · ${esc(r.agjenti)}</div></td>
+            <td style="font-size:11px;color:#64748b">${esc(r.nr_kontrates)}</td>
+            <td class="rin-primi" style="text-align:right">${formatMoney(primi)}</td>
+            <td style="text-align:right" class="${deme > 0 ? 'rin-deme-val' : 'rin-deme-none'}">${deme > 0 ? formatMoney(deme) : '—'}</td>
+            <td style="text-align:right" class="${lrClass}">${lr > 0 ? lr.toFixed(1)+'%' : '—'}</td>
+            <td style="text-align:right" class="${crClass}">${cr > 0 ? cr.toFixed(1)+'%' : '—'}</td>
+            <td><span class="rin-badge rin-badge-${r.statusi}">${STATUSET[r.statusi]?.emri||r.statusi}</span></td>
+            <td style="text-align:center;font-size:11px">${mbaron}</td>
         </tr>`;
     });
-
     tbody.innerHTML = html;
 }
 
-
-// ==============================================================
-// DRAWER
-// ==============================================================
+// ===== DRAWER =====
 function hapDrawer(id) {
     const r = rinovimet.find(x => x.id === id);
     if (!r) return;
-
     currentDrawerId = id;
 
-    // Title
     document.getElementById('drKontraktuesi').textContent = r.kontraktuesi;
     document.getElementById('drSubtitle').textContent = `${r.nr_kontrates} · ${r.dega}`;
 
-    // Status pills
     renderStatusPills(r.statusi);
+    renderHumbjeSection(r);
 
-    // Info grid
-    document.getElementById('drInfoGrid').innerHTML = `
-        ${infoCell('Agjenti', r.agjenti)}
-        ${infoCell('ID klienti', r.kontraktues_id)}
-        ${infoCell('Fillon', r.data_fillimit)}
-        ${infoCell('Mbaron', r.data_mbarimit)}
-        ${r.nr_profatures ? infoCell('Nr pro-faturës', r.nr_profatures) : ''}
-        ${infoCell('Valuta', r.valuta || 'EUR')}
-    `;
+    // Info
+    document.getElementById('drInfoGrid').innerHTML =
+        infoCell('Agjenti', r.agjenti) + infoCell('ID klienti', r.kontraktues_id) +
+        infoCell('Fillon', r.data_fillimit) + infoCell('Mbaron', r.data_mbarimit) +
+        (r.nr_profatures ? infoCell('Nr pro-faturës', r.nr_profatures) : '') + infoCell('Valuta', r.valuta || 'EUR');
 
     // Financiare
-    const primi = r.primi_vjetor || r.total_primi || r.primi || 0;
-    const demeTotal = r.deme_total_vlera || 0;
-    const cr = r.cr_percent;
-    const crColor = cr > 80 ? '#ef4444' : cr > 50 ? '#f59e0b' : '#22c55e';
+    const primi = r.primi_vjetor || 0;
+    const deme = r.deme_total_vlera || 0;
+    const lr = r.lr_percent || 0;
+    const cr = r.cr_percent || 0;
 
     document.getElementById('drMetrics').innerHTML = `
-        <div class="rin-metric">
-            <div class="rin-metric-label">Primi vjetor</div>
-            <div class="rin-metric-value" style="color:#1e293b">${formatMoney(primi)}</div>
-        </div>
-        <div class="rin-metric">
-            <div class="rin-metric-label">Dëme totale</div>
-            <div class="rin-metric-value" style="color:${demeTotal > 0 ? '#ef4444' : '#94a3b8'}">${demeTotal > 0 ? formatMoney(demeTotal) : '—'}</div>
-        </div>
-        <div class="rin-metric">
-            <div class="rin-metric-label">CR%</div>
-            <div class="rin-metric-value" style="color:${!isNaN(cr) && cr !== null ? crColor : '#94a3b8'}">${!isNaN(cr) && cr !== null ? cr.toFixed(1) + '%' : '—'}</div>
-        </div>
+        <div class="rin-metric"><div class="rin-metric-label">Primi vjetor</div><div class="rin-metric-value" style="color:#1a2332">${formatMoney(primi)}</div></div>
+        <div class="rin-metric"><div class="rin-metric-label">Dëme totale</div><div class="rin-metric-value" style="color:${deme>0?'#ef4444':'#94a3b8'}">${deme>0?formatMoney(deme):'—'}</div></div>
     `;
 
-    // Breakdown
-    document.getElementById('drBreakdown').innerHTML = `
-        ${breakdownItem('Dëme paguar', r.deme_nr_paguar, r.deme_vlera_paguar)}
-        ${breakdownItem('Dëme pezull', r.deme_nr_pezull, r.deme_vlera_pezull)}
-        ${breakdownItem('Shpenzimet', null, r.shpenzimet)}
-        ${breakdownItem('Kosto totale', null, r.kosto_totale)}
-    `;
+    document.getElementById('drBreakdown').innerHTML =
+        bdi('Dëme paguar', r.deme_nr_paguar, r.deme_vlera_paguar) +
+        bdi('Dëme pezull', r.deme_nr_pezull, r.deme_vlera_pezull) +
+        bdi('Shpenzimet', null, r.shpenzimet) +
+        bdi('Kosto totale', null, r.kosto_totale);
 
-    // CR Bar
-    const crSection = document.getElementById('drCrSection');
-    if (!isNaN(cr) && cr !== null && cr > 0) {
-        const barWidth = Math.min(cr, 100);
-        crSection.innerHTML = `<div class="rin-cr-bar-row">
-            <span class="rin-cr-bar-label">Loss ratio</span>
-            <div class="rin-cr-bar-track">
-                <div class="rin-cr-bar-fill" style="width:${barWidth}%;background:${crColor}"></div>
-            </div>
-            <span class="rin-cr-bar-value" style="color:${crColor}">${cr.toFixed(1)}%</span>
-        </div>`;
-        crSection.style.display = '';
+    // Ratio bars
+    const lrColor = lr > 80 ? '#ef4444' : lr > 50 ? '#f59e0b' : '#22c55e';
+    const crColor = cr > 80 ? '#ef4444' : cr > 50 ? '#f59e0b' : '#22c55e';
+    const ratioBars = document.getElementById('drRatioBars');
+    if (lr > 0 || cr > 0) {
+        ratioBars.innerHTML = `
+            ${ratioBar('Loss Ratio', lr, lrColor)}
+            ${ratioBar('Combined Ratio', cr, crColor)}
+        `;
+        ratioBars.style.display = '';
     } else {
-        crSection.style.display = 'none';
+        ratioBars.style.display = 'none';
     }
 
-    // Komente
     renderKomente(r);
 
-    // Open drawer
     document.getElementById('rinOverlay').classList.add('open');
     document.getElementById('rinDrawer').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -349,69 +324,118 @@ function mbyllDrawer() {
     currentDrawerId = null;
 }
 
-function renderStatusPills(currentStatus) {
-    const container = document.getElementById('drStatusRow');
+function renderStatusPills(current) {
     let html = '<label>Statusi:</label>';
     Object.keys(STATUSET).forEach(key => {
-        const selected = key === currentStatus ? 'selected' : '';
-        html += `<span class="rin-status-pill rin-sp-${key} ${selected}" 
-                       onclick="ndryshStatus('${key}')">${STATUSET[key].emri}</span>`;
+        html += `<span class="rin-status-pill rin-sp-${key} ${key===current?'selected':''}" onclick="ndryshStatus('${key}')">${STATUSET[key].emri}</span>`;
     });
-    container.innerHTML = html;
+    document.getElementById('drStatusRow').innerHTML = html;
 }
 
 function ndryshStatus(newStatus) {
     if (!currentDrawerId) return;
+    if (newStatus === 'humbur') { hapHumbjeModal(); return; }
+
     const r = rinovimet.find(x => x.id === currentDrawerId);
     if (!r) return;
+    const old = r.statusi;
+    if (old === newStatus) return;
 
-    const oldStatus = r.statusi;
     r.statusi = newStatus;
     r.updated_at = new Date().toISOString();
+    // Clear humbje data if changing away from humbur
+    if (old === 'humbur') { r.humbje_arsyeja = null; r.humbje_koment = null; }
 
-    // Auto-koment nëse ndryshohet statusi
-    if (oldStatus !== newStatus) {
-        const user = merrPerdoruesinAktual();
-        r.komente = r.komente || [];
-        r.komente.unshift({
-            teksti: `Statusi u ndryshua: ${STATUSET[oldStatus]?.emri} → ${STATUSET[newStatus]?.emri}`,
-            autori: user.emri,
-            data: new Date().toISOString(),
-            tipi: 'sistem'
-        });
-    }
+    const user = merrUser();
+    r.komente = r.komente || [];
+    r.komente.unshift({ teksti: `Statusi: ${STATUSET[old]?.emri} → ${STATUSET[newStatus]?.emri}`, autori: user.emri, data: new Date().toISOString(), tipi: 'sistem' });
 
     ruajTedhena();
     renderStatusPills(newStatus);
+    renderHumbjeSection(r);
+    renderKomente(r);
     perditesoStats();
+    renderTabs();
     aplikoFiltrat();
 }
 
-
-// ==============================================================
-// KOMENTE
-// ==============================================================
-function renderKomente(r) {
-    const container = document.getElementById('drKomente');
-    const komente = r.komente || [];
-
-    if (komente.length === 0) {
-        container.innerHTML = '<div style="font-size:13px;color:#94a3b8;padding:8px 0;">Asnjë koment ende</div>';
-        return;
-    }
-
-    let html = '';
-    komente.forEach(k => {
-        const isSistem = k.tipi === 'sistem';
-        html += `<div class="rin-comment" ${isSistem ? 'style="border-left:3px solid #3b82f6;"' : ''}>
-            <div class="rin-comment-header">
-                <span class="rin-comment-author">${escHtml(k.autori)}</span>
-                <span class="rin-comment-date">${formatKomentDate(k.data)}</span>
-            </div>
-            <p class="rin-comment-text">${escHtml(k.teksti)}</p>
+// ===== HUMBJE SECTION IN DRAWER =====
+function renderHumbjeSection(r) {
+    const el = document.getElementById('drHumbjeSection');
+    if (r.statusi === 'humbur' && r.humbje_arsyeja) {
+        el.innerHTML = `<div class="rin-humbje-section">
+            <div class="rin-humbje-title">Arsyeja e humbjes</div>
+            <div class="rin-humbje-arsye">${esc(r.humbje_arsyeja)}</div>
+            ${r.humbje_koment ? `<div class="rin-humbje-koment">"${esc(r.humbje_koment)}"</div>` : ''}
         </div>`;
+    } else {
+        el.innerHTML = '';
+    }
+}
+
+// ===== HUMBJE MODAL =====
+function hapHumbjeModal() {
+    let html = '';
+    ARSYET_HUMBJES.forEach((a, i) => {
+        html += `<label class="rin-arsye-opt" onclick="this.querySelector('input').checked=true;document.querySelectorAll('.rin-arsye-opt').forEach(x=>x.classList.remove('selected'));this.classList.add('selected')">
+            <input type="radio" name="arsyeHumbjes" value="${i}"> ${esc(a)}
+        </label>`;
     });
-    container.innerHTML = html;
+    document.getElementById('arsyeList').innerHTML = html;
+    document.getElementById('arsyeKoment').value = '';
+    document.getElementById('humbjeModal').classList.add('open');
+}
+
+function mbyllHumbjeModal() {
+    document.getElementById('humbjeModal').classList.remove('open');
+}
+
+function konfirmoHumbje() {
+    const selected = document.querySelector('input[name="arsyeHumbjes"]:checked');
+    if (!selected) { alert('Zgjedh një arsye.'); return; }
+
+    const arsyeIdx = parseInt(selected.value);
+    const arsyeTxt = ARSYET_HUMBJES[arsyeIdx];
+    const koment = document.getElementById('arsyeKoment').value.trim();
+
+    // If "Tjetër" selected, koment is required
+    if (arsyeTxt === 'Tjetër' && !koment) { alert('Shkruaj arsyen në koment.'); return; }
+
+    const r = rinovimet.find(x => x.id === currentDrawerId);
+    if (!r) return;
+    const old = r.statusi;
+
+    r.statusi = 'humbur';
+    r.humbje_arsyeja = arsyeTxt;
+    r.humbje_koment = koment || null;
+    r.updated_at = new Date().toISOString();
+
+    const user = merrUser();
+    r.komente = r.komente || [];
+    r.komente.unshift({
+        teksti: `Humbje: ${arsyeTxt}${koment ? ' — ' + koment : ''}`,
+        autori: user.emri, data: new Date().toISOString(), tipi: 'sistem'
+    });
+
+    ruajTedhena();
+    mbyllHumbjeModal();
+    renderStatusPills('humbur');
+    renderHumbjeSection(r);
+    renderKomente(r);
+    perditesoStats();
+    renderTabs();
+    aplikoFiltrat();
+}
+
+// ===== KOMENTE =====
+function renderKomente(r) {
+    const el = document.getElementById('drKomente');
+    const komente = r.komente || [];
+    if (komente.length === 0) { el.innerHTML = '<div style="font-size:13px;color:#94a3b8;padding:8px 0">Asnjë koment ende</div>'; return; }
+    el.innerHTML = komente.map(k => `<div class="rin-comment ${k.tipi==='sistem'?'sistem':''}">
+        <div class="rin-comment-header"><span class="rin-comment-author">${esc(k.autori)}</span><span class="rin-comment-date">${formatKomentDate(k.data)}</span></div>
+        <p class="rin-comment-text">${esc(k.teksti)}</p>
+    </div>`).join('');
 }
 
 function shtoKoment() {
@@ -419,32 +443,34 @@ function shtoKoment() {
     const input = document.getElementById('drKomentInput');
     const teksti = input.value.trim();
     if (!teksti) return;
-
     const r = rinovimet.find(x => x.id === currentDrawerId);
     if (!r) return;
-
-    const user = merrPerdoruesinAktual();
+    const user = merrUser();
     r.komente = r.komente || [];
-    r.komente.unshift({
-        teksti: teksti,
-        autori: user.emri,
-        data: new Date().toISOString(),
-        tipi: 'manual'
-    });
+    r.komente.unshift({ teksti, autori: user.emri, data: new Date().toISOString(), tipi: 'manual' });
     r.updated_at = new Date().toISOString();
-
     ruajTedhena();
     renderKomente(r);
     input.value = '';
 }
 
+// ===== IMPORT MODAL =====
+function populoImportMuajt() {
+    const sel = document.getElementById('importMuaji');
+    const now = new Date();
+    let html = '';
+    for (let i = -1; i < 6; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+        const key = MUAJT[d.getMonth()].toLowerCase() + '_' + d.getFullYear();
+        const label = MUAJT[d.getMonth()] + ' ' + d.getFullYear();
+        const selected = i === 0 ? 'selected' : '';
+        html += `<option value="${key}" ${selected}>${label}</option>`;
+    }
+    sel.innerHTML = html;
+}
 
-// ==============================================================
-// IMPORT — Modal Control
-// ==============================================================
 function hapImportModal() {
-    importStep = 1;
-    importParsedData = null;
+    importStep = 1; importParsedData = null;
     document.getElementById('rinImportModal').classList.add('open');
     document.getElementById('fileInput').value = '';
     showImportStep(1);
@@ -455,535 +481,274 @@ function mbyllImportModal() {
     document.getElementById('rinImportModal').classList.remove('open');
     if (!currentDrawerId) document.body.style.overflow = '';
     importParsedData = null;
-    importStep = 1;
 }
 
 function showImportStep(step) {
     importStep = step;
-    document.getElementById('importStep1').style.display = step === 1 ? '' : 'none';
-    document.getElementById('importStep2').style.display = step === 2 ? '' : 'none';
-    document.getElementById('importStep3').style.display = step === 3 ? '' : 'none';
-
-    // Update step indicators
+    document.getElementById('importStep1').style.display = step===1?'':'none';
+    document.getElementById('importStep2').style.display = step===2?'':'none';
+    document.getElementById('importStep3').style.display = step===3?'':'none';
     [1,2,3].forEach(i => {
-        const num = document.getElementById(`stepNum${i}`);
-        const txt = document.getElementById(`stepText${i}`);
-        num.classList.remove('active','done');
-        txt.classList.remove('active');
-        if (i < step) num.classList.add('done');
-        if (i === step) { num.classList.add('active'); txt.classList.add('active'); }
+        const n = document.getElementById(`stepNum${i}`), t = document.getElementById(`stepText${i}`);
+        n.classList.remove('active','done'); t.classList.remove('active');
+        if (i < step) n.classList.add('done');
+        if (i === step) { n.classList.add('active'); t.classList.add('active'); }
     });
-
-    // Update footer button
     const btn = document.getElementById('importNextBtn');
-    if (step === 1) {
-        btn.textContent = 'Vazhdo';
-        btn.disabled = true;
-        btn.onclick = () => showImportStep(2);
-    } else if (step === 2) {
-        btn.textContent = 'Vazhdo';
-        btn.disabled = false;
-        btn.onclick = () => showImportStep(3);
-        renderImportStep2();
-    } else if (step === 3) {
-        btn.textContent = `Importo ${importParsedData.records.length} kontrata`;
-        btn.disabled = false;
-        btn.onclick = () => ekzekutoImport();
-        renderImportStep3();
-    }
+    if (step===1) { btn.textContent='Vazhdo'; btn.disabled=true; btn.onclick=()=>showImportStep(2); }
+    else if (step===2) { btn.textContent='Vazhdo'; btn.disabled=false; btn.onclick=()=>showImportStep(3); renderImportStep2(); }
+    else { renderImportStep3(); btn.textContent=`Importo ${importParsedData.records.length} kontrata`; btn.disabled=false; btn.onclick=()=>ekzekutoImport(); }
 }
 
-
-// ==============================================================
-// IMPORT — File Handling
-// ==============================================================
-function handleFileSelect(event) {
-    const file = event.target.files[0];
-    if (file) processFile(file);
-}
-
-function handleDrop(event) {
-    event.preventDefault();
-    event.target.closest('.rin-upload-zone')?.classList.remove('dragover');
-    const file = event.dataTransfer.files[0];
-    if (file) processFile(file);
-}
+function handleFileSelect(e) { const f=e.target.files[0]; if(f)processFile(f); }
+function handleDrop(e) { e.preventDefault(); e.target.closest('.rin-upload-zone')?.classList.remove('dragover'); const f=e.dataTransfer.files[0]; if(f)processFile(f); }
 
 function processFile(file) {
-    if (!file.name.match(/\.xlsx?$/i)) {
-        alert('Vetëm skedarë .xlsx ose .xls pranohen.');
-        return;
-    }
-
+    if (!file.name.match(/\.xlsx?$/i)) { alert('Vetëm .xlsx ose .xls'); return; }
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
-            const data = new Uint8Array(e.target.result);
-            const wb = XLSX.read(data, { type: 'array', cellDates: false, cellFormula: false });
-            const ws = wb.Sheets[wb.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null, rawNumbers: true });
-
-            const parsed = parseExcelRows(rows, file.name);
+            const wb = XLSX.read(new Uint8Array(e.target.result), { type:'array', cellDates:false, cellFormula:false });
+            const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header:1, defval:null, rawNumbers:true });
+            const parsed = parseExcelRows(rows);
             if (!parsed) return;
-
+            parsed.fileName = file.name;
+            parsed.fileSize = (file.size/1024).toFixed(0)+' KB';
             importParsedData = parsed;
-            importParsedData.fileName = file.name;
-            importParsedData.fileSize = (file.size / 1024).toFixed(0) + ' KB';
-
-            // Enable next button and auto-advance
             document.getElementById('importNextBtn').disabled = false;
             showImportStep(2);
-
-        } catch(err) {
-            console.error('Excel parse error:', err);
-            alert('Gabim në leximin e skedarit Excel: ' + err.message);
-        }
+        } catch(err) { console.error(err); alert('Gabim: ' + err.message); }
     };
     reader.readAsArrayBuffer(file);
 }
 
-
-// ==============================================================
-// IMPORT — Excel Parsing
-// ==============================================================
-function parseExcelRows(rows, fileName) {
-    // Find header row (look for 'Nr.' or 'Kontraktuesi' in first 5 rows)
+function parseExcelRows(rows) {
     let headerIdx = -1;
-    for (let i = 0; i < Math.min(5, rows.length); i++) {
-        const row = rows[i];
-        if (!row) continue;
-        const cells = row.map(c => c ? String(c).toLowerCase().trim() : '');
-        if (cells.includes('nr.') || cells.includes('kontraktuesi') || cells.includes('nr i kontrates')) {
-            headerIdx = i;
-            break;
-        }
+    for (let i=0; i<Math.min(5,rows.length); i++) {
+        const cells = (rows[i]||[]).map(c => c?String(c).toLowerCase().trim():'');
+        if (cells.includes('nr.') || cells.includes('kontraktuesi') || cells.includes('nr i kontrates')) { headerIdx=i; break; }
     }
+    if (headerIdx===-1) { alert('Header nuk u gjet.'); return null; }
 
-    if (headerIdx === -1) {
-        alert('Nuk u gjet rreshti i header-it në Excel. Sigurohu që ka kolona si "Nr.", "Kontraktuesi", "Nr i kontrates".');
-        return null;
-    }
+    const headers = rows[headerIdx].map(h => h?String(h).toLowerCase().trim():'');
+    const dataRows = rows.slice(headerIdx+1).filter(r => r && r.some(c => c!==null && c!=='' && c!==undefined));
 
-    const headers = rows[headerIdx].map(h => h ? String(h).toLowerCase().trim() : '');
-    const dataRows = rows.slice(headerIdx + 1).filter(row =>
-        row && row.some(cell => cell !== null && cell !== '' && cell !== undefined)
-    );
-
-    // Map columns
     const colMap = {};
-    headers.forEach((h, idx) => {
-        if (COLUMN_MAP[h]) {
-            colMap[COLUMN_MAP[h]] = idx;
-        }
-    });
-
-    // Find dëme columns (positional: after 'valuta')
+    headers.forEach((h,i) => { if(COLUMN_MAP[h]) colMap[COLUMN_MAP[h]]=i; });
     const valutaIdx = colMap['valuta'];
-    if (valutaIdx !== undefined) {
-        DEME_COLS.forEach((col, i) => {
-            const idx = valutaIdx + 1 + i;
-            if (idx < headers.length) colMap[col] = idx;
-        });
-    }
+    if (valutaIdx !== undefined) DEME_COLS.forEach((col,i) => { const idx=valutaIdx+1+i; if(idx<headers.length) colMap[col]=idx; });
 
-    // Parse data rows
     const rawRecords = [];
     dataRows.forEach(row => {
         const rec = {};
-        Object.keys(colMap).forEach(field => {
-            let val = row[colMap[field]];
-            // Handle formula strings (=N8*31% etc.) — skip them
-            if (typeof val === 'string' && val.startsWith('=')) val = null;
-            rec[field] = val;
-        });
-
-        // Skip if no kontraktuesi or nr_kontrates
+        Object.keys(colMap).forEach(f => { let v=row[colMap[f]]; if(typeof v==='string'&&v.startsWith('='))v=null; rec[f]=v; });
         if (!rec.kontraktuesi && !rec.nr_kontrates) return;
-
-        // Parse numbers
-        ['primi','tvsh','total_primi','deme_nr_paguar','deme_vlera_paguar',
-         'deme_nr_pezull','deme_vlera_pezull'].forEach(f => {
-            if (rec[f] !== null && rec[f] !== undefined) {
-                rec[f] = parseFloat(rec[f]) || 0;
-            }
+        ['primi','tvsh','total_primi','deme_nr_paguar','deme_vlera_paguar','deme_nr_pezull','deme_vlera_pezull'].forEach(f => {
+            if(rec[f]!==null&&rec[f]!==undefined) rec[f]=parseFloat(rec[f])||0;
         });
-
         rawRecords.push(rec);
     });
 
     // Group by nr_kontrates
     const grouped = {};
     rawRecords.forEach(rec => {
-        const key = rec.nr_kontrates || ('no_id_' + Math.random().toString(36).substr(2, 6));
-        if (!grouped[key]) {
-            grouped[key] = { ...rec, _rowCount: 1 };
-        } else {
-            const g = grouped[key];
-            g._rowCount++;
-            // Sum primi
-            g.primi = (g.primi || 0) + (rec.primi || 0);
-            g.tvsh  = (g.tvsh || 0) + (rec.tvsh || 0);
-            g.total_primi = (g.total_primi || 0) + (rec.total_primi || 0);
-            // Sum dëme
-            g.deme_nr_paguar   = (g.deme_nr_paguar || 0)   + (rec.deme_nr_paguar || 0);
-            g.deme_vlera_paguar = (g.deme_vlera_paguar || 0) + (rec.deme_vlera_paguar || 0);
-            g.deme_nr_pezull   = (g.deme_nr_pezull || 0)   + (rec.deme_nr_pezull || 0);
-            g.deme_vlera_pezull = (g.deme_vlera_pezull || 0) + (rec.deme_vlera_pezull || 0);
-            // Date range: earliest start, latest end
-            if (rec.data_fillimit && (!g.data_fillimit || parseDateStr(rec.data_fillimit) < parseDateStr(g.data_fillimit))) {
-                g.data_fillimit = rec.data_fillimit;
-            }
-            if (rec.data_mbarimit && (!g.data_mbarimit || parseDateStr(rec.data_mbarimit) > parseDateStr(g.data_mbarimit))) {
-                g.data_mbarimit = rec.data_mbarimit;
-            }
+        const key = rec.nr_kontrates || ('noid_'+Math.random().toString(36).substr(2,6));
+        if (!grouped[key]) { grouped[key]={...rec,_rc:1}; }
+        else {
+            const g=grouped[key]; g._rc++;
+            g.primi=(g.primi||0)+(rec.primi||0); g.tvsh=(g.tvsh||0)+(rec.tvsh||0); g.total_primi=(g.total_primi||0)+(rec.total_primi||0);
+            g.deme_nr_paguar=(g.deme_nr_paguar||0)+(rec.deme_nr_paguar||0); g.deme_vlera_paguar=(g.deme_vlera_paguar||0)+(rec.deme_vlera_paguar||0);
+            g.deme_nr_pezull=(g.deme_nr_pezull||0)+(rec.deme_nr_pezull||0); g.deme_vlera_pezull=(g.deme_vlera_pezull||0)+(rec.deme_vlera_pezull||0);
+            if(rec.data_fillimit&&(!g.data_fillimit||parseDateStr(rec.data_fillimit)<parseDateStr(g.data_fillimit))) g.data_fillimit=rec.data_fillimit;
+            if(rec.data_mbarimit&&(!g.data_mbarimit||parseDateStr(rec.data_mbarimit)>parseDateStr(g.data_mbarimit))) g.data_mbarimit=rec.data_mbarimit;
         }
     });
 
-    // Build final records with calculated fields
+    const muaj = document.getElementById('importMuaji').value;
     const records = Object.values(grouped).map(g => {
-        // Calculate totals
-        g.deme_total_nr    = (g.deme_nr_paguar || 0) + (g.deme_nr_pezull || 0);
-        g.deme_total_vlera = (g.deme_vlera_paguar || 0) + (g.deme_vlera_pezull || 0);
-
-        const totalPrimi = g.total_primi || g.primi || 0;
-        g.shpenzimet  = totalPrimi * 0.31;
-        g.kosto_totale = g.deme_total_vlera + g.shpenzimet;
-        g.cr_percent  = totalPrimi > 0 ? (g.kosto_totale / totalPrimi * 100) : null;
-        g.primi_vjetor = totalPrimi;
-
+        g.deme_total_nr=(g.deme_nr_paguar||0)+(g.deme_nr_pezull||0);
+        g.deme_total_vlera=(g.deme_vlera_paguar||0)+(g.deme_vlera_pezull||0);
+        const tp=g.total_primi||g.primi||0;
+        g.shpenzimet=tp*0.31;
+        g.kosto_totale=g.deme_total_vlera+g.shpenzimet;
+        g.lr_percent=tp>0?(g.deme_total_vlera/tp*100):0;
+        g.cr_percent=tp>0?(g.kosto_totale/tp*100):0;
+        g.primi_vjetor=tp;
         return g;
     });
 
-    // Detect existing records for update
+    // Detect updates
     const existingMap = {};
-    rinovimet.forEach(r => { existingMap[r.nr_kontrates] = r.id; });
-
-    let updateCount = 0;
-    let newCount = 0;
+    rinovimet.filter(r=>r.muaji===muaj).forEach(r => { existingMap[r.nr_kontrates]=r.id; });
+    let updateCount=0, newCount=0;
     records.forEach(r => {
-        if (existingMap[r.nr_kontrates]) {
-            r._action = 'update';
-            r._existingId = existingMap[r.nr_kontrates];
-            updateCount++;
-        } else {
-            r._action = 'new';
-            newCount++;
-        }
+        if(existingMap[r.nr_kontrates]) { r._action='update'; r._existId=existingMap[r.nr_kontrates]; updateCount++; }
+        else { r._action='new'; newCount++; }
     });
 
-    // Count grouped rows
-    const groupedCount = rawRecords.length - records.length;
-    const withDeme = records.filter(r => r.deme_total_vlera > 0).length;
-    const withoutDeme = records.length - withDeme;
-
-    // Detect unique agents and branches
-    const agents = [...new Set(records.map(r => r.agjenti).filter(Boolean))];
-    const branches = [...new Set(records.map(r => r.dega).filter(Boolean))];
-
-    // Try to detect period from title row
-    let periudha = '';
-    // Check first row for period info
-    if (rows[0] && rows[0][0]) {
-        const titleStr = String(rows[0][0]);
-        const dateMatch = titleStr.match(/(\d{2}\.\d{2}\.\d{4})\s*-\s*(\d{2}\.\d{2}\.\d{4})/);
-        if (dateMatch) {
-            periudha = `${dateMatch[1]} - ${dateMatch[2]}`;
-        }
-    }
-
     return {
-        records,
-        rawCount: rawRecords.length,
-        groupedCount,
-        withDeme,
-        withoutDeme,
-        updateCount,
-        newCount,
-        agents,
-        branches,
-        periudha
+        records, rawCount:rawRecords.length, groupedCount:rawRecords.length-records.length,
+        withDeme:records.filter(r=>r.deme_total_vlera>0).length, withoutDeme:records.filter(r=>r.deme_total_vlera<=0).length,
+        updateCount, newCount, agents:[...new Set(records.map(r=>r.agjenti).filter(Boolean))],
+        branches:[...new Set(records.map(r=>r.dega).filter(Boolean))], muaj
     };
 }
 
-
-// ==============================================================
-// IMPORT — Step 2 (Verify)
-// ==============================================================
 function renderImportStep2() {
-    if (!importParsedData) return;
-    const d = importParsedData;
-
+    if(!importParsedData) return;
+    const d=importParsedData;
     let html = `
-        <div class="rin-file-info">
-            <span class="rin-file-icon">📄</span>
-            <div style="flex:1">
-                <div class="rin-file-name">${escHtml(d.fileName)}</div>
-                <div class="rin-file-meta">${d.rawCount} rreshta · ${d.fileSize}</div>
-            </div>
-        </div>
-
-        <div style="margin-bottom:16px">
-            <div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;">Rezultati i analizës</div>
+        <div class="rin-file-info"><span style="font-size:20px">📄</span><div style="flex:1"><div class="rin-file-name">${esc(d.fileName)}</div><div class="rin-file-meta">${d.rawCount} rreshta · ${d.fileSize} · ${formatMuajLabel(d.muaj)}</div></div></div>
+        <div style="margin-bottom:16px"><div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px">Rezultati i analizës</div>
             <div class="rin-validation-item"><span class="rin-v-ok">✓</span> ${d.records.length} kontrata unike (nga ${d.rawCount} rreshta)</div>
-            ${d.groupedCount > 0 ? `<div class="rin-validation-item"><span class="rin-v-ok">✓</span> ${d.groupedCount} rreshta u grupuan (nr kontratë e njëjtë)</div>` : ''}
-            <div class="rin-validation-item"><span class="rin-v-ok">✓</span> ${d.withDeme} kontrata me të dhëna dëmesh</div>
-            ${d.withoutDeme > 0 ? `<div class="rin-validation-item"><span class="rin-v-warn">⚠</span> ${d.withoutDeme} kontrata pa të dhëna dëmesh</div>` : ''}
+            ${d.groupedCount>0?`<div class="rin-validation-item"><span class="rin-v-ok">✓</span> ${d.groupedCount} rreshta u grupuan</div>`:''}
+            <div class="rin-validation-item"><span class="rin-v-ok">✓</span> ${d.withDeme} kontrata me dëme</div>
+            ${d.withoutDeme>0?`<div class="rin-validation-item"><span class="rin-v-warn">⚠</span> ${d.withoutDeme} kontrata pa dëme</div>`:''}
             <div class="rin-validation-item"><span class="rin-v-ok">✓</span> ${d.agents.length} agjentë · ${d.branches.length} degë</div>
-        </div>
-    `;
-
-    if (d.updateCount > 0 || d.newCount > 0) {
-        html += `<div class="rin-match-info">
-            ${d.updateCount > 0 ? `<strong>${d.updateCount} kontrata ekzistuese</strong> do të përditësohen.<br>` : ''}
-            <strong>${d.newCount} kontrata të reja</strong> do të shtohen.
         </div>`;
-    }
+    if(d.updateCount>0||d.newCount>0) html+=`<div class="rin-match-info">${d.updateCount>0?`<strong>${d.updateCount} ekzistuese</strong> do të përditësohen.<br>`:''}
+        <strong>${d.newCount} të reja</strong> do të shtohen.</div>`;
 
-    // Preview table
-    const preview = d.records.slice(0, 4);
-    html += `
-        <div class="rin-preview-label">Shembull (${Math.min(4, d.records.length)} rreshtat e parë)</div>
-        <div class="rin-preview-wrap">
-            <table class="rin-preview-table">
-                <thead><tr>
-                    <th style="width:30%">Kontraktuesi</th>
-                    <th style="width:22%">Nr kontratës</th>
-                    <th style="text-align:right;width:18%">Primi</th>
-                    <th style="text-align:right;width:15%">Dëme</th>
-                    <th style="text-align:right;width:15%">CR%</th>
-                </tr></thead>
-                <tbody>
-    `;
+    const preview=d.records.slice(0,4);
+    html+=`<div class="rin-preview-label">Shembull</div><div class="rin-preview-wrap"><table class="rin-preview-table">
+        <thead><tr><th style="width:30%">Kontraktuesi</th><th style="width:22%">Nr kontratës</th><th style="text-align:right;width:16%">Primi</th><th style="text-align:right;width:16%">Dëme</th><th style="text-align:right;width:16%">LR%</th></tr></thead><tbody>`;
     preview.forEach(r => {
-        const cr = r.cr_percent;
-        html += `<tr>
-            <td>${escHtml(r.kontraktuesi || '—')}</td>
-            <td>${escHtml(r.nr_kontrates || '—')}</td>
-            <td style="text-align:right">${formatMoney(r.primi_vjetor || 0)}</td>
-            <td style="text-align:right;${r.deme_total_vlera > 0 ? 'color:#ef4444' : 'color:#cbd5e1'}">${r.deme_total_vlera > 0 ? formatMoney(r.deme_total_vlera) : '—'}</td>
-            <td style="text-align:right">${cr !== null && !isNaN(cr) ? cr.toFixed(1)+'%' : '—'}</td>
-        </tr>`;
+        html+=`<tr><td>${esc(r.kontraktuesi||'—')}</td><td>${esc(r.nr_kontrates||'—')}</td>
+            <td style="text-align:right">${formatMoney(r.primi_vjetor||0)}</td>
+            <td style="text-align:right;${r.deme_total_vlera>0?'color:#ef4444':'color:#cbd5e1'}">${r.deme_total_vlera>0?formatMoney(r.deme_total_vlera):'—'}</td>
+            <td style="text-align:right">${r.lr_percent>0?r.lr_percent.toFixed(1)+'%':'—'}</td></tr>`;
     });
-    html += '</tbody></table></div>';
-
-    document.getElementById('importStep2').innerHTML = html;
+    html+='</tbody></table></div>';
+    document.getElementById('importStep2').innerHTML=html;
 }
 
-
-// ==============================================================
-// IMPORT — Step 3 (Confirm)
-// ==============================================================
 function renderImportStep3() {
-    if (!importParsedData) return;
-    const d = importParsedData;
-
-    document.getElementById('importStep3').innerHTML = `
-        <div style="text-align:center;padding:20px 0">
-            <div style="font-size:32px;margin-bottom:12px">✅</div>
-            <div style="font-size:16px;font-weight:600;color:#1e293b;margin-bottom:4px">Gati për import</div>
-            <div style="font-size:13px;color:#64748b;margin-bottom:20px">
-                ${d.records.length} kontrata do të importohen.<br>
-                ${d.updateCount > 0 ? `${d.updateCount} ekzistuese do të përditësohen. ` : ''}
-                ${d.newCount} të reja do të shtohen.
-            </div>
-            <div style="font-size:12px;color:#94a3b8">Kliko "Importo" për të vazhduar.</div>
-        </div>
-    `;
-
-    document.getElementById('importNextBtn').textContent = `Importo ${d.records.length} kontrata`;
+    if(!importParsedData) return;
+    const d=importParsedData;
+    document.getElementById('importStep3').innerHTML=`<div style="text-align:center;padding:20px 0">
+        <div style="font-size:32px;margin-bottom:12px">✅</div>
+        <div style="font-size:16px;font-weight:600;color:#1a2332;margin-bottom:4px">Gati për import — ${formatMuajLabel(d.muaj)}</div>
+        <div style="font-size:13px;color:#64748b;margin-bottom:20px">${d.records.length} kontrata do të importohen.${d.updateCount>0?' '+d.updateCount+' do të përditësohen.':''}</div>
+    </div>`;
 }
 
-
-// ==============================================================
-// IMPORT — Execute
-// ==============================================================
 function ekzekutoImport() {
-    if (!importParsedData) return;
-    const d = importParsedData;
-    const user = merrPerdoruesinAktual();
-    const now = new Date().toISOString();
-    const importId = 'imp_' + Date.now().toString(36);
+    if(!importParsedData) return;
+    const d=importParsedData;
+    const user=merrUser();
+    const now=new Date().toISOString();
+    const impId='imp_'+Date.now().toString(36);
+    const muaj=d.muaj;
 
     d.records.forEach(rec => {
-        if (rec._action === 'update' && rec._existingId) {
-            // Update existing
-            const existing = rinovimet.find(r => r.id === rec._existingId);
-            if (existing) {
-                // Update financial data, keep status and comments
-                existing.primi = rec.primi;
-                existing.tvsh = rec.tvsh;
-                existing.total_primi = rec.total_primi;
-                existing.primi_vjetor = rec.primi_vjetor;
-                existing.deme_nr_paguar = rec.deme_nr_paguar;
-                existing.deme_vlera_paguar = rec.deme_vlera_paguar;
-                existing.deme_nr_pezull = rec.deme_nr_pezull;
-                existing.deme_vlera_pezull = rec.deme_vlera_pezull;
-                existing.deme_total_nr = rec.deme_total_nr;
-                existing.deme_total_vlera = rec.deme_total_vlera;
-                existing.shpenzimet = rec.shpenzimet;
-                existing.kosto_totale = rec.kosto_totale;
-                existing.cr_percent = rec.cr_percent;
-                existing.data_fillimit = rec.data_fillimit;
-                existing.data_mbarimit = rec.data_mbarimit;
-                existing.agjenti = rec.agjenti || existing.agjenti;
-                existing.dega = rec.dega || existing.dega;
-                existing.updated_at = now;
-
-                // Add system comment
-                existing.komente = existing.komente || [];
-                existing.komente.unshift({
-                    teksti: 'Të dhënat u përditësuan nga importi.',
-                    autori: user.emri,
-                    data: now,
-                    tipi: 'sistem'
-                });
+        if(rec._action==='update'&&rec._existId) {
+            const ex=rinovimet.find(r=>r.id===rec._existId);
+            if(ex) {
+                ['primi','tvsh','total_primi','primi_vjetor','deme_nr_paguar','deme_vlera_paguar','deme_nr_pezull','deme_vlera_pezull',
+                 'deme_total_nr','deme_total_vlera','shpenzimet','kosto_totale','lr_percent','cr_percent','data_fillimit','data_mbarimit'].forEach(f=>{ex[f]=rec[f];});
+                if(rec.agjenti)ex.agjenti=rec.agjenti; if(rec.dega)ex.dega=rec.dega;
+                ex.updated_at=now;
+                ex.komente=ex.komente||[];
+                ex.komente.unshift({teksti:'Të dhënat u përditësuan nga importi.',autori:user.emri,data:now,tipi:'sistem'});
             }
         } else {
-            // New record
             rinovimet.push({
-                id: 'rin_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4),
-                nr_kontrates: rec.nr_kontrates || '',
-                kontraktues_id: rec.kontraktues_id || '',
-                kontraktuesi: rec.kontraktuesi || '',
-                dega: rec.dega || '',
-                agjenti: rec.agjenti || '',
-                lloji: rec.lloji || '',
-                nr_profatures: rec.nr_profatures || '',
-                data_fatures: rec.data_fatures || '',
-                data_fillimit: rec.data_fillimit || '',
-                data_mbarimit: rec.data_mbarimit || '',
-                primi: rec.primi || 0,
-                tvsh: rec.tvsh || 0,
-                total_primi: rec.total_primi || 0,
-                primi_vjetor: rec.primi_vjetor || 0,
-                valuta: rec.valuta || 'EUR',
-                deme_nr_paguar: rec.deme_nr_paguar || 0,
-                deme_vlera_paguar: rec.deme_vlera_paguar || 0,
-                deme_nr_pezull: rec.deme_nr_pezull || 0,
-                deme_vlera_pezull: rec.deme_vlera_pezull || 0,
-                deme_total_nr: rec.deme_total_nr || 0,
-                deme_total_vlera: rec.deme_total_vlera || 0,
-                shpenzimet: rec.shpenzimet || 0,
-                kosto_totale: rec.kosto_totale || 0,
-                cr_percent: rec.cr_percent,
-                statusi: 'pa_filluar',
-                komente: [],
-                importi_id: importId,
-                importuar_me: now,
-                importuar_nga: user.emri,
-                created_at: now,
-                updated_at: now
+                id:'rin_'+Date.now().toString(36)+'_'+Math.random().toString(36).substr(2,4),
+                muaji: muaj,
+                nr_kontrates:rec.nr_kontrates||'', kontraktues_id:rec.kontraktues_id||'', kontraktuesi:rec.kontraktuesi||'',
+                dega:rec.dega||'', agjenti:rec.agjenti||'', lloji:rec.lloji||'',
+                nr_profatures:rec.nr_profatures||'', data_fatures:rec.data_fatures||'',
+                data_fillimit:rec.data_fillimit||'', data_mbarimit:rec.data_mbarimit||'',
+                primi:rec.primi||0, tvsh:rec.tvsh||0, total_primi:rec.total_primi||0, primi_vjetor:rec.primi_vjetor||0,
+                valuta:rec.valuta||'EUR',
+                deme_nr_paguar:rec.deme_nr_paguar||0, deme_vlera_paguar:rec.deme_vlera_paguar||0,
+                deme_nr_pezull:rec.deme_nr_pezull||0, deme_vlera_pezull:rec.deme_vlera_pezull||0,
+                deme_total_nr:rec.deme_total_nr||0, deme_total_vlera:rec.deme_total_vlera||0,
+                shpenzimet:rec.shpenzimet||0, kosto_totale:rec.kosto_totale||0,
+                lr_percent:rec.lr_percent||0, cr_percent:rec.cr_percent||0,
+                statusi:'pa_filluar', komente:[], humbje_arsyeja:null, humbje_koment:null,
+                importi_id:impId, importuar_nga:user.emri, created_at:now, updated_at:now
             });
         }
     });
 
-    // Save
     ruajTedhena();
+    ruajImportMeta({id:impId, data:formatKomentDate(now), fileName:d.fileName, muaj:muaj, total:d.records.length, importuarNga:user.emri});
 
-    // Save import metadata
-    ruajImportMeta({
-        id: importId,
-        data: formatDateShort(now),
-        fileName: d.fileName,
-        periudha: d.periudha,
-        total: d.records.length,
-        new: d.newCount,
-        updated: d.updateCount,
-        importuarNga: user.emri
-    });
-
-    // Refresh UI
-    currentFilter = 'total';
-    filteredList = [...rinovimet];
-    renderTabela();
-    perditesoStats();
-    perditesoSubtitle();
+    currentMuaj = muaj;
+    renderTabs();
     populoFiltrat();
-
-    // Close modal
+    aplikoFiltrat();
     mbyllImportModal();
 }
 
+// ===== EXPORT =====
+function eksportoExcel() {
+    if(!currentMuaj) { alert('Asnjë muaj i zgjedhur.'); return; }
+    const data = filtroSipasRolit(rinovimet.filter(r=>r.muaji===currentMuaj));
+    if(data.length===0) { alert('Asnjë të dhënë për eksport.'); return; }
 
-// ==============================================================
-// HELPERS
-// ==============================================================
-function merrPerdoruesinAktual() {
-    // Consistent with auth.js pattern
-    try {
-        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        return {
-            username: user.username || 'unknown',
-            emri: user.emriPlote || user.username || 'System'
-        };
-    } catch(e) {
-        return { username: 'unknown', emri: 'System' };
-    }
+    const rows = data.map(r => ({
+        'Kontraktuesi': r.kontraktuesi,
+        'Nr Kontratës': r.nr_kontrates,
+        'Dega': r.dega,
+        'Agjenti': r.agjenti,
+        'Fillon': r.data_fillimit,
+        'Mbaron': r.data_mbarimit,
+        'Primi Vjetor': r.primi_vjetor || 0,
+        'Dëme Paguar (Nr)': r.deme_nr_paguar || 0,
+        'Dëme Paguar (€)': r.deme_vlera_paguar || 0,
+        'Dëme Pezull (Nr)': r.deme_nr_pezull || 0,
+        'Dëme Pezull (€)': r.deme_vlera_pezull || 0,
+        'Dëme Total (€)': r.deme_total_vlera || 0,
+        'Shpenzimet': Math.round(r.shpenzimet || 0),
+        'Kosto Totale': Math.round(r.kosto_totale || 0),
+        'LR%': r.lr_percent ? r.lr_percent.toFixed(1) : '',
+        'CR%': r.cr_percent ? r.cr_percent.toFixed(1) : '',
+        'Statusi': STATUSET[r.statusi]?.emri || r.statusi,
+        'Arsyeja Humbjes': r.humbje_arsyeja || '',
+        'Koment Humbjes': r.humbje_koment || ''
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Rinovimet');
+    XLSX.writeFile(wb, `Rinovimet_${formatMuajLabel(currentMuaj).replace(' ','_')}.xlsx`);
 }
 
-function parseDateStr(str) {
-    if (!str) return new Date(0);
-    if (str instanceof Date) return str;
-    str = String(str);
-    // dd.mm.yyyy
-    const parts = str.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
-    if (parts) return new Date(parseInt(parts[3]), parseInt(parts[2]) - 1, parseInt(parts[1]));
-    // ISO
-    const d = new Date(str);
-    return isNaN(d.getTime()) ? new Date(0) : d;
+// ===== HELPERS =====
+function parseDateStr(s) {
+    if(!s) return new Date(0); if(s instanceof Date) return s; s=String(s);
+    const p=s.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+    if(p) return new Date(parseInt(p[3]),parseInt(p[2])-1,parseInt(p[1]));
+    const d=new Date(s); return isNaN(d.getTime())?new Date(0):d;
 }
-
-function formatDateShort(str) {
-    if (!str) return '—';
-    const d = parseDateStr(str);
-    if (!d || isNaN(d.getTime()) || d.getTime() === 0) return '—';
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    return `${dd}.${mm}`;
+function formatDateShort(s) {
+    if(!s) return '—'; const d=parseDateStr(s); if(!d||d.getTime()===0) return '—';
+    return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0');
 }
-
-function formatKomentDate(str) {
-    if (!str) return '';
-    const d = parseDateStr(str);
-    if (!d || isNaN(d.getTime())) return '';
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const yyyy = d.getFullYear();
-    return `${dd}.${mm}.${yyyy}`;
+function formatKomentDate(s) {
+    if(!s) return ''; const d=parseDateStr(s); if(!d||isNaN(d.getTime())) return '';
+    return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();
 }
-
-function formatMoney(val) {
-    if (val === null || val === undefined || isNaN(val)) return '—';
-    val = Math.round(val);
-    return val.toLocaleString('de-DE') + '€';
+function formatMoney(v) { if(v===null||v===undefined||isNaN(v))return '—'; return Math.round(v).toLocaleString('de-DE')+'€'; }
+function formatMoneyShort(v) {
+    if(!v||isNaN(v)) return '0€';
+    if(v>=1000000) return (v/1000000).toFixed(1)+'M€';
+    if(v>=1000) return Math.round(v/1000)+'K€';
+    return Math.round(v)+'€';
 }
-
-function isUrgent(dateStr) {
-    const d = parseDateStr(dateStr);
-    if (!d || d.getTime() === 0) return false;
-    const now = new Date();
-    const diff = (d - now) / (1000 * 60 * 60 * 24);
-    return diff <= 30 && diff >= 0;
+function esc(s) { return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''; }
+function infoCell(l,v) { return `<div><div class="rin-info-label">${l}</div><div class="rin-info-value">${esc(v||'—')}</div></div>`; }
+function bdi(label,count,value) {
+    let d='—';
+    if(count!==null&&count!==undefined&&value!==null&&value!==undefined) d=`${count} / ${formatMoney(value)}`;
+    else if(value!==null&&value!==undefined&&!isNaN(value)&&value>0) d=formatMoney(value);
+    return `<div class="rin-breakdown-item"><span>${label}</span><span>${d}</span></div>`;
 }
-
-function escHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-function infoCell(label, value) {
-    return `<div>
-        <div class="rin-info-label">${label}</div>
-        <div class="rin-info-value">${escHtml(value || '—')}</div>
-    </div>`;
-}
-
-function breakdownItem(label, count, value) {
-    let display = '—';
-    if (count !== null && count !== undefined && value !== null && value !== undefined) {
-        display = `${count} / ${formatMoney(value)}`;
-    } else if (value !== null && value !== undefined && !isNaN(value) && value > 0) {
-        display = formatMoney(value);
-    }
-    return `<div class="rin-breakdown-item"><span>${label}</span><span>${display}</span></div>`;
+function ratioBar(label,val,color) {
+    const w=Math.min(val||0,150);
+    return `<div class="rin-ratio-row"><span class="rin-ratio-label">${label}</span>
+        <div class="rin-ratio-track"><div class="rin-ratio-fill" style="width:${w}%;background:${color}"></div></div>
+        <span class="rin-ratio-value" style="color:${color}">${val?val.toFixed(1)+'%':'—'}</span></div>`;
 }
