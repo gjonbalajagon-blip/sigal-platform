@@ -32,6 +32,35 @@ const COLUMN_MAP = {
 };
 const DEME_COLS = ['deme_nr_paguar','deme_vlera_paguar','deme_nr_pezull','deme_vlera_pezull'];
 
+// ===== SCORING & SUGJERIME =====
+function kalkuloSkor(r) {
+    const primi = r.primi_vjetor || 0;
+    const cr = r.cr_percent || 0;
+    // Primi score (40%): higher primi = higher score, log scale
+    let primiScore = 0;
+    if (primi > 0) primiScore = Math.min(100, Math.log10(primi) / Math.log10(100000) * 100);
+    // CR score (40%): lower CR = higher score (more profitable)
+    let crScore = 100;
+    if (cr > 0) crScore = Math.max(0, 100 - cr);
+    // Pezull risk (20%): no pezull = full score
+    const pezullRatio = primi > 0 ? ((r.deme_vlera_pezull || 0) / primi * 100) : 0;
+    let pezullScore = Math.max(0, 100 - pezullRatio * 2);
+    return Math.round(primiScore * 0.4 + crScore * 0.4 + pezullScore * 0.2);
+}
+
+function merrSugjerime(r) {
+    const suggestions = [];
+    const cr = r.cr_percent || 0;
+    const primi = r.primi_vjetor || 0;
+    const pezull = r.deme_vlera_pezull || 0;
+    if (cr > 100) suggestions.push({ tipi: 'danger', teksti: 'Kontratë joprofitabile — nevojitet vendim', ikona: '🔴' });
+    else if (cr > 90) suggestions.push({ tipi: 'warning', teksti: 'Afër kufirit të humbjes — konsidero rritje primi', ikona: '⚠️' });
+    else if (cr < 30 && primi > 5000) suggestions.push({ tipi: 'success', teksti: 'Klient profitabil — prioritet mbajtje', ikona: '✅' });
+    if (pezull > 0) suggestions.push({ tipi: 'info', teksti: `Ka ${formatMoney(pezull)} dëme pezull — CR mund të rritet`, ikona: 'ℹ️' });
+    if (primi > 50000) suggestions.push({ tipi: 'info', teksti: 'Kontratë me vlerë të lartë — trajtim prioritar', ikona: '⭐' });
+    return suggestions;
+}
+
 // ===== STATE =====
 let rinovimet = [];
 let filteredList = [];
@@ -143,11 +172,20 @@ function perditesoStats() {
         <div class="strip-metric s-humbur"><div class="sm-num">${counts.humbur}</div><div class="sm-lbl">Humbur</div></div>
     `;
 
-    // Chips
+    // Chips — with target tracking
+    const rinovuarPct = total > 0 ? (counts.rinovuar / total * 100) : 0;
+    const humburPct = total > 0 ? (counts.humbur / total * 100) : 0;
     document.getElementById('stripChips').innerHTML = `
         <div class="strip-chip">Primi <span class="sc-num">${formatMoneyShort(totalPrimi)}</span></div>
         <div class="strip-chip">Dëme <span class="sc-num">${formatMoneyShort(totalDeme)}</span></div>
         <div class="strip-chip">LR <span class="sc-num">${avgLR.toFixed(1)}%</span></div>
+        <div class="strip-chip" style="gap:8px;min-width:160px">
+            Rinovuar <span class="sc-num">${counts.rinovuar}/${total}</span>
+            <span style="flex:1;height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;min-width:40px;display:inline-block">
+                <span style="display:block;height:100%;width:${rinovuarPct}%;background:#4ade80;border-radius:2px"></span>
+            </span>
+            <span style="font-size:10px;font-weight:700;color:#4ade80">${rinovuarPct.toFixed(0)}%</span>
+        </div>
     `;
 
     // Bar
@@ -243,12 +281,14 @@ function renderTabela() {
         const deme = r.deme_total_vlera || 0;
         const lr = r.lr_percent;
         const cr = r.cr_percent;
+        const skor = kalkuloSkor(r);
         const lrClass = lr > 80 ? 'rin-lr-bad' : lr > 50 ? 'rin-lr-warn' : lr > 0 ? 'rin-lr-good' : 'rin-deme-none';
-        const crClass = cr > 80 ? 'rin-lr-bad' : cr > 50 ? 'rin-lr-warn' : cr > 0 ? 'rin-lr-good' : 'rin-deme-none';
+        const crClass = cr > 90 ? 'rin-lr-bad' : cr > 50 ? 'rin-lr-warn' : cr > 0 ? 'rin-lr-good' : 'rin-deme-none';
         const mbaron = formatDateShort(r.data_mbarimit);
+        const rowBg = cr > 90 ? 'background:rgba(254,202,202,.18);' : '';
 
-        html += `<tr onclick="hapDrawer('${r.id}')" style="cursor:pointer">
-            <td><div class="klient-name">${esc(r.kontraktuesi)}</div><div class="klient-sub">${esc(r.dega)} · ${esc(r.agjenti)}</div></td>
+        html += `<tr onclick="hapDrawer('${r.id}')" style="cursor:pointer;${rowBg}">
+            <td><div class="klient-name">${esc(r.kontraktuesi)}${cr>90?' <span style="font-size:9px;color:#ef4444;font-weight:700">⚠</span>':''}</div><div class="klient-sub">${esc(r.dega)} · ${esc(r.agjenti)}${skor?` · <span style="color:${skor>=60?'#22c55e':skor>=35?'#f59e0b':'#ef4444'};font-weight:600">Skor ${skor}</span>`:''}</div></td>
             <td style="font-size:11px;color:#64748b">${esc(r.nr_kontrates)}</td>
             <td class="rin-primi" style="text-align:right">${formatMoney(primi)}</td>
             <td style="text-align:right" class="${deme > 0 ? 'rin-deme-val' : 'rin-deme-none'}">${deme > 0 ? formatMoney(deme) : '—'}</td>
@@ -309,6 +349,33 @@ function hapDrawer(id) {
     } else {
         ratioBars.style.display = 'none';
     }
+
+    // Sugjerime + Skor
+    const skor = kalkuloSkor(r);
+    const suggestions = merrSugjerime(r);
+    const sugEl = document.getElementById('drSugjerime');
+    let sugHtml = '';
+    // Score bar
+    const skorColor = skor >= 60 ? '#22c55e' : skor >= 35 ? '#f59e0b' : '#ef4444';
+    sugHtml += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:${suggestions.length?'10':'0'}px">
+        <span style="font-size:12px;color:#64748b;min-width:80px">Skor rinovimi</span>
+        <div style="flex:1;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden">
+            <div style="height:100%;width:${skor}%;background:${skorColor};border-radius:4px;transition:width .3s"></div>
+        </div>
+        <span style="font-size:14px;font-weight:700;color:${skorColor};min-width:30px;text-align:right">${skor}</span>
+    </div>`;
+    // Suggestion badges
+    if (suggestions.length > 0) {
+        suggestions.forEach(s => {
+            const bgMap = { danger:'#fef2f2', warning:'#fffbeb', success:'#f0fdf4', info:'#eff6ff' };
+            const borderMap = { danger:'#fecaca', warning:'#fed7aa', success:'#bbf7d0', info:'#bfdbfe' };
+            const colorMap = { danger:'#991b1b', warning:'#92400e', success:'#166534', info:'#1e40af' };
+            sugHtml += `<div style="padding:8px 12px;background:${bgMap[s.tipi]};border:1px solid ${borderMap[s.tipi]};border-radius:8px;font-size:12px;color:${colorMap[s.tipi]};margin-bottom:4px;display:flex;align-items:center;gap:6px">
+                <span>${s.ikona}</span> ${esc(s.teksti)}
+            </div>`;
+        });
+    }
+    sugEl.innerHTML = sugHtml;
 
     renderKomente(r);
 
@@ -432,7 +499,7 @@ function renderKomente(r) {
     const el = document.getElementById('drKomente');
     const komente = r.komente || [];
     if (komente.length === 0) { el.innerHTML = '<div style="font-size:13px;color:#94a3b8;padding:8px 0">Asnjë koment ende</div>'; return; }
-    el.innerHTML = komente.map(k => `<div class="rin-comment ${k.tipi==='sistem'?'sistem':''}">
+    el.innerHTML = komente.map(k => `<div class="rin-comment ${k.tipi==='sistem'?'sistem':''}" ${k.tipi==='import'?'style="border-left:3px solid #f59e0b"':''}>
         <div class="rin-comment-header"><span class="rin-comment-author">${esc(k.autori)}</span><span class="rin-comment-date">${formatKomentDate(k.data)}</span></div>
         <p class="rin-comment-text">${esc(k.teksti)}</p>
     </div>`).join('');
@@ -546,6 +613,17 @@ function parseExcelRows(rows) {
         ['primi','tvsh','total_primi','deme_nr_paguar','deme_vlera_paguar','deme_nr_pezull','deme_vlera_pezull'].forEach(f => {
             if(rec[f]!==null&&rec[f]!==undefined) rec[f]=parseFloat(rec[f])||0;
         });
+        // Capture comment from last non-empty, non-formula column
+        rec._koment_excel = null;
+        for (let ci = row.length - 1; ci >= 0; ci--) {
+            const cv = row[ci];
+            if (cv !== null && cv !== undefined && String(cv).trim() !== '' && !String(cv).startsWith('=')) {
+                // Skip if it's a known data column (numeric or mapped)
+                const isDataCol = Object.values(colMap).includes(ci);
+                if (!isDataCol) { rec._koment_excel = String(cv).trim(); break; }
+                break;
+            }
+        }
         rawRecords.push(rec);
     });
 
@@ -561,6 +639,7 @@ function parseExcelRows(rows) {
             g.deme_nr_pezull=(g.deme_nr_pezull||0)+(rec.deme_nr_pezull||0); g.deme_vlera_pezull=(g.deme_vlera_pezull||0)+(rec.deme_vlera_pezull||0);
             if(rec.data_fillimit&&(!g.data_fillimit||parseDateStr(rec.data_fillimit)<parseDateStr(g.data_fillimit))) g.data_fillimit=rec.data_fillimit;
             if(rec.data_mbarimit&&(!g.data_mbarimit||parseDateStr(rec.data_mbarimit)>parseDateStr(g.data_mbarimit))) g.data_mbarimit=rec.data_mbarimit;
+            if(rec._koment_excel && !g._koment_excel) g._koment_excel=rec._koment_excel;
         }
     });
 
@@ -669,6 +748,11 @@ function ekzekutoImport() {
                 statusi:'pa_filluar', komente:[], humbje_arsyeja:null, humbje_koment:null,
                 importi_id:impId, importuar_nga:user.emri, created_at:now, updated_at:now
             });
+            // Add Excel comment if present
+            if (rec._koment_excel) {
+                const newRec = rinovimet[rinovimet.length - 1];
+                newRec.komente.push({ teksti: rec._koment_excel, autori: 'Import Excel', data: now, tipi: 'import' });
+            }
         }
     });
 
