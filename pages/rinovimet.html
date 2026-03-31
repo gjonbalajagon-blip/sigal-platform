@@ -203,7 +203,6 @@
                 <div class="strip-bottom"><div class="strip-bar" id="stripBar"></div><div class="strip-legend" id="stripLegend"></div></div>
             </div>
             <div class="filters-row">
-                <select id="rinFilterStatus" onchange="aplikoFiltrat()"><option value="">Të gjitha statuset</option><option value="pa_filluar">Pa filluar</option><option value="kontaktuar">Kontaktuar</option><option value="rinovuar">Rinovuar</option><option value="humbur">Humbur</option></select>
                 <select id="rinFilterAgjent" onchange="aplikoFiltrat()"><option value="">Të gjithë agjentët</option></select>
                 <select id="rinFilterDega" onchange="aplikoFiltrat()"><option value="">Të gjitha degët</option></select>
                 <input type="text" id="rinSearch" placeholder="Kërko kontraktues..." onkeyup="aplikoFiltrat()">
@@ -225,6 +224,7 @@
     <div class="rin-overlay" id="rinOverlay" onclick="mbyllDrawer()"></div>
     <div class="rin-drawer" id="rinDrawer">
         <div class="rin-drawer-header"><div><h3 class="rin-drawer-title" id="drKontraktuesi"></h3><div class="rin-drawer-sub" id="drSubtitle"></div></div><span class="rin-drawer-close" onclick="mbyllDrawer()">&times;</span></div>
+        <div id="drExcelNote"></div>
         <div class="rin-status-row" id="drStatusRow"></div>
         <div id="drHumbjeSection"></div>
         <div class="rin-info-section"><div class="rin-info-grid" id="drInfoGrid"></div></div>

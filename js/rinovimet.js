@@ -52,12 +52,10 @@ function merrSugjerime(r) {
     const suggestions = [];
     const cr = r.cr_percent || 0;
     const primi = r.primi_vjetor || 0;
-    const pezull = r.deme_vlera_pezull || 0;
-    if (cr > 100) suggestions.push({ tipi: 'danger', teksti: 'Kontratë joprofitabile — nevojitet vendim', ikona: '🔴' });
-    else if (cr > 90) suggestions.push({ tipi: 'warning', teksti: 'Afër kufirit të humbjes — konsidero rritje primi', ikona: '⚠️' });
-    else if (cr < 30 && primi > 5000) suggestions.push({ tipi: 'success', teksti: 'Klient profitabil — prioritet mbajtje', ikona: '✅' });
-    if (pezull > 0) suggestions.push({ tipi: 'info', teksti: `Ka ${formatMoney(pezull)} dëme pezull — CR mund të rritet`, ikona: 'ℹ️' });
-    if (primi > 50000) suggestions.push({ tipi: 'info', teksti: 'Kontratë me vlerë të lartë — trajtim prioritar', ikona: '⭐' });
+    if (cr > 100) suggestions.push({ tipi: 'danger', teksti: 'CR mbi 100% — shpenzimet dhe dëmet tejkalojnë primin', ikona: '🔴' });
+    else if (cr > 80) suggestions.push({ tipi: 'warning', teksti: 'CR ' + cr.toFixed(0) + '% — afër kufirit të profitabilitetit', ikona: '⚠️' });
+    else if (cr < 30 && cr > 0 && primi > 5000) suggestions.push({ tipi: 'success', teksti: 'CR ' + cr.toFixed(0) + '% — kontratë me profitabilitet të lartë', ikona: '✅' });
+    if (primi > 50000) suggestions.push({ tipi: 'info', teksti: 'Primi ' + formatMoney(primi) + ' — kontratë me peshë të lartë në portofol', ikona: '⭐' });
     return suggestions;
 }
 
@@ -66,6 +64,7 @@ let rinovimet = [];
 let filteredList = [];
 let currentMuaj = null;    // 'maj_2026' format
 let currentSort = 'primi';
+let currentStatusFilter = 'total';
 let currentDrawerId = null;
 let importParsedData = null;
 let importStep = 1;
@@ -163,13 +162,15 @@ function perditesoStats() {
     const total = data.length;
     const avgLR = totalPrimi > 0 ? (totalDeme / totalPrimi * 100) : 0;
 
-    // Metrics
+    // Metrics — clickable
+    const activeFilter = currentStatusFilter || 'total';
+    const metricStyle = (key) => `cursor:pointer;${activeFilter===key?'opacity:1;border-bottom:2px solid #fff;padding-bottom:14px':'opacity:0.7'}`;
     document.getElementById('stripMetrics').innerHTML = `
-        <div class="strip-metric"><div class="sm-num">${total}</div><div class="sm-lbl">Total</div></div>
-        <div class="strip-metric s-pafilluar"><div class="sm-num">${counts.pa_filluar}</div><div class="sm-lbl">Pa filluar</div></div>
-        <div class="strip-metric s-kontaktuar"><div class="sm-num">${counts.kontaktuar}</div><div class="sm-lbl">Kontaktuar</div></div>
-        <div class="strip-metric s-rinovuar"><div class="sm-num">${counts.rinovuar}</div><div class="sm-lbl">Rinovuar</div></div>
-        <div class="strip-metric s-humbur"><div class="sm-num">${counts.humbur}</div><div class="sm-lbl">Humbur</div></div>
+        <div class="strip-metric" style="${metricStyle('total')}" onclick="filtroStatusStrip('total')"><div class="sm-num">${total}</div><div class="sm-lbl">Total</div></div>
+        <div class="strip-metric s-pafilluar" style="${metricStyle('pa_filluar')}" onclick="filtroStatusStrip('pa_filluar')"><div class="sm-num">${counts.pa_filluar}</div><div class="sm-lbl">Pa filluar</div></div>
+        <div class="strip-metric s-kontaktuar" style="${metricStyle('kontaktuar')}" onclick="filtroStatusStrip('kontaktuar')"><div class="sm-num">${counts.kontaktuar}</div><div class="sm-lbl">Kontaktuar</div></div>
+        <div class="strip-metric s-rinovuar" style="${metricStyle('rinovuar')}" onclick="filtroStatusStrip('rinovuar')"><div class="sm-num">${counts.rinovuar}</div><div class="sm-lbl">Rinovuar</div></div>
+        <div class="strip-metric s-humbur" style="${metricStyle('humbur')}" onclick="filtroStatusStrip('humbur')"><div class="sm-num">${counts.humbur}</div><div class="sm-lbl">Humbur</div></div>
     `;
 
     // Chips — with target tracking
@@ -207,16 +208,20 @@ function perditesoStats() {
 }
 
 // ===== FILTERS =====
+function filtroStatusStrip(status) {
+    currentStatusFilter = (currentStatusFilter === status) ? 'total' : status;
+    aplikoFiltrat();
+}
+
 function aplikoFiltrat() {
     let data = rinovimet.filter(r => r.muaji === currentMuaj);
     data = filtroSipasRolit(data);
 
-    const status = document.getElementById('rinFilterStatus').value;
     const agjent = document.getElementById('rinFilterAgjent').value;
     const dega   = document.getElementById('rinFilterDega').value;
     const search = document.getElementById('rinSearch').value.toLowerCase().trim();
 
-    if (status) data = data.filter(r => r.statusi === status);
+    if (currentStatusFilter && currentStatusFilter !== 'total') data = data.filter(r => r.statusi === currentStatusFilter);
     if (agjent) data = data.filter(r => r.agjenti === agjent);
     if (dega)   data = data.filter(r => r.dega === dega);
     if (search)  data = data.filter(r =>
@@ -281,14 +286,13 @@ function renderTabela() {
         const deme = r.deme_total_vlera || 0;
         const lr = r.lr_percent;
         const cr = r.cr_percent;
-        const skor = kalkuloSkor(r);
         const lrClass = lr > 80 ? 'rin-lr-bad' : lr > 50 ? 'rin-lr-warn' : lr > 0 ? 'rin-lr-good' : 'rin-deme-none';
         const crClass = cr > 90 ? 'rin-lr-bad' : cr > 50 ? 'rin-lr-warn' : cr > 0 ? 'rin-lr-good' : 'rin-deme-none';
         const mbaron = formatDateShort(r.data_mbarimit);
         const rowBg = cr > 90 ? 'background:rgba(254,202,202,.18);' : '';
 
         html += `<tr onclick="hapDrawer('${r.id}')" style="cursor:pointer;${rowBg}">
-            <td><div class="klient-name">${esc(r.kontraktuesi)}${cr>90?' <span style="font-size:9px;color:#ef4444;font-weight:700">⚠</span>':''}</div><div class="klient-sub">${esc(r.dega)} · ${esc(r.agjenti)}${skor?` · <span style="color:${skor>=60?'#22c55e':skor>=35?'#f59e0b':'#ef4444'};font-weight:600">Skor ${skor}</span>`:''}</div></td>
+            <td><div class="klient-name">${esc(r.kontraktuesi)}${cr>90?' <span style="font-size:9px;color:#ef4444;font-weight:700">⚠</span>':''}</div><div class="klient-sub">${esc(r.dega)} · ${esc(r.agjenti)}</div></td>
             <td style="font-size:11px;color:#64748b">${esc(r.nr_kontrates)}</td>
             <td class="rin-primi" style="text-align:right">${formatMoney(primi)}</td>
             <td style="text-align:right" class="${deme > 0 ? 'rin-deme-val' : 'rin-deme-none'}">${deme > 0 ? formatMoney(deme) : '—'}</td>
@@ -350,22 +354,22 @@ function hapDrawer(id) {
         ratioBars.style.display = 'none';
     }
 
-    // Sugjerime + Skor
-    const skor = kalkuloSkor(r);
+    // Excel koment (lart si notë)
+    const noteEl = document.getElementById('drExcelNote');
+    const excelKoment = (r.komente || []).find(k => k.tipi === 'import');
+    if (excelKoment) {
+        noteEl.innerHTML = `<div style="padding:10px 22px;background:#fffbeb;border-bottom:1px solid #fde68a;font-size:12px;color:#92400e;display:flex;align-items:center;gap:6px">
+            <span style="font-size:14px">📝</span> <strong>Shënim:</strong> ${esc(excelKoment.teksti)}
+        </div>`;
+    } else {
+        noteEl.innerHTML = '';
+    }
+
+    // Sugjerime (vetëm në drawer, informuese)
     const suggestions = merrSugjerime(r);
     const sugEl = document.getElementById('drSugjerime');
-    let sugHtml = '';
-    // Score bar
-    const skorColor = skor >= 60 ? '#22c55e' : skor >= 35 ? '#f59e0b' : '#ef4444';
-    sugHtml += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:${suggestions.length?'10':'0'}px">
-        <span style="font-size:12px;color:#64748b;min-width:80px">Skor rinovimi</span>
-        <div style="flex:1;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden">
-            <div style="height:100%;width:${skor}%;background:${skorColor};border-radius:4px;transition:width .3s"></div>
-        </div>
-        <span style="font-size:14px;font-weight:700;color:${skorColor};min-width:30px;text-align:right">${skor}</span>
-    </div>`;
-    // Suggestion badges
     if (suggestions.length > 0) {
+        let sugHtml = '';
         suggestions.forEach(s => {
             const bgMap = { danger:'#fef2f2', warning:'#fffbeb', success:'#f0fdf4', info:'#eff6ff' };
             const borderMap = { danger:'#fecaca', warning:'#fed7aa', success:'#bbf7d0', info:'#bfdbfe' };
@@ -374,8 +378,12 @@ function hapDrawer(id) {
                 <span>${s.ikona}</span> ${esc(s.teksti)}
             </div>`;
         });
+        sugEl.innerHTML = sugHtml;
+        sugEl.style.display = '';
+    } else {
+        sugEl.innerHTML = '';
+        sugEl.style.display = 'none';
     }
-    sugEl.innerHTML = sugHtml;
 
     renderKomente(r);
 
