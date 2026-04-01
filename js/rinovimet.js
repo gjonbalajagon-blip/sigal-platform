@@ -103,8 +103,8 @@ function ruajImportMeta(m) { const a = merrImports(); a.push(m); localStorage.se
 // ===== ROLE-BASED FILTERING =====
 function merrUser() {
     try {
-        const u = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        return { username: u.username||'', emri: u.emriPlote||u.username||'System', roli: u.roli||'staff', dega: u.dega||'' };
+        const u = JSON.parse(localStorage.getItem('user_aktual') || localStorage.getItem('currentUser') || '{}');
+        return { username: u.username||'', emri: u.emri||u.emriPlote||u.username||'System', roli: u.role||u.roli||'staff', dega: u.dega||'' };
     } catch(e) { return { username:'', emri:'System', roli:'superadmin', dega:'' }; }
 }
 

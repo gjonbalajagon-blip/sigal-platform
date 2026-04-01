@@ -77,8 +77,8 @@ function toggleSidebar() {
         try { rinovimet = JSON.parse(localStorage.getItem('rinovimet_data') || '[]'); } catch(e) { return; }
 
         let user = {};
-        try { user = JSON.parse(localStorage.getItem('currentUser') || '{}'); } catch(e) {}
-        const roli = (user.roli || '').toLowerCase();
+        try { user = JSON.parse(localStorage.getItem('user_aktual') || localStorage.getItem('currentUser') || '{}'); } catch(e) {}
+        const roli = (user.role || user.roli || '').toLowerCase();
         if (roli !== 'superadmin' && roli !== 'management' && roli !== 'dep_management') {
             const dega = (user.dega || '').toLowerCase();
             if (dega) rinovimet = rinovimet.filter(r => (r.dega || '').toLowerCase() === dega);
