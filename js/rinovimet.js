@@ -76,6 +76,20 @@ document.addEventListener('DOMContentLoaded', function() {
     aplikoFiltrat();
     populoFiltrat();
     populoImportMuajt();
+
+    // Auto-open drawer from bell notification link (?hap=id)
+    const params = new URLSearchParams(window.location.search);
+    const hapId = params.get('hap');
+    if (hapId) {
+        // Find which month this record belongs to
+        const rec = rinovimet.find(r => r.id === hapId);
+        if (rec && rec.muaji) {
+            currentMuaj = rec.muaji;
+            renderTabs();
+            aplikoFiltrat();
+        }
+        setTimeout(() => hapDrawer(hapId), 200);
+    }
 });
 
 // ===== STORAGE =====
@@ -432,6 +446,7 @@ function ndryshStatus(newStatus) {
     perditesoStats();
     renderTabs();
     aplikoFiltrat();
+    if (typeof perditesoNjoftimet === 'function') perditesoNjoftimet();
 }
 
 // ===== HUMBJE SECTION IN DRAWER =====
@@ -500,6 +515,7 @@ function konfirmoHumbje() {
     perditesoStats();
     renderTabs();
     aplikoFiltrat();
+    if (typeof perditesoNjoftimet === 'function') perditesoNjoftimet();
 }
 
 // ===== KOMENTE =====
@@ -772,6 +788,7 @@ function ekzekutoImport() {
     populoFiltrat();
     aplikoFiltrat();
     mbyllImportModal();
+    if (typeof perditesoNjoftimet === 'function') perditesoNjoftimet();
 }
 
 // ===== EXPORT =====
