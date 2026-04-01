@@ -738,10 +738,5 @@ function renderTabela(){
 
 document.addEventListener('DOMContentLoaded',function(){
     // Auto-selekto muajin aktual
-    const now=new Date();
-    const vitiEl=document.getElementById('filter-viti');
-    const muajiEl=document.getElementById('filter-muaji');
-    vitiEl.value=String(now.getFullYear());
-    muajiEl.value=String(now.getMonth()+1).padStart(2,'0');
     renderTabela();
 });
