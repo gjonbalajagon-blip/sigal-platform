@@ -399,6 +399,9 @@ function hapDrawer(id) {
         sugEl.style.display = 'none';
     }
 
+    // Propozimi i primit
+    renderPropozimPrimi(r);
+
     renderKomente(r);
 
     document.getElementById('rinOverlay').classList.add('open');
@@ -411,6 +414,122 @@ function mbyllDrawer() {
     document.getElementById('rinDrawer').classList.remove('open');
     document.body.style.overflow = '';
     currentDrawerId = null;
+}
+
+// ===== PROPOZIMI I PRIMIT =====
+function renderPropozimPrimi(r) {
+    const el = document.getElementById('drPropozimi');
+    const primi = r.primi_vjetor || 0;
+    const cr = r.cr_percent || 0;
+    const kosto = r.kosto_totale || 0;
+    const crTarget = r.cr_target || 90;
+
+    if (primi <= 0) { el.innerHTML = ''; el.style.display = 'none'; return; }
+
+    let propozuar = primi; // default: pa rritje
+    let arsyeja = '';
+
+    if (cr > crTarget) {
+        propozuar = Math.ceil(kosto / (crTarget / 100));
+        const rritjaPct = ((propozuar - primi) / primi * 100);
+        arsyeja = 'CR ' + cr.toFixed(0) + '% > target ' + crTarget + '% — kosto ' + formatMoney(kosto) + ' ÷ ' + crTarget + '% = ' + formatMoney(propozuar);
+    } else {
+        arsyeja = 'CR ' + cr.toFixed(0) + '% — brenda targetit (' + crTarget + '%)';
+    }
+
+    const rritja = propozuar - primi;
+    const rritjaPct = primi > 0 ? (rritja / primi * 100) : 0;
+    const primiRi = r.primi_ri || null;
+
+    // Nëse drejtori ka futur primi_ri, trego CR e ri
+    let crRiHtml = '';
+    if (primiRi && primiRi > 0) {
+        const crRi = (kosto / primiRi * 100);
+        const crRiColor = crRi > crTarget ? '#ef4444' : crRi > 70 ? '#f59e0b' : '#22c55e';
+        const dallimiPct = ((primiRi - primi) / primi * 100);
+        crRiHtml = '<div style="margin-top:8px;padding:8px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:12px;color:#166534">'
+            + 'CR i ri me këtë prim: <strong style="color:' + crRiColor + '">' + crRi.toFixed(1) + '%</strong>'
+            + ' · Ndryshimi: <strong>' + (dallimiPct >= 0 ? '+' : '') + dallimiPct.toFixed(1) + '%</strong>'
+            + '</div>';
+    }
+
+    el.style.display = '';
+    el.innerHTML = '<div class="rin-section-title">Propozimi i primit</div>'
+        // CR Target row
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'
+        + '<span style="font-size:12px;color:#64748b">CR target:</span>'
+        + '<input type="number" id="drCrTarget" value="' + crTarget + '" min="50" max="100" style="width:60px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:13px;font-family:inherit;text-align:center" onchange="ndryshoCrTarget(this.value)">'
+        + '<span style="font-size:12px;color:#64748b">%</span>'
+        + '</div>'
+        // Metrics
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">'
+        + '<div style="background:#f8fafc;border-radius:8px;padding:10px 12px"><div style="font-size:11px;color:#94a3b8">Primi aktual</div><div style="font-size:16px;font-weight:600;color:#1a2332">' + formatMoney(primi) + '</div></div>'
+        + '<div style="background:' + (rritja > 0 ? '#fef2f2' : '#f0fdf4') + ';border-radius:8px;padding:10px 12px"><div style="font-size:11px;color:#94a3b8">Propozuar</div><div style="font-size:16px;font-weight:600;color:' + (rritja > 0 ? '#ef4444' : '#22c55e') + '">' + formatMoney(propozuar) + (rritja > 0 ? ' <span style="font-size:11px">(+' + rritjaPct.toFixed(1) + '%)</span>' : ' <span style="font-size:11px">(pa ndryshim)</span>') + '</div></div>'
+        + '</div>'
+        // Arsyeja
+        + '<div style="font-size:11px;color:#64748b;margin-bottom:12px;padding:6px 10px;background:#f8fafc;border-radius:6px">' + esc(arsyeja) + '</div>'
+        // Input primi i ri
+        + '<div style="display:flex;align-items:center;gap:8px">'
+        + '<span style="font-size:12px;color:#64748b;white-space:nowrap">Primi i ri:</span>'
+        + '<input type="number" id="drPrimiRi" value="' + (primiRi || '') + '" placeholder="' + propozuar + '" style="flex:1;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-weight:600;font-family:inherit" oninput="llogaritCrRi(this.value)">'
+        + '<span style="font-size:12px;color:#64748b">€</span>'
+        + '<button onclick="ruajPrimiRi()" style="padding:8px 14px;background:#002B5C;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">Ruaj</button>'
+        + '</div>'
+        + '<div id="drCrRiResult">' + crRiHtml + '</div>';
+}
+
+function ndryshoCrTarget(val) {
+    if (!currentDrawerId) return;
+    const r = rinovimet.find(x => x.id === currentDrawerId);
+    if (!r) return;
+    r.cr_target = Math.max(50, Math.min(100, parseInt(val) || 90));
+    ruajTedhena();
+    renderPropozimPrimi(r);
+}
+
+function llogaritCrRi(val) {
+    const r = rinovimet.find(x => x.id === currentDrawerId);
+    if (!r) return;
+    const kosto = r.kosto_totale || 0;
+    const primi = r.primi_vjetor || 0;
+    const crTarget = r.cr_target || 90;
+    const primiRi = parseFloat(val) || 0;
+    const resultEl = document.getElementById('drCrRiResult');
+
+    if (primiRi <= 0) { resultEl.innerHTML = ''; return; }
+
+    const crRi = (kosto / primiRi * 100);
+    const crRiColor = crRi > crTarget ? '#ef4444' : crRi > 70 ? '#f59e0b' : '#22c55e';
+    const dallimiPct = ((primiRi - primi) / primi * 100);
+    const statusTxt = crRi > crTarget ? '⚠️ ende mbi target' : '✅ brenda targetit';
+
+    resultEl.innerHTML = '<div style="margin-top:8px;padding:8px 12px;background:' + (crRi > crTarget ? '#fef2f2;border:1px solid #fecaca' : '#f0fdf4;border:1px solid #bbf7d0') + ';border-radius:8px;font-size:12px;color:' + (crRi > crTarget ? '#991b1b' : '#166534') + '">'
+        + 'CR i ri: <strong style="color:' + crRiColor + '">' + crRi.toFixed(1) + '%</strong> ' + statusTxt
+        + ' · Ndryshimi: <strong>' + (dallimiPct >= 0 ? '+' : '') + dallimiPct.toFixed(1) + '%</strong>'
+        + '</div>';
+}
+
+function ruajPrimiRi() {
+    if (!currentDrawerId) return;
+    const r = rinovimet.find(x => x.id === currentDrawerId);
+    if (!r) return;
+    const val = parseFloat(document.getElementById('drPrimiRi').value);
+    if (!val || val <= 0) { alert('Fut vlerën e primit të ri.'); return; }
+
+    r.primi_ri = val;
+    r.updated_at = new Date().toISOString();
+
+    const user = merrUser();
+    const dallimiPct = ((val - (r.primi_vjetor || 0)) / (r.primi_vjetor || 1) * 100);
+    r.komente = r.komente || [];
+    r.komente.unshift({
+        teksti: 'Primi i ri: ' + formatMoney(val) + ' (' + (dallimiPct >= 0 ? '+' : '') + dallimiPct.toFixed(1) + '% nga ' + formatMoney(r.primi_vjetor) + ')',
+        autori: user.emri, data: new Date().toISOString(), tipi: 'sistem'
+    });
+
+    ruajTedhena();
+    renderPropozimPrimi(r);
+    renderKomente(r);
 }
 
 function renderStatusPills(current) {
@@ -815,6 +934,9 @@ function eksportoExcel() {
         'LR%': r.lr_percent ? r.lr_percent.toFixed(1) : '',
         'CR%': r.cr_percent ? r.cr_percent.toFixed(1) : '',
         'Statusi': STATUSET[r.statusi]?.emri || r.statusi,
+        'CR Target': r.cr_target || 90,
+        'Primi i Ri': r.primi_ri || '',
+        'Ndryshimi %': r.primi_ri ? (((r.primi_ri - (r.primi_vjetor||0)) / (r.primi_vjetor||1)) * 100).toFixed(1) : '',
         'Arsyeja Humbjes': r.humbje_arsyeja || '',
         'Koment Humbjes': r.humbje_koment || ''
     }));
