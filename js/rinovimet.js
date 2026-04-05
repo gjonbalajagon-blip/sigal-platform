@@ -197,10 +197,74 @@ function hapDrawer(id){
     }else{sugEl.innerHTML='';sugEl.style.display='none';}
     // Propozimi
     renderPropozimPrimi(r);
+    // Buton kontrate
+    renderKontrateBtn(r);
     renderKomente(r);
     document.getElementById('rinOverlay').classList.add('open');document.getElementById('rinDrawer').classList.add('open');document.body.style.overflow='hidden';
 }
 function mbyllDrawer(){document.getElementById('rinOverlay').classList.remove('open');document.getElementById('rinDrawer').classList.remove('open');document.body.style.overflow='';currentDrawerId=null;}
+
+// KONTRATE BUTTON
+function renderKontrateBtn(r){
+    const el=document.getElementById('drKontrateBtn');
+    if(r.kontrata_derguar){
+        el.innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:8px 0">
+            <span style="color:#22c55e;font-size:14px">✓</span>
+            <span style="font-size:12px;color:#166534;font-weight:500">Kontrata e dërguar ${r.kontrata_derguar_data?formatKomentDate(r.kontrata_derguar_data):''}</span>
+        </div>`;
+    } else if(r.statusi==='rinovuar'){
+        el.innerHTML=`<button onclick="krijoKontrate()" style="width:100%;padding:10px;background:#002B5C;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
+            📄 Krijo Kontratën në Sistem
+        </button>`;
+    } else {
+        el.innerHTML=`<button onclick="hapKontrateWizard()" style="width:100%;padding:10px;background:#002B5C;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
+            📄 Përgatit & Dërgo Kontratën
+        </button>`;
+    }
+}
+
+function hapKontrateWizard(){
+    // TODO: Wizard modal me fushat + spreadsheet + Word gjenerim
+    // Për momentin redirect te kontratat me të dhënat bazë
+    if(!currentDrawerId)return;
+    const r=rinovimet.find(x=>x.id===currentDrawerId);if(!r)return;
+    // Ruaj të dhënat për kontratat
+    localStorage.setItem('rinovim_per_kontrate',JSON.stringify({
+        nga_rinovimi:true,
+        rinovimi_id:r.id,
+        emri:r.kontraktuesi,
+        kontraktues_id:r.kontraktues_id,
+        dega:r.dega,
+        agjenti:r.agjenti,
+        data_fillimit:r.data_fillimit,
+        data_mbarimit:r.data_mbarimit
+    }));
+    // Ndrysho statusin në kontaktuar
+    if(r.statusi==='pa_filluar'){
+        r.statusi='kontaktuar';r.updated_at=new Date().toISOString();
+        r.kontrata_derguar=true;r.kontrata_derguar_data=new Date().toISOString();
+        const u=merrUser();r.komente=r.komente||[];
+        r.komente.unshift({teksti:'Kontrata u përgatit dhe u dërgua klientit',autori:u.emri,data:new Date().toISOString(),tipi:'sistem'});
+        ruajTedhena();if(typeof perditesoNjoftimet==='function')perditesoNjoftimet();
+    }
+    window.location.href='kontratat.html?nga_rinovimi='+r.id;
+}
+
+function krijoKontrate(){
+    if(!currentDrawerId)return;
+    const r=rinovimet.find(x=>x.id===currentDrawerId);if(!r)return;
+    localStorage.setItem('rinovim_per_kontrate',JSON.stringify({
+        nga_rinovimi:true,
+        rinovimi_id:r.id,
+        emri:r.kontraktuesi,
+        kontraktues_id:r.kontraktues_id,
+        dega:r.dega,
+        agjenti:r.agjenti,
+        data_fillimit:r.data_fillimit,
+        data_mbarimit:r.data_mbarimit
+    }));
+    window.location.href='kontratat.html?nga_rinovimi='+r.id;
+}
 
 // PROPOZIMI (simple — just % suggestion)
 function renderPropozimPrimi(r){

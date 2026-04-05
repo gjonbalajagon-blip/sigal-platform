@@ -339,3 +339,58 @@ document.addEventListener('DOMContentLoaded',function(){
     const params=new URLSearchParams(window.location.search);
     if(params.get('nga_oferta')==='true')shtoKontrate();
 });
+// ============================================================
+// SHTESË PËR RINOVIME — shto në fund të kontratat.js
+// ============================================================
+// Kur hapet kontratat.html?nga_rinovimi=ID, lexon të dhënat
+// nga rinovimet dhe hap drawer-in me fushat e plotësuara
+(function(){
+    const params=new URLSearchParams(window.location.search);
+    const rinId=params.get('nga_rinovimi');
+    if(!rinId)return;
+    
+    // Lexo të dhënat nga localStorage
+    const rinData=JSON.parse(localStorage.getItem('rinovim_per_kontrate')||'{}');
+    if(!rinData.nga_rinovimi)return;
+    
+    // Prit derisa DOM të jetë gati
+    const origInit=window.addEventListener;
+    setTimeout(function(){
+        // Hap drawer-in e kontratës së re
+        shtoKontrate();
+        
+        // Plotëso fushat nga rinovimi
+        if(rinData.emri)document.getElementById('m-emri').value=rinData.emri;
+        if(rinData.kontraktues_id){
+            // Vendos nr personal ose biznesit
+            const nrP=document.getElementById('m-nr-personal');
+            const nrB=document.getElementById('m-nr-biznesit');
+            if(nrP)nrP.value=rinData.kontraktues_id;
+        }
+        
+        // Datat — llogarit periudhën e re (+1 vit)
+        if(rinData.data_mbarimit){
+            const mbOld=rinData.data_mbarimit;
+            // Fillimi i ri = dita pas mbarimit të vjetër
+            let fillRi;
+            if(mbOld.includes('.')){
+                const[d,m,y]=mbOld.split('.');
+                fillRi=new Date(parseInt(y),parseInt(m)-1,parseInt(d)+1);
+            }else{
+                fillRi=new Date(new Date(mbOld).getTime()+86400000);
+            }
+            if(!isNaN(fillRi.getTime())){
+                const mbRi=new Date(fillRi);mbRi.setFullYear(mbRi.getFullYear()+1);mbRi.setDate(mbRi.getDate()-1);
+                const fmtDate=(dt)=>String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();
+                document.getElementById('m-fillimi').value=fmtDate(fillRi);
+                document.getElementById('m-mbarimi').value=fmtDate(mbRi);
+                document.getElementById('m-data-kontrates').value=fmtDate(new Date());
+            }
+        }
+        
+        // Pastro URL dhe localStorage
+        window.history.replaceState({},'','kontratat.html');
+        localStorage.removeItem('rinovim_per_kontrate');
+        
+    },300);
+})();
