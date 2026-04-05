@@ -159,7 +159,7 @@ function renderTabela(){
     });tbody.innerHTML=html;
 }
 
-// ===== DRAWER (COMPACT) =====
+// ===== DRAWER (OPTION A) =====
 function hapDrawer(id){
     const r=rinovimet.find(x=>x.id===id);if(!r)return;currentDrawerId=id;
     document.getElementById('drKontraktuesi').textContent=r.kontraktuesi;
@@ -169,31 +169,60 @@ function hapDrawer(id){
     const exK=(r.komente||[]).find(k=>k.tipi==='import');
     noteEl.innerHTML=exK?`<div style="padding:8px 20px;background:#fffbeb;border-bottom:1px solid #fde68a;font-size:11px;color:#92400e;display:flex;align-items:center;gap:5px"><span>📝</span><strong>Shënim:</strong> ${esc(exK.teksti)}</div>`:'';
     renderStatusPills(r.statusi);renderHumbjeSection(r);
-    // Compact info — 1 row
-    document.getElementById('drInfo').innerHTML=`<div class="rin-compact-grid"><div><div class="rin-cg-label">Fillon</div><div class="rin-cg-value">${r.data_fillimit||'—'}</div></div><div><div class="rin-cg-label">Mbaron</div><div class="rin-cg-value">${r.data_mbarimit||'—'}</div></div><div><div class="rin-cg-label">ID klienti</div><div class="rin-cg-value">${r.kontraktues_id||'—'}</div></div></div>`;
-    // Compact finance
+
+    // Info + Finance merged in one gri block
     const p=r.primi_vjetor||0,d=r.deme_total_vlera||0,lr=r.lr_percent||0,cr=r.cr_percent||0;
     const lrCol=lr>80?'#ef4444':lr>50?'#f59e0b':'#22c55e';
     const crCol=cr>90?'#ef4444':cr>50?'#f59e0b':'#22c55e';
-    document.getElementById('drFinance').innerHTML=`
-        <div class="rin-compact-grid" style="margin-bottom:6px">
-            <div><div class="rin-cg-label">Primi</div><div class="rin-cg-value" style="font-size:15px">${formatMoney(p)}</div></div>
-            <div><div class="rin-cg-label">Dëme totale</div><div class="rin-cg-value" style="color:${d>0?'#ef4444':'#94a3b8'}">${d>0?formatMoney(d):'—'}</div></div>
-            <div><div class="rin-cg-label">Kosto totale</div><div class="rin-cg-value">${formatMoney(r.kosto_totale||0)}</div></div>
+    const lrBorder=lr>80?'#fecaca':lr>50?'#fde68a':'#bbf7d0';
+    const crBorder=cr>90?'#fecaca':cr>50?'#fde68a':'#bbf7d0';
+
+    document.getElementById('drInfo').innerHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+            <div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">Fillon</div><div style="font-size:13px;font-weight:600;color:#1a2332">${r.data_fillimit||'—'}</div></div>
+            <div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">Mbaron</div><div style="font-size:13px;font-weight:600;color:#1a2332">${r.data_mbarimit||'—'}</div></div>
+            <div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px">ID Klienti</div><div style="font-size:13px;font-weight:600;color:#1a2332">${r.kontraktues_id||'—'}</div></div>
         </div>
-        <div style="display:flex;gap:12px;font-size:11px;color:#64748b;margin-bottom:6px">
-            <span>Dëme paguar: ${r.deme_nr_paguar||0} / ${formatMoney(r.deme_vlera_paguar||0)}</span>
-            <span>Pezull: ${r.deme_nr_pezull||0} / ${formatMoney(r.deme_vlera_pezull||0)}</span>
-            <span>Shpenzime: ${formatMoney(r.shpenzimet||0)}</span>
+        <div style="height:1px;background:#e2e8f0;margin-bottom:12px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+            <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0">
+                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase">Primi</div>
+                <div style="font-size:18px;font-weight:800;color:#1a2332">${formatMoney(p)}</div>
+            </div>
+            <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid ${d>0?'#fecaca':'#e2e8f0'}">
+                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase">Dëme totale</div>
+                <div style="font-size:18px;font-weight:800;color:${d>0?'#ef4444':'#94a3b8'}">${d>0?formatMoney(d):'—'}</div>
+            </div>
+            <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0">
+                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase">Kosto totale</div>
+                <div style="font-size:18px;font-weight:800;color:#334155">${formatMoney(r.kosto_totale||0)}</div>
+            </div>
         </div>
-        <div class="rin-ratio-inline">
-            <div class="rin-ratio-item"><span style="color:#64748b">LR</span><div class="rin-ratio-bar"><div class="rin-ratio-fill" style="width:${Math.min(lr,100)}%;background:${lrCol}"></div></div><span style="font-weight:600;color:${lrCol}">${lr>0?lr.toFixed(1)+'%':'—'}</span></div>
-            <div class="rin-ratio-item"><span style="color:#64748b">CR</span><div class="rin-ratio-bar"><div class="rin-ratio-fill" style="width:${Math.min(cr,100)}%;background:${crCol}"></div></div><span style="font-weight:600;color:${crCol}">${cr>0?cr.toFixed(1)+'%':'—'}</span></div>
+        <div style="display:flex;gap:16px;font-size:11px;color:#64748b;margin-bottom:10px">
+            <span>Dëme paguar: <strong style="color:#334155">${r.deme_nr_paguar||0} / ${formatMoney(r.deme_vlera_paguar||0)}</strong></span>
+            <span>Pezull: <strong style="color:#334155">${r.deme_nr_pezull||0} / ${formatMoney(r.deme_vlera_pezull||0)}</strong></span>
+            <span>Shpenzime: <strong style="color:#334155">${formatMoney(r.shpenzimet||0)}</strong></span>
+        </div>
+        <div style="display:flex;gap:16px">
+            <div style="display:flex;align-items:center;gap:6px;flex:1">
+                <span style="font-size:11px;color:#64748b;min-width:20px">LR</span>
+                <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden"><div style="width:${Math.min(lr,100)}%;height:100%;background:${lrCol};border-radius:3px"></div></div>
+                <span style="font-size:12px;font-weight:700;color:${lrCol};min-width:45px;text-align:right">${lr>0?lr.toFixed(1)+'%':'—'}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex:1">
+                <span style="font-size:11px;color:#64748b;min-width:20px">CR</span>
+                <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden"><div style="width:${Math.min(cr,100)}%;height:100%;background:${crCol};border-radius:3px"></div></div>
+                <span style="font-size:12px;font-weight:700;color:${crCol};min-width:45px;text-align:right">${cr>0?cr.toFixed(1)+'%':'—'}</span>
+            </div>
         </div>`;
+
+    // Finance section hidden (merged into Info)
+    document.getElementById('drFinance').innerHTML='';document.getElementById('drFinance').style.display='none';
+
     // Sugjerime
     const sug=merrSugjerime(r),sugEl=document.getElementById('drSugjerime');
     if(sug.length>0){const bgM={danger:'#fef2f2',warning:'#fffbeb',success:'#f0fdf4',info:'#eff6ff'},bM={danger:'#fecaca',warning:'#fed7aa',success:'#bbf7d0',info:'#bfdbfe'},cM={danger:'#991b1b',warning:'#92400e',success:'#166534',info:'#1e40af'};
-        sugEl.innerHTML=sug.map(s=>`<div style="padding:6px 10px;background:${bgM[s.tipi]};border:1px solid ${bM[s.tipi]};border-radius:6px;font-size:11px;color:${cM[s.tipi]};margin-bottom:3px;display:flex;align-items:center;gap:5px"><span>${s.ikona}</span>${esc(s.teksti)}</div>`).join('');sugEl.style.display='';
+        sugEl.innerHTML=sug.map(s=>`<div style="padding:8px 12px;background:${bgM[s.tipi]};border:1px solid ${bM[s.tipi]};border-radius:8px;font-size:11px;color:${cM[s.tipi]};margin-bottom:4px;display:flex;align-items:center;gap:6px"><span>${s.ikona}</span>${esc(s.teksti)}</div>`).join('');sugEl.style.display='';
     }else{sugEl.innerHTML='';sugEl.style.display='none';}
     // Propozimi
     renderPropozimPrimi(r);
@@ -224,8 +253,6 @@ function renderKontrateBtn(r){
 }
 
 function hapKontrateWizard(){
-    // TODO: Wizard modal me fushat + spreadsheet + Word gjenerim
-    // Për momentin redirect te kontratat me të dhënat bazë
     if(!currentDrawerId)return;
     const r=rinovimet.find(x=>x.id===currentDrawerId);if(!r)return;
     // Ruaj të dhënat për kontratat
@@ -239,14 +266,6 @@ function hapKontrateWizard(){
         data_fillimit:r.data_fillimit,
         data_mbarimit:r.data_mbarimit
     }));
-    // Ndrysho statusin në kontaktuar
-    if(r.statusi==='pa_filluar'){
-        r.statusi='kontaktuar';r.updated_at=new Date().toISOString();
-        r.kontrata_derguar=true;r.kontrata_derguar_data=new Date().toISOString();
-        const u=merrUser();r.komente=r.komente||[];
-        r.komente.unshift({teksti:'Kontrata u përgatit dhe u dërgua klientit',autori:u.emri,data:new Date().toISOString(),tipi:'sistem'});
-        ruajTedhena();if(typeof perditesoNjoftimet==='function')perditesoNjoftimet();
-    }
     window.location.href='kontratat.html?nga_rinovimi='+r.id;
 }
 
@@ -358,6 +377,9 @@ function hapReportDrawer(){
     document.getElementById('rinOverlay').classList.add('open');document.getElementById('reportDrawer').classList.add('open');document.body.style.overflow='hidden';
 }
 function mbyllReportDrawer(){document.getElementById('reportDrawer').classList.remove('open');document.getElementById('rinOverlay').classList.remove('open');document.body.style.overflow='';}
+// Override overlay click to also close report drawer
+var origOverlayClick=document.getElementById('rinOverlay');
+if(origOverlayClick)origOverlayClick.addEventListener('click',function(){if(document.getElementById('reportDrawer').classList.contains('open'))mbyllReportDrawer();});
 
 // ===== IMPORT =====
 function populoImportMuajt(){const sel=document.getElementById('importMuaji'),now=new Date();let h='';for(let i=-1;i<6;i++){const d=new Date(now.getFullYear(),now.getMonth()+i,1);const k=MUAJT[d.getMonth()].toLowerCase()+'_'+d.getFullYear();h+=`<option value="${k}" ${i===0?'selected':''}>${MUAJT[d.getMonth()]+' '+d.getFullYear()}</option>`;}sel.innerHTML=h;}
@@ -424,7 +446,7 @@ function ekzekutoImport(){
     d.records.forEach(rec=>{
         if(rec._action==='update'&&rec._existId){const ex=rinovimet.find(r=>r.id===rec._existId);if(ex){['primi','tvsh','total_primi','primi_vjetor','deme_nr_paguar','deme_vlera_paguar','deme_nr_pezull','deme_vlera_pezull','deme_total_nr','deme_total_vlera','shpenzimet','kosto_totale','lr_percent','cr_percent','data_fillimit','data_mbarimit'].forEach(f=>{ex[f]=rec[f];});if(rec.agjenti)ex.agjenti=rec.agjenti;if(rec.dega)ex.dega=rec.dega;ex.updated_at=now;ex.komente=ex.komente||[];ex.komente.unshift({teksti:'Të dhënat u përditësuan nga importi.',autori:u.emri,data:now,tipi:'sistem'});}}
         else{rinovimet.push({id:'rin_'+Date.now().toString(36)+'_'+Math.random().toString(36).substr(2,4),muaji:muaj,nr_kontrates:rec.nr_kontrates||'',kontraktues_id:rec.kontraktues_id||'',kontraktuesi:rec.kontraktuesi||'',dega:rec.dega||'',agjenti:rec.agjenti||'',lloji:rec.lloji||'',nr_profatures:rec.nr_profatures||'',data_fatures:rec.data_fatures||'',data_fillimit:rec.data_fillimit||'',data_mbarimit:rec.data_mbarimit||'',primi:rec.primi||0,tvsh:rec.tvsh||0,total_primi:rec.total_primi||0,primi_vjetor:rec.primi_vjetor||0,valuta:rec.valuta||'EUR',deme_nr_paguar:rec.deme_nr_paguar||0,deme_vlera_paguar:rec.deme_vlera_paguar||0,deme_nr_pezull:rec.deme_nr_pezull||0,deme_vlera_pezull:rec.deme_vlera_pezull||0,deme_total_nr:rec.deme_total_nr||0,deme_total_vlera:rec.deme_total_vlera||0,shpenzimet:rec.shpenzimet||0,kosto_totale:rec.kosto_totale||0,lr_percent:rec.lr_percent||0,cr_percent:rec.cr_percent||0,statusi:'pa_filluar',komente:[],humbje_arsyeja:null,humbje_koment:null,importi_id:impId,importuar_nga:u.emri,created_at:now,updated_at:now});
-            if(rec._koment_excel){const nr=rinovimet[rinovimet.length-1];nr.komente.push({teksti:rec._koment_excel,autori:'Import Excel',data:now,tipi:'import'});}}
+            if(rec._koment_excel){const nr=rinovimet[rinovimet.length-1];nr.komente.push({teksti:rec._koment_excel,autori:'Menaxhmenti',data:now,tipi:'import'});}}
     });
     ruajTedhena();ruajImportMeta({id:impId,data:formatKomentDate(now),fileName:d.fileName,muaj:muaj,total:d.records.length,importuarNga:u.emri});
     currentMuaj=muaj;currentDega='';currentAgjent='';renderTabs();populoChips();aplikoFiltrat();mbyllImportModal();
