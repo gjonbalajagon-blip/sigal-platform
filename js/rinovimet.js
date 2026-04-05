@@ -90,24 +90,32 @@ function perditesoStats(){
     else{bar.innerHTML='<div class="strip-bar-seg" style="width:100%;background:rgba(255,255,255,.1)"></div>';leg.innerHTML='';}
 }
 
-// CHIPS — DEGA + AGJENT
+// CHIPS — HIERARKIKE (1 rresht degë, klik zgjeron agjentët)
 function populoChips(){
     const data=filtroSipasRolit(rinovimet.filter(r=>r.muaji===currentMuaj));
-    // Dega chips
-    const degaCount={};data.forEach(r=>{const d=r.dega||'Pa degë';degaCount[d]=(degaCount[d]||0)+1;});
-    const deget=Object.keys(degaCount).sort();
-    let dH='<span class="chips-row-label">Dega:</span>';
-    dH+=`<button class="chip-filter ${currentDega===''?'active':''}" onclick="filtroDega('')">Të gjitha <span class="chip-count">${data.length}</span></button>`;
-    deget.forEach(d=>{dH+=`<button class="chip-filter ${currentDega===d?'active':''}" onclick="filtroDega('${esc(d)}')">${esc(d)} <span class="chip-count">${degaCount[d]}</span></button>`;});
-    document.getElementById('chipsDega').innerHTML=dH;
-    // Agjent chips — filtered by selected dega
-    const agjData=currentDega?data.filter(r=>r.dega===currentDega):data;
-    const agjCount={};agjData.forEach(r=>{const a=r.agjenti||'Pa agjent';agjCount[a]=(agjCount[a]||0)+1;});
-    const agjentet=Object.keys(agjCount).sort();
-    let aH='<span class="chips-row-label">Agjenti:</span>';
-    aH+=`<button class="chip-filter ${currentAgjent===''?'active':''}" onclick="filtroAgjent('')">Të gjithë <span class="chip-count">${agjData.length}</span></button>`;
-    agjentet.forEach(a=>{aH+=`<button class="chip-filter ${currentAgjent===a?'active':''}" onclick="filtroAgjent('${esc(a)}')">${esc(a)} <span class="chip-count">${agjCount[a]}</span></button>`;});
-    document.getElementById('chipsAgjent').innerHTML=aH;
+    const degaStats={};data.forEach(r=>{
+        const d=r.dega||'Pa degë';
+        if(!degaStats[d])degaStats[d]={total:0,rinovuar:0,agjentet:{}};
+        degaStats[d].total++;if(r.statusi==='rinovuar')degaStats[d].rinovuar++;
+        const a=r.agjenti||'Pa agjent';
+        if(!degaStats[d].agjentet[a])degaStats[d].agjentet[a]={total:0,rinovuar:0};
+        degaStats[d].agjentet[a].total++;if(r.statusi==='rinovuar')degaStats[d].agjentet[a].rinovuar++;
+    });
+    const totalRin=data.filter(r=>r.statusi==='rinovuar').length;
+    const deget=Object.keys(degaStats).sort();
+    // Dega row
+    let h=`<button class="chip-filter ${currentDega===''?'active':''}" onclick="filtroDega('')">Të gjitha <span class="chip-count">${data.length}/${totalRin}✓</span></button>`;
+    deget.forEach(d=>{const s=degaStats[d];h+=`<button class="chip-filter ${currentDega===d?'active':''}" onclick="filtroDega('${esc(d)}')">${esc(d)} <span class="chip-count">${s.total}/${s.rinovuar}✓</span></button>`;});
+    document.getElementById('chipsDega').innerHTML=h;
+    // Agjent sub-row (only if dega selected)
+    const agjEl=document.getElementById('chipsAgjent');
+    if(currentDega&&degaStats[currentDega]){
+        const agj=degaStats[currentDega].agjentet;const aKeys=Object.keys(agj).sort();
+        const degaStat=degaStats[currentDega];
+        let aH=`<button class="chip-filter ${currentAgjent===''?'active':''}" onclick="filtroAgjent('')" style="margin-left:16px">Të gjithë <span class="chip-count">${degaStat.total}/${degaStat.rinovuar}✓</span></button>`;
+        aKeys.forEach(a=>{const s=agj[a];aH+=`<button class="chip-filter ${currentAgjent===a?'active':''}" onclick="filtroAgjent('${esc(a)}')">${esc(a)} <span class="chip-count">${s.total}/${s.rinovuar}✓</span></button>`;});
+        agjEl.innerHTML=aH;agjEl.style.display='';
+    }else{agjEl.innerHTML='';agjEl.style.display='none';}
 }
 function filtroDega(d){currentDega=d;currentAgjent='';populoChips();aplikoFiltrat();}
 function filtroAgjent(a){currentAgjent=a;aplikoFiltrat();populoChips();}
@@ -170,8 +178,13 @@ function hapDrawer(id){
     document.getElementById('drFinance').innerHTML=`
         <div class="rin-compact-grid" style="margin-bottom:6px">
             <div><div class="rin-cg-label">Primi</div><div class="rin-cg-value" style="font-size:15px">${formatMoney(p)}</div></div>
-            <div><div class="rin-cg-label">Dëme</div><div class="rin-cg-value" style="color:${d>0?'#ef4444':'#94a3b8'}">${d>0?formatMoney(d):'—'}</div></div>
-            <div><div class="rin-cg-label">Shpenzime</div><div class="rin-cg-value">${formatMoney(r.shpenzimet||0)}</div></div>
+            <div><div class="rin-cg-label">Dëme totale</div><div class="rin-cg-value" style="color:${d>0?'#ef4444':'#94a3b8'}">${d>0?formatMoney(d):'—'}</div></div>
+            <div><div class="rin-cg-label">Kosto totale</div><div class="rin-cg-value">${formatMoney(r.kosto_totale||0)}</div></div>
+        </div>
+        <div style="display:flex;gap:12px;font-size:11px;color:#64748b;margin-bottom:6px">
+            <span>Dëme paguar: ${r.deme_nr_paguar||0} / ${formatMoney(r.deme_vlera_paguar||0)}</span>
+            <span>Pezull: ${r.deme_nr_pezull||0} / ${formatMoney(r.deme_vlera_pezull||0)}</span>
+            <span>Shpenzime: ${formatMoney(r.shpenzimet||0)}</span>
         </div>
         <div class="rin-ratio-inline">
             <div class="rin-ratio-item"><span style="color:#64748b">LR</span><div class="rin-ratio-bar"><div class="rin-ratio-fill" style="width:${Math.min(lr,100)}%;background:${lrCol}"></div></div><span style="font-weight:600;color:${lrCol}">${lr>0?lr.toFixed(1)+'%':'—'}</span></div>
