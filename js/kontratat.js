@@ -44,7 +44,7 @@ function zgjidhLlojin(lloji,btn){
     document.getElementById('field-perfaqesuesi').style.display=(lloji==='biznes'||lloji==='familje')?'block':'none';
     document.getElementById('field-nr-personal').style.display=(lloji==='individ'||lloji==='familje')?'block':'none';
     document.getElementById('field-pozita').style.display=(lloji==='biznes')?'block':'none';
-    if(editIndex<0&&!spLocked)spSelectedPakot.clear();
+    if(editIndex<0&&!spLocked){spSelectedPakot.clear();spCustomValues=null;}
     spFoldOpen=false;
     renderSpreadsheet();
 }
@@ -186,12 +186,15 @@ function ruajKontrate(){
     const llojiSelected=document.querySelector('.drawer-lloji-btn.active');
     if(!llojiSelected){tregoNotification('Zgjidhni kategorinë (Individuale, Familjare, ose Biznese)','error');return;}
     if(!emri){tregoNotification('Shkruani emrin e klientit','error');return;}
+    if(!email){tregoNotification('Shkruani email-in e klientit','error');return;}
     if(spSelectedPakot.size===0){tregoNotification('Zgjidhni së paku një paketë','error');return;}
-    if(!fillimi){tregoNotification('Plotësoni datën e fillimit','error');return;}
-    if(!mbarimi){tregoNotification('Plotësoni datën e mbarimit','error');return;}
     if(!adresa){tregoNotification('Plotësoni adresën','error');return;}
     if(lloji==='biznes'&&!nrBiznesit){tregoNotification('Plotësoni NRB (Nr. Biznesit)','error');return;}
     if((lloji==='individ'||lloji==='familje')&&!nrPersonal){tregoNotification('Plotësoni Nr. ID (Nr. Personal)','error');return;}
+    if(lloji==='biznes'&&!document.getElementById('m-perfaqesuesi').value.trim()){tregoNotification('Plotësoni emrin e përfaqësuesit','error');return;}
+    if(!document.getElementById('m-data-kontrates').value.trim()){tregoNotification('Plotësoni datën e kontratës','error');return;}
+    if(!fillimi){tregoNotification('Plotësoni datën e fillimit','error');return;}
+    if(!mbarimi){tregoNotification('Plotësoni datën e mbarimit','error');return;}
 
     // Lexo pakot nga spreadsheet
     const pakotAktuale=[];
