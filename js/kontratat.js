@@ -25,11 +25,21 @@ function ndryshoTab(tab){activeTab=tab;document.querySelectorAll('.tab-btn').for
 function ndryshoSort(sort){activeSort=sort;document.getElementById('sort-skadon').classList.toggle('active',sort==='skadon');document.getElementById('sort-re').classList.toggle('active',sort==='re');filtro();}
 function mbyllDrawer(){document.getElementById('drawer-overlay').classList.remove('active');}
 
+// ====== NOTIFICATION ======
+function tregoNotification(msg,tipi){
+    let n=document.getElementById('k-notification');
+    if(!n){n=document.createElement('div');n.id='k-notification';n.style.cssText='position:fixed;top:20px;right:20px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);transition:opacity .3s;font-family:inherit;max-width:400px;';document.body.appendChild(n);}
+    const colors={error:'background:#fef2f2;color:#991b1b;border:1px solid #fecaca',success:'background:#f0fdf4;color:#166534;border:1px solid #bbf7d0',info:'background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe'};
+    const icons={error:'⚠️',success:'✅',info:'ℹ️'};
+    n.style.cssText+=colors[tipi||'error'];n.innerHTML=icons[tipi||'error']+' '+msg;n.style.opacity='1';
+    clearTimeout(n._timer);n._timer=setTimeout(()=>{n.style.opacity='0';setTimeout(()=>{if(n.parentNode)n.parentNode.removeChild(n);},300);},4000);
+}
+
 // ====== LLOJI ======
 function zgjidhLlojin(lloji,btn){
     document.getElementById('m-lloji').value=lloji;
     document.querySelectorAll('.drawer-lloji-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
+    if(btn)btn.classList.add('active');
     document.getElementById('field-nr-biznesit').style.display=(lloji==='biznes')?'block':'none';
     document.getElementById('field-perfaqesuesi').style.display=(lloji==='biznes'||lloji==='familje')?'block':'none';
     document.getElementById('field-nr-personal').style.display=(lloji==='individ'||lloji==='familje')?'block':'none';
@@ -51,7 +61,8 @@ function renderSpreadsheet(){
     let h='<div class="sp-container">';
     h+='<div class="sp-toolbar"><div class="sp-toolbar-left">';
     if(!spLocked)h+='<label class="sp-select-all"><input type="checkbox" id="sp-sel-all" onchange="spToggleAll(this.checked)"> Selekto të gjitha</label>';
-    h+='</div><span class="sp-hint">'+(spLocked?'🔒 Kyçur (nga oferta)':'Kliko çelulën për edit')+'</span></div>';
+    else h+='<button onclick="zhbllokoSpreadsheet()" style="font-size:11px;padding:4px 10px;border:1px solid #e5e9f0;border-radius:6px;background:#fff;color:#0047AB;cursor:pointer;font-weight:600;font-family:inherit">🔓 Zhblloko</button>';
+    h+='</div><span class="sp-hint">'+(spLocked?'🔒 Kyçur':'Kliko çelulën për edit')+'</span></div>';
 
     h+='<div class="sp-table-wrap"><table class="sp-table"><thead><tr><td></td>';
     pakotList.forEach(p=>{
@@ -64,20 +75,14 @@ function renderSpreadsheet(){
     });
     h+='</tr></thead><tbody>';
 
-    // Zona
     h+='<tr><td>Zona</td>';pakotList.forEach(p=>{const sel=spSelectedPakot.has(p.id);h+='<td class="'+(sel?'sp-cell':'sp-cell unselected')+'" data-pako="'+p.id+'" data-field="zona" '+cellClick+'>'+p.zona+'</td>';});h+='</tr>';
-    // Shuma
     h+='<tr><td>Shuma</td>';pakotList.forEach(p=>{const sel=spSelectedPakot.has(p.id);h+='<td class="'+(sel?'sp-cell':'sp-cell unselected')+'" data-pako="'+p.id+'" data-field="shuma" '+cellClick+'>'+p.shuma+'</td>';});h+='</tr>';
-    // Hospitalore
     h+='<tr class="sp-section-row"><td colspan="'+colCount+'">Hospitalore</td></tr>';
     h+='<tr><td>Mbulimi</td>';pakotList.forEach(p=>{const sel=spSelectedPakot.has(p.id);h+='<td class="'+(sel?'sp-cell':'sp-cell unselected')+'" data-pako="'+p.id+'" data-field="hospitalore" '+cellClick+'>'+p.hospitalore+'</td>';});h+='</tr>';
-    // Ambulantore
     h+='<tr class="sp-section-row"><td colspan="'+colCount+'">Ambulantore</td></tr>';
     h+='<tr><td>Mbulimi</td>';pakotList.forEach(p=>{const sel=spSelectedPakot.has(p.id);const val=p.ambulantore||'—';h+='<td class="'+(sel?'sp-cell':'sp-cell unselected')+'" data-pako="'+p.id+'" data-field="ambulantore" '+cellClick+'>'+val+'</td>';});h+='</tr>';
-    // Trajtime tjera
     h+='<tr class="sp-fold-row" onclick="spToggleFold()"><td colspan="'+colCount+'"><span class="sp-fold-arrow'+(spFoldOpen?' open':'')+'">▸</span> Trajtime tjera ('+SP_TJERA_LABELS.length+')</td></tr>';
     if(spFoldOpen){SP_TJERA_LABELS.forEach(t=>{h+='<tr><td>'+t.label+'</td>';pakotList.forEach(p=>{const sel=spSelectedPakot.has(p.id);let val='—';if(p.tjera_pikat&&p.tjera_pikat[t.idx])val=p.tjera_pikat[t.idx].vlera||'—';const isEmpty=val==='—'||val==='Nuk mbulohet';const cls=sel?(isEmpty?'sp-cell empty':'sp-cell'):'sp-cell unselected';const display=val==='Nuk mbulohet'?'—':val;h+='<td class="'+cls+'" data-pako="'+p.id+'" data-field="tjera_'+t.idx+'" '+cellClick+'>'+display+'</td>';});h+='</tr>';});}
-    // Primi
     h+='<tr class="sp-primi-row"><td>Primi</td>';pakotList.forEach(p=>{const sel=spSelectedPakot.has(p.id);const suffix=eshteIndivid?'/vit':'/muaj';h+='<td class="'+(sel?'sp-cell':'sp-cell unselected')+'" data-pako="'+p.id+'" data-field="primi_madh" '+cellClick+'>€ '+p.primi_madh+suffix+'</td>';});h+='</tr>';
     if(!eshteIndivid){h+='<tr><td style="color:#6b7a8d;font-size:10px;border-right:1px solid #e5e9f0;background:#fafbfc;">Primi fëmijë</td>';pakotList.forEach(p=>{const sel=spSelectedPakot.has(p.id);const val=p.primi_femije||'';h+='<td class="'+(sel?(val?'sp-cell':'sp-cell empty'):'sp-cell unselected')+'" data-pako="'+p.id+'" data-field="primi_femije" '+cellClick+'>'+(val?'€ '+val+'/muaj':'—')+'</td>';});h+='</tr>';}
 
@@ -86,6 +91,12 @@ function renderSpreadsheet(){
     const cb=document.getElementById('sp-sel-all');
     if(cb){const pakotList2=lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;cb.checked=spSelectedPakot.size===pakotList2.length&&pakotList2.length>0;}
     if(spLocked&&spCustomValues)setTimeout(()=>{applyCustomValues();},10);
+}
+
+function zhbllokoSpreadsheet(){
+    if(!confirm('A jeni i sigurt? Pakot do të zhbllokohen për editim.'))return;
+    spLocked=false;
+    renderSpreadsheet();
 }
 
 function spTogglePako(id){if(spLocked)return;if(spSelectedPakot.has(id))spSelectedPakot.delete(id);else spSelectedPakot.add(id);renderSpreadsheet();}
@@ -111,7 +122,7 @@ function applyCustomValues(pakotArr){
 
 // ====== SHTO / EDITO / RUAJ ======
 function shtoKontrate(){
-    editIndex=-1;spLocked=false;spSelectedPakot.clear();spFoldOpen=false;spCustomValues=null;spCustomValues=null;spCustomValues=null;
+    editIndex=-1;spLocked=false;spSelectedPakot.clear();spFoldOpen=false;spCustomValues=null;
     document.getElementById('modal-title').textContent='Kontratë e Re';
     document.getElementById('m-emri').value='';
     if(document.getElementById('m-email'))document.getElementById('m-email').value='';
@@ -123,7 +134,14 @@ function shtoKontrate(){
     document.getElementById('m-data-kontrates').value='';
     document.getElementById('m-fillimi').value='';
     document.getElementById('m-mbarimi').value='';
-    zgjidhLlojin('individ',document.querySelectorAll('.drawer-lloji-btn')[0]);
+    // Lloji pa paraselektim — shfaq layout individ por pa active
+    document.getElementById('m-lloji').value='individ';
+    document.querySelectorAll('.drawer-lloji-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('field-nr-biznesit').style.display='none';
+    document.getElementById('field-perfaqesuesi').style.display='none';
+    document.getElementById('field-nr-personal').style.display='block';
+    document.getElementById('field-pozita').style.display='none';
+    renderSpreadsheet();
 
     // Transfer nga oferta
     const params=new URLSearchParams(window.location.search);
@@ -135,12 +153,10 @@ function shtoKontrate(){
             const btns=document.querySelectorAll('.drawer-lloji-btn');
             const llojiMap={individ:0,familje:1,biznes:2};
             zgjidhLlojin(data.lloji||'individ',btns[llojiMap[data.lloji]||0]);
-            // Selekto pakot + lock
             spLocked=true;
             const pakotArr=data.pakot||[];
             pakotArr.forEach(p=>{const id=typeof p==='object'?p.id:p;spSelectedPakot.add(id);});
             renderSpreadsheet();
-            // Apliko custom values
             const pakotData=pakotArr.filter(p=>typeof p==='object').map(p=>{
                 if(!p.tjera_pikat)return p;
                 const fixed={...p};
@@ -158,9 +174,24 @@ function shtoKontrate(){
 
 function ruajKontrate(){
     const emri=document.getElementById('m-emri').value.trim();
-    if(!emri){alert('Ju lutem shkruani emrin e klientit!');return;}
-    if(spSelectedPakot.size===0){alert('Ju lutem zgjidhni së paku një paketë!');return;}
     const lloji=document.getElementById('m-lloji').value;
+    const fillimi=document.getElementById('m-fillimi').value.trim();
+    const mbarimi=document.getElementById('m-mbarimi').value.trim();
+    const email=document.getElementById('m-email')?document.getElementById('m-email').value.trim():'';
+    const adresa=document.getElementById('m-adresa').value.trim();
+    const nrPersonal=document.getElementById('m-nr-personal').value.trim();
+    const nrBiznesit=document.getElementById('m-nr-biznesit').value.trim();
+
+    // === MANDATORY VALIDATION ===
+    const llojiSelected=document.querySelector('.drawer-lloji-btn.active');
+    if(!llojiSelected){tregoNotification('Zgjidhni kategorinë (Individuale, Familjare, ose Biznese)','error');return;}
+    if(!emri){tregoNotification('Shkruani emrin e klientit','error');return;}
+    if(spSelectedPakot.size===0){tregoNotification('Zgjidhni së paku një paketë','error');return;}
+    if(!fillimi){tregoNotification('Plotësoni datën e fillimit','error');return;}
+    if(!mbarimi){tregoNotification('Plotësoni datën e mbarimit','error');return;}
+    if(!adresa){tregoNotification('Plotësoni adresën','error');return;}
+    if(lloji==='biznes'&&!nrBiznesit){tregoNotification('Plotësoni NRB (Nr. Biznesit)','error');return;}
+    if((lloji==='individ'||lloji==='familje')&&!nrPersonal){tregoNotification('Plotësoni Nr. ID (Nr. Personal)','error');return;}
 
     // Lexo pakot nga spreadsheet
     const pakotAktuale=[];
@@ -172,7 +203,6 @@ function ruajKontrate(){
             if(val==='—')val='';
             vlerat[field]=val;
         });
-        // Nëse fold mbyllur, merr tjera_0..8 nga spCustomValues
         if(spCustomValues){const cv=spCustomValues.find(c=>typeof c==='object'&&c.id===pakoId);if(cv){for(let ti=0;ti<9;ti++){const key='tjera_'+ti;if(!vlerat[key]&&cv[key])vlerat[key]=cv[key];}}}
         const pakotList=lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;
         const found=pakotList.find(pk=>pk.id===pakoId);
@@ -180,22 +210,17 @@ function ruajKontrate(){
         pakotAktuale.push(vlerat);
     });
 
-    // Emrat për backward compat
     const pakotEmra=pakotAktuale.map(p=>'Pako '+(p.emri||p.id));
 
     const kontrata={
-        emri,lloji,
-        adresa:document.getElementById('m-adresa').value.trim(),
-        nrBiznesit:document.getElementById('m-nr-biznesit').value.trim(),
-        nrPersonal:document.getElementById('m-nr-personal').value.trim(),
+        emri,lloji,adresa,
+        nrBiznesit,nrPersonal,
         perfaqesuesi:document.getElementById('m-perfaqesuesi').value.trim(),
         pozita:document.getElementById('m-pozita').value.trim(),
         dataKontrates:document.getElementById('m-data-kontrates').value,
         pakot:pakotEmra,
         pakotData:pakotAktuale,
-        fillimi:document.getElementById('m-fillimi').value,
-        mbarimi:document.getElementById('m-mbarimi').value,
-        email:document.getElementById('m-email')?document.getElementById('m-email').value.trim():'',
+        fillimi,mbarimi,email,
         faturimiLloji:document.getElementById('m-faturimi-lloji')?document.getElementById('m-faturimi-lloji').value:'mujor',
         dataKrijimit:new Date().toISOString().split('T')[0]
     };
@@ -208,6 +233,7 @@ function ruajKontrate(){
         localStorage.setItem('faturimi_klientet',JSON.stringify(faturimi));
     }
     ruajNeStorage();mbyllDrawer();renderTabela();
+    tregoNotification(editIndex>=0?'Kontrata u përditësua':'Kontrata u krijua me sukses','success');
 }
 
 function editoKontrate(index){
@@ -226,12 +252,10 @@ function editoKontrate(index){
     if(document.getElementById('m-faturimi-lloji'))document.getElementById('m-faturimi-lloji').value=k.faturimiLloji||'mujor';
 
     spSelectedPakot.clear();spFoldOpen=false;
-    // Selekto pakot nga kontrata — lock nëse ka pakotData
     const pakotData=k.pakotData||[];
     spLocked=pakotData.length>0;
     spCustomValues=pakotData.length>0?pakotData:null;
     pakotData.forEach(p=>{if(typeof p==='object'&&p.id)spSelectedPakot.add(p.id);});
-    // Nëse nuk ka pakotData, provo me emrat
     if(pakotData.length===0&&k.pakot){
         const lloji=k.lloji;const pakotList=lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;
         (k.pakot||[]).forEach(pe=>{const found=pakotList.find(p=>'Pako '+p.emri===pe||p.emri===pe);if(found)spSelectedPakot.add(found.id);});
@@ -266,6 +290,21 @@ async function gjeneroWord(index){
     const k=kontratat[index];
     try{const response=await fetch('https://sigal-platform-production.up.railway.app/api/gjenero-kontrate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(k)});
     const data=await response.json();if(data.success)window.open('https://sigal-platform-production.up.railway.app/api/shkarko/'+data.fileName,'_blank');else alert('Gabim: '+data.error);}catch(err){alert('Serveri nuk është aktiv!');}
+}
+
+async function dergoEmail(index){
+    const k=kontratat[index];
+    if(!k.email){tregoNotification('Kjo kontratë nuk ka email','error');return;}
+    if(!confirm('Dërgo kontratën me email te '+k.email+'?'))return;
+    try{
+        const response=await fetch('https://sigal-platform-production.up.railway.app/api/gjenero-kontrate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(k)});
+        const data=await response.json();
+        if(data.success){
+            // Dërgo email me Brevo
+            const emailRes=await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:k.email,emri:k.emri,subject:'Kontrata juaj - SIGAL Health',message:'I/e nderuar '+k.emri+',\n\nBashkëngjitur gjeni kontratën tuaj të sigurimit shëndetësor.\n\nMë respekt,\nSIGAL Insurance Group'})});
+            tregoNotification('Kontrata u dërgua me email te '+k.email,'success');
+        }else{tregoNotification('Gabim në gjenerimin e Word: '+data.error,'error');}
+    }catch(err){tregoNotification('Serveri nuk është aktiv','error');}
 }
 
 function filtro(){renderTabela();}
@@ -305,7 +344,6 @@ function renderTabela(){
         tbody.innerHTML=sorted.map(k=>renderRow(k)).join('');return;
     }
 
-    // Skaduar — foldable sipas vitit
     const filtered=skaduar.filter(k=>{return(filterLloji==='all'||k.lloji===filterLloji)&&(k.emri.toLowerCase().includes(search)||(k.nrPersonal||'').toLowerCase().includes(search)||(k.nrBiznesit||'').toLowerCase().includes(search));});
     if(filtered.length===0){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#888;">Nuk ka kontrata të skaduara.</td></tr>';return;}
     const sipasVitit={};
@@ -328,7 +366,7 @@ function renderRow(k){
     const pakotArr=k.pakot||[];let pakotTxt='-';
     if(pakotArr.length<=2)pakotTxt=pakotArr.join(', ');
     else pakotTxt=pakotArr.slice(0,2).join(', ')+' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">+'+(pakotArr.length-2)+'</span>';
-    return '<tr><td><div class="klient-name">'+k.emri+(k.arkivuar?' <span style="font-size:9px;color:#94a3b8;font-weight:600;">RINOVUAR</span>':'')+'</div><div class="klient-sub">'+(k.adresa||'')+'</div></td><td style="font-size:11px;color:#6b7a8d;">'+nrId+'</td><td><span class="badge-lloji '+k.lloji+'">'+(llojiLabels[k.lloji]||k.lloji)+'</span></td><td style="font-size:11px;color:#6b7a8d;">'+pakotTxt+'</td><td style="font-size:11px;color:#6b7a8d;">'+formatData(k.fillimi)+'</td><td><div class="skadon-cell"><span class="skadon-dot" style="background:'+dotColor+';"></span>'+ditet.teksti+'</div></td><td><span class="badge-status '+statusi+'">'+(statusLabels[statusi]||statusi)+'</span></td><td><div class="action-icon-btns"><button onclick="rinovoKontrate('+idx+')" title="Rinovo"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button><button onclick="editoKontrate('+idx+')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-text btn-word" onclick="gjeneroWord('+idx+')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> Word</button><button onclick="fshijKontrate('+idx+')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div></td></tr>';
+    return '<tr><td><div class="klient-name">'+k.emri+(k.arkivuar?' <span style="font-size:9px;color:#94a3b8;font-weight:600;">RINOVUAR</span>':'')+'</div><div class="klient-sub">'+(k.adresa||'')+'</div></td><td style="font-size:11px;color:#6b7a8d;">'+nrId+'</td><td><span class="badge-lloji '+k.lloji+'">'+(llojiLabels[k.lloji]||k.lloji)+'</span></td><td style="font-size:11px;color:#6b7a8d;">'+pakotTxt+'</td><td style="font-size:11px;color:#6b7a8d;">'+formatData(k.fillimi)+'</td><td><div class="skadon-cell"><span class="skadon-dot" style="background:'+dotColor+';"></span>'+ditet.teksti+'</div></td><td><span class="badge-status '+statusi+'">'+(statusLabels[statusi]||statusi)+'</span></td><td><div class="action-icon-btns"><button onclick="dergoEmail('+idx+')" title="Dërgo Email"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button onclick="editoKontrate('+idx+')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-text btn-word" onclick="gjeneroWord('+idx+')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> Word</button><button onclick="fshijKontrate('+idx+')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div></td></tr>';
 }
 
 document.addEventListener('DOMContentLoaded',function(){
@@ -339,45 +377,39 @@ document.addEventListener('DOMContentLoaded',function(){
     const params=new URLSearchParams(window.location.search);
     if(params.get('nga_oferta')==='true')shtoKontrate();
 });
+
 // ============================================================
-// SHTESË PËR RINOVIME — shto në fund të kontratat.js
+// SHTESË PËR RINOVIME
 // ============================================================
 (function(){
-    const params=new URLSearchParams(window.location.search);
-    const rinId=params.get('nga_rinovimi');
+    var params=new URLSearchParams(window.location.search);
+    var rinId=params.get('nga_rinovimi');
     if(!rinId)return;
-    
-    const rinData=JSON.parse(localStorage.getItem('rinovim_per_kontrate')||'{}');
+    var rinData=JSON.parse(localStorage.getItem('rinovim_per_kontrate')||'{}');
     if(!rinData.nga_rinovimi)return;
-    
+
     setTimeout(function(){
         shtoKontrate();
-        
         setTimeout(function(){
             if(rinData.emri)document.getElementById('m-emri').value=rinData.emri;
+            // NRB ose Nr Personal sipas llojit
             if(rinData.kontraktues_id){
-                var nrP=document.getElementById('m-nr-personal');
-                if(nrP)nrP.value=rinData.kontraktues_id;
+                document.getElementById('m-nr-personal').value=rinData.kontraktues_id;
+                document.getElementById('m-nr-biznesit').value=rinData.kontraktues_id;
             }
-            
+            // Datat e reja
             if(rinData.data_mbarimit){
-                var mbOld=rinData.data_mbarimit;
-                var fillRi;
-                if(mbOld.includes('.')){
-                    var parts=mbOld.split('.');
-                    fillRi=new Date(parseInt(parts[2]),parseInt(parts[1])-1,parseInt(parts[0])+1);
-                }else{
-                    fillRi=new Date(new Date(mbOld).getTime()+86400000);
-                }
+                var mbOld=rinData.data_mbarimit;var fillRi;
+                if(mbOld.includes('.')){var parts=mbOld.split('.');fillRi=new Date(parseInt(parts[2]),parseInt(parts[1])-1,parseInt(parts[0])+1);}
+                else{fillRi=new Date(new Date(mbOld).getTime()+86400000);}
                 if(!isNaN(fillRi.getTime())){
                     var mbRi=new Date(fillRi);mbRi.setFullYear(mbRi.getFullYear()+1);mbRi.setDate(mbRi.getDate()-1);
-                    var fmtDate=function(dt){return String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();};
-                    document.getElementById('m-fillimi').value=fmtDate(fillRi);
-                    document.getElementById('m-mbarimi').value=fmtDate(mbRi);
-                    document.getElementById('m-data-kontrates').value=fmtDate(new Date());
+                    var fmt=function(dt){return String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();};
+                    document.getElementById('m-fillimi').value=fmt(fillRi);
+                    document.getElementById('m-mbarimi').value=fmt(mbRi);
+                    document.getElementById('m-data-kontrates').value=fmt(new Date());
                 }
             }
-
             document.getElementById('modal-title').textContent='Kontratë nga Rinovimi';
             window.history.replaceState({},'','kontratat.html');
             localStorage.removeItem('rinovim_per_kontrate');
