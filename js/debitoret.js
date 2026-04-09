@@ -3,9 +3,65 @@
 // ============================================================
 const DEB_KEY = 'debitoret_data_v1';
 const DEB_IMP_KEY = 'debitoret_imports_v1';
-
 const MUAJT = ['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','Gusht','Shtator','Tetor','Nentor','Dhjetor'];
 
+// Mapping: emri i agjentit (lowercase, trimmed) -> kodi i degës
+const DEGA_KODET = {
+    D: 'Drejtoria Qendrore',
+    F: 'Dega Ferizaj',
+    Pz: 'Dega Prizren',
+    Pr: 'Dega Prishtine',
+    M: 'Dega Mitrovice',
+    G: 'Dega Gjilan',
+    Gj: 'Dega Gjakove',
+    P: 'Dega Peje'
+};
+
+const AGJENT_DEGA_MAP = {
+    'adelina hoxha': 'D',
+    'agon gjonbalaj': 'D',
+    'ajtene pakashtica': 'Pr',
+    'arbnor smajli': 'Pr',
+    'arber osmani': 'M',
+    'arbër osmani': 'M',
+    'ardora kastrati': 'Pz',
+    'arta cakiqi': 'D',
+    'azbije morina': 'D',
+    'bekim nitaj': 'P',
+    'besnik jashari': 'D',
+    'blendi krasniqi': 'D',
+    'brahim igrishta': 'Pr',
+    'brahim igrishta 1': 'D',
+    'bujar huruglica': 'Pr',
+    'drejtoria qendrore': 'D',
+    'eglant beqiraj': 'Pz',
+    'eshref mehmeti': 'F',
+    'fadil gjoshi': 'Gj',
+    'fisnik rexhepi': 'F',
+    'fisnik rexhepi - fersig': 'F',
+    'gjergj pjetraj': 'Gj',
+    'herolinda krasniqi': 'D',
+    'ismet sadiku': 'D',
+    'isuf gutaj': 'Gj',
+    'janina çeku': 'P',
+    'janina ceku': 'P',
+    'kimete maloku': 'G',
+    'kosovare kelmendi': 'Pr',
+    'lule demelezi': 'F',
+    'mevlide nuhiu': 'F',
+    'mustafe alimehaj': 'F',
+    'pranvera shehu': 'Pz',
+    'valdrin lajqi': 'P',
+    'valentina mehmeti': 'F'
+};
+
+function resolveDegaFromAgjent(agjentName) {
+    const key = String(agjentName || '').toLowerCase().trim();
+    if (!key) return 'Pa dege';
+    const kod = AGJENT_DEGA_MAP[key];
+    if (kod && DEGA_KODET[kod]) return DEGA_KODET[kod];
+    return 'Pa dege';
+}
 const STATUSET = {
     i_ri: { emri:'I ri', bar:'#cbd5e1', icon:'circle' },
     kontaktuar: { emri:'Kontaktuar', bar:'#fbbf24', icon:'phone' },
