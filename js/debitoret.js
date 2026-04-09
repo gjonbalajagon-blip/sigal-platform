@@ -340,11 +340,11 @@ function renderTabela() {
     const tbody = document.getElementById('debTableBody');
 
     if (!currentMuaj || debitoret.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8"><div class="deb-empty"><div class="deb-empty-icon">📋</div><div class="deb-empty-title">Asnje debitor ende</div><div class="deb-empty-sub">Kliko "Importo" per te ngarkuar raportin e debitoreve</div></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7"><div class="deb-empty"><div class="deb-empty-icon">📋</div><div class="deb-empty-title">Asnje debitor ende</div><div class="deb-empty-sub">Kliko "Importo" per te ngarkuar raportin e debitoreve</div></div></td></tr>`;
         return;
     }
     if (filteredList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8"><div class="deb-no-results">Asnje rezultat me keto filtra</div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7"><div class="deb-no-results">Asnje rezultat me keto filtra</div></td></tr>`;
         return;
     }
 
@@ -368,8 +368,7 @@ function renderTabela() {
             <td style="text-align:right">${formatMoney(Number(r.borxh_31_60 || 0))}</td>
             <td style="text-align:right">${formatMoney(Number(r.borxh_61_90 || 0))}</td>
             <td style="text-align:right" class="${riskClass}">${formatMoney(risk)}</td>
-            <td onclick="event.stopPropagation()">${renderStatusIcons(r)}</td>
-            <td>${labelBalance(r.kategori_balance)}</td>
+            <td onclick="event.stopPropagation()" style="text-align:center">${renderStatusIcons(r)}</td>
         </tr>
     `;
     });
@@ -817,15 +816,17 @@ function konfirmoImportin() {
 function hapReportDrawer() {
     const data = filtroSipasRolit(debitoret.filter(x => x.muaji === currentMuaj));
 
-    let totalBorxh = 0, totalRisk = 0, totalPaguar = 0;
+    let totalBorxh = 0, totalRisk = 0, totalPaguar = 0, totalPaguarPjesshem = 0;
     const counts = {};
     Object.keys(STATUSET).forEach(s => counts[s] = 0);
     const dege = {};
+    const agjentet = {};
 
     data.forEach(r => {
         totalBorxh += Number(r.debitori_total || 0);
         totalRisk += Number(r.borxh_mbi_365 || 0);
-        totalPaguar += Number(r.shuma_paguar || 0);
+        if (r.statusi === 'paguar_total') totalPaguar += Number(r.shuma_paguar || r.debitori_total || 0);
+        if (r.statusi === 'paguar_pjesshem') totalPaguarPjesshem += Number(r.shuma_paguar || 0);
         counts[r.statusi] = (counts[r.statusi] || 0) + 1;
 
         const d = r.dega || 'Pa dege';
@@ -833,21 +834,20 @@ function hapReportDrawer() {
         dege[d].total++;
         dege[d].borxh += Number(r.debitori_total || 0);
         dege[d].risk += Number(r.borxh_mbi_365 || 0);
-    });
 
-    // Breakdown sipas agjenteve
-    const agjentet = {};
-    data.forEach(r => {
         const a = r.agjenti || 'Pa agjent';
-        if (!agjentet[a]) agjentet[a] = { total:0, borxh:0, risk:0, paguar:0 };
+        if (!agjentet[a]) agjentet[a] = { total:0, borxh:0, risk:0, paguarVal:0 };
         agjentet[a].total++;
         agjentet[a].borxh += Number(r.debitori_total || 0);
         agjentet[a].risk += Number(r.borxh_mbi_365 || 0);
-        if (r.statusi === 'paguar_total') agjentet[a].paguar++;
+        if (r.statusi === 'paguar_total') agjentet[a].paguarVal += Number(r.shuma_paguar || r.debitori_total || 0);
+        if (r.statusi === 'paguar_pjesshem') agjentet[a].paguarVal += Number(r.shuma_paguar || 0);
     });
-    const agjentetSorted = Object.keys(agjentet).sort((a,b) => agjentet[b].borxh - agjentet[a].borxh);
 
-    // Krahasim me muajin paraprak
+    const paguarTotal = totalPaguar + totalPaguarPjesshem;
+    const mbetur = totalBorxh - paguarTotal;
+
+    // Krahasim muaj paraprak
     const muajtList = getMuajt();
     const idx = muajtList.indexOf(currentMuaj);
     const muajPrev = idx > 0 ? muajtList[idx - 1] : null;
@@ -855,7 +855,6 @@ function hapReportDrawer() {
     if (muajPrev) {
         const prevData = filtroSipasRolit(debitoret.filter(x => x.muaji === muajPrev));
         const prevBorxh = prevData.reduce((s,r) => s + Number(r.debitori_total || 0), 0);
-        const prevKlient = prevData.length;
         const prevRisk = prevData.reduce((s,r) => s + Number(r.borxh_mbi_365 || 0), 0);
 
         const prevNames = new Set(prevData.map(r => r.klienti_normalized || normalizeText(r.klienti)));
@@ -865,72 +864,60 @@ function hapReportDrawer() {
 
         const deltaBorxh = totalBorxh - prevBorxh;
         const deltaBorxhPct = prevBorxh ? ((deltaBorxh / prevBorxh) * 100).toFixed(1) : 0;
-        const deltaKlient = data.length - prevKlient;
+        const deltaKlient = data.length - prevData.length;
         const deltaRisk = totalRisk - prevRisk;
-
         const arrow = (n) => n > 0 ? '↑' : n < 0 ? '↓' : '→';
         const cls = (n) => n > 0 ? 'up' : n < 0 ? 'down' : '';
 
         compareHtml = `
             <div class="deb-report-section">
-                <div class="deb-section-title">Krahasim me ${formatMuajLabel(muajPrev)}</div>
-                <div class="deb-compare-row">
-                    <span class="deb-compare-label">Borxhi total</span>
-                    <span class="deb-compare-val">${formatMoney(totalBorxh)} <span class="deb-compare-delta ${cls(deltaBorxh)}">${arrow(deltaBorxh)} ${formatMoney(Math.abs(deltaBorxh))} (${deltaBorxhPct}%)</span></span>
-                </div>
-                <div class="deb-compare-row">
-                    <span class="deb-compare-label">Klientë me borxh</span>
-                    <span class="deb-compare-val">${data.length} <span class="deb-compare-delta ${cls(deltaKlient)}">${arrow(deltaKlient)} ${Math.abs(deltaKlient)}</span></span>
-                </div>
-                <div class="deb-compare-row">
-                    <span class="deb-compare-label">Mbi 365 ditë</span>
-                    <span class="deb-compare-val">${formatMoney(totalRisk)} <span class="deb-compare-delta ${cls(deltaRisk)}">${arrow(deltaRisk)} ${formatMoney(Math.abs(deltaRisk))}</span></span>
-                </div>
-                <div class="deb-compare-row">
-                    <span class="deb-compare-label">Klientë që paguan nga muaji i kaluar</span>
-                    <span class="deb-compare-val" style="color:#22c55e">${paguarNgaPrev}</span>
-                </div>
-                <div class="deb-compare-row">
-                    <span class="deb-compare-label">Klientë të rinj këtë muaj</span>
-                    <span class="deb-compare-val" style="color:#ef4444">${teRinj}</span>
-                </div>
+                <div class="deb-report-section-title">Krahasim me ${formatMuajLabel(muajPrev)}</div>
+                <div class="deb-compare-row"><span class="deb-compare-label">Borxhi total</span><span class="deb-compare-val">${formatMoney(totalBorxh)} <span class="deb-compare-delta ${cls(deltaBorxh)}">${arrow(deltaBorxh)} ${deltaBorxhPct}%</span></span></div>
+                <div class="deb-compare-row"><span class="deb-compare-label">Klientë me borxh</span><span class="deb-compare-val">${data.length} <span class="deb-compare-delta ${cls(deltaKlient)}">${arrow(deltaKlient)} ${Math.abs(deltaKlient)}</span></span></div>
+                <div class="deb-compare-row"><span class="deb-compare-label">Mbi 365 ditë</span><span class="deb-compare-val">${formatMoney(totalRisk)} <span class="deb-compare-delta ${cls(deltaRisk)}">${arrow(deltaRisk)}</span></span></div>
+                <div class="deb-compare-row"><span class="deb-compare-label">Klientë që paguan</span><span class="deb-compare-val" style="color:#22c55e">${paguarNgaPrev}</span></div>
+                <div class="deb-compare-row"><span class="deb-compare-label">Klientë të rinj</span><span class="deb-compare-val" style="color:#ef4444">${teRinj}</span></div>
             </div>
         `;
     }
 
-    const html = `
-        <div class="deb-report-section">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div class="deb-card"><div class="deb-card-label">Borxhi total</div><div class="deb-card-value">${formatMoney(totalBorxh)}</div></div>
-                <div class="deb-card"><div class="deb-card-label">Mbi 365</div><div class="deb-card-value" style="color:${totalRisk>0?'#ef4444':'#1a2332'}">${formatMoney(totalRisk)}</div></div>
-                <div class="deb-card small"><div class="deb-card-label">Paguar</div><div class="deb-card-value">${formatMoney(totalPaguar)}</div></div>
-                <div class="deb-card small"><div class="deb-card-label">Total klientë</div><div class="deb-card-value">${data.length}</div></div>
+    // KOLONA E MAJTË: totale, krahasim, statuset, degët
+    const leftHtml = `
+        <div class="deb-totals-strip">
+            <div class="deb-totals-row">
+                <div class="deb-total-box"><div class="dt-label">Borxhi total</div><div class="dt-value">${formatMoney(totalBorxh)}</div></div>
+                <div class="deb-total-box risk"><div class="dt-label">Mbi 365 ditë</div><div class="dt-value">${formatMoney(totalRisk)}</div></div>
+            </div>
+            <div class="deb-totals-row">
+                <div class="deb-total-box highlight"><div class="dt-label">Paguar (total + pjesshëm)</div><div class="dt-value">${formatMoney(paguarTotal)}</div></div>
+                <div class="deb-total-box"><div class="dt-label">Mbetur për pagesë</div><div class="dt-value">${formatMoney(mbetur)}</div></div>
             </div>
         </div>
 
         ${compareHtml}
 
-            <div class="deb-report-section">
-                <div class="deb-section-title">Statuset</div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                    ${Object.keys(STATUSET).map(k => `<span class="deb-badge deb-badge-${k}">${STATUSET[k].emri} ${counts[k] || 0}</span>`).join('')}
-                </div>
+        <div class="deb-report-section">
+            <div class="deb-report-section-title">Statuset</div>
+            <div class="deb-stats-grid">
+                ${Object.keys(STATUSET).filter(k => k !== 'i_ri').map(k => `
+                    <div class="deb-stat-card">
+                        <div class="dsc-label">${STATUSET[k].emri}</div>
+                        <div class="dsc-num" style="color:${STATUSET[k].bar}">${counts[k] || 0}</div>
+                    </div>
+                `).join('')}
             </div>
+        </div>
 
-            <div class="deb-report-section">
-                <div class="deb-section-title">Sipas degëve</div>
-                <table class="deb-report-table">
-                    <thead>
-                        <tr>
-                            <th>Dega</th>
-                            <th class="right">Klientë</th>
-                            <th class="right">Borxhi</th>
-                            <th class="right">&gt;365</th>
-                        </tr>
+        <div class="deb-report-section">
+            <div class="deb-report-section-title">Sipas degëve</div>
+            <input class="deb-report-search" id="reportDegaSearch" placeholder="Kërko degë..." onkeyup="filtroRaportDega()">
+            <table class="deb-report-table" id="reportDegaTable">
+                <thead>
+                    <tr><th>Dega</th><th class="right">Klientë</th><th class="right">Borxhi</th><th class="right">&gt;365</th></tr>
                 </thead>
                 <tbody>
                     ${Object.keys(dege).sort().map(d => `
-                        <tr>
+                        <tr data-name="${esc(d).toLowerCase()}">
                             <td>${esc(d)}</td>
                             <td class="right">${dege[d].total}</td>
                             <td class="right">${formatMoney(dege[d].borxh)}</td>
@@ -940,25 +927,25 @@ function hapReportDrawer() {
                 </tbody>
             </table>
         </div>
+    `;
 
+    // KOLONA E DJATHTË: agjentët
+    const agjentetSorted = Object.keys(agjentet).sort((a,b) => agjentet[b].borxh - agjentet[a].borxh);
+    const rightHtml = `
         <div class="deb-report-section">
-            <div class="deb-section-title">Sipas agjentëve (Top për borxh)</div>
-            <table class="deb-report-table">
+            <div class="deb-report-section-title">Sipas agjentëve (top për borxh)</div>
+            <input class="deb-report-search" id="reportAgjentSearch" placeholder="Kërko agjent..." onkeyup="filtroRaportAgjent()">
+            <table class="deb-report-table" id="reportAgjentTable">
                 <thead>
-                    <tr>
-                        <th>Agjenti</th>
-                        <th class="right">Klientë</th>
-                        <th class="right">Borxhi</th>
-                        <th class="right">Paguar</th>
-                    </tr>
+                    <tr><th>Agjenti</th><th class="right">Klientë</th><th class="right">Borxhi</th><th class="right">Paguar</th></tr>
                 </thead>
                 <tbody>
                     ${agjentetSorted.map(a => `
-                        <tr>
+                        <tr data-name="${esc(a).toLowerCase()}">
                             <td>${esc(a)}</td>
                             <td class="right">${agjentet[a].total}</td>
                             <td class="right">${formatMoney(agjentet[a].borxh)}</td>
-                            <td class="right" style="color:#22c55e">${agjentet[a].paguar}</td>
+                            <td class="right" style="color:#22c55e;font-weight:600">${formatMoney(agjentet[a].paguarVal)}</td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -966,15 +953,31 @@ function hapReportDrawer() {
         </div>
     `;
 
-    document.getElementById('reportContent').innerHTML = html;
-    document.getElementById('debOverlay').classList.add('open');
-    document.getElementById('reportDrawer').classList.add('open');
+    document.getElementById('reportMuajLabel').textContent = formatMuajLabel(currentMuaj);
+    document.getElementById('reportColLeft').innerHTML = leftHtml;
+    document.getElementById('reportColRight').innerHTML = rightHtml;
+    document.getElementById('reportModal').classList.add('open');
     document.body.style.overflow = 'hidden';
+    if (window.lucide) lucide.createIcons();
 }
+
+function filtroRaportDega() {
+    const q = (document.getElementById('reportDegaSearch')?.value || '').toLowerCase();
+    document.querySelectorAll('#reportDegaTable tbody tr').forEach(tr => {
+        tr.style.display = tr.dataset.name.includes(q) ? '' : 'none';
+    });
+}
+
+function filtroRaportAgjent() {
+    const q = (document.getElementById('reportAgjentSearch')?.value || '').toLowerCase();
+    document.querySelectorAll('#reportAgjentTable tbody tr').forEach(tr => {
+        tr.style.display = tr.dataset.name.includes(q) ? '' : 'none';
+    });
+}
+
 function mbyllReportDrawer() {
-    document.getElementById('reportDrawer').classList.remove('open');
+    document.getElementById('reportModal')?.classList.remove('open');
     if (!document.getElementById('debDrawer').classList.contains('open')) {
-        document.getElementById('debOverlay').classList.remove('open');
         document.body.style.overflow = '';
     }
 }
