@@ -7,13 +7,13 @@ const DEB_IMP_KEY = 'debitoret_imports_v1';
 const MUAJT = ['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','Gusht','Shtator','Tetor','Nentor','Dhjetor'];
 
 const STATUSET = {
-    i_ri: { emri:'I ri', bar:'#cbd5e1' },
-    kontaktuar: { emri:'Kontaktuar', bar:'#fbbf24' },
-    premtim_pagese: { emri:'Premtim pagese', bar:'#93c5fd' },
-    paguar_total: { emri:'Paguar total', bar:'#4ade80' },
-    paguar_pjesshem: { emri:'Paguar pjesshem', bar:'#86efac' },
-    kontestuar: { emri:'Kontestuar', bar:'#fca5a5' },
-    i_pamundshem: { emri:'I pamundshem', bar:'#f87171' }
+    i_ri: { emri:'I ri', bar:'#cbd5e1', icon:'circle' },
+    kontaktuar: { emri:'Kontaktuar', bar:'#fbbf24', icon:'phone' },
+    premtim_pagese: { emri:'Premtim pagese', bar:'#93c5fd', icon:'clock' },
+    paguar_total: { emri:'Paguar total', bar:'#4ade80', icon:'check-circle' },
+    paguar_pjesshem: { emri:'Paguar pjesshem', bar:'#86efac', icon:'check' },
+    kontestuar: { emri:'Kontestuar', bar:'#fca5a5', icon:'alert-triangle' },
+    i_pamundshem: { emri:'I pamundshem', bar:'#f87171', icon:'x-circle' }
 };
 
 const COLUMN_MAP = {
@@ -228,6 +228,42 @@ function aplikoFiltrat() {
     renderTabela();
     perditesoStats();
 }
+function renderStatusIcons(r) {
+    const keys = Object.keys(STATUSET);
+    const btns = keys.map(k => {
+        const s = STATUSET[k];
+        const active = r.statusi === k ? 'active s-' + k : '';
+        return `<button class="status-icon-btn ${active}" title="${s.emri}" onclick="event.stopPropagation();hapStatusModalDirekt('${r.id}','${k}')"><i data-lucide="${s.icon}"></i></button>`;
+    }).join('');
+    return `<div class="status-icons">${btns}</div>`;
+}
+
+function hapStatusModalDirekt(id, statusKey) {
+    currentDrawerId = id;
+    pendingStatus = statusKey;
+
+    document.getElementById('statusModalTitle').textContent = `Ndrysho statusin: ${STATUSET[statusKey].emri}`;
+
+    let fields = '';
+    if (statusKey === 'premtim_pagese') {
+        fields = `
+            <div class="deb-form-grid">
+                <div class="deb-form-group"><label>Data e premtuar</label><input type="date" id="statusDate"></div>
+                <div class="deb-form-group"><label>Shuma e premtuar (€)</label><input type="number" step="0.01" id="statusAmount" placeholder="0.00"></div>
+            </div>`;
+    }
+    if (statusKey === 'paguar_total' || statusKey === 'paguar_pjesshem') {
+        fields = `
+            <div class="deb-form-grid">
+                <div class="deb-form-group"><label>Data e pageses</label><input type="date" id="statusDate"></div>
+                <div class="deb-form-group"><label>Shuma e paguar (€)</label><input type="number" step="0.01" id="statusAmount" placeholder="0.00"></div>
+            </div>`;
+    }
+    fields += `<div class="deb-form-group"><label>Komenti (i detyrueshem)</label><textarea id="statusComment" placeholder="Shkruaj koment per kete status..."></textarea></div>`;
+
+    document.getElementById('statusDynamicFields').innerHTML = fields;
+    document.getElementById('statusModal').classList.add('open');
+}
 
 function perditesoStats() {
     const data = filtroSipasRolit(debitoret.filter(r => r.muaji === currentMuaj));
@@ -322,23 +358,24 @@ function renderTabela() {
         const rowBg = risk > 0 ? 'background:rgba(254,202,202,.16);' : '';
 
         html += `
-            <tr onclick="hapDrawer('${r.id}')" style="cursor:pointer;${rowBg}">
-                <td>
-                    <div class="klient-name">${esc(r.klienti)} ${risk > 0 ? '<span style="font-size:10px;color:#ef4444;font-weight:700">⚠</span>' : ''}</div>
-                    <div class="klient-sub">${esc(r.dega)} · ${esc(r.agjenti)}</div>
-                </td>
-                <td class="deb-borxh" style="text-align:right">${formatMoney(total)}</td>
-                <td style="text-align:right">${formatMoney(Number(r.borxh_0_31 || 0))}</td>
-                <td style="text-align:right">${formatMoney(Number(r.borxh_31_60 || 0))}</td>
-                <td style="text-align:right">${formatMoney(Number(r.borxh_61_90 || 0))}</td>
-                <td style="text-align:right" class="${riskClass}">${formatMoney(risk)}</td>
-                <td><span class="deb-badge deb-badge-${r.statusi}">${STATUSET[r.statusi]?.emri || r.statusi}</span></td>
-                <td>${labelBalance(r.kategori_balance)}</td>
-            </tr>
-        `;
+        <tr onclick="hapDrawer('${r.id}')" data-risk="${risk > 0 ? 1 : 0}" style="cursor:pointer">
+            <td>
+                <div class="klient-name">${esc(r.klienti)} ${risk > 0 ? '<span style="font-size:10px;color:#ef4444;font-weight:700">⚠</span>' : ''}</div>
+                <div class="klient-sub">${esc(r.dega)} · ${esc(r.agjenti)}</div>
+            </td>
+            <td class="deb-borxh" style="text-align:right">${formatMoney(total)}</td>
+            <td style="text-align:right">${formatMoney(Number(r.borxh_0_31 || 0))}</td>
+            <td style="text-align:right">${formatMoney(Number(r.borxh_31_60 || 0))}</td>
+            <td style="text-align:right">${formatMoney(Number(r.borxh_61_90 || 0))}</td>
+            <td style="text-align:right" class="${riskClass}">${formatMoney(risk)}</td>
+            <td onclick="event.stopPropagation()">${renderStatusIcons(r)}</td>
+            <td>${labelBalance(r.kategori_balance)}</td>
+        </tr>
+    `;
     });
 
     tbody.innerHTML = html;
+    if (window.lucide) lucide.createIcons();
 }
 
 function hapDrawer(id) {
@@ -349,7 +386,7 @@ function hapDrawer(id) {
     document.getElementById('drKlienti').textContent = r.klienti || 'Klienti';
     document.getElementById('drSubtitle').textContent = `${r.dega || 'Pa dege'} · ${r.agjenti || 'Pa agjent'} · ${formatMuajLabel(r.muaji)}`;
 
-    renderStatusPills(r.statusi);
+    document.getElementById('drStatusRow').innerHTML = `<label>Statusi aktual:</label><span class="deb-badge deb-badge-${r.statusi}">${STATUSET[r.statusi]?.emri || r.statusi}</span>`;
 
     document.getElementById('drSummaryGrid').innerHTML = `
         <div class="deb-card"><div class="deb-card-label">Borxhi total</div><div class="deb-card-value">${formatMoney(r.debitori_total || 0)}</div></div>
@@ -375,6 +412,8 @@ function hapDrawer(id) {
         : 'Asnje veprim ende.';
     document.getElementById('drStatusInfo').textContent = info;
 
+    renderLidhjet(r);
+    renderDetyrat(r);
     renderKomentet(r);
 
     document.getElementById('debOverlay').classList.add('open');
@@ -495,6 +534,15 @@ function ruajStatusin() {
     if (pendingStatus === 'premtim_pagese') {
         rec.shuma_premtuar = shuma;
         rec.data_premtuar = data || null;
+        rec.detyrat = rec.detyrat || [];
+        rec.detyrat.push({
+            teksti: `Ndiq premtimin e pageses${shuma ? ` (${formatMoney(shuma)})` : ''}`,
+            afati: data || '',
+            done: false,
+            krijuar: new Date().toISOString(),
+            autori: merrUser().emri,
+            tipi: 'auto'
+        });
     }
 
     rec.komente = rec.komente || [];
@@ -507,7 +555,10 @@ function ruajStatusin() {
 
     ruajTedhenat();
     mbyllStatusModal();
-    hapDrawer(rec.id);
+    // nese draweri eshte i hapur, perditeso; perndryshe vetem ri-render tabelen
+    if (document.getElementById('debDrawer').classList.contains('open')) {
+        hapDrawer(rec.id);
+    }
     aplikoFiltrat();
 }
 
@@ -784,6 +835,69 @@ function hapReportDrawer() {
         dege[d].risk += Number(r.borxh_mbi_365 || 0);
     });
 
+    // Breakdown sipas agjenteve
+    const agjentet = {};
+    data.forEach(r => {
+        const a = r.agjenti || 'Pa agjent';
+        if (!agjentet[a]) agjentet[a] = { total:0, borxh:0, risk:0, paguar:0 };
+        agjentet[a].total++;
+        agjentet[a].borxh += Number(r.debitori_total || 0);
+        agjentet[a].risk += Number(r.borxh_mbi_365 || 0);
+        if (r.statusi === 'paguar_total') agjentet[a].paguar++;
+    });
+    const agjentetSorted = Object.keys(agjentet).sort((a,b) => agjentet[b].borxh - agjentet[a].borxh);
+
+    // Krahasim me muajin paraprak
+    const muajtList = getMuajt();
+    const idx = muajtList.indexOf(currentMuaj);
+    const muajPrev = idx > 0 ? muajtList[idx - 1] : null;
+    let compareHtml = '';
+    if (muajPrev) {
+        const prevData = filtroSipasRolit(debitoret.filter(x => x.muaji === muajPrev));
+        const prevBorxh = prevData.reduce((s,r) => s + Number(r.debitori_total || 0), 0);
+        const prevKlient = prevData.length;
+        const prevRisk = prevData.reduce((s,r) => s + Number(r.borxh_mbi_365 || 0), 0);
+
+        const prevNames = new Set(prevData.map(r => r.klienti_normalized || normalizeText(r.klienti)));
+        const currNames = new Set(data.map(r => r.klienti_normalized || normalizeText(r.klienti)));
+        const paguarNgaPrev = [...prevNames].filter(n => !currNames.has(n)).length;
+        const teRinj = [...currNames].filter(n => !prevNames.has(n)).length;
+
+        const deltaBorxh = totalBorxh - prevBorxh;
+        const deltaBorxhPct = prevBorxh ? ((deltaBorxh / prevBorxh) * 100).toFixed(1) : 0;
+        const deltaKlient = data.length - prevKlient;
+        const deltaRisk = totalRisk - prevRisk;
+
+        const arrow = (n) => n > 0 ? '↑' : n < 0 ? '↓' : '→';
+        const cls = (n) => n > 0 ? 'up' : n < 0 ? 'down' : '';
+
+        compareHtml = `
+            <div class="deb-report-section">
+                <div class="deb-section-title">Krahasim me ${formatMuajLabel(muajPrev)}</div>
+                <div class="deb-compare-row">
+                    <span class="deb-compare-label">Borxhi total</span>
+                    <span class="deb-compare-val">${formatMoney(totalBorxh)} <span class="deb-compare-delta ${cls(deltaBorxh)}">${arrow(deltaBorxh)} ${formatMoney(Math.abs(deltaBorxh))} (${deltaBorxhPct}%)</span></span>
+                </div>
+                <div class="deb-compare-row">
+                    <span class="deb-compare-label">Klientë me borxh</span>
+                    <span class="deb-compare-val">${data.length} <span class="deb-compare-delta ${cls(deltaKlient)}">${arrow(deltaKlient)} ${Math.abs(deltaKlient)}</span></span>
+                </div>
+                <div class="deb-compare-row">
+                    <span class="deb-compare-label">Mbi 365 ditë</span>
+                    <span class="deb-compare-val">${formatMoney(totalRisk)} <span class="deb-compare-delta ${cls(deltaRisk)}">${arrow(deltaRisk)} ${formatMoney(Math.abs(deltaRisk))}</span></span>
+                </div>
+                <div class="deb-compare-row">
+                    <span class="deb-compare-label">Klientë që paguan nga muaji i kaluar</span>
+                    <span class="deb-compare-val" style="color:#22c55e">${paguarNgaPrev}</span>
+                </div>
+                <div class="deb-compare-row">
+                    <span class="deb-compare-label">Klientë të rinj këtë muaj</span>
+                    <span class="deb-compare-val" style="color:#ef4444">${teRinj}</span>
+                </div>
+            </div>
+        `;
+    }
+
     const html = `
         <div class="deb-report-section">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -794,23 +908,25 @@ function hapReportDrawer() {
             </div>
         </div>
 
-        <div class="deb-report-section">
-            <div class="deb-section-title">Statuset</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-                ${Object.keys(STATUSET).map(k => `<span class="deb-badge deb-badge-${k}">${STATUSET[k].emri} ${counts[k] || 0}</span>`).join('')}
-            </div>
-        </div>
+        ${compareHtml}
 
-        <div class="deb-report-section">
-            <div class="deb-section-title">Sipas degëve</div>
-            <table class="deb-report-table">
-                <thead>
-                    <tr>
-                        <th>Dega</th>
-                        <th class="right">Klientë</th>
-                        <th class="right">Borxhi</th>
-                        <th class="right">&gt;365</th>
-                    </tr>
+            <div class="deb-report-section">
+                <div class="deb-section-title">Statuset</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    ${Object.keys(STATUSET).map(k => `<span class="deb-badge deb-badge-${k}">${STATUSET[k].emri} ${counts[k] || 0}</span>`).join('')}
+                </div>
+            </div>
+
+            <div class="deb-report-section">
+                <div class="deb-section-title">Sipas degëve</div>
+                <table class="deb-report-table">
+                    <thead>
+                        <tr>
+                            <th>Dega</th>
+                            <th class="right">Klientë</th>
+                            <th class="right">Borxhi</th>
+                            <th class="right">&gt;365</th>
+                        </tr>
                 </thead>
                 <tbody>
                     ${Object.keys(dege).sort().map(d => `
@@ -819,6 +935,30 @@ function hapReportDrawer() {
                             <td class="right">${dege[d].total}</td>
                             <td class="right">${formatMoney(dege[d].borxh)}</td>
                             <td class="right" style="color:${dege[d].risk>0?'#ef4444':'#334155'}">${formatMoney(dege[d].risk)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="deb-report-section">
+            <div class="deb-section-title">Sipas agjentëve (Top për borxh)</div>
+            <table class="deb-report-table">
+                <thead>
+                    <tr>
+                        <th>Agjenti</th>
+                        <th class="right">Klientë</th>
+                        <th class="right">Borxhi</th>
+                        <th class="right">Paguar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${agjentetSorted.map(a => `
+                        <tr>
+                            <td>${esc(a)}</td>
+                            <td class="right">${agjentet[a].total}</td>
+                            <td class="right">${formatMoney(agjentet[a].borxh)}</td>
+                            <td class="right" style="color:#22c55e">${agjentet[a].paguar}</td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -947,4 +1087,113 @@ function formatKomentDate(iso) {
 function formatDateISO(d) {
     const dt = new Date(d);
     return dt.toISOString().slice(0,10);
+}
+// ===== Lidhjet me rinovimet/kontratat =====
+function renderLidhjet(r) {
+    const container = document.getElementById('drLidhjet');
+    if (!container) return;
+
+    const klientNorm = r.klienti_normalized || normalizeText(r.klienti);
+    let rinovimet = [];
+    let kontratat = [];
+
+    try {
+        const rinArr = JSON.parse(localStorage.getItem('rinovimet_data') || '[]');
+        rinovimet = rinArr.filter(x => normalizeText(x.kontraktuesi || '') === klientNorm);
+    } catch {}
+
+    try {
+        const kontArr = JSON.parse(localStorage.getItem('kontratat') || '[]');
+        kontratat = kontArr.filter(x => normalizeText(x.emri || x.kontraktuesi || '') === klientNorm);
+    } catch {}
+
+    let html = '';
+
+    if (kontratat.length) {
+        html += kontratat.map(k => `
+            <div class="deb-lidhje-item">
+                <div><strong>Kontratë</strong> · ${esc(k.nr_kontrates || k.id || '—')}<div style="font-size:10px;color:#94a3b8">${esc(k.data_fillimit || '')} → ${esc(k.data_mbarimit || '')}</div></div>
+                <a href="kontratat.html">Shiko →</a>
+            </div>`).join('');
+    }
+
+    if (rinovimet.length) {
+        html += rinovimet.map(x => `
+            <div class="deb-lidhje-item">
+                <div><strong>Rinovim</strong> · ${esc(x.nr_kontrates || '—')} · ${formatMuajLabel(x.muaji)}<div style="font-size:10px;color:#94a3b8">Statusi: ${esc(x.statusi || '—')}</div></div>
+                <a href="rinovimet.html?hap=${esc(x.id)}">Shiko →</a>
+            </div>`).join('');
+    }
+
+    if (!html) html = '<div class="deb-lidhje-empty">Asnje lidhje e gjetur me kontrata ose rinovime.</div>';
+    container.innerHTML = html;
+}
+
+// ===== Detyrat / follow-ups =====
+function renderDetyrat(r) {
+    const container = document.getElementById('drDetyrat');
+    if (!container) return;
+    r.detyrat = r.detyrat || [];
+
+    const lista = r.detyrat.length
+        ? r.detyrat.map((d, i) => `
+            <div class="deb-detyre ${d.done ? 'done' : ''}">
+                <input type="checkbox" class="deb-detyre-check" ${d.done ? 'checked' : ''} onchange="toggleDetyre(${i})">
+                <div class="deb-detyre-text">${esc(d.teksti)}</div>
+                ${d.afati ? `<div class="deb-detyre-date">${esc(d.afati)}</div>` : ''}
+                <span class="deb-detyre-del" onclick="fshijDetyre(${i})">×</span>
+            </div>`).join('')
+        : '<div class="deb-lidhje-empty">Asnje detyre ende.</div>';
+
+    container.innerHTML = `
+        ${lista}
+        <div class="deb-detyre-input-row">
+            <input class="deb-detyre-input" id="detyreInput" placeholder="Shto detyre / follow-up..." onkeydown="if(event.key==='Enter')shtoDetyre()">
+            <input type="date" class="deb-detyre-date-input" id="detyreDate">
+            <button class="deb-comment-btn" onclick="shtoDetyre()">Shto</button>
+        </div>
+    `;
+}
+
+function shtoDetyre() {
+    if (!currentDrawerId) return;
+    const rec = debitoret.find(x => x.id === currentDrawerId);
+    if (!rec) return;
+    const txt = (document.getElementById('detyreInput').value || '').trim();
+    if (!txt) return;
+    const afati = document.getElementById('detyreDate').value || '';
+
+    rec.detyrat = rec.detyrat || [];
+    rec.detyrat.push({
+        teksti: txt,
+        afati,
+        done: false,
+        krijuar: new Date().toISOString(),
+        autori: merrUser().emri,
+        tipi: 'manual'
+    });
+    rec.updated_at = new Date().toISOString();
+    ruajTedhenat();
+    renderDetyrat(rec);
+}
+
+function toggleDetyre(idx) {
+    if (!currentDrawerId) return;
+    const rec = debitoret.find(x => x.id === currentDrawerId);
+    if (!rec || !rec.detyrat || !rec.detyrat[idx]) return;
+    rec.detyrat[idx].done = !rec.detyrat[idx].done;
+    rec.updated_at = new Date().toISOString();
+    ruajTedhenat();
+    renderDetyrat(rec);
+}
+
+function fshijDetyre(idx) {
+    if (!currentDrawerId) return;
+    const rec = debitoret.find(x => x.id === currentDrawerId);
+    if (!rec || !rec.detyrat) return;
+    if (!confirm('Fshij detyren?')) return;
+    rec.detyrat.splice(idx, 1);
+    rec.updated_at = new Date().toISOString();
+    ruajTedhenat();
+    renderDetyrat(rec);
 }

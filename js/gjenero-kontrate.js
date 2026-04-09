@@ -344,7 +344,8 @@ function gjenerKontrate(k, outputDir) {
         aneksContent = aneksContent.replace(/<o:OLEObject[\s\S]*?\/>/g, '');
 
         if (aneksContent) {
-            mainXml = mainXml.replace(/<\/w:body>/, aneksContent + '</w:body>');
+            const pageBreak = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+            mainXml = mainXml.replace(/<\/w:body>/, pageBreak + aneksContent + '</w:body>');
         }
     }
 
