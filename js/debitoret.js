@@ -55,9 +55,24 @@ const AGJENT_DEGA_MAP = {
     'valentina mehmeti': 'F'
 };
 
+const AGJENT_OVERRIDES_KEY = 'agjent_dega_overrides_v1';
+
+function merrOverrides() {
+    try { return JSON.parse(localStorage.getItem(AGJENT_OVERRIDES_KEY) || '{}'); }
+    catch { return {}; }
+}
+
+function ruajOverrides(obj) {
+    localStorage.setItem(AGJENT_OVERRIDES_KEY, JSON.stringify(obj));
+}
+
 function resolveDegaFromAgjent(agjentName) {
     const key = String(agjentName || '').toLowerCase().trim();
     if (!key) return 'Pa dege';
+    // Së pari kontrollo override-at manuale
+    const overrides = merrOverrides();
+    if (overrides[key] && DEGA_KODET[overrides[key]]) return DEGA_KODET[overrides[key]];
+    // Pastaj mapping-u statik
     const kod = AGJENT_DEGA_MAP[key];
     if (kod && DEGA_KODET[kod]) return DEGA_KODET[kod];
     return 'Pa dege';
@@ -115,6 +130,23 @@ document.addEventListener('DOMContentLoaded', function () {
 function ngarkoTedhenat() {
     try { debitoret = JSON.parse(localStorage.getItem(DEB_KEY) || '[]'); }
     catch { debitoret = []; }
+    riaplikoMapimDegave();
+}
+
+function riaplikoMapimDegave() {
+    let ndryshime = 0;
+    debitoret.forEach(r => {
+        const agjent = r.agjenti || r.njesia_organizative || '';
+        const degaE_re = deriveDega(agjent);
+        if (degaE_re !== r.dega) {
+            r.dega = degaE_re;
+            ndryshime++;
+        }
+    });
+    if (ndryshime > 0) {
+        ruajTedhenat();
+        console.log(`Mapping agjent→degë: u rregulluan ${ndryshime} rekorde`);
+    }
 }
 function ruajTedhenat() {
     localStorage.setItem(DEB_KEY, JSON.stringify(debitoret));
@@ -878,12 +910,16 @@ function hapReportDrawer() {
     const dege = {};
     const agjentet = {};
 
+    const statusVlera = {};
+    Object.keys(STATUSET).forEach(s => statusVlera[s] = 0);
+
     data.forEach(r => {
         totalBorxh += Number(r.debitori_total || 0);
         totalRisk += Number(r.borxh_mbi_365 || 0);
         if (r.statusi === 'paguar_total') totalPaguar += Number(r.shuma_paguar || r.debitori_total || 0);
         if (r.statusi === 'paguar_pjesshem') totalPaguarPjesshem += Number(r.shuma_paguar || 0);
         counts[r.statusi] = (counts[r.statusi] || 0) + 1;
+        statusVlera[r.statusi] = (statusVlera[r.statusi] || 0) + Number(r.debitori_total || 0);
 
         const d = r.dega || 'Pa dege';
         if (!dege[d]) dege[d] = { total:0, borxh:0, risk:0 };
@@ -959,6 +995,7 @@ function hapReportDrawer() {
                     <div class="deb-stat-card">
                         <div class="dsc-label">${STATUSET[k].emri}</div>
                         <div class="dsc-num" style="color:${STATUSET[k].bar}">${counts[k] || 0}</div>
+                        <div style="font-size:10px;color:#64748b;font-weight:600;margin-top:3px">${formatMoneyShort(statusVlera[k] || 0)}</div>
                     </div>
                 `).join('')}
             </div>
@@ -1091,10 +1128,14 @@ function cleanClientName(v) {
 function deriveDega(njesia) {
     const s = String(njesia || '').trim();
     if (!s) return 'Pa dege';
+    // Së pari provo mapping-un e agjentëve
+    const mapped = resolveDegaFromAgjent(s);
+    if (mapped !== 'Pa dege') return mapped;
+    // Fallback për njësi të strukturuara
     if (/^dega\s/i.test(s)) return s;
     if (/sigal/i.test(s)) return 'Drejtoria Qendrore';
     if (/njesia/i.test(s)) return s;
-    return 'Agjentë individualë';
+    return 'Pa dege';
 }
 function deriveAgjenti(njesia) {
     const s = String(njesia || '').trim();
@@ -1255,4 +1296,104 @@ function fshijDetyre(idx) {
     rec.updated_at = new Date().toISOString();
     ruajTedhenat();
     renderDetyrat(rec);
+}
+// ===== Menaxhimi manual i agjentëve =====
+function hapMenaxhoAgjentet() {
+    const overlay = document.getElementById('agjentModalOverlay');
+    if (!overlay) {
+        console.error('Modal-i i agjentëve nuk ekziston në HTML');
+        return;
+    }
+
+    // Mblidh të gjithë agjentët unikë nga rekordet
+    const agjentSet = new Map();
+    debitoret.forEach(r => {
+        const a = (r.agjenti || '').trim();
+        if (!a) return;
+        const key = a.toLowerCase();
+        if (!agjentSet.has(key)) {
+            agjentSet.set(key, { emri: a, dega: r.dega || 'Pa dege', count: 0 });
+        }
+        agjentSet.get(key).count++;
+    });
+
+    const agjentList = [...agjentSet.values()].sort((a,b) => a.emri.localeCompare(b.emri, 'sq'));
+    const overrides = merrOverrides();
+
+    const degaOptions = Object.entries(DEGA_KODET).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
+
+    document.getElementById('agjentModalBody').innerHTML = `
+        <input type="text" class="deb-report-search" id="agjentSearch" placeholder="Kërko agjent..." onkeyup="filtroAgjentList()" style="margin-bottom:12px">
+        <div style="max-height:60vh;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px">
+            <table class="deb-report-table" id="agjentMapTable" style="margin:0">
+                <thead>
+                    <tr>
+                        <th>Agjenti</th>
+                        <th class="right">Klientë</th>
+                        <th>Dega aktuale</th>
+                        <th>Cakto degë</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${agjentList.map(a => {
+                        const key = a.emri.toLowerCase();
+                        const currentKod = overrides[key] || AGJENT_DEGA_MAP[key] || '';
+                        const isOverride = !!overrides[key];
+                        return `
+                            <tr data-name="${esc(a.emri).toLowerCase()}">
+                                <td>${esc(a.emri)} ${isOverride ? '<span style="font-size:9px;color:#3b82f6;font-weight:700">●MANUAL</span>' : ''}</td>
+                                <td class="right">${a.count}</td>
+                                <td><span style="font-size:11px;color:#64748b">${esc(a.dega)}</span></td>
+                                <td>
+                                    <select class="agjent-dega-select" data-key="${escAttr(key)}" style="padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;font-family:inherit;width:100%">
+                                        <option value="">— pa caktim —</option>
+                                        ${degaOptions}
+                                    </select>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    // Vendos vlerat aktuale në select-at
+    document.querySelectorAll('.agjent-dega-select').forEach(sel => {
+        const key = sel.dataset.key;
+        const current = overrides[key] || AGJENT_DEGA_MAP[key] || '';
+        if (current) sel.value = current;
+    });
+
+    overlay.classList.add('open');
+}
+
+function filtroAgjentList() {
+    const q = (document.getElementById('agjentSearch')?.value || '').toLowerCase();
+    document.querySelectorAll('#agjentMapTable tbody tr').forEach(tr => {
+        tr.style.display = tr.dataset.name.includes(q) ? '' : 'none';
+    });
+}
+
+function ruajAgjentMapping() {
+    const overrides = merrOverrides();
+    document.querySelectorAll('.agjent-dega-select').forEach(sel => {
+        const key = sel.dataset.key;
+        const val = sel.value;
+        if (val) {
+            overrides[key] = val;
+        } else {
+            delete overrides[key];
+        }
+    });
+    ruajOverrides(overrides);
+    riaplikoMapimDegave();
+    mbyllMenaxhoAgjentet();
+    populoChips();
+    aplikoFiltrat();
+    alert('Mapping-u u ruajt dhe u aplikua te të gjitha rekordet.');
+}
+
+function mbyllMenaxhoAgjentet() {
+    document.getElementById('agjentModalOverlay')?.classList.remove('open');
 }

@@ -289,6 +289,9 @@
             <button class="btn-primary" onclick="eksportoExcel()" style="background:#0f766e;border-color:#0f766e;" title="Eksporto">
                 <i data-lucide="download" style="width:15px;height:15px;"></i> Eksporto
             </button>
+            <button class="btn-primary" onclick="hapMenaxhoAgjentet()" style="background:#7c3aed;border-color:#7c3aed;" title="Menaxho agjentët">
+                <i data-lucide="users" style="width:15px;height:15px;"></i> Agjentët
+            </button>
             <button class="btn-primary" onclick="hapImportModal()" title="Importo">
                 <i data-lucide="upload" style="width:15px;height:15px;"></i> Importo
             </button>
@@ -460,6 +463,20 @@
         </div>
     </div>
 
-    <script src="../js/debitoret.js"></script>
+    <div class="deb-report-modal" id="agjentModalOverlay" onclick="mbyllMenaxhoAgjentet()">
+    <div class="deb-report-drawer" style="width:80vw;max-width:900px;height:auto;max-height:90vh" onclick="event.stopPropagation()">
+        <div class="deb-report-header">
+            <h3><i data-lucide="users" style="width:18px;height:18px"></i> Menaxho mapping-un e agjentëve</h3>
+            <span class="deb-drawer-close" onclick="mbyllMenaxhoAgjentet()">&times;</span>
+        </div>
+        <div style="padding:20px 24px;overflow-y:auto" id="agjentModalBody"></div>
+        <div style="padding:14px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:8px;background:#f8fafc">
+            <button class="deb-btn-secondary" onclick="mbyllMenaxhoAgjentet()">Anulo</button>
+            <button class="deb-btn-primary" onclick="ruajAgjentMapping()">Ruaj dhe aplikoj</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/debitoret.js"></script>
 </body>
 </html>
