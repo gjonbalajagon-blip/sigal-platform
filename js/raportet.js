@@ -1,5 +1,5 @@
 // ============================================================
-// RAPORTET.JS — Moduli i raporteve
+// RAPORTET.JS — Moduli i raporteve (v2)
 // ============================================================
 
 const MUAJT_REP = ['janar','shkurt','mars','prill','maj','qershor','korrik','gusht','shtator','tetor','nentor','dhjetor'];
@@ -7,14 +7,14 @@ const MUAJT_LABEL = ['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','G
 
 const MODULET = [
     { key:'hub', label:'Hub', icon:'home' },
+    { key:'produkti', label:'Produkti', icon:'package' },
     { key:'oferta', label:'Oferta', icon:'clipboard-list' },
     { key:'kontratat', label:'Kontratat', icon:'file-text' },
-    { key:'faturimi', label:'Faturimi', icon:'receipt' },
     { key:'rinovimet', label:'Rinovimet', icon:'refresh-cw' },
+    { key:'faturimi', label:'Faturimi', icon:'receipt' },
     { key:'debitoret', label:'Debitorët', icon:'wallet' },
     { key:'detyrat', label:'Detyrat', icon:'check-circle' },
-    { key:'stafi', label:'Stafi', icon:'users' },
-    { key:'produkti', label:'Produkti', icon:'package' }
+    { key:'stafi', label:'Stafi', icon:'users' }
 ];
 
 const SUBTABS_DEB = [
@@ -22,7 +22,7 @@ const SUBTABS_DEB = [
     { key:'krahasim', label:'Krahasim mujor' },
     { key:'deget', label:'Sipas degëve' },
     { key:'agjentet', label:'Sipas agjentëve' },
-    { key:'trend', label:'Trend vjetor' }
+    { key:'topklient', label:'Top klientët' }
 ];
 
 const SUBTABS_RIN = [
@@ -33,13 +33,13 @@ const SUBTABS_RIN = [
     { key:'performanca', label:'Performanca (LR/CR)' }
 ];
 
+const STATUSET_PAGUAR = ['paguar_total','paguar_pjesshem'];
+
 let currentModule = 'hub';
 let currentDebSubtab = 'permbledhje';
 let currentRinSubtab = 'permbledhje';
+let sortState = {};
 
-// ============================================================
-// INIT
-// ============================================================
 document.addEventListener('DOMContentLoaded', function() {
     lucide.createIcons();
     renderModulesRow();
@@ -47,18 +47,11 @@ document.addEventListener('DOMContentLoaded', function() {
     initFilters();
     renderSubtabsDeb();
     renderSubtabsRin();
-
-    // Lexo query string ?modul=debitoret
     const params = new URLSearchParams(window.location.search);
     const mod = params.get('modul');
-    if (mod && MODULET.find(m => m.key === mod)) {
-        switchModule(mod);
-    }
+    if (mod && MODULET.find(m => m.key === mod)) switchModule(mod);
 });
 
-// ============================================================
-// USER & ROLE FILTERING
-// ============================================================
 function merrUser() {
     try {
         const u = JSON.parse(localStorage.getItem('user_aktual') || localStorage.getItem('currentUser') || '{}');
@@ -76,27 +69,20 @@ function merrUser() {
 
 function eshteMenaxher() {
     const r = merrUser().roli;
-    return ['superadmin','management','dep_management','admin'].includes(r);
+    return ['superadmin','management','dep_management','admin','ceo','deputy_ceo','director','deputy_director'].includes(r);
 }
 
 function filtroSipasRolit(list, opts = {}) {
     if (eshteMenaxher()) return list;
     const u = merrUser();
-    const fieldDega = opts.dega || 'dega';
     const fieldAgjent = opts.agjenti || 'agjenti';
-
     return list.filter(x => {
-        const xd = (x[fieldDega] || '').toLowerCase();
         const xa = (x[fieldAgjent] || '').toLowerCase();
-        if (u.dega && xd === u.dega.toLowerCase()) return true;
         if (u.agjenti && xa === u.agjenti.toLowerCase()) return true;
         return false;
     });
 }
 
-// ============================================================
-// MODULES ROW (TAB ROW 1)
-// ============================================================
 function renderModulesRow() {
     const c = document.getElementById('repModulesRow');
     c.innerHTML = MODULET.map(m => `
@@ -113,35 +99,28 @@ function switchModule(key) {
     document.querySelectorAll('.rep-content').forEach(el => el.classList.remove('active'));
     document.getElementById('rep-' + key)?.classList.add('active');
     renderModulesRow();
-
-    // Update URL pa reload
     const url = new URL(window.location);
     if (key === 'hub') url.searchParams.delete('modul');
     else url.searchParams.set('modul', key);
     window.history.replaceState({}, '', url);
-
-    // Render përmbajtjen
     if (key === 'hub') renderHub();
     if (key === 'debitoret') renderRaportiDebitoret();
     if (key === 'rinovimet') renderRaportiRinovimet();
 }
 
-// ============================================================
-// HUB
-// ============================================================
+// ============ HUB ============
 function renderHub() {
     const grid = document.getElementById('repHubGrid');
-    const cards = [
+    grid.innerHTML = [
+        buildHubCardProdukti(),
         buildHubCardOferta(),
         buildHubCardKontratat(),
-        buildHubCardFaturimi(),
         buildHubCardRinovimet(),
+        buildHubCardFaturimi(),
         buildHubCardDebitoret(),
         buildHubCardDetyrat(),
-        buildHubCardStafi(),
-        buildHubCardProdukti()
-    ];
-    grid.innerHTML = cards.join('');
+        buildHubCardStafi()
+    ].join('');
     if (window.lucide) lucide.createIcons();
 }
 
@@ -171,6 +150,20 @@ function buildHubCard({ key, icon, iconClass, title, sub, metrics, status }) {
     `;
 }
 
+function buildHubCardProdukti() {
+    return buildHubCard({
+        key:'produkti', icon:'package', iconClass:'ric-produkti',
+        title:'Produkti', sub:'Importohet nga sistemi i shitjeve',
+        metrics:[
+            { label:'Kontrata', value:'—' },
+            { label:'Të siguruar', value:'—' },
+            { label:'Pako top', value:'—' },
+            { label:'Vlera', value:'—' }
+        ],
+        status:'Së shpejti'
+    });
+}
+
 function buildHubCardOferta() {
     let data = [];
     try { data = JSON.parse(localStorage.getItem('ofertat') || '[]'); } catch {}
@@ -178,7 +171,6 @@ function buildHubCardOferta() {
     const konfirmuar = data.filter(o => o.statusi === 'konfirmuar' || o.statusi === 'realizuar').length;
     const realizuar = data.filter(o => o.statusi === 'realizuar').length;
     const presin = data.filter(o => o.statusi === 'presin' || o.statusi === 'aktive').length;
-
     return buildHubCard({
         key:'oferta', icon:'clipboard-list', iconClass:'ric-oferta',
         title:'Oferta', sub:'Menaxhimi i ofertave',
@@ -198,10 +190,8 @@ function buildHubCardKontratat() {
     const total = data.length;
     const aktive = data.filter(k => !k.statusi || k.statusi === 'aktive').length;
     const skaduar = data.filter(k => k.statusi === 'skaduar').length;
-
     const llojet = { individ:0, familje:0, biznes:0 };
     data.forEach(k => { if (llojet[k.lloji] !== undefined) llojet[k.lloji]++; });
-
     return buildHubCard({
         key:'kontratat', icon:'file-text', iconClass:'ric-kontratat',
         title:'Kontratat', sub:'Të gjitha kontratat aktive',
@@ -215,13 +205,33 @@ function buildHubCardKontratat() {
     });
 }
 
+function buildHubCardRinovimet() {
+    let data = [];
+    try { data = JSON.parse(localStorage.getItem('rinovimet_data') || '[]'); } catch {}
+    data = filtroSipasRolit(data);
+    const total = data.length;
+    const rinovuar = data.filter(r => r.statusi === 'rinovuar').length;
+    const humbur = data.filter(r => r.statusi === 'humbur').length;
+    const primi = data.reduce((s,r) => s + (Number(r.primi_vjetor || r.total_primi) || 0), 0);
+    return buildHubCard({
+        key:'rinovimet', icon:'refresh-cw', iconClass:'ric-rinovimet',
+        title:'Rinovimet', sub:'Procesi i rinovimeve',
+        metrics:[
+            { label:'Total', value:total },
+            { label:'Rinovuar', value:rinovuar, color:'green' },
+            { label:'Humbur', value:humbur, color:'red' },
+            { label:'Primi total', value:formatMoneyShort(primi), color:'blue' }
+        ],
+        status:'Së shpejti'
+    });
+}
+
 function buildHubCardFaturimi() {
     let data = [];
     try { data = JSON.parse(localStorage.getItem('faturimi_klientet') || '[]'); } catch {}
     const total = data.length;
     const leshuar = data.filter(f => f.statusi === 'leshuar').length;
     const proces = data.filter(f => f.statusi === 'ne_proces').length;
-
     return buildHubCard({
         key:'faturimi', icon:'receipt', iconClass:'ric-faturimi',
         title:'Faturimi', sub:'Faturat dhe pagesat',
@@ -235,47 +245,22 @@ function buildHubCardFaturimi() {
     });
 }
 
-function buildHubCardRinovimet() {
-    let data = [];
-    try { data = JSON.parse(localStorage.getItem('rinovimet_data') || '[]'); } catch {}
-    data = filtroSipasRolit(data);
-
-    const total = data.length;
-    const rinovuar = data.filter(r => r.statusi === 'rinovuar').length;
-    const humbur = data.filter(r => r.statusi === 'humbur').length;
-    const primi = data.reduce((s,r) => s + (Number(r.primi_vjetor || r.total_primi) || 0), 0);
-
-    return buildHubCard({
-        key:'rinovimet', icon:'refresh-cw', iconClass:'ric-rinovimet',
-        title:'Rinovimet', sub:'Procesi i rinovimeve',
-        metrics:[
-            { label:'Total', value:total },
-            { label:'Rinovuar', value:rinovuar, color:'green' },
-            { label:'Humbur', value:humbur, color:'red' },
-            { label:'Primi total', value:formatMoneyShort(primi), color:'blue' }
-        ],
-        status:'I disponueshëm'
-    });
-}
-
 function buildHubCardDebitoret() {
     let data = [];
     try { data = JSON.parse(localStorage.getItem('debitoret_data_v1') || '[]'); } catch {}
     data = filtroSipasRolit(data);
-
     const total = data.length;
     const totalBorxh = data.reduce((s,r) => s + Number(r.debitori_total || 0), 0);
     const risk = data.reduce((s,r) => s + Number(r.borxh_mbi_365 || 0), 0);
-    const paguar = data.filter(r => r.statusi === 'paguar_total').length;
-
+    const paguar = data.filter(r => STATUSET_PAGUAR.includes(r.statusi)).length;
     return buildHubCard({
         key:'debitoret', icon:'wallet', iconClass:'ric-debitoret',
-        title:'Debitorët', sub:'Borxhet dhe pagesat',
+        title:'Debitorët', sub:'Borxhet dhe rikuperimet',
         metrics:[
             { label:'Klientë', value:total },
             { label:'Borxhi', value:formatMoneyShort(totalBorxh), color:'red' },
-            { label:'Mbi 365 ditë', value:formatMoneyShort(risk), color:'red' },
-            { label:'Paguar', value:paguar, color:'green' }
+            { label:'Mbi 365', value:formatMoneyShort(risk), color:'red' },
+            { label:'Rikuperuar', value:paguar, color:'green' }
         ],
         status:'I disponueshëm'
     });
@@ -286,10 +271,8 @@ function buildHubCardDetyrat() {
         key:'detyrat', icon:'check-circle', iconClass:'ric-detyrat',
         title:'Detyrat', sub:'Follow-ups dhe aktivitete',
         metrics:[
-            { label:'Aktive', value:'—' },
-            { label:'Përfunduar', value:'—' },
-            { label:'Vonuar', value:'—' },
-            { label:'Sot', value:'—' }
+            { label:'Aktive', value:'—' }, { label:'Përfunduar', value:'—' },
+            { label:'Vonuar', value:'—' }, { label:'Sot', value:'—' }
         ],
         status:'Së shpejti'
     });
@@ -302,38 +285,18 @@ function buildHubCardStafi() {
         key:'stafi', icon:'users', iconClass:'ric-stafi',
         title:'Stafi', sub:'Performanca e ekipit',
         metrics:[
-            { label:'Total', value:data.length || '—' },
-            { label:'Aktivë', value:'—' },
-            { label:'Degë', value:'—' },
-            { label:'Top performer', value:'—' }
+            { label:'Total', value:data.length || '—' }, { label:'Aktivë', value:'—' },
+            { label:'Degë', value:'—' }, { label:'Top performer', value:'—' }
         ],
         status:'Së shpejti'
     });
 }
 
-function buildHubCardProdukti() {
-    return buildHubCard({
-        key:'produkti', icon:'package', iconClass:'ric-produkti',
-        title:'Produkti', sub:'Importohet nga sistemi i shitjeve',
-        metrics:[
-            { label:'Kontrata', value:'—' },
-            { label:'Të siguruar', value:'—' },
-            { label:'Pako top', value:'—' },
-            { label:'Vlera', value:'—' }
-        ],
-        status:'Importohet me Excel'
-    });
-}
-
-// ============================================================
-// FILTRAT (Viti / Muaji)
-// ============================================================
+// ============ FILTRAT ============
 function initFilters() {
     const tani = new Date();
     const aktualVit = tani.getFullYear();
     const aktualMuaj = MUAJT_REP[tani.getMonth()];
-
-    // Vitet nga të dhënat e debitoreve dhe rinovimeve
     const vitet = new Set();
     try {
         const deb = JSON.parse(localStorage.getItem('debitoret_data_v1') || '[]');
@@ -345,11 +308,9 @@ function initFilters() {
     } catch {}
     vitet.add(String(aktualVit));
     const vitArr = [...vitet].sort().reverse();
-
     const vitOptions = vitArr.map(v => `<option value="${v}">${v}</option>`).join('');
     const muajOptions = '<option value="total">Total viti</option>' +
         MUAJT_REP.map((m,i) => `<option value="${m}">${MUAJT_LABEL[i]}</option>`).join('');
-
     ['repDebViti','repRinViti'].forEach(id => {
         const sel = document.getElementById(id);
         if (sel) { sel.innerHTML = vitOptions; sel.value = String(aktualVit); }
@@ -360,9 +321,7 @@ function initFilters() {
     });
 }
 
-// ============================================================
-// SUBTABS
-// ============================================================
+// ============ SUBTABS ============
 function renderSubtabsDeb() {
     document.getElementById('repDebSubtabs').innerHTML = SUBTABS_DEB.map(t =>
         `<button class="rep-subtab ${t.key === currentDebSubtab ? 'active' : ''}" onclick="switchDebSubtab('${t.key}')">${t.label}</button>`
@@ -373,7 +332,6 @@ function switchDebSubtab(key) {
     renderSubtabsDeb();
     renderRaportiDebitoret();
 }
-
 function renderSubtabsRin() {
     document.getElementById('repRinSubtabs').innerHTML = SUBTABS_RIN.map(t =>
         `<button class="rep-subtab ${t.key === currentRinSubtab ? 'active' : ''}" onclick="switchRinSubtab('${t.key}')">${t.label}</button>`
@@ -385,49 +343,54 @@ function switchRinSubtab(key) {
     renderRaportiRinovimet();
 }
 
-// ============================================================
-// RAPORTI DEBITORET
-// ============================================================
-function renderRaportiDebitoret() {
-    const container = document.getElementById('repDebContent');
-    if (!container) return;
+// ============ DEBITORET ============
+function getDebPrevMonth(viti, muaji) {
+    if (muaji === 'total') return null;
+    const idx = MUAJT_REP.indexOf(muaji);
+    if (idx === 0) return { viti: String(Number(viti)-1), muaji: 'dhjetor' };
+    return { viti, muaji: MUAJT_REP[idx-1] };
+}
 
-    const viti = document.getElementById('repDebViti')?.value || String(new Date().getFullYear());
-    const muaji = document.getElementById('repDebMuaji')?.value || 'total';
-
-    let data = [];
-    try { data = JSON.parse(localStorage.getItem('debitoret_data_v1') || '[]'); } catch {}
-    data = filtroSipasRolit(data);
-
-    // Filtër viti/muaji
-    const filtered = data.filter(r => {
+function filterDebData(all, viti, muaji) {
+    return all.filter(r => {
         if (!r.muaji) return false;
         const [m, y] = r.muaji.split('_');
         if (y !== viti) return false;
         if (muaji === 'total') return true;
         return m === muaji;
     });
+}
+
+function renderRaportiDebitoret() {
+    const container = document.getElementById('repDebContent');
+    if (!container) return;
+    const viti = document.getElementById('repDebViti')?.value || String(new Date().getFullYear());
+    const muaji = document.getElementById('repDebMuaji')?.value || 'total';
+    let allData = [];
+    try { allData = JSON.parse(localStorage.getItem('debitoret_data_v1') || '[]'); } catch {}
+    allData = filtroSipasRolit(allData);
+    const filtered = filterDebData(allData, viti, muaji);
 
     if (filtered.length === 0) {
         container.innerHTML = `<div class="rep-empty"><div class="rep-empty-icon">📊</div><div class="rep-empty-title">Nuk ka të dhëna</div><div class="rep-empty-sub">Për ${muaji === 'total' ? 'vitin ' + viti : MUAJT_LABEL[MUAJT_REP.indexOf(muaji)] + ' ' + viti} nuk ka rekorde debitorësh</div></div>`;
         return;
     }
 
-    if (currentDebSubtab === 'permbledhje') container.innerHTML = renderDebPermbledhje(filtered, viti, muaji);
-    if (currentDebSubtab === 'krahasim') container.innerHTML = renderDebKrahasim(data, viti, muaji);
+    if (currentDebSubtab === 'permbledhje') container.innerHTML = renderDebPermbledhje(filtered, allData, viti, muaji);
+    if (currentDebSubtab === 'krahasim') container.innerHTML = renderDebKrahasim(allData, viti);
     if (currentDebSubtab === 'deget') container.innerHTML = renderDebDeget(filtered);
     if (currentDebSubtab === 'agjentet') container.innerHTML = renderDebAgjentet(filtered);
-    if (currentDebSubtab === 'trend') container.innerHTML = renderDebTrend(data, viti);
-
+    if (currentDebSubtab === 'topklient') container.innerHTML = renderDebTopKlient(filtered);
     if (window.lucide) lucide.createIcons();
 }
 
-function renderDebPermbledhje(data, viti, muaji) {
+function renderDebPermbledhje(data, allData, viti, muaji) {
     const totalBorxh = data.reduce((s,r) => s + Number(r.debitori_total || 0), 0);
     const totalRisk = data.reduce((s,r) => s + Number(r.borxh_mbi_365 || 0), 0);
-    const totalPaguar = data.filter(r => r.statusi === 'paguar_total').reduce((s,r) => s + Number(r.shuma_paguar || r.debitori_total || 0), 0);
-    const totalPaguarPjess = data.filter(r => r.statusi === 'paguar_pjesshem').reduce((s,r) => s + Number(r.shuma_paguar || 0), 0);
-    const mbetur = totalBorxh - totalPaguar - totalPaguarPjess;
+    const paguarTotal = data.filter(r => r.statusi === 'paguar_total').reduce((s,r) => s + Number(r.shuma_paguar || r.debitori_total || 0), 0);
+    const paguarPjess = data.filter(r => r.statusi === 'paguar_pjesshem').reduce((s,r) => s + Number(r.shuma_paguar || 0), 0);
+    const totalPaguar = paguarTotal + paguarPjess;
+    const mbetur = totalBorxh - totalPaguar;
 
     const counts = {};
     ['i_ri','kontaktuar','premtim_pagese','paguar_total','paguar_pjesshem','kontestuar','i_pamundshem'].forEach(k => counts[k] = 0);
@@ -445,24 +408,29 @@ function renderDebPermbledhje(data, viti, muaji) {
     const maxAging = Math.max(...Object.values(aging), 1);
 
     const periudha = muaji === 'total' ? `Total viti ${viti}` : `${MUAJT_LABEL[MUAJT_REP.indexOf(muaji)]} ${viti}`;
+    const insights = buildDebInsights(data, allData, viti, muaji, totalBorxh);
 
     return `
         <div class="rep-summary-strip">
             <div class="rep-ss-item"><div class="rss-label">Borxhi total</div><div class="rss-value">${formatMoney(totalBorxh)}</div><div class="rss-sub">${data.length} klientë · ${periudha}</div></div>
-            <div class="rep-ss-item danger"><div class="rss-label">Mbi 365 ditë</div><div class="rss-value">${formatMoney(totalRisk)}</div><div class="rss-sub">${((totalRisk/totalBorxh)*100||0).toFixed(1)}% e totalit</div></div>
-            <div class="rep-ss-item highlight"><div class="rss-label">Paguar (total + pjesshëm)</div><div class="rss-value">${formatMoney(totalPaguar+totalPaguarPjess)}</div><div class="rss-sub">${counts.paguar_total + counts.paguar_pjesshem} klientë</div></div>
-            <div class="rep-ss-item warning"><div class="rss-label">Mbetur për pagesë</div><div class="rss-value">${formatMoney(mbetur)}</div><div class="rss-sub">${(((mbetur)/totalBorxh)*100||0).toFixed(1)}% e mbetur</div></div>
+            <div class="rep-ss-item danger"><div class="rss-label">Mbi 365 ditë</div><div class="rss-value">${formatMoney(totalRisk)}</div><div class="rss-sub">${totalBorxh ? ((totalRisk/totalBorxh)*100).toFixed(1) : 0}% e totalit</div></div>
+            <div class="rep-ss-item highlight"><div class="rss-label">Paguar (total + pjesshëm)</div><div class="rss-value">${formatMoney(totalPaguar)}</div><div class="rss-sub">${counts.paguar_total + counts.paguar_pjesshem} klientë</div></div>
+            <div class="rep-ss-item warning"><div class="rss-label">Mbetur për pagesë</div><div class="rss-value">${formatMoney(mbetur)}</div><div class="rss-sub">${totalBorxh ? ((mbetur/totalBorxh)*100).toFixed(1) : 0}% e mbetur</div></div>
         </div>
 
-        <div class="rep-stats-grid">
+        <div class="rep-section-title">🎯 Insights kryesore</div>
+        <div class="rep-insights-grid">${insights}</div>
+
+        <div class="rep-section-title">📊 Statuset aktuale</div>
+        <div class="rep-stats-grid" style="grid-template-columns:repeat(8,1fr)">
             <div class="rep-stat-card"><div class="rsc-label">I ri</div><div class="rsc-value" style="color:#94a3b8">${counts.i_ri}</div></div>
             <div class="rep-stat-card"><div class="rsc-label">Kontaktuar</div><div class="rsc-value" style="color:#f59e0b">${counts.kontaktuar}</div></div>
-            <div class="rep-stat-card"><div class="rsc-label">Premtim pagese</div><div class="rsc-value" style="color:#3b82f6">${counts.premtim_pagese}</div></div>
+            <div class="rep-stat-card"><div class="rsc-label">Premtim</div><div class="rsc-value" style="color:#3b82f6">${counts.premtim_pagese}</div></div>
             <div class="rep-stat-card"><div class="rsc-label">Paguar total</div><div class="rsc-value" style="color:#22c55e">${counts.paguar_total}</div></div>
-            <div class="rep-stat-card"><div class="rsc-label">Paguar pjesshëm</div><div class="rsc-value" style="color:#84cc16">${counts.paguar_pjesshem}</div></div>
+            <div class="rep-stat-card"><div class="rsc-label">Pjesshëm</div><div class="rsc-value" style="color:#84cc16">${counts.paguar_pjesshem}</div></div>
             <div class="rep-stat-card"><div class="rsc-label">Kontestuar</div><div class="rsc-value" style="color:#f87171">${counts.kontestuar}</div></div>
             <div class="rep-stat-card"><div class="rsc-label">I pamundshëm</div><div class="rsc-value" style="color:#dc2626">${counts.i_pamundshem}</div></div>
-            <div class="rep-stat-card"><div class="rsc-label">Total klientë</div><div class="rsc-value">${data.length}</div></div>
+            <div class="rep-stat-card"><div class="rsc-label">Total</div><div class="rsc-value">${data.length}</div></div>
         </div>
 
         <div class="rep-table-wrap">
@@ -487,30 +455,155 @@ function renderDebPermbledhje(data, viti, muaji) {
     `;
 }
 
-function renderDebKrahasim(allData, viti, _muaji) {
-    // Të dhënat për të gjitha muajt e vitit të zgjedhur
+function buildDebInsights(data, allData, viti, muaji, totalBorxh) {
+    const cards = [];
+
+    // Insight 1: Po rritet borxhi?
+    const prev = getDebPrevMonth(viti, muaji);
+    if (prev) {
+        const prevData = allData.filter(r => r.muaji === `${prev.muaji}_${prev.viti}`);
+        if (prevData.length > 0) {
+            const prevBorxh = prevData.reduce((s,r) => s + Number(r.debitori_total || 0), 0);
+            const delta = totalBorxh - prevBorxh;
+            const deltaPct = prevBorxh ? ((delta/prevBorxh)*100).toFixed(1) : 0;
+            const rritet = delta > 0;
+            const color = rritet ? '#ef4444' : '#22c55e';
+            const icon = rritet ? '↑' : delta < 0 ? '↓' : '→';
+            const status = rritet ? 'PO' : delta < 0 ? 'JO' : 'STABIL';
+            cards.push(`
+                <div class="rep-insight-card ${rritet ? 'danger' : 'success'}">
+                    <div class="ric-question">A po rritet borxhi total?</div>
+                    <div class="ric-answer">
+                        <span class="ric-big" style="color:${color}">${icon} ${status}</span>
+                        <span class="ric-pct" style="color:${color}">${deltaPct > 0 ? '+' : ''}${deltaPct}%</span>
+                    </div>
+                    <div class="ric-context">
+                        ${formatMoneyShort(totalBorxh)} këtë periudhë<br>
+                        ${formatMoneyShort(prevBorxh)} ${MUAJT_LABEL[MUAJT_REP.indexOf(prev.muaji)]}<br>
+                        <strong>${delta >= 0 ? '+' : ''}${formatMoneyShort(delta)}</strong> diferencë
+                    </div>
+                </div>
+            `);
+        }
+    }
+    if (cards.length === 0) {
+        cards.push(`
+            <div class="rep-insight-card neutral">
+                <div class="ric-question">A po rritet borxhi total?</div>
+                <div class="ric-answer"><span class="ric-big">—</span></div>
+                <div class="ric-context">Nuk ka të dhëna nga muaji paraprak për krahasim</div>
+            </div>
+        `);
+    }
+
+    // Insight 2: Agjenti me Recovery Rate më të ulët
+    const agj = {};
+    data.forEach(r => {
+        const a = r.agjenti || 'Pa agjent';
+        if (!agj[a]) agj[a] = { total:0, paguar:0 };
+        agj[a].total++;
+        if (STATUSET_PAGUAR.includes(r.statusi)) agj[a].paguar++;
+    });
+    const agjArr = Object.keys(agj).filter(a => agj[a].total >= 5).map(a => ({
+        emri: a, total: agj[a].total, paguar: agj[a].paguar,
+        rate: agj[a].total ? (agj[a].paguar/agj[a].total*100) : 0
+    }));
+    if (agjArr.length > 0) {
+        const sorted = [...agjArr].sort((a,b) => a.rate - b.rate);
+        const worst = sorted[0];
+        const mesatarja = agjArr.reduce((s,a) => s + a.rate, 0) / agjArr.length;
+        cards.push(`
+            <div class="rep-insight-card danger">
+                <div class="ric-question">Kush rikuperon më pak?</div>
+                <div class="ric-answer">
+                    <span class="ric-big" style="color:#ef4444;font-size:15px">⚠ ${esc(worst.emri)}</span>
+                </div>
+                <div class="ric-context">
+                    Recovery Rate: <strong>${worst.rate.toFixed(1)}%</strong><br>
+                    ${worst.paguar} nga ${worst.total} klientë paguan<br>
+                    <span style="color:#94a3b8">Mesatarja: ${mesatarja.toFixed(1)}%</span>
+                </div>
+            </div>
+        `);
+    }
+
+    // Insight 3: Sa nga debitorët e muajit paraprak kanë paguar
+    if (prev) {
+        const prevData = allData.filter(r => r.muaji === `${prev.muaji}_${prev.viti}`);
+        if (prevData.length > 0) {
+            const prevNames = new Set(prevData.map(r => r.klienti_normalized || (r.klienti || '').toLowerCase().trim()));
+            const currNames = new Set(data.map(r => r.klienti_normalized || (r.klienti || '').toLowerCase().trim()));
+            const paguar = [...prevNames].filter(n => !currNames.has(n)).length;
+            const ende = prevData.length - paguar;
+            const rate = prevData.length ? (paguar/prevData.length*100).toFixed(1) : 0;
+            cards.push(`
+                <div class="rep-insight-card success">
+                    <div class="ric-question">Sa klientë të muajit të kaluar kanë paguar?</div>
+                    <div class="ric-answer">
+                        <span class="ric-big" style="color:#22c55e">✓ ${paguar}</span>
+                        <span class="ric-pct" style="color:#22c55e">${rate}%</span>
+                    </div>
+                    <div class="ric-context">
+                        nga <strong>${prevData.length}</strong> klientë që kishin borxh<br>
+                        ${ende} ende kanë borxh
+                    </div>
+                </div>
+            `);
+        }
+    }
+
+    return cards.join('');
+}
+
+function renderDebKrahasim(allData, viti) {
     const muajRows = MUAJT_REP.map((m,i) => {
         const monthData = allData.filter(r => r.muaji === `${m}_${viti}`);
         return {
-            muaji: m,
-            label: MUAJT_LABEL[i],
+            muaji: m, label: MUAJT_LABEL[i],
             klient: monthData.length,
             borxh: monthData.reduce((s,r) => s + Number(r.debitori_total || 0), 0),
             risk: monthData.reduce((s,r) => s + Number(r.borxh_mbi_365 || 0), 0),
-            paguar: monthData.filter(r => r.statusi === 'paguar_total').length
+            paguar: monthData.filter(r => STATUSET_PAGUAR.includes(r.statusi)).length
         };
     }).filter(r => r.klient > 0);
 
     if (muajRows.length === 0) {
-        return `<div class="rep-empty"><div class="rep-empty-icon">📈</div><div class="rep-empty-title">Nuk ka të dhëna për krahasim</div><div class="rep-empty-sub">Importoni të paktën 2 muaj për të parë trendin</div></div>`;
+        return `<div class="rep-empty"><div class="rep-empty-icon">📈</div><div class="rep-empty-title">Nuk ka të dhëna për krahasim</div></div>`;
     }
 
-    const arrow = (n) => n > 0 ? '↑' : n < 0 ? '↓' : '→';
-    const cls = (n) => n > 0 ? 'up' : n < 0 ? 'down' : 'neutral';
+    const maxBorxh = Math.max(...muajRows.map(r => r.borxh), 1);
+    const maxKlient = Math.max(...muajRows.map(r => r.klient), 1);
 
     return `
+        <div class="rep-2col">
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">📊 Borxhi total gjatë vitit ${viti}</h3></div>
+                <div style="padding:22px 24px">
+                    ${muajRows.map(r => `
+                        <div class="rep-bar-row" style="margin-bottom:14px">
+                            <div class="rep-bar-label">${r.label}</div>
+                            <div class="rep-bar-track" style="height:22px"><div class="rep-bar-fill" style="width:${(r.borxh/maxBorxh*100).toFixed(1)}%;background:linear-gradient(90deg,#002B5C,#3b82f6);height:100%"></div></div>
+                            <div class="rep-bar-value">${formatMoneyShort(r.borxh)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">👥 Klientë me borxh gjatë vitit ${viti}</h3></div>
+                <div style="padding:22px 24px">
+                    ${muajRows.map(r => `
+                        <div class="rep-bar-row" style="margin-bottom:14px">
+                            <div class="rep-bar-label">${r.label}</div>
+                            <div class="rep-bar-track" style="height:22px"><div class="rep-bar-fill" style="width:${(r.klient/maxKlient*100).toFixed(1)}%;background:linear-gradient(90deg,#7c3aed,#a855f7);height:100%"></div></div>
+                            <div class="rep-bar-value">${r.klient}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+
         <div class="rep-table-wrap">
-            <div class="rep-table-header"><h3 class="rep-table-title">Krahasim mes muajve · Viti ${viti}</h3></div>
+            <div class="rep-table-header"><h3 class="rep-table-title">📋 Detaje mujore me delta</h3></div>
             <table class="rep-table">
                 <thead>
                     <tr>
@@ -520,7 +613,7 @@ function renderDebKrahasim(allData, viti, _muaji) {
                         <th class="right">Borxhi total</th>
                         <th class="right">Δ %</th>
                         <th class="right">Mbi 365</th>
-                        <th class="right">Paguar</th>
+                        <th class="right">Rikuperuar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -529,6 +622,8 @@ function renderDebKrahasim(allData, viti, _muaji) {
                         const dKlient = prev ? r.klient - prev.klient : 0;
                         const dBorxh = prev ? r.borxh - prev.borxh : 0;
                         const dBorxhPct = prev && prev.borxh ? ((dBorxh/prev.borxh)*100).toFixed(1) : '0.0';
+                        const arrow = (n) => n > 0 ? '↑' : n < 0 ? '↓' : '→';
+                        const cls = (n) => n > 0 ? 'up' : n < 0 ? 'down' : 'neutral';
                         return `
                             <tr>
                                 <td><strong>${r.label}</strong></td>
@@ -555,12 +650,21 @@ function renderDebDeget(data) {
         dege[d].klient++;
         dege[d].borxh += Number(r.debitori_total || 0);
         dege[d].risk += Number(r.borxh_mbi_365 || 0);
-        if (r.statusi === 'paguar_total') { dege[d].paguar++; dege[d].paguarVal += Number(r.shuma_paguar || r.debitori_total || 0); }
+        if (STATUSET_PAGUAR.includes(r.statusi)) dege[d].paguar++;
+        if (r.statusi === 'paguar_total') dege[d].paguarVal += Number(r.shuma_paguar || r.debitori_total || 0);
         if (r.statusi === 'paguar_pjesshem') dege[d].paguarVal += Number(r.shuma_paguar || 0);
     });
-    const sorted = Object.keys(dege).sort((a,b) => dege[b].borxh - dege[a].borxh);
-    const totalBorxh = sorted.reduce((s,d) => s + dege[d].borxh, 0);
-    const maxBorxh = Math.max(...sorted.map(d => dege[d].borxh), 1);
+
+    const rows = Object.keys(dege).map(d => ({
+        emri: d, klient: dege[d].klient, borxh: dege[d].borxh, risk: dege[d].risk,
+        paguar: dege[d].paguar, paguarVal: dege[d].paguarVal,
+        recovery: dege[d].klient ? (dege[d].paguar/dege[d].klient*100) : 0,
+        riskRatio: dege[d].borxh ? (dege[d].risk/dege[d].borxh*100) : 0
+    }));
+
+    const sorted = sortRows(rows, 'deget', 'borxh', 'desc');
+    const totalBorxh = rows.reduce((s,d) => s + d.borxh, 0);
+    const maxBorxh = Math.max(...rows.map(d => d.borxh), 1);
 
     return `
         <div class="rep-2col left-bigger">
@@ -569,26 +673,30 @@ function renderDebDeget(data) {
                     <h3 class="rep-table-title">Performanca sipas degëve</h3>
                     <input class="rep-table-search" placeholder="Kërko degë..." onkeyup="filtroTabelen(this,'#tblDeget')">
                 </div>
-                <table class="rep-table" id="tblDeget">
+                <table class="rep-table sortable" id="tblDeget">
                     <thead>
                         <tr>
-                            <th>Dega</th>
-                            <th class="right">Klientë</th>
-                            <th class="right">Borxhi</th>
+                            <th onclick="sortTable('deget','emri')">Dega ${sortArrow('deget','emri')}</th>
+                            <th class="right" onclick="sortTable('deget','klient')">Klientë ${sortArrow('deget','klient')}</th>
+                            <th class="right" onclick="sortTable('deget','borxh')">Borxhi ${sortArrow('deget','borxh')}</th>
                             <th class="right">% e totalit</th>
-                            <th class="right">Mbi 365</th>
-                            <th class="right">Paguar (€)</th>
+                            <th class="right" onclick="sortTable('deget','recovery')">Recovery % ${sortArrow('deget','recovery')}</th>
+                            <th class="right" onclick="sortTable('deget','riskRatio')">Risk % ${sortArrow('deget','riskRatio')}</th>
+                            <th class="right" onclick="sortTable('deget','risk')">Mbi 365 ${sortArrow('deget','risk')}</th>
+                            <th class="right" onclick="sortTable('deget','paguarVal')">Paguar € ${sortArrow('deget','paguarVal')}</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${sorted.map(d => `
-                            <tr data-name="${esc(d).toLowerCase()}">
-                                <td><strong>${esc(d)}</strong></td>
-                                <td class="right">${dege[d].klient}</td>
-                                <td class="right"><strong>${formatMoney(dege[d].borxh)}</strong></td>
-                                <td class="right">${((dege[d].borxh/totalBorxh)*100||0).toFixed(1)}%</td>
-                                <td class="right" style="color:${dege[d].risk>0?'#ef4444':'#94a3b8'}">${formatMoney(dege[d].risk)}</td>
-                                <td class="right" style="color:#22c55e;font-weight:600">${formatMoney(dege[d].paguarVal)}</td>
+                            <tr data-name="${esc(d.emri).toLowerCase()}">
+                                <td><strong>${esc(d.emri)}</strong></td>
+                                <td class="right">${d.klient}</td>
+                                <td class="right"><strong>${formatMoney(d.borxh)}</strong></td>
+                                <td class="right">${totalBorxh ? ((d.borxh/totalBorxh)*100).toFixed(1) : 0}%</td>
+                                <td class="right" style="color:${d.recovery<20?'#ef4444':d.recovery<40?'#f59e0b':'#22c55e'};font-weight:700">${d.recovery.toFixed(1)}%<div style="font-size:9px;color:#94a3b8;font-weight:400">${d.paguar}/${d.klient}</div></td>
+                                <td class="right" style="color:${d.riskRatio>30?'#ef4444':d.riskRatio>15?'#f59e0b':'#22c55e'};font-weight:600">${d.riskRatio.toFixed(1)}%</td>
+                                <td class="right" style="color:${d.risk>0?'#ef4444':'#94a3b8'}">${formatMoney(d.risk)}</td>
+                                <td class="right" style="color:#22c55e;font-weight:600">${formatMoney(d.paguarVal)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -599,9 +707,9 @@ function renderDebDeget(data) {
                 <div style="padding:18px 22px">
                     ${sorted.map(d => `
                         <div class="rep-bar-row">
-                            <div class="rep-bar-label" title="${esc(d)}">${esc(d)}</div>
-                            <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${(dege[d].borxh/maxBorxh*100).toFixed(1)}%;background:linear-gradient(90deg,#002B5C,#3b82f6)"></div></div>
-                            <div class="rep-bar-value">${formatMoneyShort(dege[d].borxh)}</div>
+                            <div class="rep-bar-label" title="${esc(d.emri)}">${esc(d.emri)}</div>
+                            <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${(d.borxh/maxBorxh*100).toFixed(1)}%;background:linear-gradient(90deg,#002B5C,#3b82f6)"></div></div>
+                            <div class="rep-bar-value">${formatMoneyShort(d.borxh)}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -614,41 +722,70 @@ function renderDebAgjentet(data) {
     const agj = {};
     data.forEach(r => {
         const a = r.agjenti || 'Pa agjent';
-        if (!agj[a]) agj[a] = { klient:0, borxh:0, risk:0, paguarVal:0, dega:r.dega || 'Pa degë' };
-        agj[a].klient++;
+        if (!agj[a]) agj[a] = { total:0, iRi:0, paguar:0, borxh:0, risk:0, paguarVal:0, dega:r.dega || 'Pa degë' };
+        agj[a].total++;
+        if (r.statusi === 'i_ri') agj[a].iRi++;
+        if (STATUSET_PAGUAR.includes(r.statusi)) agj[a].paguar++;
         agj[a].borxh += Number(r.debitori_total || 0);
         agj[a].risk += Number(r.borxh_mbi_365 || 0);
         if (r.statusi === 'paguar_total') agj[a].paguarVal += Number(r.shuma_paguar || r.debitori_total || 0);
         if (r.statusi === 'paguar_pjesshem') agj[a].paguarVal += Number(r.shuma_paguar || 0);
     });
-    const sorted = Object.keys(agj).sort((a,b) => agj[b].borxh - agj[a].borxh);
+
+    const rows = Object.keys(agj).map(a => ({
+        emri: a, dega: agj[a].dega, total: agj[a].total, iRi: agj[a].iRi,
+        paguar: agj[a].paguar, borxh: agj[a].borxh, risk: agj[a].risk,
+        paguarVal: agj[a].paguarVal,
+        recovery: agj[a].total ? (agj[a].paguar/agj[a].total*100) : 0
+    }));
+
+    const sorted = sortRows(rows, 'agjentet', 'recovery', 'asc');
+    const alarmAgj = rows.filter(a => a.iRi > 0 && a.total >= 5).sort((a,b) => b.iRi - a.iRi);
 
     return `
+        ${alarmAgj.length > 0 ? `
+            <div class="rep-alarm-box">
+                <div class="rep-alarm-title">🚨 Alarm: Agjentë me klientë të pakontaktuar</div>
+                <div class="rep-alarm-items">
+                    ${alarmAgj.slice(0, 6).map(a => `
+                        <div class="rep-alarm-item">
+                            <div class="raa-name">${esc(a.emri)}</div>
+                            <div class="raa-count"><strong>${a.iRi}</strong> / ${a.total} i panisur</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        ` : ''}
+
         <div class="rep-table-wrap">
             <div class="rep-table-header">
-                <h3 class="rep-table-title">Të gjithë agjentët (renditur sipas borxhit)</h3>
+                <h3 class="rep-table-title">Performanca sipas agjentëve (default: Recovery Rate më i ulët lart)</h3>
                 <input class="rep-table-search" placeholder="Kërko agjent..." onkeyup="filtroTabelen(this,'#tblAgjentet')">
             </div>
-            <table class="rep-table" id="tblAgjentet">
+            <table class="rep-table sortable" id="tblAgjentet">
                 <thead>
                     <tr>
-                        <th>Agjenti</th>
+                        <th onclick="sortTable('agjentet','emri')">Agjenti ${sortArrow('agjentet','emri')}</th>
                         <th>Dega</th>
-                        <th class="right">Klientë</th>
-                        <th class="right">Borxhi</th>
-                        <th class="right">Mbi 365</th>
-                        <th class="right">Paguar (€)</th>
+                        <th class="right" onclick="sortTable('agjentet','total')">Klientë ${sortArrow('agjentet','total')}</th>
+                        <th class="right" onclick="sortTable('agjentet','iRi')">I ri ⚠ ${sortArrow('agjentet','iRi')}</th>
+                        <th class="right" onclick="sortTable('agjentet','borxh')">Borxhi ${sortArrow('agjentet','borxh')}</th>
+                        <th class="right" onclick="sortTable('agjentet','recovery')">Recovery % ${sortArrow('agjentet','recovery')}</th>
+                        <th class="right" onclick="sortTable('agjentet','risk')">Mbi 365 ${sortArrow('agjentet','risk')}</th>
+                        <th class="right" onclick="sortTable('agjentet','paguarVal')">Paguar € ${sortArrow('agjentet','paguarVal')}</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${sorted.map(a => `
-                        <tr data-name="${esc(a).toLowerCase()}">
-                            <td><strong>${esc(a)}</strong></td>
-                            <td><span style="font-size:11px;color:#64748b">${esc(agj[a].dega)}</span></td>
-                            <td class="right">${agj[a].klient}</td>
-                            <td class="right"><strong>${formatMoney(agj[a].borxh)}</strong></td>
-                            <td class="right" style="color:${agj[a].risk>0?'#ef4444':'#94a3b8'}">${formatMoney(agj[a].risk)}</td>
-                            <td class="right" style="color:#22c55e;font-weight:600">${formatMoney(agj[a].paguarVal)}</td>
+                        <tr data-name="${esc(a.emri).toLowerCase()}">
+                            <td><strong>${esc(a.emri)}</strong></td>
+                            <td><span style="font-size:11px;color:#64748b">${esc(a.dega)}</span></td>
+                            <td class="right">${a.total}</td>
+                            <td class="right" style="color:${a.iRi>0?'#ef4444':'#94a3b8'};font-weight:${a.iRi>0?'700':'400'}">${a.iRi}</td>
+                            <td class="right"><strong>${formatMoney(a.borxh)}</strong></td>
+                            <td class="right" style="color:${a.recovery<20?'#ef4444':a.recovery<40?'#f59e0b':'#22c55e'};font-weight:700">${a.recovery.toFixed(1)}%<div style="font-size:9px;color:#94a3b8;font-weight:400">${a.paguar}/${a.total}</div></td>
+                            <td class="right" style="color:${a.risk>0?'#ef4444':'#94a3b8'}">${formatMoney(a.risk)}</td>
+                            <td class="right" style="color:#22c55e;font-weight:600">${formatMoney(a.paguarVal)}</td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -657,325 +794,110 @@ function renderDebAgjentet(data) {
     `;
 }
 
-function renderDebTrend(allData, viti) {
-    const muajRows = MUAJT_REP.map((m,i) => {
-        const monthData = allData.filter(r => r.muaji === `${m}_${viti}`);
-        return {
-            label: MUAJT_LABEL[i],
-            borxh: monthData.reduce((s,r) => s + Number(r.debitori_total || 0), 0),
-            risk: monthData.reduce((s,r) => s + Number(r.borxh_mbi_365 || 0), 0)
+function renderDebTopKlient(data) {
+    const sorted = [...data].sort((a,b) => Number(b.debitori_total||0) - Number(a.debitori_total||0)).slice(0, 20);
+
+    const agingLabel = (r) => {
+        const buckets = [
+            { label:'>365d', v:Number(r.borxh_mbi_365||0) },
+            { label:'181-365d', v:Number(r.borxh_181_365||0) },
+            { label:'91-180d', v:Number(r.borxh_91_180||0) },
+            { label:'61-90d', v:Number(r.borxh_61_90||0) },
+            { label:'31-60d', v:Number(r.borxh_31_60||0) },
+            { label:'0-31d', v:Number(r.borxh_0_31||0) }
+        ];
+        const top = buckets.sort((a,b) => b.v - a.v)[0];
+        return top.v > 0 ? top.label : '—';
+    };
+
+    const statusBadge = (s) => {
+        const colors = {
+            i_ri:'#94a3b8', kontaktuar:'#f59e0b', premtim_pagese:'#3b82f6',
+            paguar_total:'#22c55e', paguar_pjesshem:'#84cc16',
+            kontestuar:'#f87171', i_pamundshem:'#dc2626'
         };
-    });
-    const max = Math.max(...muajRows.map(r => r.borxh), 1);
-
-    return `
-        <div class="rep-table-wrap">
-            <div class="rep-table-header"><h3 class="rep-table-title">Trend i borxhit gjatë vitit ${viti}</h3></div>
-            <div style="padding:24px 26px">
-                ${muajRows.map(r => `
-                    <div class="rep-bar-row" style="margin-bottom:12px">
-                        <div class="rep-bar-label">${r.label}</div>
-                        <div class="rep-bar-track" style="height:20px"><div class="rep-bar-fill" style="width:${(r.borxh/max*100).toFixed(1)}%;background:linear-gradient(90deg,#002B5C,#3b82f6);height:100%"></div></div>
-                        <div class="rep-bar-value">${formatMoneyShort(r.borxh)}</div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-}
-
-// ============================================================
-// RAPORTI RINOVIMET
-// ============================================================
-function renderRaportiRinovimet() {
-    const container = document.getElementById('repRinContent');
-    if (!container) return;
-
-    const viti = document.getElementById('repRinViti')?.value || String(new Date().getFullYear());
-    const muaji = document.getElementById('repRinMuaji')?.value || 'total';
-
-    let data = [];
-    try { data = JSON.parse(localStorage.getItem('rinovimet_data') || '[]'); } catch {}
-    data = filtroSipasRolit(data);
-
-    const filtered = data.filter(r => {
-        if (!r.muaji) return false;
-        const [m, y] = r.muaji.split('_');
-        if (y !== viti) return false;
-        if (muaji === 'total') return true;
-        return m === muaji;
-    });
-
-    if (filtered.length === 0) {
-        container.innerHTML = `<div class="rep-empty"><div class="rep-empty-icon">📊</div><div class="rep-empty-title">Nuk ka të dhëna</div><div class="rep-empty-sub">Për ${muaji === 'total' ? 'vitin ' + viti : MUAJT_LABEL[MUAJT_REP.indexOf(muaji)] + ' ' + viti} nuk ka rekorde rinovimesh</div></div>`;
-        return;
-    }
-
-    if (currentRinSubtab === 'permbledhje') container.innerHTML = renderRinPermbledhje(filtered, viti, muaji);
-    if (currentRinSubtab === 'krahasim') container.innerHTML = renderRinKrahasim(data, viti);
-    if (currentRinSubtab === 'deget') container.innerHTML = renderRinDeget(filtered);
-    if (currentRinSubtab === 'agjentet') container.innerHTML = renderRinAgjentet(filtered);
-    if (currentRinSubtab === 'performanca') container.innerHTML = renderRinPerformanca(filtered);
-
-    if (window.lucide) lucide.createIcons();
-}
-
-function renderRinPermbledhje(data, viti, muaji) {
-    const total = data.length;
-    const rinovuar = data.filter(r => r.statusi === 'rinovuar').length;
-    const humbur = data.filter(r => r.statusi === 'humbur').length;
-    const paFilluar = data.filter(r => r.statusi === 'pa_filluar' || !r.statusi).length;
-    const kontaktuar = data.filter(r => r.statusi === 'kontaktuar').length;
-
-    const primi = data.reduce((s,r) => s + Number(r.primi_vjetor || r.total_primi || 0), 0);
-    const deme = data.reduce((s,r) => s + Number(r.deme_total_vlera || 0), 0);
-    const shpenz = data.reduce((s,r) => s + Number(r.shpenzimet || 0), 0);
-    const lr = primi ? (deme/primi*100) : 0;
-    const cr = primi ? ((deme+shpenz)/primi*100) : 0;
-    const rinovRate = total ? (rinovuar/total*100) : 0;
-
-    const periudha = muaji === 'total' ? `Total viti ${viti}` : `${MUAJT_LABEL[MUAJT_REP.indexOf(muaji)]} ${viti}`;
-
-    return `
-        <div class="rep-summary-strip">
-            <div class="rep-ss-item"><div class="rss-label">Total kontrata</div><div class="rss-value">${total}</div><div class="rss-sub">${periudha}</div></div>
-            <div class="rep-ss-item"><div class="rss-label">Primi total</div><div class="rss-value">${formatMoney(primi)}</div><div class="rss-sub">Vjetor</div></div>
-            <div class="rep-ss-item highlight"><div class="rss-label">Rinovuar</div><div class="rss-value">${rinovuar}</div><div class="rss-sub">${rinovRate.toFixed(1)}% rinovim rate</div></div>
-            <div class="rep-ss-item danger"><div class="rss-label">Humbur</div><div class="rss-value">${humbur}</div><div class="rss-sub">${total ? (humbur/total*100).toFixed(1) : 0}% humbje</div></div>
-        </div>
-
-        <div class="rep-stats-grid">
-            <div class="rep-stat-card"><div class="rsc-label">Pa filluar</div><div class="rsc-value" style="color:#94a3b8">${paFilluar}</div></div>
-            <div class="rep-stat-card"><div class="rsc-label">Kontaktuar</div><div class="rsc-value" style="color:#f59e0b">${kontaktuar}</div></div>
-            <div class="rep-stat-card"><div class="rsc-label">Dëme totale</div><div class="rsc-value" style="color:#ef4444">${formatMoneyShort(deme)}</div></div>
-            <div class="rep-stat-card"><div class="rsc-label">Shpenzime</div><div class="rsc-value">${formatMoneyShort(shpenz)}</div></div>
-            <div class="rep-stat-card"><div class="rsc-label">LR (Loss Ratio)</div><div class="rsc-value" style="color:${lr>90?'#ef4444':lr>60?'#f59e0b':'#22c55e'}">${lr.toFixed(1)}%</div></div>
-            <div class="rep-stat-card"><div class="rsc-label">CR (Combined Ratio)</div><div class="rsc-value" style="color:${cr>100?'#ef4444':cr>90?'#f59e0b':'#22c55e'}">${cr.toFixed(1)}%</div></div>
-            <div class="rep-stat-card"><div class="rsc-label">Marzhi</div><div class="rsc-value" style="color:${(100-cr)<0?'#ef4444':'#22c55e'}">${(100-cr).toFixed(1)}%</div></div>
-            <div class="rep-stat-card"><div class="rsc-label">Primi mesatar</div><div class="rsc-value">${total ? formatMoneyShort(primi/total) : '0€'}</div></div>
-        </div>
-    `;
-}
-
-function renderRinKrahasim(allData, viti) {
-    const muajRows = MUAJT_REP.map((m,i) => {
-        const monthData = allData.filter(r => r.muaji === `${m}_${viti}`);
-        const primi = monthData.reduce((s,r) => s + Number(r.primi_vjetor || r.total_primi || 0), 0);
-        const deme = monthData.reduce((s,r) => s + Number(r.deme_total_vlera || 0), 0);
-        return {
-            label: MUAJT_LABEL[i],
-            total: monthData.length,
-            rinovuar: monthData.filter(r => r.statusi === 'rinovuar').length,
-            humbur: monthData.filter(r => r.statusi === 'humbur').length,
-            primi, deme,
-            lr: primi ? (deme/primi*100) : 0
+        const labels = {
+            i_ri:'I ri', kontaktuar:'Kontaktuar', premtim_pagese:'Premtim',
+            paguar_total:'Paguar', paguar_pjesshem:'Pjesshëm',
+            kontestuar:'Kontestuar', i_pamundshem:'I pamundshëm'
         };
-    }).filter(r => r.total > 0);
-
-    if (muajRows.length === 0) return `<div class="rep-empty"><div class="rep-empty-icon">📈</div><div class="rep-empty-title">Nuk ka të dhëna për krahasim</div></div>`;
-
-    const arrow = (n) => n > 0 ? '↑' : n < 0 ? '↓' : '→';
-    const cls = (n, inverse) => {
-        if (n === 0) return 'neutral';
-        if (inverse) return n > 0 ? 'down' : 'up';
-        return n > 0 ? 'up' : 'down';
+        return `<span style="padding:3px 9px;border-radius:12px;font-size:10px;font-weight:600;background:${colors[s]||'#e2e8f0'}20;color:${colors[s]||'#64748b'}">${labels[s]||s}</span>`;
     };
 
     return `
         <div class="rep-table-wrap">
-            <div class="rep-table-header"><h3 class="rep-table-title">Krahasim mes muajve · Viti ${viti}</h3></div>
-            <table class="rep-table">
-                <thead>
-                    <tr>
-                        <th>Muaji</th>
-                        <th class="right">Total</th>
-                        <th class="right">Rinovuar</th>
-                        <th class="right">Humbur</th>
-                        <th class="right">Primi</th>
-                        <th class="right">Δ Primi</th>
-                        <th class="right">LR%</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${muajRows.map((r,i) => {
-                        const prev = i > 0 ? muajRows[i-1] : null;
-                        const dPrimi = prev ? r.primi - prev.primi : 0;
-                        const dPct = prev && prev.primi ? ((dPrimi/prev.primi)*100).toFixed(1) : '0.0';
-                        return `
-                            <tr>
-                                <td><strong>${r.label}</strong></td>
-                                <td class="right">${r.total}</td>
-                                <td class="right" style="color:#22c55e;font-weight:600">${r.rinovuar}</td>
-                                <td class="right" style="color:#ef4444;font-weight:600">${r.humbur}</td>
-                                <td class="right"><strong>${formatMoney(r.primi)}</strong></td>
-                                <td class="right">${prev ? `<span class="rep-delta ${cls(dPrimi,true)}">${arrow(dPrimi)} ${dPct}%</span>` : '—'}</td>
-                                <td class="right" style="color:${r.lr>90?'#ef4444':r.lr>60?'#f59e0b':'#22c55e'}">${r.lr.toFixed(1)}%</td>
-                            </tr>
-                        `;
-                    }).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
-}
-
-function renderRinDeget(data) {
-    const dege = {};
-    data.forEach(r => {
-        const d = r.dega || 'Pa degë';
-        if (!dege[d]) dege[d] = { total:0, rinovuar:0, humbur:0, primi:0, deme:0 };
-        dege[d].total++;
-        if (r.statusi === 'rinovuar') dege[d].rinovuar++;
-        if (r.statusi === 'humbur') dege[d].humbur++;
-        dege[d].primi += Number(r.primi_vjetor || r.total_primi || 0);
-        dege[d].deme += Number(r.deme_total_vlera || 0);
-    });
-    const sorted = Object.keys(dege).sort((a,b) => dege[b].primi - dege[a].primi);
-
-    return `
-        <div class="rep-table-wrap">
             <div class="rep-table-header">
-                <h3 class="rep-table-title">Performanca sipas degëve</h3>
-                <input class="rep-table-search" placeholder="Kërko degë..." onkeyup="filtroTabelen(this,'#tblRinDeget')">
+                <h3 class="rep-table-title">🏆 Top 20 klientët me borxhin më të madh</h3>
+                <input class="rep-table-search" placeholder="Kërko klient..." onkeyup="filtroTabelen(this,'#tblTopKlient')">
             </div>
-            <table class="rep-table" id="tblRinDeget">
+            <table class="rep-table" id="tblTopKlient">
                 <thead>
                     <tr>
-                        <th>Dega</th>
-                        <th class="right">Total</th>
-                        <th class="right">Rinovuar</th>
-                        <th class="right">Humbur</th>
-                        <th class="right">Rate %</th>
-                        <th class="right">Primi</th>
-                        <th class="right">LR%</th>
+                        <th style="width:40px">#</th>
+                        <th>Klienti</th>
+                        <th>Dega / Agjenti</th>
+                        <th class="right">Borxhi total</th>
+                        <th class="right">Mbi 365</th>
+                        <th class="center">Aging dominant</th>
+                        <th class="center">Statusi</th>
+                        <th class="center">Veprim</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${sorted.map(d => {
-                        const rate = dege[d].total ? (dege[d].rinovuar/dege[d].total*100) : 0;
-                        const lr = dege[d].primi ? (dege[d].deme/dege[d].primi*100) : 0;
-                        return `
-                            <tr data-name="${esc(d).toLowerCase()}">
-                                <td><strong>${esc(d)}</strong></td>
-                                <td class="right">${dege[d].total}</td>
-                                <td class="right" style="color:#22c55e;font-weight:600">${dege[d].rinovuar}</td>
-                                <td class="right" style="color:#ef4444;font-weight:600">${dege[d].humbur}</td>
-                                <td class="right">${rate.toFixed(1)}%</td>
-                                <td class="right"><strong>${formatMoney(dege[d].primi)}</strong></td>
-                                <td class="right" style="color:${lr>90?'#ef4444':lr>60?'#f59e0b':'#22c55e'}">${lr.toFixed(1)}%</td>
-                            </tr>
-                        `;
-                    }).join('')}
+                    ${sorted.map((r, i) => `
+                        <tr data-name="${esc(r.klienti).toLowerCase()}">
+                            <td style="font-weight:800;color:#64748b">${i+1}</td>
+                            <td><strong>${esc(r.klienti)}</strong></td>
+                            <td><div style="font-size:11px">${esc(r.dega||'—')}</div><div style="font-size:10px;color:#94a3b8">${esc(r.agjenti||'—')}</div></td>
+                            <td class="right"><strong style="font-size:13px">${formatMoney(r.debitori_total||0)}</strong></td>
+                            <td class="right" style="color:${Number(r.borxh_mbi_365||0)>0?'#ef4444':'#94a3b8'};font-weight:600">${formatMoney(r.borxh_mbi_365||0)}</td>
+                            <td class="center" style="font-size:11px;color:#64748b">${agingLabel(r)}</td>
+                            <td class="center">${statusBadge(r.statusi)}</td>
+                            <td class="center"><a href="debitoret.html?hap=${esc(r.id)}" style="font-size:11px;color:#002B5C;font-weight:600;text-decoration:none">Hap →</a></td>
+                        </tr>
+                    `).join('')}
                 </tbody>
             </table>
         </div>
     `;
 }
 
-function renderRinAgjentet(data) {
-    const agj = {};
-    data.forEach(r => {
-        const a = r.agjenti || 'Pa agjent';
-        if (!agj[a]) agj[a] = { total:0, rinovuar:0, humbur:0, primi:0, deme:0, dega:r.dega || 'Pa degë' };
-        agj[a].total++;
-        if (r.statusi === 'rinovuar') agj[a].rinovuar++;
-        if (r.statusi === 'humbur') agj[a].humbur++;
-        agj[a].primi += Number(r.primi_vjetor || r.total_primi || 0);
-        agj[a].deme += Number(r.deme_total_vlera || 0);
+// ============ SORTIM ============
+function sortRows(rows, tableKey, defaultField, defaultDir) {
+    const s = sortState[tableKey] || { field: defaultField, dir: defaultDir };
+    return [...rows].sort((a, b) => {
+        const va = a[s.field], vb = b[s.field];
+        if (typeof va === 'string') {
+            return s.dir === 'asc' ? va.localeCompare(vb, 'sq') : vb.localeCompare(va, 'sq');
+        }
+        return s.dir === 'asc' ? (va - vb) : (vb - va);
     });
-    const sorted = Object.keys(agj).sort((a,b) => agj[b].primi - agj[a].primi);
-
-    return `
-        <div class="rep-table-wrap">
-            <div class="rep-table-header">
-                <h3 class="rep-table-title">Performanca sipas agjentëve</h3>
-                <input class="rep-table-search" placeholder="Kërko agjent..." onkeyup="filtroTabelen(this,'#tblRinAgjentet')">
-            </div>
-            <table class="rep-table" id="tblRinAgjentet">
-                <thead>
-                    <tr>
-                        <th>Agjenti</th>
-                        <th>Dega</th>
-                        <th class="right">Total</th>
-                        <th class="right">Rinovuar</th>
-                        <th class="right">Rate %</th>
-                        <th class="right">Primi</th>
-                        <th class="right">LR%</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${sorted.map(a => {
-                        const rate = agj[a].total ? (agj[a].rinovuar/agj[a].total*100) : 0;
-                        const lr = agj[a].primi ? (agj[a].deme/agj[a].primi*100) : 0;
-                        return `
-                            <tr data-name="${esc(a).toLowerCase()}">
-                                <td><strong>${esc(a)}</strong></td>
-                                <td><span style="font-size:11px;color:#64748b">${esc(agj[a].dega)}</span></td>
-                                <td class="right">${agj[a].total}</td>
-                                <td class="right" style="color:#22c55e;font-weight:600">${agj[a].rinovuar}</td>
-                                <td class="right">${rate.toFixed(1)}%</td>
-                                <td class="right"><strong>${formatMoney(agj[a].primi)}</strong></td>
-                                <td class="right" style="color:${lr>90?'#ef4444':lr>60?'#f59e0b':'#22c55e'}">${lr.toFixed(1)}%</td>
-                            </tr>
-                        `;
-                    }).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
 }
 
-function renderRinPerformanca(data) {
-    // Top 10 ma fitimprurës (CR më i ulët) dhe top 10 problematikë (CR më i lartë)
-    const withCR = data.filter(r => Number(r.primi_vjetor || r.total_primi || 0) > 0).map(r => {
-        const primi = Number(r.primi_vjetor || r.total_primi || 0);
-        const deme = Number(r.deme_total_vlera || 0);
-        const shpenz = Number(r.shpenzimet || 0);
-        return {
-            klient: r.kontraktuesi || '—',
-            dega: r.dega || '—',
-            agjenti: r.agjenti || '—',
-            primi, deme, shpenz,
-            lr: primi ? (deme/primi*100) : 0,
-            cr: primi ? ((deme+shpenz)/primi*100) : 0
-        };
-    });
-
-    const fitimprurese = [...withCR].sort((a,b) => a.cr - b.cr).slice(0, 10);
-    const problematike = [...withCR].sort((a,b) => b.cr - a.cr).slice(0, 10);
-
-    const buildRow = (r) => `
-        <tr>
-            <td><strong>${esc(r.klient)}</strong><div style="font-size:10px;color:#94a3b8">${esc(r.dega)} · ${esc(r.agjenti)}</div></td>
-            <td class="right">${formatMoney(r.primi)}</td>
-            <td class="right" style="color:${r.lr>90?'#ef4444':'#334155'}">${r.lr.toFixed(1)}%</td>
-            <td class="right" style="color:${r.cr>100?'#ef4444':r.cr>90?'#f59e0b':'#22c55e'};font-weight:700">${r.cr.toFixed(1)}%</td>
-        </tr>
-    `;
-
-    return `
-        <div class="rep-2col">
-            <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">🏆 Top 10 fitimprurës (CR më i ulët)</h3></div>
-                <table class="rep-table">
-                    <thead><tr><th>Klienti</th><th class="right">Primi</th><th class="right">LR%</th><th class="right">CR%</th></tr></thead>
-                    <tbody>${fitimprurese.map(buildRow).join('') || '<tr><td colspan="4" style="text-align:center;color:#94a3b8">Asnjë rekord</td></tr>'}</tbody>
-                </table>
-            </div>
-            <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">⚠ Top 10 problematikë (CR më i lartë)</h3></div>
-                <table class="rep-table">
-                    <thead><tr><th>Klienti</th><th class="right">Primi</th><th class="right">LR%</th><th class="right">CR%</th></tr></thead>
-                    <tbody>${problematike.map(buildRow).join('') || '<tr><td colspan="4" style="text-align:center;color:#94a3b8">Asnjë rekord</td></tr>'}</tbody>
-                </table>
-            </div>
-        </div>
-    `;
+function sortTable(tableKey, field) {
+    const current = sortState[tableKey];
+    if (current && current.field === field) {
+        sortState[tableKey] = { field, dir: current.dir === 'asc' ? 'desc' : 'asc' };
+    } else {
+        sortState[tableKey] = { field, dir: 'desc' };
+    }
+    renderRaportiDebitoret();
 }
 
-// ============================================================
-// EXPORT
-// ============================================================
+function sortArrow(tableKey, field) {
+    const s = sortState[tableKey];
+    if (!s || s.field !== field) return '';
+    return s.dir === 'asc' ? '▲' : '▼';
+}
+
+// ============ RINOVIMET (placeholder — sesioni i ardhshem) ============
+function renderRaportiRinovimet() {
+    const container = document.getElementById('repRinContent');
+    if (!container) return;
+    container.innerHTML = `<div class="rep-coming-soon"><div class="rep-cs-icon">🔄</div><div class="rep-cs-title">Raporti i Rinovimeve</div><div class="rep-cs-text">Do të rindërtohet me strukturën e re të Debitorëve në sesionin e ardhshëm.</div></div>`;
+}
+
+// ============ EXPORT ============
 function eksportoRaportin(modul) {
     let data = [], filename = '';
     if (modul === 'debitoret') {
@@ -984,32 +906,13 @@ function eksportoRaportin(modul) {
         let raw = [];
         try { raw = JSON.parse(localStorage.getItem('debitoret_data_v1') || '[]'); } catch {}
         raw = filtroSipasRolit(raw);
-        data = raw.filter(r => {
-            if (!r.muaji) return false;
-            const [m, y] = r.muaji.split('_');
-            return y === viti && (muaji === 'total' || m === muaji);
-        }).map(r => ({
+        data = filterDebData(raw, viti, muaji).map(r => ({
             Muaji: r.muaji, Klienti: r.klienti, Dega: r.dega, Agjenti: r.agjenti,
             'Borxhi total': r.debitori_total, 'Mbi 365': r.borxh_mbi_365, Statusi: r.statusi
         }));
         filename = `raport_debitoret_${viti}_${muaji}.xlsx`;
     }
-    if (modul === 'rinovimet') {
-        const viti = document.getElementById('repRinViti').value;
-        const muaji = document.getElementById('repRinMuaji').value;
-        let raw = [];
-        try { raw = JSON.parse(localStorage.getItem('rinovimet_data') || '[]'); } catch {}
-        raw = filtroSipasRolit(raw);
-        data = raw.filter(r => {
-            if (!r.muaji) return false;
-            const [m, y] = r.muaji.split('_');
-            return y === viti && (muaji === 'total' || m === muaji);
-        }).map(r => ({
-            Muaji: r.muaji, Kontraktuesi: r.kontraktuesi, Dega: r.dega, Agjenti: r.agjenti,
-            Primi: r.primi_vjetor || r.total_primi, Deme: r.deme_total_vlera, Statusi: r.statusi
-        }));
-        filename = `raport_rinovimet_${viti}_${muaji}.xlsx`;
-    }
+    if (modul === 'rinovimet') { alert('Së shpejti'); return; }
     if (!data.length) { alert('Nuk ka të dhëna për eksport.'); return; }
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
@@ -1017,9 +920,7 @@ function eksportoRaportin(modul) {
     XLSX.writeFile(wb, filename);
 }
 
-// ============================================================
-// HELPERS
-// ============================================================
+// ============ HELPERS ============
 function filtroTabelen(input, selector) {
     const q = input.value.toLowerCase();
     document.querySelectorAll(`${selector} tbody tr`).forEach(tr => {
