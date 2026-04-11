@@ -11,16 +11,12 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-    /* === Tab Row 1: Modulet === */
-    .rep-modules-row{display:flex;gap:0;background:#fff;border-bottom:1px solid #e2e8f0;padding:0;margin:-20px -20px 20px -20px;padding:0 20px;overflow-x:auto}
+    .rep-modules-row{display:flex;gap:0;background:#fff;border-bottom:1px solid #e2e8f0;margin:-20px -20px 20px -20px;padding:0 20px;overflow-x:auto}
     .rep-mod-tab{padding:14px 18px;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;border:none;background:none;font-family:inherit;border-bottom:3px solid transparent;transition:all .15s;display:flex;align-items:center;gap:8px;white-space:nowrap}
     .rep-mod-tab:hover{color:#002B5C}
     .rep-mod-tab.active{color:#002B5C;border-bottom-color:#002B5C}
     .rep-mod-tab svg{width:16px;height:16px}
-    .rep-mod-tab .rmt-badge{font-size:9px;padding:2px 6px;border-radius:8px;background:#e2e8f0;color:#64748b;font-weight:700;margin-left:2px}
-    .rep-mod-tab.active .rmt-badge{background:#002B5C;color:#fff}
 
-    /* === Filtrat lart (Viti / Muaji) === */
     .rep-filters{display:flex;gap:10px;align-items:center;margin-bottom:16px;padding:12px 16px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0}
     .rep-filters label{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
     .rep-filters select{padding:7px 12px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;font-family:inherit;background:#fff;color:#1a2332;font-weight:600;cursor:pointer;outline:none}
@@ -30,13 +26,11 @@
     .rep-filters .rep-export-btn:hover{background:#0d5e57}
     .rep-filters .rep-export-btn svg{width:14px;height:14px}
 
-    /* === Tab Row 2: Nën-tabs === */
     .rep-subtabs{display:flex;gap:4px;background:#e5e9f0;border-radius:8px;padding:3px;margin-bottom:18px;flex-wrap:wrap}
     .rep-subtab{padding:8px 16px;font-size:12px;font-weight:600;color:#64748b;border-radius:6px;cursor:pointer;border:none;background:none;font-family:inherit;transition:all .15s}
     .rep-subtab.active{background:#fff;color:#002B5C;box-shadow:0 1px 3px rgba(0,0,0,.08)}
     .rep-subtab:hover:not(.active){color:#1a2332}
 
-    /* === HUB: Grid me karta === */
     .rep-hub-header{margin-bottom:24px}
     .rep-hub-title{font-size:22px;font-weight:700;color:#1a2332;margin:0 0 4px 0}
     .rep-hub-subtitle{font-size:13px;color:#64748b}
@@ -49,7 +43,6 @@
     .rep-card-icon svg{width:22px;height:22px;color:#fff}
     .rep-card-title{font-size:15px;font-weight:700;color:#1a2332;margin:0}
     .rep-card-sub{font-size:11px;color:#94a3b8;margin-top:1px}
-
     .rep-card-metrics{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
     .rep-card-metric{background:#f8fafc;border-radius:8px;padding:10px}
     .rep-card-metric .rcm-label{font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:600;letter-spacing:.3px}
@@ -58,13 +51,11 @@
     .rep-card-metric .rcm-value.red{color:#ef4444}
     .rep-card-metric .rcm-value.blue{color:#3b82f6}
     .rep-card-metric .rcm-value.amber{color:#f59e0b}
-
     .rep-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid #f1f5f9}
     .rep-card-link{font-size:11px;color:#002B5C;font-weight:600;display:flex;align-items:center;gap:4px}
     .rep-card-link svg{width:14px;height:14px}
     .rep-card-status{font-size:10px;color:#94a3b8;font-style:italic}
 
-    /* === Card icons backgrounds === */
     .ric-oferta{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
     .ric-kontratat{background:linear-gradient(135deg,#10b981,#047857)}
     .ric-faturimi{background:linear-gradient(135deg,#f59e0b,#d97706)}
@@ -74,20 +65,41 @@
     .ric-stafi{background:linear-gradient(135deg,#ec4899,#be185d)}
     .ric-produkti{background:linear-gradient(135deg,#64748b,#334155)}
 
-    /* === Containers për raportet === */
     .rep-content{display:none}
     .rep-content.active{display:block}
 
-    /* === Përmbledhje cards === */
-    .rep-summary-strip{background:linear-gradient(135deg,#002B5C 0%,#003d80 100%);border-radius:14px;padding:22px 26px;color:#fff;margin-bottom:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+    .rep-perm-row{display:grid;grid-template-columns:2.2fr 1fr;gap:14px;margin-bottom:18px}
+    .rep-perm-strip{min-width:0}
+    .rep-perm-insight{min-width:0}
+
+    .rep-summary-strip{background:linear-gradient(135deg,#002B5C 0%,#003d80 100%);border-radius:14px;padding:22px 26px;color:#fff;display:grid;grid-template-columns:repeat(4,1fr);gap:22px;height:100%}
     .rep-ss-item .rss-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.6);font-weight:600}
-    .rep-ss-item .rss-value{font-size:26px;font-weight:800;margin-top:4px;line-height:1}
-    .rep-ss-item .rss-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:4px}
+    .rep-ss-item .rss-value{font-size:22px;font-weight:800;margin-top:4px;line-height:1}
+    .rep-ss-item .rss-sub{font-size:10px;color:rgba(255,255,255,.7);margin-top:4px}
     .rep-ss-item.highlight .rss-value{color:#4ade80}
     .rep-ss-item.danger .rss-value{color:#fca5a5}
     .rep-ss-item.warning .rss-value{color:#fbbf24}
 
-    /* === Tabela raporti === */
+    .rep-insight-small{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px 20px;border-left:4px solid #94a3b8;height:100%;display:flex;flex-direction:column;justify-content:space-between}
+    .rep-insight-small.danger{border-left-color:#ef4444;background:linear-gradient(135deg,#fff,#fef2f2)}
+    .rep-insight-small.success{border-left-color:#22c55e;background:linear-gradient(135deg,#fff,#f0fdf4)}
+    .rep-insight-small.neutral{border-left-color:#94a3b8}
+    .rep-insight-small .ris-q{font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;line-height:1.3}
+    .rep-insight-small .ris-main{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+    .rep-insight-small .ris-val{font-size:20px;font-weight:800;line-height:1}
+    .rep-insight-small .ris-pct{font-size:13px;font-weight:700}
+    .rep-insight-small .ris-ctx{font-size:10px;color:#64748b;line-height:1.5;padding-top:8px;border-top:1px solid #f1f5f9}
+    .rep-insight-small .ris-ctx strong{color:#1a2332}
+
+    .rep-section-title{font-size:13px;font-weight:700;color:#1a2332;margin:18px 0 12px 0}
+
+    .rep-statuset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:8px}
+    .rep-statuset-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px 22px;transition:all .2s}
+    .rep-statuset-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.04)}
+    .rep-statuset-card .rsg-label{font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+    .rep-statuset-card .rsg-num{font-size:34px;font-weight:800;line-height:1;margin-top:8px}
+    .rep-statuset-card .rsg-val{font-size:13px;color:#64748b;font-weight:600;margin-top:6px}
+
     .rep-table-wrap{background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:18px}
     .rep-table-header{padding:14px 18px;border-bottom:1px solid #e2e8f0;background:#f8fafc;display:flex;justify-content:space-between;align-items:center}
     .rep-table-title{font-size:13px;font-weight:700;color:#1a2332;margin:0}
@@ -103,89 +115,43 @@
     .rep-table tbody tr:hover{background:#f8fafc}
     .rep-table tbody tr:nth-child(even){background:#fdfdfd}
     .rep-table tbody tr:nth-child(even):hover{background:#f8fafc}
+    .rep-table.sortable th{cursor:pointer;user-select:none;transition:background .12s}
+    .rep-table.sortable th:hover{background:#eef2f7}
 
-    /* === Trend / delta indicators === */
     .rep-delta{font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:2px}
     .rep-delta.up{color:#ef4444}
     .rep-delta.down{color:#22c55e}
     .rep-delta.neutral{color:#94a3b8}
 
-    /* === 2-col layout për raporte === */
     .rep-2col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
     .rep-2col.left-bigger{grid-template-columns:1.4fr 1fr}
+    .rep-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px}
 
-    /* === Stat cards grid === */
-    .rep-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-    .rep-stat-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px}
-    .rep-stat-card .rsc-label{font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:600;letter-spacing:.3px}
-    .rep-stat-card .rsc-value{font-size:20px;font-weight:800;color:#1a2332;margin-top:4px;line-height:1}
-    .rep-stat-card .rsc-sub{font-size:10px;color:#64748b;margin-top:4px;font-weight:500}
-
-    /* === Bar chart simple === */
     .rep-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:11px}
     .rep-bar-label{width:140px;color:#475569;font-weight:600;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .rep-bar-track{flex:1;height:14px;background:#f1f5f9;border-radius:4px;overflow:hidden}
     .rep-bar-fill{height:100%;border-radius:4px;transition:width .4s ease}
     .rep-bar-value{width:80px;text-align:right;color:#1a2332;font-weight:700;flex-shrink:0}
 
-    /* === Empty state === */
     .rep-empty{text-align:center;padding:60px 20px;color:#94a3b8;background:#fff;border:1px dashed #e2e8f0;border-radius:12px}
-    .rep-empty-icon{font-size:42px;margin-bottom:12px}
     .rep-empty-title{font-size:15px;color:#64748b;font-weight:600;margin-bottom:4px}
     .rep-empty-sub{font-size:12px}
 
     .rep-coming-soon{text-align:center;padding:80px 20px;background:linear-gradient(135deg,#f8fafc,#fff);border:2px dashed #cbd5e1;border-radius:14px}
-    .rep-cs-icon{font-size:48px;margin-bottom:14px}
     .rep-cs-title{font-size:18px;font-weight:700;color:#1a2332;margin-bottom:6px}
     .rep-cs-text{font-size:13px;color:#64748b;max-width:420px;margin:0 auto}
 
     @media(max-width:1100px){
         .rep-hub-grid{grid-template-columns:repeat(2,1fr)}
-        .rep-stats-grid{grid-template-columns:repeat(2,1fr)}
-        .rep-2col,.rep-2col.left-bigger{grid-template-columns:1fr}
+        .rep-statuset-grid{grid-template-columns:repeat(2,1fr)}
+        .rep-2col,.rep-2col.left-bigger,.rep-3col{grid-template-columns:1fr}
         .rep-summary-strip{grid-template-columns:repeat(2,1fr);gap:18px}
+        .rep-perm-row{grid-template-columns:1fr}
     }
     @media(max-width:700px){
         .rep-hub-grid{grid-template-columns:1fr}
     }
-/* === Seksion title === */
-.rep-section-title{font-size:13px;font-weight:700;color:#1a2332;margin:22px 0 12px 0;display:flex;align-items:center;gap:8px}
-
-/* === Insights cards grid === */
-.rep-insights-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:10px}
-.rep-insight-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;border-left:4px solid #94a3b8;transition:all .2s}
-.rep-insight-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-1px)}
-.rep-insight-card.danger{border-left-color:#ef4444;background:linear-gradient(135deg,#fff,#fef2f2)}
-.rep-insight-card.success{border-left-color:#22c55e;background:linear-gradient(135deg,#fff,#f0fdf4)}
-.rep-insight-card.warning{border-left-color:#f59e0b;background:linear-gradient(135deg,#fff,#fffbeb)}
-.rep-insight-card.neutral{border-left-color:#94a3b8}
-
-.rep-insight-card .ric-question{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:10px;line-height:1.3}
-.rep-insight-card .ric-answer{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-.rep-insight-card .ric-big{font-size:22px;font-weight:800;color:#1a2332;line-height:1}
-.rep-insight-card .ric-pct{font-size:14px;font-weight:700;color:#64748b}
-.rep-insight-card .ric-context{font-size:11px;color:#64748b;line-height:1.6;padding-top:8px;border-top:1px solid #f1f5f9}
-.rep-insight-card .ric-context strong{color:#1a2332}
-
-/* === Alarm box për agjentët me klientë të pakontaktuar === */
-.rep-alarm-box{background:linear-gradient(135deg,#fef2f2,#fff);border:1px solid #fecaca;border-left:4px solid #ef4444;border-radius:12px;padding:16px 20px;margin-bottom:18px}
-.rep-alarm-title{font-size:13px;font-weight:700;color:#991b1b;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.rep-alarm-items{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.rep-alarm-item{background:#fff;border:1px solid #fecaca;border-radius:8px;padding:10px 12px}
-.rep-alarm-item .raa-name{font-size:12px;font-weight:700;color:#1a2332;margin-bottom:3px}
-.rep-alarm-item .raa-count{font-size:10px;color:#ef4444}
-.rep-alarm-item .raa-count strong{font-size:14px}
-
-/* === Sortable tables === */
-.rep-table.sortable th{cursor:pointer;user-select:none;transition:background .12s}
-.rep-table.sortable th:hover{background:#eef2f7}
-
-@media(max-width:1100px){
-    .rep-insights-grid{grid-template-columns:1fr}
-    .rep-alarm-items{grid-template-columns:1fr}
-}
 </style>
-
 </head>
 <body>
     <div class="sidebar">
@@ -196,7 +162,6 @@
                 <span class="logo-text-sub">Insurance Group</span>
             </div>
         </div>
-
         <nav class="sidebar-nav">
             <a href="dashboard.html" class="nav-item"><span class="nav-icon"><i data-lucide="layout-dashboard"></i></span><span class="nav-label">Dashboard</span></a>
             <a href="oferta.html" class="nav-item"><span class="nav-icon"><i data-lucide="clipboard-list"></i></span><span class="nav-label">Oferta</span></a>
@@ -209,7 +174,6 @@
             <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="folder-open"></i></span><span class="nav-label">Dokumentet</span></a>
             <a href="stafi.html" class="nav-item"><span class="nav-icon"><i data-lucide="users"></i></span><span class="nav-label">Stafi</span></a>
         </nav>
-
         <div class="sidebar-footer">
             <a href="../index.html" class="nav-item logout"><span class="nav-icon"><i data-lucide="log-out"></i></span><span class="nav-label">Dilni</span></a>
         </div>
@@ -223,10 +187,8 @@
         </div>
 
         <div class="content-area">
-            <!-- Tab Row 1: Modulet -->
             <div class="rep-modules-row" id="repModulesRow"></div>
 
-            <!-- HUB -->
             <div class="rep-content active" id="rep-hub">
                 <div class="rep-hub-header">
                     <h2 class="rep-hub-title">Përmbledhje e të gjitha raporteve</h2>
@@ -235,13 +197,10 @@
                 <div class="rep-hub-grid" id="repHubGrid"></div>
             </div>
 
-            <!-- Raporti DEBITORET -->
             <div class="rep-content" id="rep-debitoret">
                 <div class="rep-filters">
-                    <label>Viti</label>
-                    <select id="repDebViti" onchange="renderRaportiDebitoret()"></select>
-                    <label>Muaji</label>
-                    <select id="repDebMuaji" onchange="renderRaportiDebitoret()"></select>
+                    <label>Viti</label><select id="repDebViti" onchange="renderRaportiDebitoret()"></select>
+                    <label>Muaji</label><select id="repDebMuaji" onchange="renderRaportiDebitoret()"></select>
                     <div class="rep-filter-spacer"></div>
                     <button class="rep-export-btn" onclick="eksportoRaportin('debitoret')"><i data-lucide="download"></i> Eksporto</button>
                 </div>
@@ -249,13 +208,10 @@
                 <div id="repDebContent"></div>
             </div>
 
-            <!-- Raporti RINOVIMET -->
             <div class="rep-content" id="rep-rinovimet">
                 <div class="rep-filters">
-                    <label>Viti</label>
-                    <select id="repRinViti" onchange="renderRaportiRinovimet()"></select>
-                    <label>Muaji</label>
-                    <select id="repRinMuaji" onchange="renderRaportiRinovimet()"></select>
+                    <label>Viti</label><select id="repRinViti" onchange="renderRaportiRinovimet()"></select>
+                    <label>Muaji</label><select id="repRinMuaji" onchange="renderRaportiRinovimet()"></select>
                     <div class="rep-filter-spacer"></div>
                     <button class="rep-export-btn" onclick="eksportoRaportin('rinovimet')"><i data-lucide="download"></i> Eksporto</button>
                 </div>
@@ -263,13 +219,42 @@
                 <div id="repRinContent"></div>
             </div>
 
-            <!-- Modulet e tjera (placeholder Coming Soon) -->
-            <div class="rep-content" id="rep-oferta"><div class="rep-coming-soon"><div class="rep-cs-icon">📋</div><div class="rep-cs-title">Raporti i Ofertave</div><div class="rep-cs-text">Ky raport është në zhvillim e sipër dhe do të jetë i disponueshëm së shpejti.</div></div></div>
-            <div class="rep-content" id="rep-kontratat"><div class="rep-coming-soon"><div class="rep-cs-icon">📄</div><div class="rep-cs-title">Raporti i Kontratave</div><div class="rep-cs-text">Ky raport është në zhvillim e sipër dhe do të jetë i disponueshëm së shpejti.</div></div></div>
-            <div class="rep-content" id="rep-faturimi"><div class="rep-coming-soon"><div class="rep-cs-icon">🧾</div><div class="rep-cs-title">Raporti i Faturimit</div><div class="rep-cs-text">Ky raport është në zhvillim e sipër dhe do të jetë i disponueshëm së shpejti.</div></div></div>
-            <div class="rep-content" id="rep-detyrat"><div class="rep-coming-soon"><div class="rep-cs-icon">✅</div><div class="rep-cs-title">Raporti i Detyrave</div><div class="rep-cs-text">Ky raport është në zhvillim e sipër dhe do të jetë i disponueshëm së shpejti.</div></div></div>
-            <div class="rep-content" id="rep-stafi"><div class="rep-coming-soon"><div class="rep-cs-icon">👥</div><div class="rep-cs-title">Raporti i Stafit</div><div class="rep-cs-text">Ky raport është në zhvillim e sipër dhe do të jetë i disponueshëm së shpejti.</div></div></div>
-            <div class="rep-content" id="rep-produkti"><div class="rep-coming-soon"><div class="rep-cs-icon">📊</div><div class="rep-cs-title">Raporti i Produktit</div><div class="rep-cs-text">Ky raport do të importohet drejtpërdrejt nga sistemi kryesor i shitjeve me Excel dhe është në zhvillim e sipër.</div></div></div>
+            <div class="rep-content" id="rep-kontratat">
+                <div class="rep-filters">
+                    <label>Viti</label><select id="repKonViti" onchange="renderRaportiKontratat()"></select>
+                    <label>Muaji</label><select id="repKonMuaji" onchange="renderRaportiKontratat()"></select>
+                    <div class="rep-filter-spacer"></div>
+                    <button class="rep-export-btn" onclick="eksportoRaportin('kontratat')"><i data-lucide="download"></i> Eksporto</button>
+                </div>
+                <div class="rep-subtabs" id="repKonSubtabs"></div>
+                <div id="repKonContent"></div>
+            </div>
+
+            <div class="rep-content" id="rep-faturimi">
+                <div class="rep-filters">
+                    <label>Viti</label><select id="repFatViti" onchange="renderRaportiFaturimi()"></select>
+                    <label>Muaji</label><select id="repFatMuaji" onchange="renderRaportiFaturimi()"></select>
+                    <div class="rep-filter-spacer"></div>
+                    <button class="rep-export-btn" onclick="eksportoRaportin('faturimi')"><i data-lucide="download"></i> Eksporto</button>
+                </div>
+                <div class="rep-subtabs" id="repFatSubtabs"></div>
+                <div id="repFatContent"></div>
+            </div>
+
+            <div class="rep-content" id="rep-oferta">
+                <div class="rep-filters">
+                    <label>Viti</label><select id="repOfeViti" onchange="renderRaportiOferta()"></select>
+                    <label>Muaji</label><select id="repOfeMuaji" onchange="renderRaportiOferta()"></select>
+                    <div class="rep-filter-spacer"></div>
+                    <button class="rep-export-btn" onclick="eksportoRaportin('oferta')"><i data-lucide="download"></i> Eksporto</button>
+                </div>
+                <div class="rep-subtabs" id="repOfeSubtabs"></div>
+                <div id="repOfeContent"></div>
+            </div>
+
+            <div class="rep-content" id="rep-detyrat"><div class="rep-coming-soon"><div class="rep-cs-title">Raporti i Detyrave</div><div class="rep-cs-text">Moduli i detyrave nuk ekziston ende. Raporti do të ndërtohet pasi moduli kryesor të jetë gati.</div></div></div>
+            <div class="rep-content" id="rep-stafi"><div class="rep-coming-soon"><div class="rep-cs-title">Raporti i Stafit</div><div class="rep-cs-text">Do të ndërtohet në sesionin e ardhshëm si scorecard kombinues nga të gjitha modulet.</div></div></div>
+            <div class="rep-content" id="rep-produkti"><div class="rep-coming-soon"><div class="rep-cs-title">Raporti i Produktit</div><div class="rep-cs-text">Do të importohet drejtpërdrejt nga sistemi kryesor i shitjeve me Excel.</div></div></div>
         </div>
     </div>
 
