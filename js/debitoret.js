@@ -125,6 +125,8 @@ document.addEventListener('DOMContentLoaded', function () {
     renderTabs();
     populoChips();
     aplikoFiltrat();
+    const hapParam = new URLSearchParams(window.location.search).get('hap');
+if (hapParam) setTimeout(() => hapDrawer(hapParam), 500);
 });
 
 function ngarkoTedhenat() {

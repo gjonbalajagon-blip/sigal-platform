@@ -499,6 +499,32 @@ function filterByDataField(all, viti, muaji, dateField) {
     });
 }
 
+// Filter universal — provo disa field data, fallback te created_at/id timestamp
+function filterByAnyDate(all, viti, muaji) {
+    if (muaji === 'total') {
+        // Per total viti, provo te filtro sipas vitit nga ndonje date field
+        const dateFields = ['data_kontratës','data_kontrates','data_fillimit','data_oferta','data_krijimit','created_at','createdAt'];
+        for (const f of dateFields) {
+            const result = all.filter(r => {
+                const d = r[f]; if (!d) return false;
+                const dt = new Date(d); if (isNaN(dt)) return false;
+                return dt.getFullYear() === Number(viti);
+            });
+            if (result.length > 0) return result;
+        }
+        // Fallback: nese asnje date field nuk gjendet, kthe te gjitha
+        return all;
+    }
+    // Per muaj specifik
+    const dateFields = ['data_kontratës','data_kontrates','data_fillimit','data_oferta','data_krijimit','created_at','createdAt'];
+    for (const f of dateFields) {
+        const result = filterByDataField(all, viti, muaji, f);
+        if (result.length > 0) return result;
+    }
+    // Fallback: nese asnje date field nuk gjendet, kthe te gjitha
+    return all;
+}
+
 // ============================================================
 // RAPORTI 1: DEBITORET
 // ============================================================
@@ -942,27 +968,18 @@ function renderRinPermbledhje(data, allData, viti, muaji) {
 
     const periudha = muaji === 'total' ? `Total viti ${viti}` : `${MUAJT_LABEL[MUAJT_REP.indexOf(muaji)]} ${viti}`;
 
-    // Insight: Renewal Rate vs muaji paraprak
-    const prev = getPrevMonth(viti, muaji);
+    // Insight: Sa prim humbet nga kontratat e humbura
     let insight = '';
-    if (prev && muaji !== 'total') {
-        const prevData = allData.filter(r => r.muaji === `${prev.muaji}_${prev.viti}`);
-        if (prevData.length > 0) {
-            const prevRinov = prevData.filter(r => r.statusi === 'rinovuar').length;
-            const prevRate = prevData.length ? (prevRinov/prevData.length*100) : 0;
-            const delta = renewalRate - prevRate;
-            const isPos = delta >= 0;
-            insight = buildInsightCardSmall(
-                'Renewal Rate vs muaji paraprak?',
-                renewalRate.toFixed(1) + '%',
-                (delta >= 0 ? '+' : '') + delta.toFixed(1) + 'pp',
-                `Tani: <strong>${rinovuar}/${total}</strong><br>${MUAJT_LABEL[MUAJT_REP.indexOf(prev.muaji)]}: ${prevRinov}/${prevData.length}`,
-                isPos
-            );
-        }
-    }
-    if (!insight) {
-        insight = buildInsightCardSmall('Renewal Rate aktual', renewalRate.toFixed(1) + '%', '', `${rinovuar} rinovuar nga ${total} total`, renewalRate >= 50 ? true : false);
+    if (humbur > 0) {
+        insight = buildInsightCardSmall(
+            'Sa prim humbet nga kontratat e pa-rinovuara?',
+            formatMoneyShort(primiHumbur),
+            '',
+            `${humbur} kontrata te humbura<br>${total ? ((humbur/total)*100).toFixed(1) : 0}% e totalit`,
+            false
+        );
+    } else {
+        insight = buildInsightCardSmall('Asnje kontrate e humbur', 'OK', '', `${rinovuar} rinovuar nga ${total} total`, true);
     }
 
     return `
@@ -996,12 +1013,13 @@ function renderRinKrahasim(allData, viti) {
         const primi = monthData.reduce((s,r) => s + Number(r.primi_vjetor || r.total_primi || 0), 0);
         const deme = monthData.reduce((s,r) => s + Number(r.deme_total_vlera || 0), 0);
         const rinovuar = monthData.filter(r => r.statusi === 'rinovuar').length;
+        const shpenz = monthData.reduce((s,r) => s + Number(r.shpenzimet || 0), 0);
         return {
             muaji: m, label: MUAJT_LABEL[i],
             total: monthData.length, rinovuar,
             humbur: monthData.filter(r => r.statusi === 'humbur').length,
             primi, deme,
-            lr: primi ? (deme/primi*100) : 0,
+            cr: primi ? ((deme+shpenz)/primi*100) : 0,
             renewalRate: monthData.length ? (rinovuar/monthData.length*100) : 0
         };
     }).filter(r => r.total > 0);
@@ -1020,7 +1038,7 @@ function renderRinKrahasim(allData, viti) {
                         <th class="right">Humbur</th>
                         <th class="right">Renewal %</th>
                         <th class="right">Primi</th>
-                        <th class="right">LR%</th>
+                        <th class="right">CR%</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1032,7 +1050,7 @@ function renderRinKrahasim(allData, viti) {
                             <td class="right" style="color:#ef4444;font-weight:600">${r.humbur}</td>
                             <td class="right" style="color:${r.renewalRate>=70?'#22c55e':r.renewalRate>=50?'#f59e0b':'#ef4444'};font-weight:700">${r.renewalRate.toFixed(1)}%</td>
                             <td class="right"><strong>${formatMoney(r.primi)}</strong></td>
-                            <td class="right" style="color:${r.lr>90?'#ef4444':r.lr>60?'#f59e0b':'#22c55e'}">${r.lr.toFixed(1)}%</td>
+                            <td class="right" style="color:${r.cr>100?'#ef4444':r.cr>90?'#f59e0b':'#22c55e'}">${r.cr.toFixed(1)}%</td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -1049,8 +1067,8 @@ function renderRinKrahasim(allData, viti) {
                 <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'renewalRate', 'label', 'linear-gradient(90deg,#22c55e,#84cc16)', n=>n.toFixed(1)+'%')}</div>
             </div>
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Loss Ratio %</h3></div>
-                <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'lr', 'label', 'linear-gradient(90deg,#dc2626,#f87171)', n=>n.toFixed(1)+'%')}</div>
+                <div class="rep-table-header"><h3 class="rep-table-title">Combined Ratio %</h3></div>
+                <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'cr', 'label', 'linear-gradient(90deg,#dc2626,#f87171)', n=>n.toFixed(1)+'%')}</div>
             </div>
         </div>
     `;
@@ -1227,9 +1245,7 @@ function renderRaportiKontratat() {
     let allData = [];
     try { allData = JSON.parse(localStorage.getItem('kontratat') || '[]'); } catch {}
     allData = filtroSipasRolit(allData);
-    const filtered = filterByDataField(allData, viti, muaji, 'data_kontratës') || [];
-    // Fallback nese data_kontrates nuk ekziston
-    const dataToUse = filtered.length > 0 ? filtered : filterByDataField(allData, viti, muaji, 'data_fillimit');
+    const dataToUse = filterByAnyDate(allData, viti, muaji);
 
     if (dataToUse.length === 0) {
         container.innerHTML = `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna</div><div class="rep-empty-sub">Për ${muaji === 'total' ? 'vitin ' + viti : MUAJT_LABEL[MUAJT_REP.indexOf(muaji)] + ' ' + viti} nuk ka kontrata</div></div>`;
@@ -1307,8 +1323,7 @@ function renderKonPermbledhje(data, allData, viti, muaji) {
 
 function renderKonKrahasim(allData, viti) {
     const muajRows = MUAJT_REP.map((m,i) => {
-        const monthData = filterByDataField(allData, viti, m, 'data_kontratës');
-        const dataReal = monthData.length > 0 ? monthData : filterByDataField(allData, viti, m, 'data_fillimit');
+        const dataReal = filterByAnyDate(allData, viti, m);
         return {
             label: MUAJT_LABEL[i],
             total: dataReal.length,
@@ -1609,8 +1624,7 @@ function renderRaportiOferta() {
     try { allData = JSON.parse(localStorage.getItem('ofertat') || '[]'); } catch {}
     allData = filtroSipasRolit(allData);
 
-    const filtered = filterByDataField(allData, viti, muaji, 'data_oferta') ||
-                     filterByDataField(allData, viti, muaji, 'data_kontratës') || allData;
+    const filtered = filterByAnyDate(allData, viti, muaji);
 
     if (filtered.length === 0) {
         container.innerHTML = `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna</div></div>`;
@@ -1671,7 +1685,7 @@ function renderOfePermbledhje(data, viti, muaji) {
 
 function renderOfeKrahasim(allData, viti) {
     const muajRows = MUAJT_REP.map((m,i) => {
-        const monthData = filterByDataField(allData, viti, m, 'data_oferta') || [];
+        const monthData = filterByAnyDate(allData, viti, m);
         const realizuar = monthData.filter(o => o.statusi === 'realizuar').length;
         return {
             label: MUAJT_LABEL[i],
