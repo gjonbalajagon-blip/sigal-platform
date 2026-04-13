@@ -68,7 +68,8 @@
     .rep-content{display:none}
     .rep-content.active{display:block}
 
-    .rep-perm-row{display:grid;grid-template-columns:2.2fr 1fr;gap:14px;margin-bottom:18px}
+    .rep-perm-row{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);gap:14px;margin-bottom:18px}
+    .rep-summary-strip>*{min-width:0}
     .rep-perm-strip{min-width:0}
     .rep-perm-insight{min-width:0}
 

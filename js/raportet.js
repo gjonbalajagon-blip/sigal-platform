@@ -766,13 +766,12 @@ function renderDebDeget(data) {
                     <thead>
                         <tr>
                             <th onclick="sortTable('debDeget','emri','debitoret')">Dega ${sortArrow('debDeget','emri')}</th>
-                            <th class="right" onclick="sortTable('debDeget','klient','debitoret')">Klientë ${sortArrow('debDeget','klient')}</th>
+                            <th class="right" onclick="sortTable('debDeget','klient','debitoret')">Kl. ${sortArrow('debDeget','klient')}</th>
                             <th class="right" onclick="sortTable('debDeget','borxh','debitoret')">Borxhi ${sortArrow('debDeget','borxh')}</th>
-                            <th class="right">% e totalit</th>
-                            <th class="right" onclick="sortTable('debDeget','recovery','debitoret')">Recovery % ${sortArrow('debDeget','recovery')}</th>
-                            <th class="right" onclick="sortTable('debDeget','riskRatio','debitoret')">Risk % ${sortArrow('debDeget','riskRatio')}</th>
+                            <th class="right" onclick="sortTable('debDeget','recovery','debitoret')">Rec% ${sortArrow('debDeget','recovery')}</th>
+                            <th class="right" onclick="sortTable('debDeget','riskRatio','debitoret')">Risk% ${sortArrow('debDeget','riskRatio')}</th>
                             <th class="right" onclick="sortTable('debDeget','risk','debitoret')">Mbi 365 ${sortArrow('debDeget','risk')}</th>
-                            <th class="right" onclick="sortTable('debDeget','paguarVal','debitoret')">Paguar € ${sortArrow('debDeget','paguarVal')}</th>
+                            <th class="right" onclick="sortTable('debDeget','paguarVal','debitoret')">Paguar ${sortArrow('debDeget','paguarVal')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -780,12 +779,11 @@ function renderDebDeget(data) {
                             <tr data-name="${esc(d.emri).toLowerCase()}">
                                 <td><strong>${esc(d.emri)}</strong></td>
                                 <td class="right">${d.klient}</td>
-                                <td class="right"><strong>${formatMoney(d.borxh)}</strong></td>
-                                <td class="right">${totalBorxh ? ((d.borxh/totalBorxh)*100).toFixed(1) : 0}%</td>
-                                <td class="right" style="color:${d.recovery<20?'#ef4444':d.recovery<40?'#f59e0b':'#22c55e'};font-weight:700">${d.recovery.toFixed(1)}%<div style="font-size:9px;color:#94a3b8;font-weight:400">${d.paguar}/${d.klient}</div></td>
+                                <td class="right"><strong>${formatMoneyShort(d.borxh)}</strong></td>
+                                <td class="right" style="color:${d.recovery<20?'#ef4444':d.recovery<40?'#f59e0b':'#22c55e'};font-weight:700">${d.recovery.toFixed(1)}%</td>
                                 <td class="right" style="color:${d.riskRatio>30?'#ef4444':d.riskRatio>15?'#f59e0b':'#22c55e'};font-weight:600">${d.riskRatio.toFixed(1)}%</td>
-                                <td class="right" style="color:${d.risk>0?'#ef4444':'#94a3b8'}">${formatMoney(d.risk)}</td>
-                                <td class="right" style="color:#22c55e;font-weight:600">${formatMoney(d.paguarVal)}</td>
+                                <td class="right" style="color:${d.risk>0?'#ef4444':'#94a3b8'}">${formatMoneyShort(d.risk)}</td>
+                                <td class="right" style="color:#22c55e;font-weight:600">${formatMoneyShort(d.paguarVal)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -1256,6 +1254,7 @@ function renderRaportiKontratat() {
     if (sub === 'permbledhje') container.innerHTML = renderKonPermbledhje(dataToUse, allData, viti, muaji);
     if (sub === 'krahasim') container.innerHTML = renderKonKrahasim(allData, viti);
     if (sub === 'lloji') container.innerHTML = renderKonLloji(dataToUse);
+    if (sub === 'deget') container.innerHTML = renderKonDeget(dataToUse);
     if (sub === 'agjentet') container.innerHTML = renderKonAgjentet(dataToUse);
     if (window.lucide) lucide.createIcons();
 }
@@ -1336,27 +1335,28 @@ function renderKonKrahasim(allData, viti) {
     if (muajRows.length === 0) return `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna</div></div>`;
 
     return `
-        <div class="rep-table-wrap" style="margin-bottom:18px">
-            <div class="rep-table-header"><h3 class="rep-table-title">Kontrata të reja sipas muajit</h3></div>
-            <table class="rep-table">
-                <thead><tr><th>Muaji</th><th class="right">Total</th><th class="right">Individ</th><th class="right">Familje</th><th class="right">Biznes</th></tr></thead>
-                <tbody>
-                    ${muajRows.map(r => `
-                        <tr>
-                            <td><strong>${r.label}</strong></td>
-                            <td class="right"><strong>${r.total}</strong></td>
-                            <td class="right">${r.individ}</td>
-                            <td class="right">${r.familje}</td>
-                            <td class="right">${r.biznes}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="rep-table-wrap">
-            <div class="rep-table-header"><h3 class="rep-table-title">Trend i kontratave të reja</h3></div>
-            <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'total', 'label', 'linear-gradient(90deg,#10b981,#047857)', n=>n)}</div>
+        <div class="rep-2col left-bigger">
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Kontrata të reja sipas muajit</h3></div>
+                <table class="rep-table">
+                    <thead><tr><th>Muaji</th><th class="right">Total</th><th class="right">Individ</th><th class="right">Familje</th><th class="right">Biznes</th></tr></thead>
+                    <tbody>
+                        ${muajRows.map(r => `
+                            <tr>
+                                <td><strong>${r.label}</strong></td>
+                                <td class="right"><strong>${r.total}</strong></td>
+                                <td class="right">${r.individ}</td>
+                                <td class="right">${r.familje}</td>
+                                <td class="right">${r.biznes}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Trend i kontratave të reja</h3></div>
+                <div style="padding:14px 18px">${buildBarChartHorizontal(muajRows, 'total', 'label', 'linear-gradient(90deg,#10b981,#047857)', n=>n)}</div>
+            </div>
         </div>
     `;
 }
@@ -1392,6 +1392,67 @@ function renderKonLloji(data) {
                     }).join('')}
                 </tbody>
             </table>
+        </div>
+    `;
+}
+function renderKonDeget(data) {
+    const stafi = merrStafiList();
+    const dege = {};
+    data.forEach(k => {
+        const agjent = (k.agjenti || '').toLowerCase().trim();
+        const d = stafi[agjent] || k.dega || 'Pa degë';
+        if (!dege[d]) dege[d] = { total:0, aktive:0, skaduar:0, individ:0, familje:0, biznes:0 };
+        dege[d].total++;
+        if (!k.statusi || k.statusi === 'aktive') dege[d].aktive++;
+        if (k.statusi === 'skaduar') dege[d].skaduar++;
+        if (k.lloji === 'individ') dege[d].individ++;
+        if (k.lloji === 'familje') dege[d].familje++;
+        if (k.lloji === 'biznes') dege[d].biznes++;
+    });
+    const rows = Object.keys(dege).map(d => ({
+        emri: d, total: dege[d].total, aktive: dege[d].aktive, skaduar: dege[d].skaduar,
+        individ: dege[d].individ, familje: dege[d].familje, biznes: dege[d].biznes,
+        retention: dege[d].total ? (dege[d].aktive/dege[d].total*100) : 0
+    }));
+    const sorted = sortRows(rows, 'konDeget', 'total', 'desc');
+    return `
+        <div class="rep-2col left-bigger">
+            <div class="rep-table-wrap">
+                <div class="rep-table-header">
+                    <h3 class="rep-table-title">Performanca sipas degëve</h3>
+                    <input class="rep-table-search" placeholder="Kërko degë..." onkeyup="filtroTabelen(this,'#tblKonDeget')">
+                </div>
+                <table class="rep-table sortable" id="tblKonDeget">
+                    <thead><tr>
+                        <th onclick="sortTable('konDeget','emri','kontratat')">Dega ${sortArrow('konDeget','emri')}</th>
+                        <th class="right" onclick="sortTable('konDeget','total','kontratat')">Total ${sortArrow('konDeget','total')}</th>
+                        <th class="right" onclick="sortTable('konDeget','aktive','kontratat')">Aktive ${sortArrow('konDeget','aktive')}</th>
+                        <th class="right" onclick="sortTable('konDeget','skaduar','kontratat')">Skaduar ${sortArrow('konDeget','skaduar')}</th>
+                        <th class="right" onclick="sortTable('konDeget','retention','kontratat')">Retention % ${sortArrow('konDeget','retention')}</th>
+                        <th class="right" onclick="sortTable('konDeget','individ','kontratat')">Individ ${sortArrow('konDeget','individ')}</th>
+                        <th class="right" onclick="sortTable('konDeget','familje','kontratat')">Familje ${sortArrow('konDeget','familje')}</th>
+                        <th class="right" onclick="sortTable('konDeget','biznes','kontratat')">Biznes ${sortArrow('konDeget','biznes')}</th>
+                    </tr></thead>
+                    <tbody>
+                        ${sorted.map(d => `
+                            <tr data-name="${esc(d.emri).toLowerCase()}">
+                                <td><strong>${esc(d.emri)}</strong></td>
+                                <td class="right"><strong>${d.total}</strong></td>
+                                <td class="right" style="color:#22c55e;font-weight:600">${d.aktive}</td>
+                                <td class="right" style="color:#ef4444;font-weight:600">${d.skaduar}</td>
+                                <td class="right" style="color:${d.retention>=80?'#22c55e':d.retention>=60?'#f59e0b':'#ef4444'};font-weight:700">${d.retention.toFixed(1)}%</td>
+                                <td class="right">${d.individ}</td>
+                                <td class="right">${d.familje}</td>
+                                <td class="right">${d.biznes}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Vizualizim</h3></div>
+                <div style="padding:14px 18px">${buildBarChartHorizontal(sorted, 'total', 'emri', 'linear-gradient(90deg,#10b981,#047857)', n=>n)}</div>
+            </div>
         </div>
     `;
 }
