@@ -37,6 +37,7 @@ const SUBTABS = {
         { key:'permbledhje', label:'Përmbledhje' },
         { key:'krahasim', label:'Krahasim mujor' },
         { key:'lloji', label:'Sipas llojit' },
+        { key:'deget', label:'Sipas degëve' },
         { key:'agjentet', label:'Sipas agjentëve' }
     ],
     faturimi: [
@@ -49,6 +50,7 @@ const SUBTABS = {
         { key:'permbledhje', label:'Përmbledhje' },
         { key:'krahasim', label:'Krahasim mujor' },
         { key:'lloji', label:'Sipas llojit' },
+        { key:'deget', label:'Sipas degëve' },
         { key:'agjentet', label:'Sipas agjentëve' },
         { key:'topoferta', label:'Top oferta' }
     ]
@@ -92,6 +94,18 @@ function eshteMenaxher() {
     return ['superadmin','management','dep_management','admin','ceo','deputy_ceo','director','deputy_director'].includes(r);
 }
 
+function merrStafiList() {
+    try {
+        const stafi = JSON.parse(localStorage.getItem('stafi') || '[]');
+        const map = {};
+        stafi.forEach(s => {
+            const key = (s.emri || s.emriPlote || '').toLowerCase().trim();
+            if (key) map[key] = s.dega || 'Pa dege';
+        });
+        return map;
+    } catch { return {}; }
+}
+
 function filtroSipasRolit(list, opts = {}) {
     if (eshteMenaxher()) return list;
     const u = merrUser();
@@ -101,6 +115,17 @@ function filtroSipasRolit(list, opts = {}) {
         if (u.agjenti && xa === u.agjenti.toLowerCase()) return true;
         return false;
     });
+}
+
+// Normalizon field-e camelCase/snake_case (perdoret per oferta)
+function normalizoOferta(o) {
+    return {
+        ...o,
+        agjenti: o.agjenti || o.perfaqesuesi || '',
+        data_krijimit: o.data_krijimit || o.dataKrijimit || '',
+        data_skadon: o.data_skadon || o.dataSkadon || '',
+        nr_personash: o.nr_personash || o.nrPersonash || (Array.isArray(o.personat) ? o.personat.length : 1)
+    };
 }
 
 // ============ MODULES ROW ============
@@ -190,8 +215,7 @@ function buildHubCardOferta() {
     let data = [];
     try { data = JSON.parse(localStorage.getItem('ofertat') || '[]'); } catch {}
     const total = data.length;
-    const realizuar = data.filter(o => o.statusi === 'realizuar').length;
-    const konfirmuar = data.filter(o => o.statusi === 'konfirmuar').length;
+    const realizuar = data.filter(o => o.statusi === 'realizuar' || o.statusi === 'kontrate').length;
     const presin = data.filter(o => o.statusi === 'presin' || o.statusi === 'aktive').length;
     const conv = total ? ((realizuar/total)*100).toFixed(0) : 0;
     return buildHubCard({
@@ -222,7 +246,7 @@ function buildHubCardKontratat() {
             { label:'Total', value:total },
             { label:'Aktive', value:aktive, color:'green' },
             { label:'Skaduar', value:skaduar, color:'red' },
-            { label:'Biznes', value:llojet.biznes, color:'blue' }
+            { label:'Individ', value:llojet.individ }
         ],
         status:'I disponueshëm'
     });
@@ -273,7 +297,6 @@ function buildHubCardDebitoret() {
     let data = [];
     try { data = JSON.parse(localStorage.getItem('debitoret_data_v1') || '[]'); } catch {}
     data = filtroSipasRolit(data);
-    // merr vetem muajin e fundit per debitoret (gjendje aktuale)
     const muajt = [...new Set(data.map(r => r.muaji).filter(Boolean))].sort((a,b) => {
         const [ma, ya] = a.split('_'); const [mb, yb] = b.split('_');
         return (parseInt(ya) - parseInt(yb)) || (MUAJT_REP.indexOf(ma) - MUAJT_REP.indexOf(mb));
@@ -283,7 +306,7 @@ function buildHubCardDebitoret() {
     const total = filtered.length;
     const totalBorxh = filtered.reduce((s,r) => s + Number(r.debitori_total || 0), 0);
     const risk = filtered.reduce((s,r) => s + Number(r.borxh_mbi_365 || 0), 0);
-    const paguar = filtered.filter(r => STATUSET_DEB_PAGUAR.includes(r.statusi)).length;
+    const paguar = filtered.filter(r => STATUSET_DEB_PAGUAR.includes(r.statusi)).reduce((s,r) => s + Number(r.shuma_paguar || r.debitori_total || 0), 0);
     return buildHubCard({
         key:'debitoret', icon:'wallet', iconClass:'ric-debitoret',
         title:'Debitorët', sub:'Borxhet dhe rikuperimet',
@@ -291,7 +314,7 @@ function buildHubCardDebitoret() {
             { label:'Klientë', value:total },
             { label:'Borxhi', value:formatMoneyShort(totalBorxh), color:'red' },
             { label:'Mbi 365', value:formatMoneyShort(risk), color:'red' },
-            { label:'Rikuperuar', value:paguar, color:'green' }
+            { label:'Rikuperuar', value:formatMoneyShort(paguar), color:'green' }
         ],
         status:'I disponueshëm'
     });
@@ -341,13 +364,11 @@ function initFilters() {
     const muajOptionsTotal = '<option value="total">Total viti</option>' + MUAJT_REP.map((m,i) => `<option value="${m}">${MUAJT_LABEL[i]}</option>`).join('');
     const muajOptionsNoTotal = MUAJT_REP.map((m,i) => `<option value="${m}">${MUAJT_LABEL[i]}</option>`).join('');
 
-    // Te debitoret: pa "Total viti"
     const debViti = document.getElementById('repDebViti');
     const debMuaji = document.getElementById('repDebMuaji');
     if (debViti) { debViti.innerHTML = vitOptions; debViti.value = String(aktualVit); }
     if (debMuaji) { debMuaji.innerHTML = muajOptionsNoTotal; debMuaji.value = aktualMuaj; }
 
-    // Te te tjerat: me "Total viti"
     ['repRinViti','repKonViti','repFatViti','repOfeViti'].forEach(id => {
         const sel = document.getElementById(id);
         if (sel) { sel.innerHTML = vitOptions; sel.value = String(aktualVit); }
@@ -486,43 +507,40 @@ function filterByMuaj(all, viti, muaji, field='muaji') {
     });
 }
 
-// Filter sipas datës (per modulet që përdorin data_kontratës ose data_fillimit)
-function filterByDataField(all, viti, muaji, dateField) {
+// Lexon date nga ndonje field (mbulon camelCase + snake_case)
+function readRecordDate(r) {
+    const fields = ['dataKrijimit','dataSkadon','data_krijimit','data_kontratës','data_kontrates','data_fillimit','data_oferta','data_skadon','created_at','createdAt'];
+    for (const f of fields) {
+        if (r[f]) {
+            const d = new Date(r[f]);
+            if (!isNaN(d)) return d;
+        }
+    }
+    return null;
+}
+
+// Grupon rekorde sipas muajit, duke perdorur ndonje date field qe ekziston
+function groupByMonth(all, viti) {
+    const g = {};
+    MUAJT_REP.forEach(m => g[m] = []);
+    all.forEach(r => {
+        const dt = readRecordDate(r);
+        if (!dt || dt.getFullYear() !== Number(viti)) return;
+        const m = MUAJT_REP[dt.getMonth()];
+        if (g[m]) g[m].push(r);
+    });
+    return g;
+}
+
+// Filter sipas vitit/muajit duke perdorur readRecordDate
+function filterByAnyDate(all, viti, muaji) {
     return all.filter(r => {
-        const d = r[dateField];
-        if (!d) return false;
-        const dt = new Date(d);
-        if (isNaN(dt)) return false;
+        const dt = readRecordDate(r);
+        if (!dt) return false;
         if (dt.getFullYear() !== Number(viti)) return false;
         if (muaji === 'total') return true;
         return MUAJT_REP[dt.getMonth()] === muaji;
     });
-}
-
-// Filter universal — provo disa field data, fallback te created_at/id timestamp
-function filterByAnyDate(all, viti, muaji) {
-    if (muaji === 'total') {
-        // Per total viti, provo te filtro sipas vitit nga ndonje date field
-        const dateFields = ['dataKrijimit','dataSkadon','data_kontratës','data_kontrates','data_fillimit','data_oferta','data_krijimit','created_at','createdAt'];
-        for (const f of dateFields) {
-            const result = all.filter(r => {
-                const d = r[f]; if (!d) return false;
-                const dt = new Date(d); if (isNaN(dt)) return false;
-                return dt.getFullYear() === Number(viti);
-            });
-            if (result.length > 0) return result;
-        }
-        // Fallback: nese asnje date field nuk gjendet, kthe te gjitha
-        return all;
-    }
-    // Per muaj specifik
-    const dateFields = ['dataKrijimit','dataSkadon','data_kontratës','data_kontrates','data_fillimit','data_oferta','data_krijimit','created_at','createdAt'];
-    for (const f of dateFields) {
-        const result = filterByDataField(all, viti, muaji, f);
-        if (result.length > 0) return result;
-    }
-    // Fallback: nese asnje date field nuk gjendet, kthe te gjitha
-    return all;
 }
 
 // ============================================================
@@ -581,7 +599,6 @@ function renderDebPermbledhje(data, allData, viti, muaji) {
     const maxAging = Math.max(...Object.values(aging), 1);
     const periudha = `${MUAJT_LABEL[MUAJT_REP.indexOf(muaji)]} ${viti}`;
 
-    // Insight i vogël
     const prev = getPrevMonth(viti, muaji);
     let insight = '';
     if (prev) {
@@ -650,25 +667,20 @@ function renderDebPermbledhje(data, allData, viti, muaji) {
 }
 
 function renderDebKrahasim(allData, viti) {
-const groups = groupByMonth(allData, viti);
     const muajRows = MUAJT_REP.map((m,i) => {
-        const monthData = groups[m];
-        const realizuar = monthData.filter(o => o.statusi === 'realizuar' || o.statusi === 'kontrate').length;
+        const monthData = allData.filter(r => r.muaji === `${m}_${viti}`);
         return {
-            label: MUAJT_LABEL[i],
-            total: monthData.length,
-            realizuar,
-            conversionRate: monthData.length ? (realizuar/monthData.length*100) : 0
+            muaji: m, label: MUAJT_LABEL[i],
+            klient: monthData.length,
+            borxh: monthData.reduce((s,r) => s + Number(r.debitori_total || 0), 0),
+            risk: monthData.reduce((s,r) => s + Number(r.borxh_mbi_365 || 0), 0),
+            paguar: monthData.filter(r => STATUSET_DEB_PAGUAR.includes(r.statusi)).length
         };
-    }).filter(r => r.total > 0);
+    }).filter(r => r.klient > 0);
 
     if (muajRows.length === 0) {
         return `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna për krahasim</div></div>`;
     }
-
-    const maxBorxh = Math.max(...muajRows.map(r => r.borxh), 1);
-    const maxKlient = Math.max(...muajRows.map(r => r.klient), 1);
-    const maxRisk = Math.max(...muajRows.map(r => r.risk), 1);
 
     return `
         <div class="rep-table-wrap" style="margin-bottom:18px">
@@ -753,7 +765,6 @@ function renderDebDeget(data) {
     }));
 
     const sorted = sortRows(rows, 'debDeget', 'borxh', 'desc');
-    const totalBorxh = rows.reduce((s,d) => s + d.borxh, 0);
     const maxBorxh = Math.max(...rows.map(d => d.borxh), 1);
 
     return `
@@ -967,13 +978,11 @@ function renderRinPermbledhje(data, allData, viti, muaji) {
 
     const periudha = muaji === 'total' ? `Total viti ${viti}` : `${MUAJT_LABEL[MUAJT_REP.indexOf(muaji)]} ${viti}`;
 
-    // Insight: Sa prim humbet nga kontratat e humbura
     let insight = '';
     if (humbur > 0) {
         insight = buildInsightCardSmall(
             'Sa prim humbet nga kontratat e pa-rinovuara?',
-            formatMoneyShort(primiHumbur),
-            '',
+            formatMoneyShort(primiHumbur), '',
             `${humbur} kontrata te humbura<br>${total ? ((humbur/total)*100).toFixed(1) : 0}% e totalit`,
             false
         );
@@ -1276,24 +1285,11 @@ function renderKonPermbledhje(data, allData, viti, muaji) {
 
     const periudha = muaji === 'total' ? `Total viti ${viti}` : `${MUAJT_LABEL[MUAJT_REP.indexOf(muaji)]} ${viti}`;
 
-    // Insight
     let insight = '';
     if (skadojneShpejt > 0) {
-        insight = buildInsightCardSmall(
-            'Kontrata që skadojnë në 30 ditë',
-            String(skadojneShpejt),
-            '',
-            `nga ${aktive} aktive<br>Veprim preventiv kërkohet`,
-            false
-        );
+        insight = buildInsightCardSmall('Kontrata që skadojnë në 30 ditë', String(skadojneShpejt), '', `nga ${aktive} aktive<br>Veprim preventiv kërkohet`, false);
     } else {
-        insight = buildInsightCardSmall(
-            'Asnjë kontratë në rrezik',
-            'OK',
-            '',
-            `${aktive} kontrata aktive<br>Pa skadime në 30 ditë`,
-            true
-        );
+        insight = buildInsightCardSmall('Asnjë kontratë në rrezik', 'OK', '', `${aktive} kontrata aktive<br>Pa skadime në 30 ditë`, true);
     }
 
     return `
@@ -1339,7 +1335,7 @@ function renderKonKrahasim(allData, viti) {
     return `
         <div class="rep-2col left-bigger">
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Kontrata të reja sipas muajit</h3></div>
+                <div class="rep-table-header"><h3 class="rep-table-title">Kontrata sipas muajit</h3></div>
                 <table class="rep-table">
                     <thead><tr><th>Muaji</th><th class="right">Total</th><th class="right">Individ</th><th class="right">Familje</th><th class="right">Biznes</th></tr></thead>
                     <tbody>
@@ -1356,7 +1352,7 @@ function renderKonKrahasim(allData, viti) {
                 </table>
             </div>
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Trend i kontratave të reja</h3></div>
+                <div class="rep-table-header"><h3 class="rep-table-title">Trend i kontratave</h3></div>
                 <div style="padding:14px 18px">${buildBarChartHorizontal(muajRows, 'total', 'label', 'linear-gradient(90deg,#10b981,#047857)', n=>n)}</div>
             </div>
         </div>
@@ -1397,6 +1393,7 @@ function renderKonLloji(data) {
         </div>
     `;
 }
+
 function renderKonDeget(data) {
     const stafi = merrStafiList();
     const dege = {};
@@ -1528,17 +1525,12 @@ function renderRaportiFaturimi() {
     try { allData = JSON.parse(localStorage.getItem('faturimi_klientet') || '[]'); } catch {}
     allData = filtroSipasRolit(allData);
 
-    // Filtri sipas muajit (faturimi mund të jetë me field tjetër)
     const filtered = allData.filter(r => {
-        // Provo te lexosh nga muaji ose data_fillimit
         if (r.muaji_aktiv) {
-            if (muaji === 'total') {
-                // Per total viti, kontrollo nese ndonje muaj eshte ne kete vit (heuristik)
-                return true;
-            }
+            if (muaji === 'total') return true;
             return r.muaji_aktiv === muaji;
         }
-        return true; // Nese s'ka filter, kthe gjithcka
+        return true;
     });
 
     if (filtered.length === 0) {
@@ -1563,13 +1555,7 @@ function renderFatPermbledhje(data, viti, muaji) {
     const issuanceRate = total ? (leshuar/total*100) : 0;
     const periudha = muaji === 'total' ? `Total viti ${viti}` : `${MUAJT_LABEL[MUAJT_REP.indexOf(muaji)]} ${viti}`;
 
-    let insight = buildInsightCardSmall(
-        'Issuance Rate aktual',
-        issuanceRate.toFixed(1) + '%',
-        '',
-        `${leshuar} faturuar nga ${total} total<br>${asgje} pa veprim`,
-        issuanceRate >= 70
-    );
+    let insight = buildInsightCardSmall('Issuance Rate aktual', issuanceRate.toFixed(1) + '%', '', `${leshuar} faturuar nga ${total} total<br>${asgje} pa veprim`, issuanceRate >= 70);
 
     return `
         <div class="rep-perm-row">
@@ -1597,7 +1583,7 @@ function renderFatPermbledhje(data, viti, muaji) {
 }
 
 function renderFatKrahasim(data) {
-    return `<div class="rep-empty"><div class="rep-empty-title">Krahasimi mujor i faturimit</div><div class="rep-empty-sub">Faturimi kërkon fushën "muaji_aktiv" për të bërë krahasime mujore. Do të aktivizohet kur të dhënat të kenë këtë fushë.</div></div>`;
+    return `<div class="rep-empty"><div class="rep-empty-title">Krahasimi mujor i faturimit</div><div class="rep-empty-sub">Faturimi kërkon fushën "muaji_aktiv" për të bërë krahasime mujore.</div></div>`;
 }
 
 function renderFatAgjentet(data) {
@@ -1619,7 +1605,7 @@ function renderFatAgjentet(data) {
     return `
         <div class="rep-table-wrap">
             <div class="rep-table-header">
-                <h3 class="rep-table-title">Performanca sipas agjentëve (default: Issuance Rate më i ulët lart)</h3>
+                <h3 class="rep-table-title">Performanca sipas agjentëve</h3>
                 <input class="rep-table-search" placeholder="Kërko agjent..." onkeyup="filtroTabelen(this,'#tblFatAgj')">
             </div>
             <table class="rep-table sortable" id="tblFatAgj">
@@ -1685,7 +1671,7 @@ function renderRaportiOferta() {
     const muaji = document.getElementById('repOfeMuaji')?.value || 'total';
     let allData = [];
     try { allData = JSON.parse(localStorage.getItem('ofertat') || '[]'); } catch {}
-    allData = allData.map(o => ({ ...o, agjenti: o.agjenti || o.perfaqesuesi || '' }));
+    allData = allData.map(normalizoOferta);
     allData = filtroSipasRolit(allData);
 
     const filtered = filterByAnyDate(allData, viti, muaji);
@@ -1699,6 +1685,7 @@ function renderRaportiOferta() {
     if (sub === 'permbledhje') container.innerHTML = renderOfePermbledhje(filtered, viti, muaji);
     if (sub === 'krahasim') container.innerHTML = renderOfeKrahasim(allData, viti);
     if (sub === 'lloji') container.innerHTML = renderOfeLloji(filtered);
+    if (sub === 'deget') container.innerHTML = renderOfeDeget(filtered);
     if (sub === 'agjentet') container.innerHTML = renderOfeAgjentet(filtered);
     if (sub === 'topoferta') container.innerHTML = renderOfeTop(filtered);
     if (window.lucide) lucide.createIcons();
@@ -1706,7 +1693,7 @@ function renderRaportiOferta() {
 
 function renderOfePermbledhje(data, viti, muaji) {
     const total = data.length;
-    const realizuar = data.filter(o => o.statusi === 'realizuar').length;
+    const realizuar = data.filter(o => o.statusi === 'realizuar' || o.statusi === 'kontrate').length;
     const konfirmuar = data.filter(o => o.statusi === 'konfirmuar').length;
     const presin = data.filter(o => o.statusi === 'presin' || o.statusi === 'aktive').length;
     const skaduar = data.filter(o => o.statusi === 'skaduar').length;
@@ -1714,13 +1701,7 @@ function renderOfePermbledhje(data, viti, muaji) {
     const conversionRate = total ? (realizuar/total*100) : 0;
     const periudha = muaji === 'total' ? `Total viti ${viti}` : `${MUAJT_LABEL[MUAJT_REP.indexOf(muaji)]} ${viti}`;
 
-    let insight = buildInsightCardSmall(
-        'Conversion Rate aktual',
-        conversionRate.toFixed(1) + '%',
-        '',
-        `${realizuar} realizuar nga ${total} total<br>${presin} ende presin`,
-        conversionRate >= 30
-    );
+    let insight = buildInsightCardSmall('Sa oferta ende presin pergjigje?', presin.toString(), '', `${konfirmuar} konfirmuar<br>${refuzuar} refuzuar`, presin === 0);
 
     return `
         <div class="rep-perm-row">
@@ -1742,15 +1723,16 @@ function renderOfePermbledhje(data, viti, muaji) {
             { label:'Realizuar', count:realizuar, color:'#22c55e' },
             { label:'Skaduar', count:skaduar, color:'#94a3b8' },
             { label:'Refuzuar', count:refuzuar, color:'#ef4444' },
-            { label:'Conversion Rate', count:conversionRate.toFixed(1)+'%', color:'#7c3aed' }
+            { label:'Total', count:total, color:'#1a2332' }
         ])}
     `;
 }
 
 function renderOfeKrahasim(allData, viti) {
+    const groups = groupByMonth(allData, viti);
     const muajRows = MUAJT_REP.map((m,i) => {
-        const monthData = filterByAnyDate(allData, viti, m);
-        const realizuar = monthData.filter(o => o.statusi === 'realizuar').length;
+        const monthData = groups[m];
+        const realizuar = monthData.filter(o => o.statusi === 'realizuar' || o.statusi === 'kontrate').length;
         return {
             label: MUAJT_LABEL[i],
             total: monthData.length,
@@ -1761,7 +1743,7 @@ function renderOfeKrahasim(allData, viti) {
 
     if (muajRows.length === 0) return `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna</div></div>`;
 
-  return `
+    return `
         <div class="rep-2col left-bigger">
             <div class="rep-table-wrap">
                 <div class="rep-table-header"><h3 class="rep-table-title">Oferta sipas muajit</h3></div>
@@ -1788,31 +1770,87 @@ function renderOfeKrahasim(allData, viti) {
 }
 
 function renderOfeLloji(data) {
-    const llojet = ['individ','familje','biznes'].map(l => {
+    const llojet = ['individ','familje','biznes','individuale','familjare-biznes','familjare'].map(l => {
         const f = data.filter(o => o.lloji === l);
-        const realizuar = f.filter(o => o.statusi === 'realizuar').length;
+        if (f.length === 0) return null;
+        const realizuar = f.filter(o => o.statusi === 'realizuar' || o.statusi === 'kontrate').length;
         return {
             label: l.charAt(0).toUpperCase() + l.slice(1),
             total: f.length, realizuar,
             conversionRate: f.length ? (realizuar/f.length*100) : 0
         };
-    });
+    }).filter(Boolean);
     return `
-        <div class="rep-table-wrap">
-            <div class="rep-table-header"><h3 class="rep-table-title">Sipas llojit të ofertës</h3></div>
-            <table class="rep-table">
-                <thead><tr><th>Lloji</th><th class="right">Total</th><th class="right">Realizuar</th><th class="right">Conversion %</th></tr></thead>
-                <tbody>
-                    ${llojet.map(l => `
-                        <tr>
-                            <td><strong>${l.label}</strong></td>
-                            <td class="right">${l.total}</td>
-                            <td class="right" style="color:#22c55e;font-weight:600">${l.realizuar}</td>
-                            <td class="right" style="color:${l.conversionRate>=30?'#22c55e':'#f59e0b'};font-weight:700">${l.conversionRate.toFixed(1)}%</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
+        <div class="rep-2col left-bigger">
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Sipas llojit te ofertes</h3></div>
+                <table class="rep-table">
+                    <thead><tr><th>Lloji</th><th class="right">Total</th><th class="right">Realizuar</th><th class="right">Conversion %</th></tr></thead>
+                    <tbody>
+                        ${llojet.map(l => `
+                            <tr>
+                                <td><strong>${l.label}</strong></td>
+                                <td class="right">${l.total}</td>
+                                <td class="right" style="color:#22c55e;font-weight:600">${l.realizuar}</td>
+                                <td class="right" style="color:${l.conversionRate>=30?'#22c55e':'#f59e0b'};font-weight:700">${l.conversionRate.toFixed(1)}%</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Vizualizim</h3></div>
+                <div style="padding:14px 18px">${buildBarChartHorizontal(llojet, 'total', 'label', 'linear-gradient(90deg,#3b82f6,#1d4ed8)', n=>n)}</div>
+            </div>
+        </div>
+    `;
+}
+
+function renderOfeDeget(data) {
+    const stafi = merrStafiList();
+    const dege = {};
+    data.forEach(o => {
+        const agjent = (o.agjenti || '').toLowerCase().trim();
+        const degaStafi = stafi[agjent] || o.dega || 'Pa dege';
+        if (!dege[degaStafi]) dege[degaStafi] = { total:0, realizuar:0, presin:0 };
+        dege[degaStafi].total++;
+        if (o.statusi === 'realizuar' || o.statusi === 'kontrate') dege[degaStafi].realizuar++;
+        if (o.statusi === 'presin' || o.statusi === 'aktive') dege[degaStafi].presin++;
+    });
+    const rows = Object.keys(dege).map(d => ({
+        emri: d, total: dege[d].total, realizuar: dege[d].realizuar, presin: dege[d].presin,
+        conversionRate: dege[d].total ? (dege[d].realizuar/dege[d].total*100) : 0
+    }));
+    const sorted = sortRows(rows, 'ofeDeget', 'total', 'desc');
+    return `
+        <div class="rep-2col left-bigger">
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Performanca sipas degeve</h3></div>
+                <table class="rep-table sortable">
+                    <thead><tr>
+                        <th onclick="sortTable('ofeDeget','emri','oferta')">Dega ${sortArrow('ofeDeget','emri')}</th>
+                        <th class="right" onclick="sortTable('ofeDeget','total','oferta')">Total ${sortArrow('ofeDeget','total')}</th>
+                        <th class="right" onclick="sortTable('ofeDeget','realizuar','oferta')">Realizuar ${sortArrow('ofeDeget','realizuar')}</th>
+                        <th class="right" onclick="sortTable('ofeDeget','presin','oferta')">Presin ${sortArrow('ofeDeget','presin')}</th>
+                        <th class="right" onclick="sortTable('ofeDeget','conversionRate','oferta')">Conv% ${sortArrow('ofeDeget','conversionRate')}</th>
+                    </tr></thead>
+                    <tbody>
+                        ${sorted.map(d => `
+                            <tr>
+                                <td><strong>${esc(d.emri)}</strong></td>
+                                <td class="right">${d.total}</td>
+                                <td class="right" style="color:#22c55e;font-weight:600">${d.realizuar}</td>
+                                <td class="right" style="color:#f59e0b">${d.presin}</td>
+                                <td class="right" style="color:${d.conversionRate>=30?'#22c55e':'#f59e0b'};font-weight:700">${d.conversionRate.toFixed(1)}%</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Vizualizim</h3></div>
+                <div style="padding:14px 18px">${buildBarChartHorizontal(sorted, 'total', 'emri', 'linear-gradient(90deg,#002B5C,#3b82f6)', n=>n)}</div>
+            </div>
         </div>
     `;
 }
@@ -1823,7 +1861,7 @@ function renderOfeAgjentet(data) {
         const a = o.agjenti || 'Pa agjent';
         if (!agj[a]) agj[a] = { total:0, realizuar:0, presin:0, refuzuar:0 };
         agj[a].total++;
-        if (o.statusi === 'realizuar') agj[a].realizuar++;
+        if (o.statusi === 'realizuar' || o.statusi === 'kontrate') agj[a].realizuar++;
         if (o.statusi === 'presin' || o.statusi === 'aktive') agj[a].presin++;
         if (o.statusi === 'refuzuar') agj[a].refuzuar++;
     });
@@ -1836,7 +1874,7 @@ function renderOfeAgjentet(data) {
     return `
         <div class="rep-table-wrap">
             <div class="rep-table-header">
-                <h3 class="rep-table-title">Performanca sipas agjentëve (default: Conversion Rate më i ulët lart)</h3>
+                <h3 class="rep-table-title">Performanca sipas agjentëve</h3>
                 <input class="rep-table-search" placeholder="Kërko agjent..." onkeyup="filtroTabelen(this,'#tblOfeAgj')">
             </div>
             <table class="rep-table sortable" id="tblOfeAgj">
@@ -1868,7 +1906,6 @@ function renderOfeAgjentet(data) {
 }
 
 function renderOfeTop(data) {
-    // Top oferta sipas numrit te personave (per familje/biznes mund te kete nr_personash)
     const sorted = [...data]
         .map(o => ({ ...o, _persona: Number(o.nr_personash || o.persona || 1) }))
         .sort((a,b) => b._persona - a._persona)
@@ -1907,7 +1944,7 @@ function eksportoRaportin(modul) {
         rinovimet: { storage:'rinovimet_data', vit:'repRinViti', muaj:'repRinMuaji', map:r=>({Muaji:r.muaji,Kontraktuesi:r.kontraktuesi,Dega:r.dega,Agjenti:r.agjenti,Primi:r.primi_vjetor||r.total_primi,Deme:r.deme_total_vlera,Statusi:r.statusi}) },
         kontratat: { storage:'kontratat', vit:'repKonViti', muaj:'repKonMuaji', map:r=>({Klienti:r.emri||r.kontraktuesi,Lloji:r.lloji,Agjenti:r.agjenti,'Data fillimit':r.data_fillimit,'Data mbarimit':r.data_mbarimit,Statusi:r.statusi}) },
         faturimi: { storage:'faturimi_klientet', vit:'repFatViti', muaj:'repFatMuaji', map:r=>({Klienti:r.emri||r.klienti,NRB:r.nrb||r.nr_personal,Agjenti:r.agjenti,Statusi:r.statusi}) },
-        oferta: { storage:'ofertat', vit:'repOfeViti', muaj:'repOfeMuaji', map:r=>({Klienti:r.emri||r.klienti,Lloji:r.lloji,Agjenti:r.agjenti,Statusi:r.statusi}) }
+        oferta: { storage:'ofertat', vit:'repOfeViti', muaj:'repOfeMuaji', map:r=>({Klienti:r.emri||r.klienti,Lloji:r.lloji,Agjenti:r.agjenti||r.perfaqesuesi,Statusi:r.statusi}) }
     };
     const cfg = cfgs[modul];
     if (!cfg) return;
@@ -1915,6 +1952,7 @@ function eksportoRaportin(modul) {
     const muaji = document.getElementById(cfg.muaj).value;
     let raw = [];
     try { raw = JSON.parse(localStorage.getItem(cfg.storage) || '[]'); } catch {}
+    if (modul === 'oferta') raw = raw.map(normalizoOferta);
     raw = filtroSipasRolit(raw);
     if (modul === 'debitoret') data = filterByMuaj(raw, viti, muaji).map(cfg.map);
     else data = raw.map(cfg.map);
