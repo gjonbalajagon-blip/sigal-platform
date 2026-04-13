@@ -650,16 +650,17 @@ function renderDebPermbledhje(data, allData, viti, muaji) {
 }
 
 function renderDebKrahasim(allData, viti) {
+const groups = groupByMonth(allData, viti);
     const muajRows = MUAJT_REP.map((m,i) => {
-        const monthData = allData.filter(r => r.muaji === `${m}_${viti}`);
+        const monthData = groups[m];
+        const realizuar = monthData.filter(o => o.statusi === 'realizuar' || o.statusi === 'kontrate').length;
         return {
-            muaji: m, label: MUAJT_LABEL[i],
-            klient: monthData.length,
-            borxh: monthData.reduce((s,r) => s + Number(r.debitori_total || 0), 0),
-            risk: monthData.reduce((s,r) => s + Number(r.borxh_mbi_365 || 0), 0),
-            paguar: monthData.filter(r => STATUSET_DEB_PAGUAR.includes(r.statusi)).length
+            label: MUAJT_LABEL[i],
+            total: monthData.length,
+            realizuar,
+            conversionRate: monthData.length ? (realizuar/monthData.length*100) : 0
         };
-    }).filter(r => r.klient > 0);
+    }).filter(r => r.total > 0);
 
     if (muajRows.length === 0) {
         return `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna për krahasim</div></div>`;
@@ -1321,8 +1322,9 @@ function renderKonPermbledhje(data, allData, viti, muaji) {
 }
 
 function renderKonKrahasim(allData, viti) {
+    const groups = groupByMonth(allData, viti);
     const muajRows = MUAJT_REP.map((m,i) => {
-        const dataReal = filterByAnyDate(allData, viti, m);
+        const dataReal = groups[m];
         return {
             label: MUAJT_LABEL[i],
             total: dataReal.length,
@@ -1758,32 +1760,27 @@ function renderOfeKrahasim(allData, viti) {
 
     if (muajRows.length === 0) return `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna</div></div>`;
 
-    return `
-        <div class="rep-table-wrap" style="margin-bottom:18px">
-            <div class="rep-table-header"><h3 class="rep-table-title">Oferta sipas muajit</h3></div>
-            <table class="rep-table">
-                <thead><tr><th>Muaji</th><th class="right">Total</th><th class="right">Realizuar</th><th class="right">Conversion %</th></tr></thead>
-                <tbody>
-                    ${muajRows.map(r => `
-                        <tr>
-                            <td><strong>${r.label}</strong></td>
-                            <td class="right"><strong>${r.total}</strong></td>
-                            <td class="right" style="color:#22c55e;font-weight:600">${r.realizuar}</td>
-                            <td class="right" style="color:${r.conversionRate>=30?'#22c55e':'#f59e0b'};font-weight:700">${r.conversionRate.toFixed(1)}%</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="rep-2col">
+  return `
+        <div class="rep-2col left-bigger">
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Oferta të reja</h3></div>
-                <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'total', 'label', 'linear-gradient(90deg,#3b82f6,#1d4ed8)', n=>n)}</div>
+                <div class="rep-table-header"><h3 class="rep-table-title">Oferta sipas muajit</h3></div>
+                <table class="rep-table">
+                    <thead><tr><th>Muaji</th><th class="right">Total</th><th class="right">Realizuar</th><th class="right">Conversion %</th></tr></thead>
+                    <tbody>
+                        ${muajRows.map(r => `
+                            <tr>
+                                <td><strong>${r.label}</strong></td>
+                                <td class="right"><strong>${r.total}</strong></td>
+                                <td class="right" style="color:#22c55e;font-weight:600">${r.realizuar}</td>
+                                <td class="right" style="color:${r.conversionRate>=30?'#22c55e':'#f59e0b'};font-weight:700">${r.conversionRate.toFixed(1)}%</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
             </div>
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Conversion Rate</h3></div>
-                <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'conversionRate', 'label', 'linear-gradient(90deg,#22c55e,#16a34a)', n=>n.toFixed(1)+'%')}</div>
+                <div class="rep-table-header"><h3 class="rep-table-title">Trend i ofertave</h3></div>
+                <div style="padding:14px 18px">${buildBarChartHorizontal(muajRows, 'total', 'label', 'linear-gradient(90deg,#3b82f6,#1d4ed8)', n=>n)}</div>
             </div>
         </div>
     `;
