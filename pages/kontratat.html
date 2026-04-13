@@ -398,183 +398,179 @@ body {
     color: #fff !important;
 }
 
-/* ---------- STATS STRIP (NEW FORMAT) ---------- */
+/* ---------- KPI CARDS ---------- */
 .stats-strip {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 12px !important;
+    margin-bottom: 14px !important;
     background: transparent !important;
     border-radius: 0 !important;
     overflow: visible !important;
-    margin-bottom: 14px !important;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
 }
-.strip-top {
-    background: linear-gradient(135deg, #002B5C 0%, #1e40af 50%, #3b82f6 100%) !important;
-    border-radius: 18px !important;
-    padding: 18px 22px !important;
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 16px !important;
-    align-items: stretch !important;
-    box-shadow: 0 14px 32px rgba(0,43,92,0.3) !important;
+.kpi-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.95);
+    border-radius: 16px;
+    padding: 16px 18px;
+    box-shadow: 0 6px 18px rgba(30,64,175,0.06);
     position: relative;
-    overflow: hidden;
+    transition: all 0.2s;
+    cursor: default;
 }
-.strip-top::before {
-    content: '';
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(30,64,175,0.1);
+}
+.kpi-icon {
+    width: 38px; height: 38px;
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+}
+.kpi-icon i, .kpi-icon svg {
+    width: 18px !important; height: 18px !important;
+    stroke-width: 2.2 !important;
+}
+.kpi-icon-total {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e40af;
+}
+.kpi-icon-aktive {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #047857;
+}
+.kpi-icon-skadon {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #b45309;
+}
+.kpi-icon-skaduar {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #b91c1c;
+}
+.kpi-arrow {
     position: absolute;
-    top: -50%; right: -10%;
-    width: 320px; height: 320px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(96,165,250,0.35), transparent 70%);
-    pointer-events: none;
+    top: 14px; right: 14px;
+    width: 24px; height: 24px;
+    border-radius: 7px;
+    background: rgba(240,246,255,0.8);
+    border: 1px solid rgba(220,230,250,0.7);
+    display: flex; align-items: center; justify-content: center;
+    color: #7c8aa8;
+    cursor: pointer;
+    transition: all 0.15s;
 }
-.strip-top::after {
-    content: '';
-    position: absolute;
-    bottom: -40%; left: 30%;
-    width: 240px; height: 240px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(59,130,246,0.25), transparent 70%);
-    pointer-events: none;
+.kpi-arrow:hover {
+    background: linear-gradient(135deg, #002B5C, #3b82f6);
+    color: #fff;
+    border-color: transparent;
 }
-.strip-metrics {
-    display: contents !important;
+.kpi-arrow i, .kpi-arrow svg {
+    width: 13px !important; height: 13px !important;
+    stroke-width: 2.2 !important;
 }
-.strip-metric {
-    padding: 0 !important;
-    border-right: none !important;
-    position: relative;
-    z-index: 1;
-}
-.strip-metric:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    right: -8px; top: 10%; bottom: 10%;
-    width: 1px;
-    background: rgba(255,255,255,0.12);
-}
-.strip-metric .sm-num {
-    font-size: 26px !important;
-    font-weight: 800 !important;
-    color: #fff !important;
-    line-height: 1 !important;
+.kpi-card .sm-num {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f1a30;
+    line-height: 1;
     letter-spacing: -0.5px;
 }
-.strip-metric .sm-lbl {
-    font-size: 9.5px !important;
-    font-weight: 700 !important;
-    color: rgba(255,255,255,0.6) !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.6px !important;
-    margin-top: 5px !important;
-}
-.strip-metric.aktive .sm-num { color: #4ade80 !important; }
-.strip-metric.skadon-shpejt .sm-num { color: #fbbf24 !important; }
-.strip-metric.skaduar .sm-num { color: #fca5a5 !important; }
-
-/* Chip-at e llojeve - hidden nga strip-top, do dalin si rresht i veçantë */
-.strip-llojet {
-    display: none !important;
-}
-
-/* Bottom bar — bashkangjit me strip-top brenda të njëjtës kartelë */
-.strip-bottom {
-    background: rgba(255,255,255,0.85) !important;
-    backdrop-filter: blur(20px);
-    padding: 12px 18px !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 14px !important;
-    border-radius: 14px !important;
-    border: 1px solid rgba(255,255,255,0.95) !important;
-    box-shadow: 0 6px 18px rgba(30,64,175,0.06) !important;
-}
-.strip-bar {
-    flex: 1 !important;
-    display: flex !important;
-    gap: 2px !important;
-    height: 8px !important;
-    border-radius: 4px !important;
-    overflow: hidden !important;
-    background: #eef2fa;
-}
-.strip-bar-seg { height: 100% !important; transition: width 0.4s ease !important; }
-.strip-legend {
-    display: flex !important;
-    gap: 14px !important;
-    flex-shrink: 0 !important;
-}
-.strip-legend span {
-    font-size: 10px !important;
-    color: #7c8aa8 !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 5px !important;
-    font-weight: 600 !important;
-}
-.strip-legend .sl-dot {
-    width: 7px !important; height: 7px !important;
-    border-radius: 50% !important;
-}
-
-/* ---------- LLOJET ROW (i ri, jashte stats-strip) ---------- */
-.llojet-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 14px;
-    padding: 12px 18px;
-    background: rgba(255,255,255,0.75);
-    backdrop-filter: blur(20px);
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.95);
-    box-shadow: 0 6px 18px rgba(30,64,175,0.06);
-    flex-wrap: wrap;
-}
-.llojet-row .llojet-label {
+.kpi-card .sm-num.aktive-num { color: #047857; }
+.kpi-card .sm-num.skadon-num { color: #b45309; }
+.kpi-card .sm-num.skaduar-num { color: #b91c1c; }
+.kpi-card .sm-lbl {
     font-size: 10px;
+    font-weight: 700;
     color: #7c8aa8;
     text-transform: uppercase;
     letter-spacing: 0.6px;
-    font-weight: 700;
-    margin-right: 4px;
+    margin-top: 6px;
 }
-.llojet-row #llojet-chips {
+
+/* ---------- TABS me round badge si screenshot ---------- */
+.tab-btn .tab-count {
+    background: #0f1a30 !important;
+    color: #fff !important;
+    border-radius: 50% !important;
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    font-size: 9.5px !important;
+    font-weight: 800 !important;
+    min-width: 18px;
+}
+.tab-btn.active .tab-count {
+    background: #fff !important;
+    color: #002B5C !important;
+}
+
+/* ---------- LLOJET CHIPS INLINE (në filters-row) ---------- */
+.llojet-chips-inline {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
 }
-.llojet-row .ll-chip {
+.llojet-chips-inline .ll-chip {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 10px 5px 5px;
-    border-radius: 8px;
-    background: #f0f6ff;
-    border: 1px solid rgba(200,220,250,0.7);
+    padding: 7px 12px 7px 7px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid rgba(220,230,250,0.9);
     font-size: 11px;
     font-weight: 600;
-    color: #1e40af;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
 }
-.llojet-row .ll-chip .ll-num {
+.llojet-chips-inline .ll-chip:hover {
+    border-color: rgba(0,43,92,0.3);
+    transform: translateY(-1px);
+}
+.llojet-chips-inline .ll-chip .ll-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 20px; height: 20px;
+    min-width: 20px;
+    height: 20px;
     padding: 0 5px;
-    background: linear-gradient(135deg, #002B5C, #3b82f6);
-    color: #fff;
-    font-size: 11px;
+    background: #f1f5f9;
+    color: #4b5563;
+    font-size: 10.5px;
     font-weight: 800;
     border-radius: 6px;
+    transition: all 0.18s;
 }
-.llojet-row .ll-chip.individ { background: #eff6ff; color: #1e40af; border-color: #dbeafe; }
-.llojet-row .ll-chip.familje { background: #f5f3ff; color: #6d28d9; border-color: #ede9fe; }
-.llojet-row .ll-chip.familje .ll-num { background: linear-gradient(135deg, #6d28d9, #8b5cf6); }
-.llojet-row .ll-chip.biznes { background: #ecfdf5; color: #047857; border-color: #d1fae5; }
-.llojet-row .ll-chip.biznes .ll-num { background: linear-gradient(135deg, #047857, #10b981); }
-
+/* Active state */
+.llojet-chips-inline .ll-chip.active {
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 6px 14px rgba(0,43,92,0.25);
+}
+.llojet-chips-inline .ll-chip.active .ll-num {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+}
+.llojet-chips-inline .ll-chip.individ.active {
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+}
+.llojet-chips-inline .ll-chip.familje.active {
+    background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+}
+.llojet-chips-inline .ll-chip.biznes.active {
+    background: linear-gradient(135deg, #047857, #10b981);
+}
+/* Inactive state — color hint */
+.llojet-chips-inline .ll-chip.individ:not(.active) .ll-num { background: #dbeafe; color: #1e40af; }
+.llojet-chips-inline .ll-chip.familje:not(.active) .ll-num { background: #ede9fe; color: #6d28d9; }
+.llojet-chips-inline .ll-chip.biznes:not(.active) .ll-num { background: #d1fae5; color: #047857; }
 /* ---------- FILTERS ROW ---------- */
 .filters-row {
     display: flex !important;
@@ -898,7 +894,6 @@ body {
     <h1>Kontratat</h1>
     <div class="topbar-right">
         <button class="btn-primary" onclick="shtoKontrate()"><i data-lucide="plus" style="width:15px;height:15px;"></i> Kontratë e Re</button>
-        <div class="topbar-bell" title="Njoftimet"><i data-lucide="bell"></i><span class="bell-badge">3</span></div>
         <div class="topbar-user">
             <div class="tu-avatar">A</div>
             <div class="tu-info">
@@ -915,27 +910,39 @@ body {
                     <button class="tab-btn" id="tab-skaduar" onclick="ndryshoTab('skaduar')">Skaduar <span class="tab-count" id="tab-count-skaduar">0</span></button>
                 </div>
             </div>
-            <div class="stats-strip">
-                <div class="strip-top">
-                    <div class="strip-metrics">
-                        <div class="strip-metric"><div class="sm-num" id="st-total">0</div><div class="sm-lbl">Total</div></div>
-                        <div class="strip-metric aktive"><div class="sm-num" id="st-aktive">0</div><div class="sm-lbl">Aktive</div></div>
-                        <div class="strip-metric skadon-shpejt"><div class="sm-num" id="st-skadon">0</div><div class="sm-lbl">Skadon shpejt</div></div>
-                        <div class="strip-metric skaduar"><div class="sm-num" id="st-skaduar">0</div><div class="sm-lbl">Skaduar</div></div>
-                    </div>
-                    <div class="strip-llojet" id="st-llojet"></div>
-                </div>
-                <div class="strip-bottom"><div class="strip-bar" id="st-bar"></div><div class="strip-legend" id="st-legend"></div></div>
-            </div>
-            <div class="llojet-row">
-                <span class="llojet-label">LLOJET</span>
-                <div id="llojet-chips"></div>
-            </div>
-            <div class="filters-row">
-                <select id="filter-lloji" onchange="filtro()"><option value="all">Të gjitha llojet</option><option value="individ">Individ</option><option value="familje">Familje</option><option value="biznes">Biznes</option></select>
-                <input type="text" id="search-kontrate" placeholder="Kërko kontratë..." onkeyup="filtro()">
-                <div class="sort-btns"><button class="sort-btn active" id="sort-skadon" onclick="ndryshoSort('skadon')">Skadon shpejt</button><button class="sort-btn" id="sort-re" onclick="ndryshoSort('re')">Më e re</button></div>
-            </div>
+       <div class="stats-strip">
+    <div class="kpi-card">
+        <div class="kpi-icon kpi-icon-total"><i data-lucide="bar-chart-3"></i></div>
+        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+        <div class="sm-num" id="st-total">0</div>
+        <div class="sm-lbl">Total</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon kpi-icon-aktive"><i data-lucide="check-circle"></i></div>
+        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+        <div class="sm-num aktive-num" id="st-aktive">0</div>
+        <div class="sm-lbl">Aktive</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon kpi-icon-skadon"><i data-lucide="clock"></i></div>
+        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+        <div class="sm-num skadon-num" id="st-skadon">0</div>
+        <div class="sm-lbl">Skadon shpejt</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon kpi-icon-skaduar"><i data-lucide="alert-triangle"></i></div>
+        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+        <div class="sm-num skaduar-num" id="st-skaduar">0</div>
+        <div class="sm-lbl">Skaduar</div>
+    </div>
+    <div class="strip-llojet" id="st-llojet" style="display:none"></div>
+</div>
+          <div class="filters-row">
+    <select id="filter-lloji" onchange="filtro()" style="display:none"><option value="all">all</option><option value="individ">individ</option><option value="familje">familje</option><option value="biznes">biznes</option></select>
+    <div id="llojet-chips" class="llojet-chips-inline"></div>
+    <input type="text" id="search-kontrate" placeholder="Kërko kontratë..." onkeyup="filtro()">
+    <div class="sort-btns"><button class="sort-btn active" id="sort-skadon" onclick="ndryshoSort('skadon')">Skadon shpejt</button><button class="sort-btn" id="sort-re" onclick="ndryshoSort('re')">Më e re</button></div>
+</div>
             <div class="table-container">
                 <table><thead><tr><th>Klienti</th><th style="width:70px">Nr. ID</th><th style="width:80px">Lloji</th><th>Pakot</th><th style="width:75px">Fillimi</th><th style="width:60px">Skadon</th><th style="width:70px">Statusi</th><th style="width:160px">Veprimet</th></tr></thead><tbody id="kontratat-tbody"></tbody></table>
             </div>
@@ -978,34 +985,48 @@ body {
     <script src="../js/main.js"></script>
     <script src="../js/pakot.js"></script>
     <script src="../js/kontratat.js"></script>
-    <script>
-    lucide.createIcons();
+<script>
+lucide.createIcons();
 
-    // Mirror i strip-llojet → llojet-chips (bridge pa prekur kontratat.js)
-    (function(){
-        const llojiNames={individ:'Individ',familje:'Familje',biznes:'Biznes'};
-        const llojiClass={individ:'individ',familje:'familje',biznes:'biznes'};
-        const target=document.getElementById('llojet-chips');
-        const source=document.getElementById('st-llojet');
-        if(!target||!source)return;
-        function rebuild(){
-            // Lexo nga strip-chips qe JS ka injektuar, transformo ne ll-chip
-            const chips=source.querySelectorAll('.strip-chip');
-            if(chips.length===0){target.innerHTML='<span style="font-size:11px;color:#9ca8c0;font-style:italic">Asnjë lloj i pranishëm</span>';return;}
-            const out=[];
-            chips.forEach(ch=>{
-                const num=ch.querySelector('.sc-num')?.textContent||'0';
-                const text=ch.textContent.replace(num,'').trim();
-                const key=Object.keys(llojiNames).find(k=>llojiNames[k]===text)||'individ';
-                out.push('<span class="ll-chip '+llojiClass[key]+'"><span class="ll-num">'+num+'</span> '+text+'</span>');
+// Mirror i strip-llojet → llojet-chips inline + clickable filter
+(function(){
+    const llojiNames={individ:'Individ',familje:'Familje',biznes:'Biznes'};
+    const target=document.getElementById('llojet-chips');
+    const source=document.getElementById('st-llojet');
+    const select=document.getElementById('filter-lloji');
+    if(!target||!source||!select)return;
+
+    let activeLloji='all';
+
+    function rebuild(){
+        const chips=source.querySelectorAll('.strip-chip');
+        const counts={individ:0,familje:0,biznes:0};
+        chips.forEach(ch=>{
+            const num=parseInt(ch.querySelector('.sc-num')?.textContent||'0');
+            const text=ch.textContent.replace(num,'').trim();
+            const key=Object.keys(llojiNames).find(k=>llojiNames[k]===text);
+            if(key)counts[key]=num;
+        });
+        const out=['individ','familje','biznes'].map(k=>{
+            const isActive=activeLloji===k?' active':'';
+            return '<span class="ll-chip '+k+isActive+'" data-lloji="'+k+'"><span class="ll-num">'+counts[k]+'</span> '+llojiNames[k]+'</span>';
+        });
+        target.innerHTML=out.join('');
+        // Bind click
+        target.querySelectorAll('.ll-chip').forEach(chip=>{
+            chip.addEventListener('click',()=>{
+                const lloji=chip.dataset.lloji;
+                activeLloji=(activeLloji===lloji)?'all':lloji;
+                select.value=activeLloji;
+                select.dispatchEvent(new Event('change'));
+                rebuild();
             });
-            target.innerHTML=out.join('');
-        }
-        // Observer — sa here qe kontratat.js rifresoj st-llojet, ne mirroroj
-        new MutationObserver(rebuild).observe(source,{childList:true,subtree:true});
-        // Run i pare pas page load
-        setTimeout(rebuild,100);
-    })();
-    </script>
+        });
+    }
+
+    new MutationObserver(rebuild).observe(source,{childList:true,subtree:true});
+    setTimeout(rebuild,100);
+})();
+</script>
 </body>
 </html>
