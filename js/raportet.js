@@ -503,7 +503,7 @@ function filterByDataField(all, viti, muaji, dateField) {
 function filterByAnyDate(all, viti, muaji) {
     if (muaji === 'total') {
         // Per total viti, provo te filtro sipas vitit nga ndonje date field
-        const dateFields = ['data_kontratës','data_kontrates','data_fillimit','data_oferta','data_krijimit','created_at','createdAt'];
+        const dateFields = ['dataKrijimit','dataSkadon','data_kontratës','data_kontrates','data_fillimit','data_oferta','data_krijimit','created_at','createdAt'];
         for (const f of dateFields) {
             const result = all.filter(r => {
                 const d = r[f]; if (!d) return false;
@@ -516,7 +516,7 @@ function filterByAnyDate(all, viti, muaji) {
         return all;
     }
     // Per muaj specifik
-    const dateFields = ['data_kontratës','data_kontrates','data_fillimit','data_oferta','data_krijimit','created_at','createdAt'];
+    const dateFields = ['dataKrijimit','dataSkadon','data_kontratës','data_kontrates','data_fillimit','data_oferta','data_krijimit','created_at','createdAt'];
     for (const f of dateFields) {
         const result = filterByDataField(all, viti, muaji, f);
         if (result.length > 0) return result;
@@ -1685,6 +1685,7 @@ function renderRaportiOferta() {
     const muaji = document.getElementById('repOfeMuaji')?.value || 'total';
     let allData = [];
     try { allData = JSON.parse(localStorage.getItem('ofertat') || '[]'); } catch {}
+    allData = allData.map(o => ({ ...o, agjenti: o.agjenti || o.perfaqesuesi || '' }));
     allData = filtroSipasRolit(allData);
 
     const filtered = filterByAnyDate(allData, viti, muaji);
