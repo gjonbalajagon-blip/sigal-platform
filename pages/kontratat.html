@@ -230,6 +230,15 @@ body {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    gap: 12px !important;
+    flex-wrap: nowrap !important;
+}
+.topbar > .topbar-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
 }
 .topbar-right {
     display: flex;
@@ -380,21 +389,26 @@ body {
     gap: 6px !important;
 }
 .tab-btn.active {
-    background: linear-gradient(135deg, #002B5C, #3b82f6) !important;
-    color: #fff !important;
-    box-shadow: 0 6px 14px rgba(0,43,92,0.3) !important;
+    background: #fff !important;
+    color: #0f1a30 !important;
+    box-shadow: 0 2px 8px rgba(15,26,48,0.08) !important;
 }
 .tab-btn .tab-count {
-    font-size: 10px !important;
-    padding: 1px 7px !important;
-    border-radius: 8px !important;
-    margin-left: 0 !important;
-    font-weight: 700 !important;
     background: #e5e9f0 !important;
     color: #7c8aa8 !important;
+    border-radius: 50% !important;
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    font-size: 9.5px !important;
+    font-weight: 800 !important;
+    min-width: 18px;
 }
 .tab-btn.active .tab-count {
-    background: rgba(255,255,255,0.25) !important;
+    background: #0f1a30 !important;
     color: #fff !important;
 }
 
@@ -402,7 +416,7 @@ body {
 .stats-strip {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
-    gap: 12px !important;
+    gap: 10px !important;
     margin-bottom: 14px !important;
     background: transparent !important;
     border-radius: 0 !important;
@@ -412,12 +426,14 @@ body {
     background: rgba(255,255,255,0.85);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255,255,255,0.95);
-    border-radius: 16px;
-    padding: 16px 18px;
+    border-radius: 14px;
+    padding: 12px 14px;
     box-shadow: 0 6px 18px rgba(30,64,175,0.06);
     position: relative;
     transition: all 0.2s;
-    cursor: default;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 .kpi-card:hover {
     transform: translateY(-2px);
@@ -425,34 +441,51 @@ body {
 }
 .kpi-icon {
     width: 38px; height: 38px;
-    border-radius: 11px;
+    border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    margin-bottom: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(30,64,175,0.08);
 }
 .kpi-icon i, .kpi-icon svg {
-    width: 18px !important; height: 18px !important;
-    stroke-width: 2.2 !important;
+    width: 17px !important; height: 17px !important;
+    stroke-width: 2 !important;
 }
-.kpi-icon-total {
-    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-    color: #1e40af;
+.kpi-icon-total { background: #c7d9ff; color: #1e40af; }
+.kpi-icon-aktive { background: #c5f1d8; color: #047857; }
+.kpi-icon-skadon { background: #ffe1b3; color: #b45309; }
+.kpi-icon-skaduar { background: #ffd0d0; color: #b91c1c; }
+
+.kpi-card .kpi-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
-.kpi-icon-aktive {
-    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-    color: #047857;
+.kpi-card .sm-lbl {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #7c8aa8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    order: 1;
 }
-.kpi-icon-skadon {
-    background: linear-gradient(135deg, #fef3c7, #fde68a);
-    color: #b45309;
+.kpi-card .sm-num {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f1a30;
+    line-height: 1;
+    letter-spacing: -0.5px;
+    order: 2;
 }
-.kpi-icon-skaduar {
-    background: linear-gradient(135deg, #fee2e2, #fecaca);
-    color: #b91c1c;
-}
+.kpi-card .sm-num.aktive-num { color: #047857; }
+.kpi-card .sm-num.skadon-num { color: #b45309; }
+.kpi-card .sm-num.skaduar-num { color: #b91c1c; }
 .kpi-arrow {
     position: absolute;
-    top: 14px; right: 14px;
-    width: 24px; height: 24px;
+    top: 10px; right: 10px;
+    width: 22px; height: 22px;
     border-radius: 7px;
     background: rgba(240,246,255,0.8);
     border: 1px solid rgba(220,230,250,0.7);
@@ -467,26 +500,17 @@ body {
     border-color: transparent;
 }
 .kpi-arrow i, .kpi-arrow svg {
-    width: 13px !important; height: 13px !important;
+    width: 12px !important; height: 12px !important;
     stroke-width: 2.2 !important;
 }
-.kpi-card .sm-num {
-    font-size: 26px;
-    font-weight: 800;
-    color: #0f1a30;
-    line-height: 1;
-    letter-spacing: -0.5px;
+@media (max-width: 1100px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr) !important; }
 }
-.kpi-card .sm-num.aktive-num { color: #047857; }
-.kpi-card .sm-num.skadon-num { color: #b45309; }
-.kpi-card .sm-num.skaduar-num { color: #b91c1c; }
-.kpi-card .sm-lbl {
-    font-size: 10px;
-    font-weight: 700;
-    color: #7c8aa8;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-top: 6px;
+@media (max-width: 480px) {
+    .stats-strip { grid-template-columns: 1fr 1fr !important; }
+    .kpi-card { padding: 10px 12px; }
+    .kpi-icon { width: 32px; height: 32px; }
+    .kpi-card .sm-num { font-size: 18px; }
 }
 
 /* ---------- TABS me round badge si screenshot ---------- */
@@ -914,28 +938,38 @@ body {
     <div class="kpi-card">
         <div class="kpi-icon kpi-icon-total"><i data-lucide="bar-chart-3"></i></div>
         <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
-        <div class="sm-num" id="st-total">0</div>
-        <div class="sm-lbl">Total</div>
+<div class="kpi-body">
+    <div class="sm-lbl">Total</div>
+    <div class="sm-num" id="st-total">0</div>
+</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-icon kpi-icon-aktive"><i data-lucide="check-circle"></i></div>
         <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
-        <div class="sm-num aktive-num" id="st-aktive">0</div>
-        <div class="sm-lbl">Aktive</div>
+<div class="kpi-body">
+    <div class="sm-lbl">Aktive</div>
+    <div class="sm-num aktive-num" id="st-aktive">0</div>
+</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-icon kpi-icon-skadon"><i data-lucide="clock"></i></div>
         <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
-        <div class="sm-num skadon-num" id="st-skadon">0</div>
-        <div class="sm-lbl">Skadon shpejt</div>
+<div class="kpi-body">
+    <div class="sm-lbl">Skadon shpejt</div>
+    <div class="sm-num skadon-num" id="st-skadon">0</div>
+</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-icon kpi-icon-skaduar"><i data-lucide="alert-triangle"></i></div>
         <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
-        <div class="sm-num skaduar-num" id="st-skaduar">0</div>
-        <div class="sm-lbl">Skaduar</div>
+<div class="kpi-body">
+    <div class="sm-lbl">Skaduar</div>
+    <div class="sm-num skaduar-num" id="st-skaduar">0</div>
+</div>
     </div>
     <div class="strip-llojet" id="st-llojet" style="display:none"></div>
+<div id="st-bar" style="display:none"></div>
+<div id="st-legend" style="display:none"></div>
 </div>
           <div class="filters-row">
     <select id="filter-lloji" onchange="filtro()" style="display:none"><option value="all">all</option><option value="individ">individ</option><option value="familje">familje</option><option value="biznes">biznes</option></select>
