@@ -365,11 +365,11 @@ function renderRow(k){
     const nrId=k.lloji==='biznes'?(k.nrBiznesit||'-'):(k.nrPersonal||'-');
     const llojiLabels={individ:'Individ',biznes:'Biznes',familje:'Familje'};
     const statusLabels={aktive:'Aktive',skaduar:'Skaduar','ne-pritje':'Në Pritje',skadon:'Skadon'};
-    let dotColor='#22c55e';if(ditet.klasa==='skadon-warning')dotColor='#f59e0b';if(ditet.klasa==='skadon-expired')dotColor='#ef4444';
+    let dotColor='#10b981',skadonCls='green';if(ditet.klasa==='skadon-warning'){dotColor='#f59e0b';skadonCls='orange';}if(ditet.klasa==='skadon-expired'){dotColor='#ef4444';skadonCls='red';}
     const pakotArr=k.pakot||[];let pakotTxt='-';
     if(pakotArr.length<=2)pakotTxt=pakotArr.join(', ');
     else pakotTxt=pakotArr.slice(0,2).join(', ')+' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">+'+(pakotArr.length-2)+'</span>';
-    return '<tr><td><div class="klient-name">'+k.emri+(k.arkivuar?' <span style="font-size:9px;color:#94a3b8;font-weight:600;">RINOVUAR</span>':'')+'</div><div class="klient-sub">'+(k.adresa||'')+'</div></td><td style="font-size:11px;color:#6b7a8d;">'+nrId+'</td><td><span class="badge-lloji '+k.lloji+'">'+(llojiLabels[k.lloji]||k.lloji)+'</span></td><td style="font-size:11px;color:#6b7a8d;">'+pakotTxt+'</td><td style="font-size:11px;color:#6b7a8d;">'+formatData(k.fillimi)+'</td><td><div class="skadon-cell"><span class="skadon-dot" style="background:'+dotColor+';"></span>'+ditet.teksti+'</div></td><td><span class="badge-status '+statusi+'">'+(statusLabels[statusi]||statusi)+'</span></td><td><div class="action-icon-btns"><button onclick="dergoEmail('+idx+')" title="Dërgo Email"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button onclick="editoKontrate('+idx+')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-text btn-word" onclick="gjeneroWord('+idx+')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> Word</button><button onclick="fshijKontrate('+idx+')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div></td></tr>';
+    return '<tr><td><div class="klient-name">'+k.emri+(k.arkivuar?' <span style="font-size:9px;color:#94a3b8;font-weight:600;">RINOVUAR</span>':'')+'</div><div class="klient-sub">'+(k.adresa||'')+'</div></td><td style="font-size:11px;color:#6b7a8d;">'+nrId+'</td><td><span class="badge-lloji '+k.lloji+'">'+(llojiLabels[k.lloji]||k.lloji)+'</span></td><td style="font-size:11px;color:#6b7a8d;">'+pakotTxt+'</td><td style="font-size:11px;color:#6b7a8d;">'+formatData(k.fillimi)+'</td>'<td><div class="skadon-cell '+skadonCls+'"><span class="skadon-dot"></span>'+ditet.teksti+'</div></td>'<td><span class="badge-status '+statusi+'">'+(statusLabels[statusi]||statusi)+'</span></td><td><div class="action-icon-btns"><button onclick="dergoEmail('+idx+')" title="Dërgo Email"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button onclick="editoKontrate('+idx+')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-text btn-word" onclick="gjeneroWord('+idx+')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> Word</button><button onclick="fshijKontrate('+idx+')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div></td></tr>';
 }
 
 document.addEventListener('DOMContentLoaded',function(){
@@ -418,4 +418,16 @@ document.addEventListener('DOMContentLoaded',function(){
             localStorage.removeItem('rinovim_per_kontrate');
         },200);
     },300);
+    // Stats KPI clickable filter
+document.querySelectorAll('.kpi-card').forEach(function(card){
+    card.addEventListener('click',function(){
+        var lbl=card.querySelector('.sm-lbl');
+        if(!lbl)return;
+        var t=lbl.textContent.trim().toLowerCase();
+        if(t==='aktive')ndryshoTab('aktive');
+        else if(t==='skaduar')ndryshoTab('skaduar');
+        else if(t==='skadon shpejt'){ndryshoTab('aktive');activeSort='skadon';document.getElementById('sort-skadon').classList.add('active');document.getElementById('sort-re').classList.remove('active');filtro();}
+        else if(t==='total'){ndryshoTab('aktive');}
+    });
+});
 })();
