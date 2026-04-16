@@ -134,7 +134,6 @@ function shtoKontrate(){
     document.getElementById('m-data-kontrates').value='';
     document.getElementById('m-fillimi').value='';
     document.getElementById('m-mbarimi').value='';
-    // Lloji pa paraselektim — shfaq layout individ por pa active
     document.getElementById('m-lloji').value='individ';
     document.querySelectorAll('.drawer-lloji-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById('field-nr-biznesit').style.display='none';
@@ -143,7 +142,6 @@ function shtoKontrate(){
     document.getElementById('field-pozita').style.display='none';
     renderSpreadsheet();
 
-    // Transfer nga oferta
     const params=new URLSearchParams(window.location.search);
     if(params.get('nga_oferta')==='true'){
         const data=JSON.parse(localStorage.getItem('oferta_per_kontrate')||'{}');
@@ -182,7 +180,6 @@ function ruajKontrate(){
     const nrPersonal=document.getElementById('m-nr-personal').value.trim();
     const nrBiznesit=document.getElementById('m-nr-biznesit').value.trim();
 
-    // === MANDATORY VALIDATION ===
     const llojiSelected=document.querySelector('.drawer-lloji-btn.active');
     if(!llojiSelected){tregoNotification('Zgjidhni kategorinë (Individuale, Familjare, ose Biznese)','error');return;}
     if(!emri){tregoNotification('Shkruani emrin e klientit','error');return;}
@@ -196,7 +193,6 @@ function ruajKontrate(){
     if(!fillimi){tregoNotification('Plotësoni datën e fillimit','error');return;}
     if(!mbarimi){tregoNotification('Plotësoni datën e mbarimit','error');return;}
 
-    // Lexo pakot nga spreadsheet
     const pakotAktuale=[];
     spSelectedPakot.forEach(pakoId=>{
         const vlerat={id:pakoId};
@@ -303,7 +299,6 @@ async function dergoEmail(index){
         const response=await fetch('https://sigal-platform-production.up.railway.app/api/gjenero-kontrate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(k)});
         const data=await response.json();
         if(data.success){
-            // Dërgo email me Brevo
             const emailRes=await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:k.email,emri:k.emri,subject:'Kontrata juaj - SIGAL Health',message:'I/e nderuar '+k.emri+',\n\nBashkëngjitur gjeni kontratën tuaj të sigurimit shëndetësor.\n\nMë respekt,\nSIGAL Insurance Group'})});
             tregoNotification('Kontrata u dërgua me email te '+k.email,'success');
         }else{tregoNotification('Gabim në gjenerimin e Word: '+data.error,'error');}
@@ -334,9 +329,12 @@ function renderTabela(){
     document.getElementById('st-llojet').innerHTML=['individ','familje','biznes'].map(ll=>({ll,total:joArkivuar.filter(k=>k.lloji===ll).length})).filter(d=>d.total>0).map(d=>'<span class="strip-chip"><span class="sc-num">'+d.total+'</span> '+llojiNames[d.ll]+'</span>').join('');
 
     const stTotal=joArkivuar.length;const stAktive=joArkivuar.filter(k=>llogaritStatus(k.mbarimi)==='aktive').length;const stSkadon=joArkivuar.filter(k=>llogaritStatus(k.mbarimi)==='skadon').length;
-    const barEl=document.getElementById('st-bar');const legEl=document.getElementById('st-legend');
-    if(stTotal>0){const pA=Math.round(stAktive/stTotal*100);const pS=Math.round(stSkadon/stTotal*100);const pSk=100-pA-pS;barEl.innerHTML='<div class="strip-bar-seg" style="width:'+pA+'%;background:#4ade80;border-radius:3px 0 0 3px;"></div><div class="strip-bar-seg" style="width:'+pS+'%;background:#fbbf24;"></div><div class="strip-bar-seg" style="width:'+pSk+'%;background:#fca5a5;border-radius:0 3px 3px 0;"></div>';legEl.innerHTML='<span><span class="sl-dot" style="background:#4ade80;"></span>Aktive</span><span><span class="sl-dot" style="background:#fbbf24;"></span>Skadon shpejt</span><span><span class="sl-dot" style="background:#fca5a5;"></span>Skaduar</span>';}
-    else{barEl.innerHTML='<div class="strip-bar-seg" style="width:100%;background:rgba(255,255,255,0.08);border-radius:3px;"></div>';legEl.innerHTML='';}
+    var barEl=document.getElementById('st-bar');
+    var legEl=document.getElementById('st-legend');
+    if(barEl&&legEl){
+        if(stTotal>0){var pA=Math.round(stAktive/stTotal*100);var pS=Math.round(stSkadon/stTotal*100);var pSk=100-pA-pS;barEl.innerHTML='<div class="strip-bar-seg" style="width:'+pA+'%;background:#4ade80;border-radius:3px 0 0 3px;"></div><div class="strip-bar-seg" style="width:'+pS+'%;background:#fbbf24;"></div><div class="strip-bar-seg" style="width:'+pSk+'%;background:#fca5a5;border-radius:0 3px 3px 0;"></div>';legEl.innerHTML='<span><span class="sl-dot" style="background:#4ade80;"></span>Aktive</span><span><span class="sl-dot" style="background:#fbbf24;"></span>Skadon shpejt</span><span><span class="sl-dot" style="background:#fca5a5;"></span>Skaduar</span>';}
+        else{barEl.innerHTML='';legEl.innerHTML='';}
+    }
 
     const tbody=document.getElementById('kontratat-tbody');
 
@@ -365,11 +363,11 @@ function renderRow(k){
     const nrId=k.lloji==='biznes'?(k.nrBiznesit||'-'):(k.nrPersonal||'-');
     const llojiLabels={individ:'Individ',biznes:'Biznes',familje:'Familje'};
     const statusLabels={aktive:'Aktive',skaduar:'Skaduar','ne-pritje':'Në Pritje',skadon:'Skadon'};
-    let dotColor='#10b981',skadonCls='green';if(ditet.klasa==='skadon-warning'){dotColor='#f59e0b';skadonCls='orange';}if(ditet.klasa==='skadon-expired'){dotColor='#ef4444';skadonCls='red';}
+    var dotColor='#10b981',skadonCls='green';if(ditet.klasa==='skadon-warning'){dotColor='#f59e0b';skadonCls='orange';}if(ditet.klasa==='skadon-expired'){dotColor='#ef4444';skadonCls='red';}
     const pakotArr=k.pakot||[];let pakotTxt='-';
     if(pakotArr.length<=2)pakotTxt=pakotArr.join(', ');
     else pakotTxt=pakotArr.slice(0,2).join(', ')+' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">+'+(pakotArr.length-2)+'</span>';
-    return '<tr><td><div class="klient-name">'+k.emri+(k.arkivuar?' <span style="font-size:9px;color:#94a3b8;font-weight:600;">RINOVUAR</span>':'')+'</div><div class="klient-sub">'+(k.adresa||'')+'</div></td><td style="font-size:11px;color:#6b7a8d;">'+nrId+'</td><td><span class="badge-lloji '+k.lloji+'">'+(llojiLabels[k.lloji]||k.lloji)+'</span></td><td style="font-size:11px;color:#6b7a8d;">'+pakotTxt+'</td><td style="font-size:11px;color:#6b7a8d;">'+formatData(k.fillimi)+'</td>'<td><div class="skadon-cell '+skadonCls+'"><span class="skadon-dot"></span>'+ditet.teksti+'</div></td>'<td><span class="badge-status '+statusi+'">'+(statusLabels[statusi]||statusi)+'</span></td><td><div class="action-icon-btns"><button onclick="dergoEmail('+idx+')" title="Dërgo Email"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button onclick="editoKontrate('+idx+')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-text btn-word" onclick="gjeneroWord('+idx+')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> Word</button><button onclick="fshijKontrate('+idx+')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div></td></tr>';
+    return '<tr><td><div class="klient-name">'+k.emri+(k.arkivuar?' <span style="font-size:9px;color:#94a3b8;font-weight:600;">RINOVUAR</span>':'')+'</div><div class="klient-sub">'+(k.adresa||'')+'</div></td><td style="font-size:11px;color:#6b7a8d;">'+nrId+'</td><td><span class="badge-lloji '+k.lloji+'">'+(llojiLabels[k.lloji]||k.lloji)+'</span></td><td style="font-size:11px;color:#6b7a8d;">'+pakotTxt+'</td><td style="font-size:11px;color:#6b7a8d;">'+formatData(k.fillimi)+'</td><td><div class="skadon-cell '+skadonCls+'"><span class="skadon-dot"></span>'+ditet.teksti+'</div></td><td><span class="badge-status '+statusi+'">'+(statusLabels[statusi]||statusi)+'</span></td><td><div class="action-icon-btns"><button onclick="dergoEmail('+idx+')" title="Dërgo Email"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button onclick="editoKontrate('+idx+')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-text btn-word" onclick="gjeneroWord('+idx+')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> Word</button><button onclick="fshijKontrate('+idx+')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div></td></tr>';
 }
 
 document.addEventListener('DOMContentLoaded',function(){
@@ -395,12 +393,10 @@ document.addEventListener('DOMContentLoaded',function(){
         shtoKontrate();
         setTimeout(function(){
             if(rinData.emri)document.getElementById('m-emri').value=rinData.emri;
-            // NRB ose Nr Personal sipas llojit
             if(rinData.kontraktues_id){
                 document.getElementById('m-nr-personal').value=rinData.kontraktues_id;
                 document.getElementById('m-nr-biznesit').value=rinData.kontraktues_id;
             }
-            // Datat e reja
             if(rinData.data_mbarimit){
                 var mbOld=rinData.data_mbarimit;var fillRi;
                 if(mbOld.includes('.')){var parts=mbOld.split('.');fillRi=new Date(parseInt(parts[2]),parseInt(parts[1])-1,parseInt(parts[0])+1);}
@@ -418,16 +414,21 @@ document.addEventListener('DOMContentLoaded',function(){
             localStorage.removeItem('rinovim_per_kontrate');
         },200);
     },300);
-    // Stats KPI clickable filter
-document.querySelectorAll('.kpi-card').forEach(function(card){
-    card.addEventListener('click',function(){
-        var lbl=card.querySelector('.sm-lbl');
-        if(!lbl)return;
-        var t=lbl.textContent.trim().toLowerCase();
-        if(t==='aktive')ndryshoTab('aktive');
-        else if(t==='skaduar')ndryshoTab('skaduar');
-        else if(t==='skadon shpejt'){ndryshoTab('aktive');activeSort='skadon';document.getElementById('sort-skadon').classList.add('active');document.getElementById('sort-re').classList.remove('active');filtro();}
-        else if(t==='total'){ndryshoTab('aktive');}
+})();
+
+// ============================================================
+// STATS KPI CLICKABLE FILTER
+// ============================================================
+document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('.kpi-card').forEach(function(card){
+        card.addEventListener('click',function(){
+            var lbl=card.querySelector('.sm-lbl');
+            if(!lbl)return;
+            var t=lbl.textContent.trim().toLowerCase();
+            if(t==='aktive')ndryshoTab('aktive');
+            else if(t==='skaduar')ndryshoTab('skaduar');
+            else if(t==='skadon shpejt'){ndryshoTab('aktive');activeSort='skadon';document.getElementById('sort-skadon').classList.add('active');document.getElementById('sort-re').classList.remove('active');filtro();}
+            else if(t==='total'){ndryshoTab('aktive');}
+        });
     });
 });
-})();
