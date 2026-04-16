@@ -861,6 +861,30 @@ body {
   .table-container { overflow-x: auto; }
   .table-container table { min-width: 800px; }
 }
+/* Llojet chips inline */
+.llojet-chips-inline { display: flex; gap: 6px; flex-wrap: wrap; }
+.llojet-chips-inline .ll-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px 7px 7px; border-radius: 10px;
+  background: #fff; border: 1px solid var(--s-border);
+  font-size: 11px; font-weight: 600; color: var(--s-text-sub);
+  cursor: pointer; transition: all 0.18s; user-select: none;
+}
+.llojet-chips-inline .ll-chip:hover { border-color: rgba(30,58,138,0.3); transform: translateY(-1px); }
+.llojet-chips-inline .ll-chip .ll-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 20px; padding: 0 5px;
+  background: #f1f5f9; color: var(--s-text-sub);
+  font-size: 10.5px; font-weight: 800; border-radius: 6px;
+}
+.llojet-chips-inline .ll-chip.active { color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(30,58,138,0.25); }
+.llojet-chips-inline .ll-chip.active .ll-num { background: rgba(255,255,255,0.25); color: #fff; }
+.llojet-chips-inline .ll-chip.individ.active { background: linear-gradient(135deg, #1e40af, #3b82f6); }
+.llojet-chips-inline .ll-chip.familje.active { background: linear-gradient(135deg, #6d28d9, #8b5cf6); }
+.llojet-chips-inline .ll-chip.biznes.active { background: linear-gradient(135deg, #047857, #10b981); }
+.llojet-chips-inline .ll-chip.individ:not(.active) .ll-num { background: #dbeafe; color: #1e40af; }
+.llojet-chips-inline .ll-chip.familje:not(.active) .ll-num { background: #ede9fe; color: #6d28d9; }
+.llojet-chips-inline .ll-chip.biznes:not(.active) .ll-num { background: #d1fae5; color: #047857; }
 @media (max-width: 480px) {
   .sidebar { display: none; }
   .main-content { margin-left: 0; }
