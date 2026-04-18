@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sigal Health | Stafi</title>
-    <link rel="stylesheet" href="../css/theme-v2.css">
+    <link rel="stylesheet" href="../css/theme.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         .org-dega { margin-bottom: 28px; }
@@ -33,16 +33,16 @@
             </div>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item" data-label="Dashboard"><span class="nav-icon"><i data-lucide="layout-dashboard"></i></span><span class="nav-label">Dashboard</span></a>
-            <a href="oferta.html" class="nav-item" data-label="Oferta"><span class="nav-icon"><i data-lucide="clipboard-list"></i></span><span class="nav-label">Oferta</span></a>
-            <a href="kontratat.html" class="nav-item" data-label="Kontratat"><span class="nav-icon"><i data-lucide="file-text"></i></span><span class="nav-label">Kontratat</span></a>
-            <a href="faturimi.html" class="nav-item" data-label="Faturimi"><span class="nav-icon"><i data-lucide="receipt"></i></span><span class="nav-label">Faturimi</span></a>
-            <a href="rinovimet.html" class="nav-item" data-label="Rinovimet"><span class="nav-icon"><i data-lucide="refresh-cw"></i></span><span class="nav-label">Rinovimet</span></a>
+            <a href="dashboard.html" class="nav-item"><span class="nav-icon"><i data-lucide="layout-dashboard"></i></span><span class="nav-label">Dashboard</span></a>
+            <a href="oferta.html" class="nav-item"><span class="nav-icon"><i data-lucide="clipboard-list"></i></span><span class="nav-label">Oferta</span></a>
+            <a href="kontratat.html" class="nav-item"><span class="nav-icon"><i data-lucide="file-text"></i></span><span class="nav-label">Kontratat</span></a>
+            <a href="faturimi.html" class="nav-item"><span class="nav-icon"><i data-lucide="receipt"></i></span><span class="nav-label">Faturimi</span></a>
+            <a href="rinovimet.html" class="nav-item"><span class="nav-icon"><i data-lucide="refresh-cw"></i></span><span class="nav-label">Rinovimet</span></a>
             <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="wallet"></i></span><span class="nav-label">Debitorët</span></a>
-            <a href="raportet.html" class="nav-item" data-label="Raportet"><span class="nav-icon"><i data-lucide="bar-chart-3"></i></span><span class="nav-label">Raportet</span></a>
+            <a href="raportet.html" class="nav-item"><span class="nav-icon"><i data-lucide="bar-chart-3"></i></span><span class="nav-label">Raportet</span></a>
             <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="check-circle"></i></span><span class="nav-label">Detyrat</span></a>
             <a href="dokumentet.html" class="nav-item"><span class="nav-icon"><i data-lucide="folder-open"></i></span><span class="nav-label">Dokumentet</span></a>
-            <a href="stafi.html" class="nav-item active" data-label="Stafi"><span class="nav-icon"><i data-lucide="users"></i></span><span class="nav-label">Stafi</span></a>
+            <a href="stafi.html" class="nav-item active"><span class="nav-icon"><i data-lucide="users"></i></span><span class="nav-label">Stafi</span></a>
         </nav>
         <div class="sidebar-footer">
             <a href="../index.html" class="nav-item logout" onclick="localStorage.removeItem('user_aktual')">
