@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sq">
 <head>
     <meta charset="UTF-8">
@@ -9,81 +9,137 @@
     <script src="../js/auth.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* ====== TABS AKTIVE/SKADUAR ====== */
-        .tabs-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-        .tabs { display: flex; gap: 0; background: #e5e9f0; border-radius: 8px; padding: 2px; }
-        .tab-btn { padding: 7px 18px; font-size: 12px; font-weight: 600; color: #6b7a8d; border-radius: 6px; cursor: pointer; border: none; background: none; font-family: inherit; transition: all 0.15s; }
-        .tab-btn.active { background: white; color: #002B5C; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-        .tab-btn .tab-count { font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: 4px; font-weight: 700; background: #e5e9f0; color: #6b7a8d; }
-        .tab-btn.active .tab-count { background: #002B5C; color: white; }
-        .period-filter { display: flex; align-items: center; gap: 6px; }
-        .period-filter label { font-size: 11px; color: #6b7a8d; font-weight: 600; }
-        .period-select { font-family: inherit; font-size: 12px; padding: 5px 10px; border: 1px solid #e5e9f0; border-radius: 6px; background: white; color: #1a2332; font-weight: 600; cursor: pointer; }
+        /* ====== SPECIFIKE PËR OFERTA ====== */
 
-        /* ====== NAVY STRIP STATS ====== */
-        .stats-strip { background: #002B5C; border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
-        .strip-top { padding: 16px 24px; display: flex; align-items: flex-end; justify-content: space-between; }
-        .strip-metrics { display: flex; gap: 0; }
-        .strip-metric { padding: 0 20px; border-right: 1px solid rgba(255,255,255,0.08); }
-        .strip-metric:first-child { padding-left: 0; }
-        .strip-metric:last-child { border-right: none; }
-        .strip-metric .sm-num { font-size: 28px; font-weight: 800; color: white; line-height: 1; }
-        .strip-metric .sm-lbl { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
-        .strip-metric.presin .sm-num { color: #fbbf24; }
-        .strip-metric.konfirmuar .sm-num { color: #4ade80; }
-        .strip-metric.realizuar .sm-num { color: #93c5fd; }
-        .strip-metric.skaduar .sm-num { color: #fca5a5; }
-        .strip-llojet { display: flex; gap: 5px; padding-bottom: 4px; }
-        .strip-chip { font-size: 10px; padding: 5px 10px; border-radius: 10px; font-weight: 500; color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.07); display: flex; align-items: center; gap: 6px; line-height: 1; }
-        .strip-chip .sc-num { font-weight: 800; font-size: 13px; color: white; }
-        .strip-chip .sc-real { font-size: 9px; color: #4ade80; font-weight: 700; margin-left: 2px; }
-        .strip-bottom { background: rgba(0,0,0,0.15); padding: 10px 24px; display: flex; align-items: center; gap: 14px; }
-        .strip-bar { flex: 1; display: flex; gap: 2px; height: 6px; border-radius: 3px; overflow: hidden; }
-        .strip-bar-seg { height: 100%; transition: width 0.4s ease; }
-        .strip-legend { display: flex; gap: 10px; flex-shrink: 0; }
-        .strip-legend span { font-size: 9px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px; }
-        .strip-legend .sl-dot { width: 5px; height: 5px; border-radius: 1.5px; }
+        /* Strip chips për llojet (inline në filter row) */
+        .llojet-chips-oferta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .strip-chip {
+            font-size: 11px; padding: 6px 11px 6px 7px; border-radius: 10px;
+            font-weight: 600; color: var(--s-text-sub);
+            background: #fff; border: 1px solid var(--s-border);
+            display: inline-flex; align-items: center; gap: 6px; line-height: 1;
+            transition: all 0.18s;
+        }
+        .strip-chip:hover { border-color: rgba(30,58,138,0.3); transform: translateY(-1px); }
+        .strip-chip .sc-num {
+            font-weight: 800; font-size: 11px;
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 22px; height: 20px; padding: 0 6px;
+            background: var(--s-brand-dark); color: #fff; border-radius: 6px;
+        }
+        .strip-chip .sc-real {
+            font-size: 10px; color: var(--s-green); font-weight: 700;
+            display: inline-flex; align-items: center; gap: 2px;
+        }
 
-        /* ====== FILTERS + SORT ====== */
-        .filters-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
-        .filters-row select, .filters-row input { font-family: inherit; font-size: 11px; padding: 6px 10px; border: 1px solid #e5e9f0; border-radius: 6px; background: white; color: #1a2332; }
-        .filters-row input { flex: 1; max-width: 220px; }
-        .sort-btns { display: flex; gap: 4px; margin-left: auto; }
-        .sort-btn { font-family: inherit; font-size: 10px; padding: 5px 10px; border: 1px solid #e5e9f0; border-radius: 6px; background: white; color: #6b7a8d; cursor: pointer; font-weight: 600; }
-        .sort-btn.active { background: #002B5C; color: white; border-color: #002B5C; }
+        /* Version panel */
+        .version-panel {
+            margin-top: 16px;
+            border: 1px solid var(--s-border-light);
+            border-radius: var(--r-md);
+            overflow: hidden;
+            background: rgba(255,255,255,0.5);
+        }
+        .version-panel-header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 14px;
+            background: rgba(240,246,255,0.5);
+            cursor: pointer;
+            border-bottom: 1px solid var(--s-border-light);
+        }
+        #history-arrow {
+            font-size: 10px; color: var(--s-brand-dark);
+            transition: transform 0.15s;
+        }
+        #history-label {
+            font-size: 12px; font-weight: 700; color: var(--s-brand-dark);
+            flex: 1;
+        }
+        #version-count {
+            font-size: 10px; padding: 2px 8px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));
+            color: #fff; font-weight: 700;
+        }
+        #version-body { max-height: 400px; overflow-y: auto; padding: 0; }
 
-        /* ====== TABELA KOMPAKTE ====== */
-        .table-container table th { font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; }
-        .table-container table td { padding: 8px 12px; font-size: 12px; }
-        .klient-name { font-weight: 600; font-size: 12px; color: #1a2332; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-        .klient-sub { font-size: 10px; color: #b0b8c4; margin-top: 1px; }
-        .pakot-cell { font-size: 11px; color: #6b7a8d; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .skadon-cell { display: flex; align-items: center; gap: 4px; font-size: 11px; }
-        .skadon-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-        .action-icon-btns { display: flex; gap: 3px; }
-        .action-icon-btns button { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e5e9f0; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.1s; }
-        .action-icon-btns button:hover { background: #f0f4ff; border-color: #0047AB; }
-        .action-icon-btns button svg { width: 13px; height: 13px; stroke: #6b7a8d; stroke-width: 2; fill: none; }
-        .action-icon-btns button:hover svg { stroke: #0047AB; }
-        .action-icon-btns button.btn-kontrate-icon { background: #002B5C; border-color: #002B5C; }
-        .action-icon-btns button.btn-kontrate-icon svg { stroke: white; }
-        .action-icon-btns button.btn-kontrate-icon:hover { background: #0047AB; }
-        .action-icon-btns .btn-text { width: auto; padding: 0 8px; gap: 3px; font-size: 10px; font-weight: 600; font-family: inherit; }
-        .action-icon-btns .btn-text svg { width: 12px; height: 12px; }
-        .action-icon-btns .btn-word { color: #0047AB; border-color: #dbeafe; background: #f0f4ff; }
-        .action-icon-btns .btn-word:hover { background: #dbeafe; }
-        .action-icon-btns .btn-kontrate-text { background: #002B5C; border-color: #002B5C; color: white; }
-        .action-icon-btns .btn-kontrate-text svg { stroke: white; }
-        .action-icon-btns .btn-kontrate-text:hover { background: #0047AB; }
+        /* Pakot cell në tabelë */
+        .pakot-cell {
+            font-size: 11px; color: var(--s-text-sub);
+            max-width: 220px; overflow: hidden;
+            text-overflow: ellipsis; white-space: nowrap;
+            display: inline-block; vertical-align: middle;
+        }
+        .pakot-cell .pakot-more {
+            background: #eef2ff; color: var(--s-brand-dark);
+            font-size: 9px; padding: 2px 6px;
+            border-radius: 8px; font-weight: 800; margin-left: 4px;
+        }
 
-        /* ====== VERSIONING PANEL ====== */
-        .version-panel { margin-top: 20px; border: 1px solid #e5e9f0; border-radius: 8px; overflow: hidden; }
-        .version-panel-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border-bottom: 1px solid #e5e9f0; cursor: pointer; }
-        .version-panel-header h4 { font-size: 12px; color: #002B5C; margin: 0; display: flex; align-items: center; gap: 6px; }
-        .version-panel-header .version-count { background: #002B5C; color: white; font-size: 10px; padding: 1px 7px; border-radius: 10px; }
-        .version-panel-body { display: none; max-height: 400px; overflow-y: auto; }
-        .version-panel-body.open { display: block; }
-        .realizuar-sub { display: block; font-size: 11px !important; color: #888 !important; margin-top: 2px; font-weight: 400 !important; line-height: 1.2; }
+        /* Version count badge pranë emrit */
+        .version-badge {
+            background: #eef2ff; color: var(--s-brand-dark);
+            font-size: 9px; padding: 2px 6px;
+            border-radius: 8px; font-weight: 800; margin-left: 4px;
+        }
+
+        /* Notification dot */
+        .notif-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--s-red-dot); display: inline-block;
+            vertical-align: middle; margin-left: 3px;
+            box-shadow: 0 0 0 2px rgba(239,68,68,0.2);
+        }
+
+        /* Track badge për status të ofertës */
+        .track-badge {
+            font-size: 10px; font-weight: 700;
+            padding: 3px 9px; border-radius: 10px;
+            white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;
+        }
+        .track-badge.e_krijuar  { background: #f1f5f9;  color: #475569; }
+        .track-badge.e_derguar  { background: #dbeafe;  color: #1e40af; }
+        .track-badge.e_pare     { background: #fef3c7;  color: #92400e; }
+        .track-badge.e_konfirmuar {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            color: var(--s-green); border: 1px solid rgba(16,185,129,0.25);
+        }
+        .track-badge.kontrate {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            color: var(--s-brand-dark); border: 1px solid rgba(59,130,246,0.25);
+        }
+
+        /* Kontratë button (action) */
+        .btn-kontrate-text {
+            background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand)) !important;
+            color: #fff !important;
+            border: none; padding: 6px 12px;
+            border-radius: 9px;
+            font-size: 10.5px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 5px;
+            cursor: pointer; font-family: inherit;
+            box-shadow: 0 6px 14px rgba(30,58,138,0.3);
+            transition: all 0.15s;
+        }
+        .btn-kontrate-text:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(30,58,138,0.4); }
+        .btn-kontrate-text svg, .btn-kontrate-text svg * {
+            width: 12px; height: 12px; stroke-width: 2.2;
+            fill: none !important; stroke: #fff !important;
+        }
+
+        /* Konfirmim banner (brenda drawer kur konfirmuar) */
+        #konfirmim-banner {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: var(--r-md);
+            padding: 12px 14px;
+            margin: 0 0 14px 0;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px;
+        }
+
+        /* Drawer body padding reset — për pakot-container të shfrytëzojë hapësirën */
+        .drawer-panel { max-width: 960px; }
+        .drawer-panel-body { padding: 18px 20px; }
     </style>
 </head>
 <body>
@@ -102,10 +158,10 @@
             <a href="kontratat.html" class="nav-item" data-label="Kontratat"><span class="nav-icon"><i data-lucide="file-text"></i></span><span class="nav-label">Kontratat</span></a>
             <a href="faturimi.html" class="nav-item" data-label="Faturimi"><span class="nav-icon"><i data-lucide="receipt"></i></span><span class="nav-label">Faturimi</span></a>
             <a href="rinovimet.html" class="nav-item" data-label="Rinovimet"><span class="nav-icon"><i data-lucide="refresh-cw"></i></span><span class="nav-label">Rinovimet</span></a>
-            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="wallet"></i></span><span class="nav-label">Debitorët</span></a>
+            <a href="debitoret.html" class="nav-item" data-label="Debitorët"><span class="nav-icon"><i data-lucide="wallet"></i></span><span class="nav-label">Debitorët</span></a>
             <a href="raportet.html" class="nav-item" data-label="Raportet"><span class="nav-icon"><i data-lucide="bar-chart-3"></i></span><span class="nav-label">Raportet</span></a>
-            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="check-circle"></i></span><span class="nav-label">Detyrat</span></a>
-            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="folder-open"></i></span><span class="nav-label">Dokumentet</span></a>
+            <a href="#" class="nav-item" data-label="Detyrat"><span class="nav-icon"><i data-lucide="check-circle"></i></span><span class="nav-label">Detyrat</span></a>
+            <a href="#" class="nav-item" data-label="Dokumentet"><span class="nav-icon"><i data-lucide="folder-open"></i></span><span class="nav-label">Dokumentet</span></a>
             <a href="stafi.html" class="nav-item" data-label="Stafi"><span class="nav-icon"><i data-lucide="users"></i></span><span class="nav-label">Stafi</span></a>
         </nav>
         <div class="sidebar-footer">
@@ -116,9 +172,12 @@
     <div class="main-content">
         <div class="topbar">
             <h1>Oferta</h1>
-            <button class="btn-primary" onclick="shtoOferte()">
-                <i data-lucide="plus" style="width:15px;height:15px;"></i> Ofertë e Re
-            </button>
+            <div class="topbar-right">
+                <button class="btn-primary" onclick="shtoOferte()">
+                    <i data-lucide="plus"></i> Ofertë e Re
+                </button>
+                <!-- bell + user tag injektohen automatikisht nga main.js -->
+            </div>
         </div>
 
         <div class="content-area">
@@ -128,14 +187,14 @@
                     <button class="tab-btn active" id="tab-aktive" onclick="ndryshoTab('aktive')">Aktive <span class="tab-count" id="tab-count-aktive">0</span></button>
                     <button class="tab-btn" id="tab-skaduar" onclick="ndryshoTab('skaduar')">Skaduar <span class="tab-count" id="tab-count-skaduar">0</span></button>
                 </div>
-                <div class="period-filter">
-                    <label>Viti:</label>
-                    <select class="period-select" id="filter-viti" onchange="ndryshoViti();filtro()">
+                <div class="tabs-filters">
+                    <label style="font-size:11px;color:var(--s-text-muted);font-weight:600;">Viti:</label>
+                    <select id="filter-viti" class="filter-select" onchange="ndryshoViti();filtro()">
                         <option value="2026">2026</option>
                         <option value="2025">2025</option>
                     </select>
-                    <label style="margin-left:8px;">Muaji:</label>
-                    <select class="period-select" id="filter-muaji" onchange="filtro()">
+                    <label style="font-size:11px;color:var(--s-text-muted);font-weight:600;margin-left:4px;">Muaji:</label>
+                    <select id="filter-muaji" class="filter-select" onchange="filtro()">
                         <option value="all">Total</option>
                         <option value="01">Janar</option>
                         <option value="02">Shkurt</option>
@@ -153,42 +212,60 @@
                 </div>
             </div>
 
-            <!-- Navy Strip Stats -->
-            <div class="stats-strip" id="stats-strip">
-                <div class="strip-top">
-                    <div class="strip-metrics">
-                        <div class="strip-metric"><div class="sm-num" id="st-total">0</div><div class="sm-lbl">Total</div></div>
-                        <div class="strip-metric presin"><div class="sm-num" id="st-presin">0</div><div class="sm-lbl">Presin përgjigje</div></div>
-                        <div class="strip-metric konfirmuar"><div class="sm-num" id="st-konfirmuar">0</div><div class="sm-lbl">Konfirmuar</div></div>
-                        <div class="strip-metric realizuar"><div class="sm-num" id="st-realizuar">0</div><div class="sm-lbl">Realizuar</div></div>
+            <!-- KPI Cards (clickable për filtrim sipas track status) -->
+            <div class="stats-strip">
+                <div class="kpi-card" data-filter="all">
+                    <div class="kpi-icon kpi-icon-total"><i data-lucide="bar-chart-3"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Total</div>
+                        <div class="sm-num" id="st-total">0</div>
                     </div>
-                    <div class="strip-llojet" id="st-llojet"></div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
                 </div>
-                <div class="strip-bottom">
-                    <div class="strip-bar" id="st-bar"></div>
-                    <div class="strip-legend" id="st-legend"></div>
+                <div class="kpi-card" data-filter="presin">
+                    <div class="kpi-icon kpi-icon-skadon"><i data-lucide="clock"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Presin përgjigje</div>
+                        <div class="sm-num skadon-num" id="st-presin">0</div>
+                    </div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                </div>
+                <div class="kpi-card" data-filter="konfirmuar">
+                    <div class="kpi-icon kpi-icon-aktive"><i data-lucide="check-circle"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Konfirmuar</div>
+                        <div class="sm-num aktive-num" id="st-konfirmuar">0</div>
+                    </div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                </div>
+                <div class="kpi-card" data-filter="kontrate">
+                    <div class="kpi-icon kpi-icon-total"><i data-lucide="file-check"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Realizuar</div>
+                        <div class="sm-num" id="st-realizuar" style="color:var(--s-brand-dark)">0</div>
+                    </div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
                 </div>
             </div>
 
-            <!-- Filters + Sort -->
+            <!-- Filters + Sort (pa filter-statusi — e bën KPI-ja) -->
             <div class="filters-row">
-                <select id="filter-lloji" onchange="filtro()">
+                <select id="filter-lloji" class="filter-select" onchange="filtro()">
                     <option value="all">Të gjitha llojet</option>
                     <option value="individ">Individuale</option>
                     <option value="familje">Familjare</option>
                     <option value="biznes">Biznese</option>
                 </select>
-                <select id="filter-statusi" onchange="filtro()">
-                    <option value="all">Të gjitha statuset</option>
-                    <option value="e_krijuar">E krijuar</option>
-                    <option value="e_derguar">E dërguar</option>
-                    <option value="e_konfirmuar">Konfirmuar</option>
-                    <option value="kontrate">Kontratë</option>
-                </select>
-                <select id="filter-krijuar" onchange="filtro()">
+                <select id="filter-krijuar" class="filter-select" onchange="filtro()">
                     <option value="all">Të gjithë agjentët</option>
                 </select>
                 <input type="text" id="search-oferte" placeholder="Kërko ofertë..." onkeyup="filtro()">
+                <!-- Llojet chips inline (popullohen nga JS) -->
+                <div class="llojet-chips-oferta" id="st-llojet"></div>
+                <!-- filter-statusi i fshehur për kompatibilitet me KPI -->
+                <select id="filter-statusi" style="display:none">
+                    <option value="all">Të gjitha statuset</option>
+                </select>
                 <div class="sort-btns">
                     <button class="sort-btn active" id="sort-skadon" onclick="ndryshoSort('skadon')">Skadon shpejt</button>
                     <button class="sort-btn" id="sort-re" onclick="ndryshoSort('re')">Më e re</button>
@@ -202,9 +279,9 @@
                             <th>Klienti</th>
                             <th style="width:90px;">Lloji</th>
                             <th>Pakot</th>
-                            <th style="width:60px;">Skadon</th>
-                            <th style="width:80px;">Statusi</th>
-                            <th style="width:180px;">Veprimet</th>
+                            <th style="width:90px;">Skadon</th>
+                            <th style="width:110px;">Statusi</th>
+                            <th style="width:220px;text-align:right;">Veprimet</th>
                         </tr>
                     </thead>
                     <tbody id="ofertat-tbody"></tbody>
@@ -213,19 +290,21 @@
         </div>
     </div>
 
-    <!-- ====== DRAWER MODAL ====== -->
+    <!-- ====== DRAWER ====== -->
     <div class="drawer-overlay" id="drawer-overlay" onclick="if(event.target===this)mbyllDrawer()">
         <div class="drawer-panel">
             <div class="drawer-panel-header">
-                <h2 id="modal-title">Ofertë e Re</h2>
-                <button class="drawer-close" onclick="mbyllDrawer()">✕</button>
+                <h2 id="modal-title">Ofertë <span style="font-weight:500">e Re</span></h2>
+                <button class="drawer-close" onclick="mbyllDrawer()">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
-            <div class="drawer-body">
-                <div class="form-row">
+            <div class="drawer-panel-body">
+                <div class="form-grid">
                     <div class="form-group"><label>Emri Mbiemri</label><input id="m-emri" placeholder="Emri Mbiemri / Kompania"></div>
                     <div class="form-group"><label>Email</label><input id="m-email" type="email" placeholder="email@example.com"></div>
                 </div>
-                <div class="form-row three">
+                <div class="drawer-extra-fields" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--s-border-light);">
                     <div class="form-group"><label>Kërkuar nga</label>
                         <select id="m-kerkuar-nga" onchange="tregoBoxAgjenti()">
                             <option value="direkt">Direkt</option>
@@ -235,25 +314,29 @@
                     </div>
                     <div class="form-group" id="field-agjenti" style="display:none"><label>Emri i Agjentit</label><input id="m-agjenti" placeholder="Emri i agjentit"></div>
                 </div>
+
                 <input type="hidden" id="m-lloji" value="individ">
-                <div class="drawer-lloji-row">
-                    <button class="drawer-lloji-btn active" onclick="zgjidhLlojin('individ',this)">Individuale</button>
-                    <button class="drawer-lloji-btn" onclick="zgjidhLlojin('familje',this)">Familjare</button>
-                    <button class="drawer-lloji-btn" onclick="zgjidhLlojin('biznes',this)">Biznese</button>
+
+                <div class="lloji-selector" style="margin-top:18px;">
+                    <button class="lloji-btn drawer-lloji-btn active" onclick="zgjidhLlojin('individ',this)">Individuale</button>
+                    <button class="lloji-btn drawer-lloji-btn" onclick="zgjidhLlojin('familje',this)">Familjare</button>
+                    <button class="lloji-btn drawer-lloji-btn" onclick="zgjidhLlojin('biznes',this)">Biznese</button>
                 </div>
+
                 <div id="pakot-container"></div>
-                <div id="version-panel" style="display:none">
-                    <div style="display:flex;align-items:center;gap:6px;margin-top:12px;cursor:pointer;padding:8px 0;border-top:1px solid #e5e9f0;" onclick="toggleVersions()">
-                        <span id="history-arrow" style="font-size:10px;color:#002B5C;">▸</span>
-                        <span id="history-label" style="font-size:12px;font-weight:600;color:#002B5C;">Historiku i ofertës</span>
-                        <span id="version-count" style="font-size:10px;background:#e5e9f0;padding:1px 6px;border-radius:8px;">0</span>
+
+                <div class="version-panel" id="version-panel" style="display:none">
+                    <div class="version-panel-header" onclick="toggleVersions()">
+                        <span id="history-arrow">▸</span>
+                        <span id="history-label">Historiku i ofertës</span>
+                        <span id="version-count">0</span>
                     </div>
                     <div id="version-body" style="display:none;"></div>
                 </div>
-                <div class="sp-actions">
-                    <button class="sp-btn" onclick="mbyllDrawer()">Anulo</button>
-                    <button class="sp-btn primary" onclick="ruajOferte()">Ruaj</button>
-                </div>
+            </div>
+            <div class="drawer-panel-footer">
+                <button class="btn-secondary" onclick="mbyllDrawer()">Anulo</button>
+                <button class="btn-primary" onclick="ruajOferte()">Ruaj</button>
             </div>
         </div>
     </div>
@@ -262,6 +345,49 @@
     <script src="../js/pakot.js"></script>
     <script src="../js/oferta.js"></script>
     <script src="../js/oferta-tracking.js"></script>
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+
+        // KPI clickable filter — mbush filter-statusi të fshehur
+        document.addEventListener('DOMContentLoaded', function() {
+            const kpiCards = document.querySelectorAll('.kpi-card[data-filter]');
+            let activeKpi = 'all';
+            const allCard = document.querySelector('.kpi-card[data-filter="all"]');
+            if (allCard) allCard.classList.add('kpi-active');
+
+            kpiCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    if (activeKpi === filter && filter !== 'all') {
+                        activeKpi = 'all';
+                    } else {
+                        activeKpi = filter;
+                    }
+                    kpiCards.forEach(c => c.classList.remove('kpi-active'));
+                    document.querySelector('.kpi-card[data-filter="'+activeKpi+'"]').classList.add('kpi-active');
+
+                    // Mbush filter-statusi fshehur me value që kupton kodi ekzistues
+                    const statusSel = document.getElementById('filter-statusi');
+                    if (!statusSel) return;
+                    if (activeKpi === 'all') statusSel.value = 'all';
+                    else if (activeKpi === 'presin') {
+                        // "presin" = e_krijuar + e_derguar + e_pare (multi) — përdor flag
+                        window.__ofertaKpiGroup = 'presin';
+                        statusSel.value = 'all'; // reset
+                    } else if (activeKpi === 'konfirmuar') {
+                        window.__ofertaKpiGroup = null;
+                        statusSel.value = 'e_konfirmuar';
+                    } else if (activeKpi === 'kontrate') {
+                        window.__ofertaKpiGroup = null;
+                        statusSel.value = 'kontrate';
+                    } else {
+                        window.__ofertaKpiGroup = null;
+                    }
+                    if (activeKpi !== 'presin') window.__ofertaKpiGroup = null;
+                    if (typeof filtro === 'function') filtro();
+                });
+            });
+        });
+    </script>
 </body>
 </html>
