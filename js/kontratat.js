@@ -341,12 +341,12 @@ function renderTabela(){
     if(activeTab==='aktive'){
         const filtered=aktive.filter(k=>{return(filterLloji==='all'||k.lloji===filterLloji)&&(k.emri.toLowerCase().includes(search)||(k.nrPersonal||'').toLowerCase().includes(search)||(k.nrBiznesit||'').toLowerCase().includes(search));});
         const sorted=[...filtered].sort((a,b)=>{if(activeSort==='re')return(b.dataKrijimit||'').localeCompare(a.dataKrijimit||'');if(!a.mbarimi)return 1;if(!b.mbarimi)return-1;return parseDate(a.mbarimi)-parseDate(b.mbarimi);});
-        if(sorted.length===0){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#888;">Nuk ka kontrata aktive.</td></tr>';return;}
-        tbody.innerHTML=sorted.map(k=>renderRow(k)).join('');return;
+        if(sorted.length===0){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#888;">Nuk ka kontrata aktive.</td></tr>';if(typeof lucide!=='undefined')lucide.createIcons();return;}
+        tbody.innerHTML=sorted.map(k=>renderRow(k)).join('');if(typeof lucide!=='undefined')lucide.createIcons();return;
     }
 
     const filtered=skaduar.filter(k=>{return(filterLloji==='all'||k.lloji===filterLloji)&&(k.emri.toLowerCase().includes(search)||(k.nrPersonal||'').toLowerCase().includes(search)||(k.nrBiznesit||'').toLowerCase().includes(search));});
-    if(filtered.length===0){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#888;">Nuk ka kontrata të skaduara.</td></tr>';return;}
+    if(filtered.length===0){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#888;">Nuk ka kontrata të skaduara.</td></tr>';if(typeof lucide!=='undefined')lucide.createIcons();return;}
     const sipasVitit={};
     filtered.forEach(k=>{let viti='?';const mb=k.mbarimi||'';if(mb.includes('-'))viti=mb.substring(0,4);else if(mb.includes('/')){const parts=mb.split('/');viti=parts[2]||'?';}if(!sipasVitit[viti])sipasVitit[viti]=[];sipasVitit[viti].push(k);});
     const vitetSorted=Object.keys(sipasVitit).sort((a,b)=>b.localeCompare(a));
@@ -356,6 +356,7 @@ function renderTabela(){
         if(isOpen){const sorted=[...lista].sort((a,b)=>{if(!a.mbarimi)return 1;if(!b.mbarimi)return-1;return parseDate(b.mbarimi)-parseDate(a.mbarimi);});html+=sorted.map(k=>renderRow(k)).join('');}
     });
     tbody.innerHTML=html;
+    if(typeof lucide!=='undefined')lucide.createIcons();
 }
 
 function renderRow(k){
@@ -367,7 +368,7 @@ function renderRow(k){
     const pakotArr=k.pakot||[];let pakotTxt='-';
     if(pakotArr.length<=2)pakotTxt=pakotArr.join(', ');
     else pakotTxt=pakotArr.slice(0,2).join(', ')+' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">+'+(pakotArr.length-2)+'</span>';
-    return '<tr><td><div class="klient-name">'+k.emri+(k.arkivuar?' <span style="font-size:9px;color:#94a3b8;font-weight:600;">RINOVUAR</span>':'')+'</div><div class="klient-sub">'+(k.adresa||'')+'</div></td><td style="font-size:11px;color:#6b7a8d;">'+nrId+'</td><td><span class="badge-lloji '+k.lloji+'">'+(llojiLabels[k.lloji]||k.lloji)+'</span></td><td style="font-size:11px;color:#6b7a8d;">'+pakotTxt+'</td><td style="font-size:11px;color:#6b7a8d;">'+formatData(k.fillimi)+'</td><td><div class="skadon-cell '+skadonCls+'"><span class="skadon-dot"></span>'+ditet.teksti+'</div></td><td><span class="badge-status '+statusi+'">'+(statusLabels[statusi]||statusi)+'</span></td><td><div class="action-icon-btns"><button onclick="dergoEmail('+idx+')" title="Dërgo Email"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button><button onclick="editoKontrate('+idx+')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button><button class="btn-text btn-word" onclick="gjeneroWord('+idx+')" title="Word"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> Word</button><button onclick="fshijKontrate('+idx+')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div></td></tr>';
+    return '<tr><td><div class="klient-name">'+k.emri+(k.arkivuar?' <span style="font-size:9px;color:#94a3b8;font-weight:600;">RINOVUAR</span>':'')+'</div><div class="klient-sub">'+(k.adresa||'')+'</div></td><td style="font-size:11px;color:#6b7a8d;">'+nrId+'</td><td><span class="badge-lloji '+k.lloji+'">'+(llojiLabels[k.lloji]||k.lloji)+'</span></td><td style="font-size:11px;color:#6b7a8d;">'+pakotTxt+'</td><td style="font-size:11px;color:#6b7a8d;">'+formatData(k.fillimi)+'</td><td><div class="skadon-cell '+skadonCls+'"><span class="skadon-dot"></span>'+ditet.teksti+'</div></td><td><span class="badge-status '+statusi+'">'+(statusLabels[statusi]||statusi)+'</span></td><td style="text-align:right;"><div class="action-icon-btns" style="justify-content:flex-end;"><button onclick="editoKontrate('+idx+')" title="Edito"><i data-lucide="pencil"></i></button><button class="btn-word" onclick="gjeneroWord('+idx+')" title="Word"><i data-lucide="file-text"></i> Word</button><button onclick="dergoEmail('+idx+')" title="Email"><i data-lucide="mail"></i></button><button onclick="fshijKontrate('+idx+')" title="Fshi"><i data-lucide="trash-2"></i></button></div></td></tr>';
 }
 
 document.addEventListener('DOMContentLoaded',function(){

@@ -11,27 +11,6 @@
     <style>
         /* ====== SPECIFIKE PËR OFERTA ====== */
 
-        /* Strip chips për llojet (inline në filter row) */
-        .llojet-chips-oferta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-        .strip-chip {
-            font-size: 11px; padding: 6px 11px 6px 7px; border-radius: 10px;
-            font-weight: 600; color: var(--s-text-sub);
-            background: #fff; border: 1px solid var(--s-border);
-            display: inline-flex; align-items: center; gap: 6px; line-height: 1;
-            transition: all 0.18s;
-        }
-        .strip-chip:hover { border-color: rgba(30,58,138,0.3); transform: translateY(-1px); }
-        .strip-chip .sc-num {
-            font-weight: 800; font-size: 11px;
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 22px; height: 20px; padding: 0 6px;
-            background: var(--s-brand-dark); color: #fff; border-radius: 6px;
-        }
-        .strip-chip .sc-real {
-            font-size: 10px; color: var(--s-green); font-weight: 700;
-            display: inline-flex; align-items: center; gap: 2px;
-        }
-
         /* Version panel */
         .version-panel {
             margin-top: 16px;
@@ -248,20 +227,21 @@
                 </div>
             </div>
 
-            <!-- Filters + Sort (pa filter-statusi — e bën KPI-ja) -->
+            <!-- Filters + Sort (pa filter-lloji/statusi — e bëjnë chips + KPI) -->
             <div class="filters-row">
-                <select id="filter-lloji" class="filter-select" onchange="filtro()">
-                    <option value="all">Të gjitha llojet</option>
-                    <option value="individ">Individuale</option>
-                    <option value="familje">Familjare</option>
-                    <option value="biznes">Biznese</option>
+                <!-- MAJTAS: Llojet chips (zëvendësojnë select-in) -->
+                <div id="llojet-chips" class="llojet-chips-inline"></div>
+                <!-- filter-lloji i fshehur për kompatibilitet (chips e përditësojnë) -->
+                <select id="filter-lloji" onchange="filtro()" style="display:none">
+                    <option value="all">all</option>
+                    <option value="individ">individ</option>
+                    <option value="familje">familje</option>
+                    <option value="biznes">biznes</option>
                 </select>
                 <select id="filter-krijuar" class="filter-select" onchange="filtro()">
                     <option value="all">Të gjithë agjentët</option>
                 </select>
                 <input type="text" id="search-oferte" placeholder="Kërko ofertë..." onkeyup="filtro()">
-                <!-- Llojet chips inline (popullohen nga JS) -->
-                <div class="llojet-chips-oferta" id="st-llojet"></div>
                 <!-- filter-statusi i fshehur për kompatibilitet me KPI -->
                 <select id="filter-statusi" style="display:none">
                     <option value="all">Të gjitha statuset</option>

@@ -543,6 +543,11 @@ function tregoToast(msg){
     setTimeout(()=>{t.style.opacity='0';},2000);
 }
 function filtro(){renderTabela();}
+function toggleLloji(ll){
+    const sel=document.getElementById('filter-lloji');
+    sel.value=(sel.value===ll)?'all':ll;
+    filtro();
+}
 
 // ====== TABS, SORT, PERIOD ======
 let activeTab='aktive';
@@ -638,18 +643,19 @@ function renderTabela(){
     setText('st-konfirmuar',stKonfirmuar);
     setText('st-realizuar',stRealizuar);
 
-    // Llojet chips inline (pas input-it)
-    const llojetData=['individ','familje','biznes'].map(ll=>{
-        const total=aktive.filter(o=>o.lloji===ll).length;
-        const real=aktive.filter(o=>o.lloji===ll&&getTrackStatus(o)==='kontrate').length;
-        return{ll,total,real};
+    // Llojet chips MAJTAS (clickable, filtron sipas lloji)
+    const llojetCounts={};
+    ['individ','familje','biznes'].forEach(ll=>{
+        llojetCounts[ll]=aktive.filter(o=>o.lloji===ll).length;
     });
     const llojiNames={individ:'Individ',familje:'Familje',biznes:'Biznes'};
-    const stLlojetEl=document.getElementById('st-llojet');
-    if(stLlojetEl){
-        stLlojetEl.innerHTML=llojetData.filter(d=>d.total>0).map(d=>
-            '<span class="strip-chip"><span class="sc-num">'+d.total+'</span> '+llojiNames[d.ll]+(d.real>0?' <span class="sc-real">'+d.real+' ✓</span>':'')+'</span>'
-        ).join('');
+    const activeL=filterLloji;
+    const chipsEl=document.getElementById('llojet-chips');
+    if(chipsEl){
+        chipsEl.innerHTML=['individ','familje','biznes'].map(ll=>{
+            const isActive=activeL===ll?' active':'';
+            return '<span class="ll-chip '+ll+isActive+'" onclick="toggleLloji(\''+ll+'\')"><span class="ll-num">'+llojetCounts[ll]+'</span> '+llojiNames[ll]+'</span>';
+        }).join('');
     }
 
     // ====== TABELA ======
