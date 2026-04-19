@@ -623,132 +623,125 @@ body {
 .skadon-cell.red .skadon-dot { background: var(--s-red-dot); box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
 
 /* ============================================================
-   ACTION BUTTONS — Standard i unifikuar për të gjitha modulet
+   ACTION BUTTONS — SAKTËSISHT SI FOTO 2
+   Butonat ikonë: bordurë gri, bg të bardhë, pill shape
+   Word: lavender i mbushur, pa bordurë
    ============================================================ */
-.action-icon-btns, .action-btns {
+
+.action-icon-btns {
   display: inline-flex;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
 }
 
-/* Butoni ikonë (transparent, icon only) */
-.action-icon-btns > button:not(.btn-word):not(.btn-kontrate-text),
-.action-btns > button:not(.btn-word):not(.btn-kontrate-text),
-.action-btns > .icon-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
+/* BUTONAT IKONË — me BORDURË gri, bg bardhë */
+.action-icon-btns > button {
+  width: 34px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid #e5e9f0 !important;
+  background: #ffffff !important;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--s-text-muted);
+  color: #64748b;
   transition: all 0.15s;
   padding: 0;
-  box-shadow: none;
-  font-family: inherit;
+  box-shadow: none !important;
 }
-.action-icon-btns > button:not(.btn-word):not(.btn-kontrate-text):hover,
-.action-btns > button:not(.btn-word):not(.btn-kontrate-text):hover,
-.action-btns > .icon-btn:hover {
-  background: #eef2ff;
+.action-icon-btns > button:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
   color: var(--s-brand-dark);
-  transform: none;
-  box-shadow: none;
 }
-.action-icon-btns > button:not(.btn-word):not(.btn-kontrate-text) svg,
-.action-icon-btns > button:not(.btn-word):not(.btn-kontrate-text) svg *,
-.action-btns > button:not(.btn-word):not(.btn-kontrate-text) svg,
-.action-btns > button:not(.btn-word):not(.btn-kontrate-text) svg * {
-  width: 14px;
-  height: 14px;
-  stroke-width: 2;
+
+.action-icon-btns > button svg,
+.action-icon-btns > button svg *,
+.action-icon-btns > button i,
+.action-icon-btns > button i * {
+  width: 15px !important;
+  height: 15px !important;
+  stroke-width: 2 !important;
   fill: none !important;
   stroke: currentColor !important;
 }
 
-/* Word button — soft lavender */
-.action-icon-btns .btn-word,
-.action-btns .btn-word {
-  width: auto;
-  height: 28px;
-  padding: 0 10px;
-  gap: 5px;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  background: #e0e7ff;
-  color: #4338ca;
-  border: none;
-  border-radius: 8px;
-  transition: all 0.15s;
-  white-space: nowrap;
-  box-shadow: none;
+/* WORD — lavender i mbushur PA BORDURË */
+.action-icon-btns .btn-word {
+  width: auto !important;
+  height: 30px !important;
+  padding: 0 14px !important;
+  gap: 6px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  font-family: inherit !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #e0e7ff !important;
+  color: #4338ca !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  transition: all 0.15s !important;
 }
-.action-icon-btns .btn-word:hover,
-.action-btns .btn-word:hover {
-  background: #c7d2fe;
-  transform: none;
-  box-shadow: none;
+.action-icon-btns .btn-word:hover {
+  background: #c7d2fe !important;
+  color: #3730a3 !important;
 }
 .action-icon-btns .btn-word svg,
 .action-icon-btns .btn-word svg *,
-.action-btns .btn-word svg,
-.action-btns .btn-word svg * {
-  width: 13px;
-  height: 13px;
-  stroke-width: 2.2;
+.action-icon-btns .btn-word i,
+.action-icon-btns .btn-word i * {
+  width: 14px !important;
+  height: 14px !important;
+  stroke-width: 2.2 !important;
   fill: none !important;
   stroke: currentColor !important;
 }
 
-/* Kontratë button — JO i madh. Stil i ngjashëm me btn-word, por brand color */
-.action-icon-btns .btn-kontrate-text,
-.action-btns .btn-kontrate-text,
-.btn-kontrate-text {
-  width: auto;
-  height: 28px;
-  padding: 0 10px;
-  gap: 5px;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-  color: var(--s-brand-dark);
-  border: 1px solid rgba(59, 130, 246, 0.25);
-  border-radius: 8px;
-  transition: all 0.15s;
-  white-space: nowrap;
-  box-shadow: none;
+/* KONTRATË — si Word por blue */
+.action-icon-btns .btn-kontrate-text {
+  width: auto !important;
+  height: 30px !important;
+  padding: 0 14px !important;
+  gap: 6px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  font-family: inherit !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #dbeafe !important;
+  color: #1e40af !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  transition: all 0.15s !important;
 }
-.action-icon-btns .btn-kontrate-text:hover,
-.action-btns .btn-kontrate-text:hover,
-.btn-kontrate-text:hover {
-  background: linear-gradient(135deg, #bfdbfe, #93c5fd);
-  border-color: rgba(59, 130, 246, 0.4);
-  transform: none;
-  box-shadow: none;
-  color: var(--s-brand-dark);
+.action-icon-btns .btn-kontrate-text:hover {
+  background: #bfdbfe !important;
+  color: var(--s-brand-dark) !important;
 }
 .action-icon-btns .btn-kontrate-text svg,
 .action-icon-btns .btn-kontrate-text svg *,
-.action-btns .btn-kontrate-text svg,
-.action-btns .btn-kontrate-text svg *,
-.btn-kontrate-text svg,
-.btn-kontrate-text svg * {
-  width: 13px;
-  height: 13px;
-  stroke-width: 2.2;
+.action-icon-btns .btn-kontrate-text i,
+.action-icon-btns .btn-kontrate-text i * {
+  width: 14px !important;
+  height: 14px !important;
+  stroke-width: 2.2 !important;
   fill: none !important;
   stroke: currentColor !important;
+}
+
+/* Kill legacy klasa */
+.btn-edit, .btn-delete, .btn-email {
+  border: 1px solid #e5e9f0 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
 }
 
 .btn-kontrate, .btn-rinovo {
