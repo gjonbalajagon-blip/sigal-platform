@@ -37,32 +37,55 @@ function toggleSidebar() {
         const topbar = document.querySelector('.topbar');
         if (!topbar) return;
 
-        const bellWrapper = document.createElement('div');
-        bellWrapper.id = 'bell-wrapper';
-        bellWrapper.style.cssText = 'position:relative;margin-right:8px;order:90;';
-        bellWrapper.innerHTML = `
-            <div id="bell-btn" style="width:36px;height:36px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;transition:all .15s" onclick="toggleNjoftimetDropdown()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                <span id="bell-count" style="position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px;line-height:1;font-family:inherit"></span>
-            </div>
-            <div id="bell-dropdown" style="display:none;position:absolute;top:44px;right:0;width:360px;max-height:420px;overflow-y:auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.12);z-index:999">
-                <div style="padding:12px 16px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between">
-                    <span style="font-size:13px;font-weight:600;color:#1a2332">Njoftimet</span>
-                    <span id="bell-total" style="font-size:11px;color:#64748b"></span>
-                </div>
-                <div id="bell-list" style="padding:4px 0"></div>
-            </div>
-        `;
+        // Prefer .topbar-right; fallback to .topbar
+        const host = topbar.querySelector('.topbar-right') || topbar;
 
-        // Safe append — always works regardless of topbar structure
-        topbar.appendChild(bellWrapper);
+        // Inject bell (only if not already present)
+        if (!document.getElementById('bell-wrapper')) {
+            const bellWrapper = document.createElement('div');
+            bellWrapper.id = 'bell-wrapper';
+            bellWrapper.style.cssText = 'position:relative;';
+            bellWrapper.innerHTML = `
+                <div id="bell-btn" style="width:36px;height:36px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;transition:all .15s" onclick="toggleNjoftimetDropdown()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span id="bell-count" style="position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px;line-height:1;font-family:inherit"></span>
+                </div>
+                <div id="bell-dropdown" style="display:none;position:absolute;top:44px;right:0;width:360px;max-height:420px;overflow-y:auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.12);z-index:999">
+                    <div style="padding:12px 16px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between">
+                        <span style="font-size:13px;font-weight:600;color:#1a2332">Njoftimet</span>
+                        <span id="bell-total" style="font-size:11px;color:#64748b"></span>
+                    </div>
+                    <div id="bell-list" style="padding:4px 0"></div>
+                </div>
+            `;
+            host.appendChild(bellWrapper);
+        }
+
+        // Inject user tag (only if not already hardcoded in HTML)
+        if (!document.querySelector('.topbar-user')) {
+            let user = {};
+            try { user = JSON.parse(localStorage.getItem('user_aktual') || localStorage.getItem('currentUser') || '{}'); } catch(e) {}
+            const emri = user.emri || 'Agon';
+            const mbiemri = user.mbiemri || '';
+            const roli = user.role || user.roli || 'Admin';
+            const iniciali = (emri[0] || 'A').toUpperCase();
+            const emriFull = (emri + ' ' + mbiemri).trim();
+            const roliCap = roli.charAt(0).toUpperCase() + roli.slice(1).toLowerCase();
+
+            const userTag = document.createElement('div');
+            userTag.className = 'topbar-user';
+            userTag.innerHTML = '<div class="tu-avatar">' + iniciali + '</div>'
+                + '<div class="tu-info"><div class="tu-name">' + emriFull + '</div><div class="tu-role">' + roliCap + '</div></div>';
+            host.appendChild(userTag);
+        }
 
         perditesoNjoftimet();
 
         document.addEventListener('click', function(e) {
             const bw = document.getElementById('bell-wrapper');
-            if (bw && !bw.contains(e.target)) {
-                document.getElementById('bell-dropdown').style.display = 'none';
+            const dd = document.getElementById('bell-dropdown');
+            if (bw && dd && !bw.contains(e.target)) {
+                dd.style.display = 'none';
             }
         });
     }

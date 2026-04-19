@@ -705,8 +705,7 @@ function renderTabela(){
             '<td style="text-align:right;"><div class="action-icon-btns" style="justify-content:flex-end;">'+
                 '<button onclick="editoOferte('+idx+')" title="Edito"><i data-lucide="pencil"></i></button>'+
                 '<button class="btn-word" onclick="gjeneroWord('+idx+')" title="Word"><i data-lucide="file-text"></i> Word</button>'+
-                '<button onclick="dergoEmail('+idx+')" title="Email"><i data-lucide="mail"></i></button>'+
-                '<button onclick="kopjoLink('+idx+')" title="Kopjo Link"><i data-lucide="link"></i></button>'+
+                '<button onclick="dergoEmail('+idx+')" title="Email / Kopjo Link"><i data-lucide="mail"></i></button>'+
                 (showKontrate?'<button class="btn-kontrate-text" onclick="krijoKontrate('+idx+')" title="Kontratë"><i data-lucide="file-check"></i> Kontratë</button>':'')+
                 '<button onclick="fshijOferte('+idx+')" title="Fshi"><i data-lucide="trash-2"></i></button>'+
             '</div></td>'+
