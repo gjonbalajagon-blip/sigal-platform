@@ -40,6 +40,14 @@ function toggleSidebar() {
         // Prefer .topbar-right; fallback to .topbar
         const host = topbar.querySelector('.topbar-right') || topbar;
 
+        // Krijo / ripërdor container për utils (bell + user) — qëndron djathtas fare
+        let utils = host.querySelector('.topbar-utils');
+        if (!utils) {
+            utils = document.createElement('div');
+            utils.className = 'topbar-utils';
+            host.appendChild(utils);
+        }
+
         // Inject bell (only if not already present)
         if (!document.getElementById('bell-wrapper')) {
             const bellWrapper = document.createElement('div');
@@ -58,11 +66,12 @@ function toggleSidebar() {
                     <div id="bell-list" style="padding:4px 0"></div>
                 </div>
             `;
-            host.appendChild(bellWrapper);
+            utils.appendChild(bellWrapper);
         }
 
-        // Inject user tag (only if not already hardcoded in HTML)
-        if (!document.querySelector('.topbar-user')) {
+        // Inject user tag (ose lëviz existingun te utils, nëse është jashtë)
+        let userTag = document.querySelector('.topbar-user');
+        if (!userTag) {
             let user = {};
             try { user = JSON.parse(localStorage.getItem('user_aktual') || localStorage.getItem('currentUser') || '{}'); } catch(e) {}
             const emri = user.emri || 'Agon';
@@ -72,12 +81,13 @@ function toggleSidebar() {
             const emriFull = (emri + ' ' + mbiemri).trim();
             const roliCap = roli.charAt(0).toUpperCase() + roli.slice(1).toLowerCase();
 
-            const userTag = document.createElement('div');
+            userTag = document.createElement('div');
             userTag.className = 'topbar-user';
             userTag.innerHTML = '<div class="tu-avatar">' + iniciali + '</div>'
                 + '<div class="tu-info"><div class="tu-name">' + emriFull + '</div><div class="tu-role">' + roliCap + '</div></div>';
-            host.appendChild(userTag);
         }
+        // Sigurohu që user tag është brenda utils (djathtas fare)
+        if (userTag.parentElement !== utils) utils.appendChild(userTag);
 
         perditesoNjoftimet();
 

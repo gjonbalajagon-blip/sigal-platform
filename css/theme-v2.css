@@ -306,8 +306,12 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 0;
-  margin-left: auto;
+  flex: 1;
+  justify-content: space-between;
+  margin-left: 24px;
+}
+.topbar-right .topbar-utils {
+  display: flex; align-items: center; gap: 10px;
 }
 .topbar-actions { display: flex; gap: 10px; align-items: center; }
 .topbar .user-info {
@@ -625,16 +629,22 @@ body {
 .action-icon-btns, .action-btns { display: flex; gap: 6px; align-items: center; }
 .action-icon-btns button, .action-btns .icon-btn,
 .btn-edit, .btn-delete, .btn-email {
-  width: 30px; height: 30px; border-radius: 9px;
-  border: none; background: transparent;
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--s-border);
+  background: #fff;
   cursor: pointer; display: inline-flex;
   align-items: center; justify-content: center;
-  color: var(--s-text-muted); transition: all 0.15s;
+  color: var(--s-text-sub); transition: all 0.15s;
   padding: 0;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
 }
 .action-icon-btns button:hover, .action-btns .icon-btn:hover,
 .btn-edit:hover, .btn-delete:hover, .btn-email:hover {
-  background: #eef2ff; color: var(--s-brand-dark);
+  background: #f0f6ff;
+  border-color: rgba(30,58,138,0.25);
+  color: var(--s-brand-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(30,58,138,0.12);
 }
 .action-icon-btns button svg, .action-btns .icon-btn svg,
 .action-icon-btns button svg *, .action-btns .icon-btn svg * {
@@ -643,20 +653,31 @@ body {
 .action-icon-btns .btn-text svg, .action-icon-btns .btn-text svg *,
 .action-icon-btns .btn-word svg, .action-icon-btns .btn-word svg *,
 .action-btns .btn-word svg, .action-btns .btn-word svg * {
-  width: 12px; height: 12px; stroke-width: 2.2; fill: none !important; stroke: currentColor !important;
+  width: 13px; height: 13px; stroke-width: 2.2; fill: none !important; stroke: currentColor !important;
 }
 
+/* Word button — buton i vërtetë me gradient të butë blu */
 .action-icon-btns .btn-text, .action-btns .btn-word, .btn-word {
-  width: auto; padding: 6px 12px; gap: 5px;
-  font-size: 10.5px; font-weight: 700;
+  width: auto; height: 32px;
+  padding: 0 14px; gap: 6px;
+  font-size: 11px; font-weight: 700;
   font-family: inherit; cursor: pointer;
-  display: inline-flex; align-items: center;
-  background: #e0e7ff; color: #4338ca;
-  border: none; border-radius: 9px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: var(--s-brand-dark);
+  border: 1px solid rgba(30,58,138,0.25);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(30,58,138,0.08);
   transition: all 0.15s;
+  white-space: nowrap;
 }
-.action-icon-btns .btn-text svg, .action-btns .btn-word svg, .btn-word svg { width: 12px; height: 12px; stroke-width: 2.2; }
-.action-icon-btns .btn-text:hover, .action-btns .btn-word:hover, .btn-word:hover { background: #c7d2fe; }
+.action-icon-btns .btn-text:hover, .action-btns .btn-word:hover, .btn-word:hover {
+  background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));
+  color: #fff;
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(30,58,138,0.3);
+}
 
 .btn-kontrate, .btn-rinovo {
   background: var(--s-green-bg); color: var(--s-green);
