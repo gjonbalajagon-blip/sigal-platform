@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sq">
 <head>
     <meta charset="UTF-8">
@@ -6,22 +6,6 @@
     <title>Sigal Health | Stafi</title>
     <link rel="stylesheet" href="../css/theme-v2.css">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        .org-dega { margin-bottom: 28px; }
-        .org-dega-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--sigal-navy); border-left: 4px solid var(--sigal-navy); padding-left: 10px; margin-bottom: 12px; }
-        .org-karta-list { display: flex; flex-wrap: wrap; gap: 12px; }
-        .org-karta { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--sigal-border); border-radius: 10px; padding: 12px 16px; min-width: 260px; }
-        .org-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--sigal-navy); color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .org-emri { font-size: 13px; font-weight: 700; color: var(--sigal-text); }
-        .org-pozita { font-size: 11px; color: var(--sigal-text-light); }
-        .org-role { font-size: 10px; font-weight: 700; color: var(--sigal-blue); text-transform: uppercase; }
-        .org-kontakt { font-size: 10px; color: var(--sigal-text-muted); margin-top: 2px; }
-        .tabs-stafi { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 2px solid var(--sigal-border); }
-        .tab-btn-stafi { padding: 8px 24px; border: none; background: none; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--sigal-text-light); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
-        .tab-btn-stafi.active { color: var(--sigal-navy); border-bottom-color: var(--sigal-navy); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-    </style>
 </head>
 <body>
     <div class="sidebar">
@@ -38,10 +22,10 @@
             <a href="kontratat.html" class="nav-item" data-label="Kontratat"><span class="nav-icon"><i data-lucide="file-text"></i></span><span class="nav-label">Kontratat</span></a>
             <a href="faturimi.html" class="nav-item" data-label="Faturimi"><span class="nav-icon"><i data-lucide="receipt"></i></span><span class="nav-label">Faturimi</span></a>
             <a href="rinovimet.html" class="nav-item" data-label="Rinovimet"><span class="nav-icon"><i data-lucide="refresh-cw"></i></span><span class="nav-label">Rinovimet</span></a>
-            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="wallet"></i></span><span class="nav-label">Debitorët</span></a>
+            <a href="debitoret.html" class="nav-item" data-label="Debitorët"><span class="nav-icon"><i data-lucide="wallet"></i></span><span class="nav-label">Debitorët</span></a>
             <a href="raportet.html" class="nav-item" data-label="Raportet"><span class="nav-icon"><i data-lucide="bar-chart-3"></i></span><span class="nav-label">Raportet</span></a>
-            <a href="#" class="nav-item"><span class="nav-icon"><i data-lucide="check-circle"></i></span><span class="nav-label">Detyrat</span></a>
-            <a href="dokumentet.html" class="nav-item"><span class="nav-icon"><i data-lucide="folder-open"></i></span><span class="nav-label">Dokumentet</span></a>
+            <a href="#" class="nav-item" data-label="Detyrat"><span class="nav-icon"><i data-lucide="check-circle"></i></span><span class="nav-label">Detyrat</span></a>
+            <a href="#" class="nav-item" data-label="Dokumentet"><span class="nav-icon"><i data-lucide="folder-open"></i></span><span class="nav-label">Dokumentet</span></a>
             <a href="stafi.html" class="nav-item active" data-label="Stafi"><span class="nav-icon"><i data-lucide="users"></i></span><span class="nav-label">Stafi</span></a>
         </nav>
         <div class="sidebar-footer">
@@ -55,28 +39,67 @@
     <div class="main-content">
         <div class="topbar">
             <h1>Stafi</h1>
-            <button class="btn-primary" onclick="shtoStaf()">
-                <i data-lucide="plus" style="width:15px;height:15px;"></i> Shto Anëtar
-            </button>
+            <div class="topbar-right">
+                <button class="btn-primary" onclick="shtoStaf()">
+                    <i data-lucide="plus"></i> Shto Anëtar
+                </button>
+                <!-- bell + user tag injektohen automatikisht nga main.js -->
+            </div>
         </div>
-        <div class="content-area">
 
-            <div class="tabs-stafi">
-                <button class="tab-btn-stafi active" onclick="ndryshoTab('lista')">Lista e Stafit</button>
-                <button class="tab-btn-stafi" onclick="ndryshoTab('organogram')">Organogrami</button>
+        <div class="content-area">
+            <!-- Tabs: Lista / Organogrami -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="ndryshoTab('lista')">
+                    <i data-lucide="list"></i> Lista e Stafit
+                </button>
+                <button class="tab-btn" onclick="ndryshoTab('organogram')">
+                    <i data-lucide="network"></i> Organogrami
+                </button>
             </div>
 
             <!-- LISTA -->
             <div class="tab-content active" id="tab-lista">
-                <div class="filter-bar">
-                    <select id="filter-role" onchange="filtro()">
-                        <option value="all">Të gjitha rolet</option>
-                        <option value="management">Management</option>
-                        <option value="dep_management">Dep. Management</option>
-                        <option value="staff_hq">Staff HQ</option>
-                        <option value="staff">Staff</option>
-                    </select>
-                    <select id="filter-dega" onchange="filtro()">
+                <!-- KPI Cards (clickable për filtrim sipas rolit) -->
+                <div class="stats-strip">
+                    <div class="kpi-card" data-filter="all">
+                        <div class="kpi-icon kpi-icon-total"><i data-lucide="users"></i></div>
+                        <div class="kpi-body">
+                            <div class="sm-lbl">Total Staf</div>
+                            <div class="sm-num" id="count-total">0</div>
+                        </div>
+                        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    </div>
+                    <div class="kpi-card" data-filter="management">
+                        <div class="kpi-icon kpi-icon-aktive"><i data-lucide="crown"></i></div>
+                        <div class="kpi-body">
+                            <div class="sm-lbl">Management</div>
+                            <div class="sm-num aktive-num" id="count-mgmt">0</div>
+                        </div>
+                        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    </div>
+                    <div class="kpi-card" data-filter="staff_hq">
+                        <div class="kpi-icon kpi-icon-skadon"><i data-lucide="building-2"></i></div>
+                        <div class="kpi-body">
+                            <div class="sm-lbl">Staff HQ</div>
+                            <div class="sm-num skadon-num" id="count-hq">0</div>
+                        </div>
+                        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    </div>
+                    <div class="kpi-card" data-filter="staff">
+                        <div class="kpi-icon kpi-icon-skaduar" style="background:linear-gradient(135deg,#a78bfa,#7c3aed 60%,#5b21b6);box-shadow:0 10px 20px -4px rgba(124,58,237,0.45),inset 0 1px 0 rgba(255,255,255,0.25)"><i data-lucide="user"></i></div>
+                        <div class="kpi-body">
+                            <div class="sm-lbl">Staff</div>
+                            <div class="sm-num" id="count-staff" style="color:#7c3aed">0</div>
+                        </div>
+                        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    </div>
+                </div>
+
+                <!-- Filter row (pa filter-role tani — KPI klikohen për atë) -->
+                <div class="filters-row">
+                    <input type="text" id="search-staf" placeholder="Kërko staf..." onkeyup="filtro()">
+                    <select id="filter-dega" onchange="filtro()" class="filter-select">
                         <option value="all">Të gjitha degët</option>
                         <option value="HQ">HQ</option>
                         <option value="Prishtinë">Prishtinë</option>
@@ -87,22 +110,17 @@
                         <option value="Gjakovë">Gjakovë</option>
                         <option value="Mitrovicë">Mitrovicë</option>
                     </select>
-                    <input type="text" id="search-staf" placeholder="Kërko staf..." onkeyup="filtro()">
+                    <!-- hidden select për kompatibilitet me kodin ekzistues -->
+                    <select id="filter-role" style="display:none">
+                        <option value="all">Të gjitha rolet</option>
+                        <option value="management">Management</option>
+                        <option value="dep_management">Dep. Management</option>
+                        <option value="staff_hq">Staff HQ</option>
+                        <option value="staff">Staff</option>
+                    </select>
                 </div>
 
-                <div class="stats-container">
-                    <div class="stats-row">
-                        <div class="fstat-card small individ-card">
-                            <span id="count-hq">0</span>
-                            <p>HQ</p>
-                        </div>
-                        <div class="fstat-card big total-card">
-                            <span id="count-total">0</span>
-                            <p>Total Stafi</p>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- Tabela -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -113,7 +131,7 @@
                                 <th>Dega</th>
                                 <th>Email</th>
                                 <th>Telefoni</th>
-                                <th>Veprimet</th>
+                                <th style="text-align:right;">Veprimet</th>
                             </tr>
                         </thead>
                         <tbody id="stafi-tbody"></tbody>
@@ -125,17 +143,19 @@
             <div class="tab-content" id="tab-organogram">
                 <div id="organogram"></div>
             </div>
-
         </div>
     </div>
 
-    <div class="modal-overlay" id="modal-overlay" onclick="mbyllModal()">
-        <div class="modal modal-large" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h2 id="modal-title">Shto Staf</h2>
-                <button onclick="mbyllModal()">✕</button>
+    <!-- Drawer për shtim/edit -->
+    <div class="drawer-overlay" id="modal-overlay" onclick="mbyllModal()">
+        <div class="drawer-panel" onclick="event.stopPropagation()">
+            <div class="drawer-panel-header">
+                <h2 id="modal-title">Shto <span style="font-weight:500">Anëtar</span></h2>
+                <button class="drawer-close" onclick="mbyllModal()">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
-            <div class="modal-body">
+            <div class="drawer-panel-body">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Emri *</label>
@@ -189,7 +209,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="drawer-panel-footer">
                 <button class="btn-secondary" onclick="mbyllModal()">Anulo</button>
                 <button class="btn-primary" onclick="ruajStaf()">Ruaj</button>
             </div>
@@ -197,16 +217,50 @@
     </div>
 
     <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
     <script src="../js/stafi.js"></script>
     <script>
         lucide.createIcons();
+
         function ndryshoTab(tab) {
-            document.querySelectorAll('.tab-btn-stafi').forEach((b, i) => {
+            document.querySelectorAll('.tab-btn').forEach((b, i) => {
                 b.classList.toggle('active', (i === 0 && tab === 'lista') || (i === 1 && tab === 'organogram'));
             });
             document.getElementById('tab-lista').classList.toggle('active', tab === 'lista');
             document.getElementById('tab-organogram').classList.toggle('active', tab === 'organogram');
         }
+
+        // KPI clickable filter
+        document.addEventListener('DOMContentLoaded', function() {
+            const kpiCards = document.querySelectorAll('.kpi-card[data-filter]');
+            let activeKpi = 'all';
+            const allCard = document.querySelector('.kpi-card[data-filter="all"]');
+            if (allCard) allCard.classList.add('kpi-active');
+
+            kpiCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    if (activeKpi === filter && filter !== 'all') {
+                        activeKpi = 'all';
+                    } else {
+                        activeKpi = filter;
+                    }
+                    kpiCards.forEach(c => c.classList.remove('kpi-active'));
+                    document.querySelector('.kpi-card[data-filter="'+activeKpi+'"]').classList.add('kpi-active');
+
+                    // Set hidden filter-role dhe re-render
+                    const roleSel = document.getElementById('filter-role');
+                    if (activeKpi === 'all') {
+                        roleSel.value = 'all';
+                    } else if (activeKpi === 'management') {
+                        roleSel.value = 'management';
+                    } else {
+                        roleSel.value = activeKpi;
+                    }
+                    if (typeof filtro === 'function') filtro();
+                });
+            });
+        });
     </script>
 </body>
 </html>
