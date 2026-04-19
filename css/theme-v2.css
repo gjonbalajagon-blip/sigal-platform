@@ -270,7 +270,7 @@ body {
   background: transparent;
 }
 .content-area {
-  padding: 18px 24px 24px;
+  padding: 4px 24px 24px;
   flex: 1;
   overflow: auto;
 }
@@ -282,8 +282,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
-  padding: 0 24px;
+  margin-bottom: 14px;
+  padding: 18px 24px 8px;
   background: transparent;
   border: none;
   box-shadow: none;
@@ -1397,4 +1397,312 @@ body {
   .kpi-icon, .stat-icon { width: 34px; height: 34px; }
   .kpi-card .sm-num, .stat-num { font-size: 18px; }
   .rep-hub-title { font-size: 17px; }
+}
+
+/* ============================================================
+   KPI CARDS — Active state (clickable filter)
+   ============================================================ */
+.kpi-card { position: relative; overflow: visible; }
+.kpi-card.kpi-active {
+  border-color: rgba(59,130,246,0.45);
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.18), var(--sh-md);
+}
+.kpi-card.kpi-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 16px; right: 16px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--s-brand-dark), var(--s-brand));
+  border-radius: 2px;
+}
+.kpi-card[data-filter]:hover .kpi-arrow {
+  background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));
+  color: #fff; border-color: transparent;
+}
+
+/* ============================================================
+   DRAWER / MODAL — Full layout (overlay + panel + animation)
+   ============================================================ */
+.drawer-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 200;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+.drawer-overlay.active { display: flex; }
+.drawer-panel {
+  width: 100%;
+  max-width: 720px;
+  height: 100vh;
+  background: var(--s-glass-strong);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 22px 0 0 22px;
+  box-shadow: -20px 0 60px rgba(30,64,175,0.18);
+  display: flex;
+  flex-direction: column;
+  animation: drawerSlide 0.28s ease;
+  overflow: hidden;
+}
+@keyframes drawerSlide {
+  from { transform: translateX(100%); opacity: 0.6; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+.drawer-panel-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--s-border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.5);
+}
+.drawer-panel-body {
+  flex: 1;
+  padding: 20px 22px;
+  overflow-y: auto;
+}
+.drawer-panel-footer {
+  padding: 14px 22px;
+  border-top: 1px solid var(--s-border-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.5);
+}
+.drawer-close {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  background: rgba(240,246,255,0.7);
+  border: 1px solid var(--s-border-light);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--s-text-muted);
+  transition: all 0.15s;
+}
+.drawer-close:hover { background: #eef2ff; color: var(--s-brand-dark); border-color: rgba(30,58,138,0.25); }
+.drawer-close svg { width: 16px; height: 16px; stroke-width: 2.2; }
+
+/* Modal variant (centered) */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,0.42);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  justify-content: center;
+  align-items: center;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  background: var(--s-glass-strong);
+  backdrop-filter: blur(24px);
+  border-radius: var(--r-xl);
+  box-shadow: 0 24px 60px rgba(30,64,175,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalPop 0.2s ease;
+}
+@keyframes modalPop {
+  from { transform: scale(0.95); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+.modal-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--s-border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-body { padding: 20px 22px; overflow-y: auto; flex: 1; }
+.modal-footer {
+  padding: 14px 22px;
+  border-top: 1px solid var(--s-border-light);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* ============================================================
+   CHART CARD + VIEW TOGGLE (Bars / Tabela)
+   ============================================================ */
+.chart-card {
+  background: var(--s-glass);
+  backdrop-filter: var(--s-glass-blur);
+  border: 1px solid var(--s-glass-border);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  box-shadow: var(--sh-sm);
+  margin-bottom: 14px;
+}
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.chart-card-header h3 {
+  font-size: 14px; font-weight: 700;
+  color: var(--s-text);
+  margin: 0;
+}
+.chart-card-body { min-height: 120px; }
+
+/* View toggle — bars/tabela switcher */
+.view-toggle {
+  display: inline-flex;
+  gap: 2px;
+  background: #e5e9f0;
+  padding: 3px;
+  border-radius: var(--r-sm);
+}
+.vt-btn {
+  padding: 6px 12px;
+  border: none; background: none;
+  font-family: inherit;
+  font-size: 11px; font-weight: 600;
+  color: var(--s-text-muted);
+  cursor: pointer;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+.vt-btn:hover:not(.active) { color: var(--s-text); }
+.vt-btn.active {
+  background: #fff;
+  color: var(--s-text);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.vt-btn svg { width: 13px; height: 13px; stroke-width: 2.2; }
+
+.view-content { display: none; }
+.view-content.active { display: block; }
+
+/* Colored bar fills — variantet */
+.rep-bar-fill.green  { background: linear-gradient(90deg, #34d399, #10b981); }
+.rep-bar-fill.blue   { background: linear-gradient(90deg, #60a5fa, #3b82f6); }
+.rep-bar-fill.amber  { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+.rep-bar-fill.orange { background: linear-gradient(90deg, #fb923c, #ea580c); }
+.rep-bar-fill.red    { background: linear-gradient(90deg, #f87171, #ef4444); }
+.rep-bar-fill.purple { background: linear-gradient(90deg, #a78bfa, #7c3aed); }
+
+/* ============================================================
+   DONUT CHART (statuset)
+   ============================================================ */
+.donut-wrapper {
+  position: relative;
+  width: 200px; height: 200px;
+  margin: 0 auto;
+}
+.donut-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+.donut-total {
+  font-size: 28px; font-weight: 800;
+  color: var(--s-text);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.donut-label {
+  font-size: 9px; color: var(--s-text-muted);
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  margin-top: 3px;
+}
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--s-text-sub);
+  font-weight: 500;
+}
+.legend-item .dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.legend-item strong {
+  margin-left: auto;
+  color: var(--s-text);
+  font-weight: 700;
+}
+
+/* Dashboard sections wrapper */
+.dashboard-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+@media (max-width: 1100px) {
+  .dashboard-row { grid-template-columns: 1fr; }
+}
+.dashboard-greeting {
+  margin-bottom: 16px;
+}
+.dashboard-greeting h2 {
+  font-size: 22px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--s-text), var(--s-brand-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 4px 0;
+}
+.dashboard-greeting p {
+  font-size: 13px;
+  color: var(--s-text-muted);
+  margin: 0;
+}
+
+/* ============================================================
+   TOPBAR — notification bell + user tag spacing fix
+   ============================================================ */
+.topbar .notif-bell {
+  width: 38px; height: 38px;
+  border-radius: var(--r-md);
+  background: var(--s-glass);
+  backdrop-filter: var(--s-glass-blur);
+  border: 1px solid var(--s-border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--s-text-muted);
+  position: relative;
+  transition: all 0.2s;
+}
+.topbar .notif-bell:hover { background: #fff; color: var(--s-brand-dark); border-color: rgba(30,58,138,0.2); }
+.topbar .notif-bell svg { width: 17px; height: 17px; stroke-width: 2; }
+.topbar .notif-bell .notif-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  min-width: 18px; height: 18px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  font-size: 10px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 10px rgba(239,68,68,0.45);
 }
