@@ -623,91 +623,100 @@ body {
 .skadon-cell.red .skadon-dot { background: var(--s-red-dot); box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
 
 /* ============================================================
-   ACTION BUTTONS
+   ACTION BUTTONS — Version 6A "Ghost + Blue CTA"
    ============================================================ */
-/* ============================================================
-   ACTION BUTTONS — soft colored pills (qartësisht butona)
-   ============================================================ */
-.action-icon-btns, .action-btns { display: flex; gap: 5px; align-items: center; }
+.action-icon-btns, .action-btns {
+  display: inline-flex; align-items: center; gap: 6px;
+}
 
-/* Butoni bazë: icon-only, 32x32, soft bg, hover lift */
+/* Ghost icon button — 34×34, white bg, subtle border, slate icon */
 .action-icon-btns button, .action-btns .icon-btn,
-.btn-edit, .btn-delete, .btn-email {
-  width: 32px; height: 32px; border-radius: 9px;
-  border: none;
-  background: #eef2ff;
-  color: var(--s-brand-dark);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center; justify-content: center;
-  transition: all 0.18s ease;
+.btn-edit, .btn-delete, .btn-email, .btn-word,
+.action-icon-btns .btn-word, .action-btns .btn-word {
+  width: 34px; height: 34px;
   padding: 0;
-  box-shadow: 0 1px 2px rgba(15,23,42,0.05);
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.12s ease;
+  box-shadow: none;
+  font-family: inherit;
+  font-size: 0;
+  white-space: nowrap;
 }
 .action-icon-btns button:hover, .action-btns .icon-btn:hover,
-.btn-edit:hover, .btn-delete:hover, .btn-email:hover {
-  background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(30,58,138,0.35);
+.btn-edit:hover, .btn-delete:hover, .btn-email:hover, .btn-word:hover,
+.action-icon-btns .btn-word:hover, .action-btns .btn-word:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+  transform: none;
+  box-shadow: none;
 }
-.action-icon-btns button:active, .action-btns .icon-btn:active { transform: translateY(0); }
+.action-icon-btns button:focus-visible,
+.action-icon-btns .btn-word:focus-visible,
+.btn-word:focus-visible {
+  outline: 2px solid #93a6f1; outline-offset: 2px;
+}
+.action-icon-btns button:active, .action-btns .icon-btn:active,
+.btn-word:active, .action-icon-btns .btn-word:active { transform: translateY(0); }
 
 .action-icon-btns button svg, .action-btns .icon-btn svg,
-.action-icon-btns button svg *, .action-btns .icon-btn svg * {
-  width: 15px; height: 15px; stroke-width: 2.2;
+.action-icon-btns button svg *, .action-btns .icon-btn svg *,
+.action-icon-btns .btn-word svg, .action-icon-btns .btn-word svg *,
+.btn-word svg, .btn-word svg * {
+  width: 13px; height: 13px; stroke-width: 1.4;
   fill: none !important; stroke: currentColor !important;
 }
 
-/* Delete variant — hover i kuq (detekton nga titulli "Fshi") */
-.action-icon-btns button[title*="Fshi"],
-.action-icon-btns button[title*="Delete"] { background: #fee2e2; color: #b91c1c; }
-.action-icon-btns button[title*="Fshi"]:hover,
-.action-icon-btns button[title*="Delete"]:hover {
-  background: linear-gradient(135deg, #b91c1c, #ef4444);
-  color: #fff;
-  box-shadow: 0 6px 14px rgba(220,38,38,0.35);
+/* Divider vertikal midis veprimeve dytësore dhe CTA */
+.action-icon-btns .action-divider, .action-btns .action-divider {
+  width: 1px; height: 22px;
+  background: #e2e8f0;
+  margin: 0 4px;
+  flex-shrink: 0;
 }
 
-/* Email variant — soft teal */
-.action-icon-btns button[title*="Email"],
-.action-icon-btns button[title*="email"] { background: #e0f2fe; color: #0369a1; }
-.action-icon-btns button[title*="Email"]:hover,
-.action-icon-btns button[title*="email"]:hover {
-  background: linear-gradient(135deg, #0369a1, #0284c7);
-  color: #fff;
-  box-shadow: 0 6px 14px rgba(3,105,161,0.32);
-}
-
-/* ============================================================
-   WORD BUTTON — buton primar me tekst (gradient brand, always prominent)
-   ============================================================ */
-.action-icon-btns .btn-text, .action-btns .btn-word, .btn-word {
-  width: auto; height: 32px;
-  padding: 0 14px; gap: 6px;
-  font-size: 11.5px; font-weight: 700;
-  font-family: inherit; cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));
-  color: #fff !important;
+/* Primary CTA — "Kontratë" blu solid */
+.action-icon-btns .btn-kontrate-text,
+.action-btns .btn-kontrate-text,
+.btn-kontrate-text {
+  width: auto; height: auto;
+  padding: 8px 14px; gap: 7px;
+  border-radius: 8px;
   border: none;
-  border-radius: 9px;
-  box-shadow: 0 3px 8px rgba(30,58,138,0.28), inset 0 1px 0 rgba(255,255,255,0.18);
-  transition: all 0.18s ease;
+  background: #3b5bdb;
+  color: #ffffff !important;
+  font-family: inherit;
+  font-size: 12.5px; font-weight: 600;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 1px 2px rgba(59, 91, 219, 0.18);
+  transition: all 0.12s ease;
   white-space: nowrap;
 }
-.action-icon-btns .btn-text:hover, .action-btns .btn-word:hover, .btn-word:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(30,58,138,0.42), inset 0 1px 0 rgba(255,255,255,0.22);
+.action-icon-btns .btn-kontrate-text:hover,
+.action-btns .btn-kontrate-text:hover,
+.btn-kontrate-text:hover {
+  background: #3049b5;
+  box-shadow: 0 2px 6px rgba(59, 91, 219, 0.28);
+  transform: none;
+  color: #ffffff !important;
 }
-.action-icon-btns .btn-text:active, .action-btns .btn-word:active, .btn-word:active { transform: translateY(0); }
+.action-icon-btns .btn-kontrate-text:focus-visible,
+.btn-kontrate-text:focus-visible {
+  outline: 2px solid #93a6f1; outline-offset: 2px;
+}
+.action-icon-btns .btn-kontrate-text:active,
+.btn-kontrate-text:active { transform: translateY(1px); box-shadow: 0 1px 1px rgba(59, 91, 219, 0.18); }
 
-.action-icon-btns .btn-text svg, .action-icon-btns .btn-text svg *,
-.action-icon-btns .btn-word svg, .action-icon-btns .btn-word svg *,
-.action-btns .btn-word svg, .action-btns .btn-word svg *,
-.btn-word svg, .btn-word svg * {
-  width: 13px; height: 13px; stroke-width: 2.3;
-  fill: none !important; stroke: #fff !important;
+.action-icon-btns .btn-kontrate-text svg,
+.action-icon-btns .btn-kontrate-text svg *,
+.btn-kontrate-text svg, .btn-kontrate-text svg * {
+  width: 13px; height: 13px; stroke-width: 1.6;
+  fill: none !important; stroke: #ffffff !important;
 }
 
 .btn-kontrate, .btn-rinovo {
