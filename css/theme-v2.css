@@ -623,100 +623,132 @@ body {
 .skadon-cell.red .skadon-dot { background: var(--s-red-dot); box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
 
 /* ============================================================
-   ACTION BUTTONS — Version 6A "Ghost + Blue CTA"
+   ACTION BUTTONS — Standard i unifikuar për të gjitha modulet
    ============================================================ */
 .action-icon-btns, .action-btns {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
 }
 
-/* Ghost icon button — 34×34, white bg, subtle border, slate icon */
-.action-icon-btns button, .action-btns .icon-btn,
-.btn-edit, .btn-delete, .btn-email, .btn-word,
-.action-icon-btns .btn-word, .action-btns .btn-word {
-  width: 34px; height: 34px;
-  padding: 0;
+/* Butoni ikonë (transparent, icon only) */
+.action-icon-btns > button:not(.btn-word):not(.btn-kontrate-text),
+.action-btns > button:not(.btn-word):not(.btn-kontrate-text),
+.action-btns > .icon-btn {
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #64748b;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center;
-  transition: all 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--s-text-muted);
+  transition: all 0.15s;
+  padding: 0;
   box-shadow: none;
   font-family: inherit;
-  font-size: 0;
-  white-space: nowrap;
 }
-.action-icon-btns button:hover, .action-btns .icon-btn:hover,
-.btn-edit:hover, .btn-delete:hover, .btn-email:hover, .btn-word:hover,
-.action-icon-btns .btn-word:hover, .action-btns .btn-word:hover {
-  background: #f1f5f9;
-  color: #1e293b;
+.action-icon-btns > button:not(.btn-word):not(.btn-kontrate-text):hover,
+.action-btns > button:not(.btn-word):not(.btn-kontrate-text):hover,
+.action-btns > .icon-btn:hover {
+  background: #eef2ff;
+  color: var(--s-brand-dark);
   transform: none;
   box-shadow: none;
 }
-.action-icon-btns button:focus-visible,
-.action-icon-btns .btn-word:focus-visible,
-.btn-word:focus-visible {
-  outline: 2px solid #93a6f1; outline-offset: 2px;
-}
-.action-icon-btns button:active, .action-btns .icon-btn:active,
-.btn-word:active, .action-icon-btns .btn-word:active { transform: translateY(0); }
-
-.action-icon-btns button svg, .action-btns .icon-btn svg,
-.action-icon-btns button svg *, .action-btns .icon-btn svg *,
-.action-icon-btns .btn-word svg, .action-icon-btns .btn-word svg *,
-.btn-word svg, .btn-word svg * {
-  width: 13px; height: 13px; stroke-width: 1.4;
-  fill: none !important; stroke: currentColor !important;
+.action-icon-btns > button:not(.btn-word):not(.btn-kontrate-text) svg,
+.action-icon-btns > button:not(.btn-word):not(.btn-kontrate-text) svg *,
+.action-btns > button:not(.btn-word):not(.btn-kontrate-text) svg,
+.action-btns > button:not(.btn-word):not(.btn-kontrate-text) svg * {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  fill: none !important;
+  stroke: currentColor !important;
 }
 
-/* Divider vertikal midis veprimeve dytësore dhe CTA */
-.action-icon-btns .action-divider, .action-btns .action-divider {
-  width: 1px; height: 22px;
-  background: #e2e8f0;
-  margin: 0 4px;
-  flex-shrink: 0;
+/* Word button — soft lavender */
+.action-icon-btns .btn-word,
+.action-btns .btn-word {
+  width: auto;
+  height: 28px;
+  padding: 0 10px;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  background: #e0e7ff;
+  color: #4338ca;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.15s;
+  white-space: nowrap;
+  box-shadow: none;
+}
+.action-icon-btns .btn-word:hover,
+.action-btns .btn-word:hover {
+  background: #c7d2fe;
+  transform: none;
+  box-shadow: none;
+}
+.action-icon-btns .btn-word svg,
+.action-icon-btns .btn-word svg *,
+.action-btns .btn-word svg,
+.action-btns .btn-word svg * {
+  width: 13px;
+  height: 13px;
+  stroke-width: 2.2;
+  fill: none !important;
+  stroke: currentColor !important;
 }
 
-/* Primary CTA — "Kontratë" blu solid */
+/* Kontratë button — JO i madh. Stil i ngjashëm me btn-word, por brand color */
 .action-icon-btns .btn-kontrate-text,
 .action-btns .btn-kontrate-text,
 .btn-kontrate-text {
-  width: auto; height: auto;
-  padding: 8px 14px; gap: 7px;
-  border-radius: 8px;
-  border: none;
-  background: #3b5bdb;
-  color: #ffffff !important;
+  width: auto;
+  height: 28px;
+  padding: 0 10px;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
   font-family: inherit;
-  font-size: 12.5px; font-weight: 600;
   cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center;
-  box-shadow: 0 1px 2px rgba(59, 91, 219, 0.18);
-  transition: all 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: var(--s-brand-dark);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 8px;
+  transition: all 0.15s;
   white-space: nowrap;
+  box-shadow: none;
 }
 .action-icon-btns .btn-kontrate-text:hover,
 .action-btns .btn-kontrate-text:hover,
 .btn-kontrate-text:hover {
-  background: #3049b5;
-  box-shadow: 0 2px 6px rgba(59, 91, 219, 0.28);
+  background: linear-gradient(135deg, #bfdbfe, #93c5fd);
+  border-color: rgba(59, 130, 246, 0.4);
   transform: none;
-  color: #ffffff !important;
+  box-shadow: none;
+  color: var(--s-brand-dark);
 }
-.action-icon-btns .btn-kontrate-text:focus-visible,
-.btn-kontrate-text:focus-visible {
-  outline: 2px solid #93a6f1; outline-offset: 2px;
-}
-.action-icon-btns .btn-kontrate-text:active,
-.btn-kontrate-text:active { transform: translateY(1px); box-shadow: 0 1px 1px rgba(59, 91, 219, 0.18); }
-
 .action-icon-btns .btn-kontrate-text svg,
 .action-icon-btns .btn-kontrate-text svg *,
-.btn-kontrate-text svg, .btn-kontrate-text svg * {
-  width: 13px; height: 13px; stroke-width: 1.6;
-  fill: none !important; stroke: #ffffff !important;
+.action-btns .btn-kontrate-text svg,
+.action-btns .btn-kontrate-text svg *,
+.btn-kontrate-text svg,
+.btn-kontrate-text svg * {
+  width: 13px;
+  height: 13px;
+  stroke-width: 2.2;
+  fill: none !important;
+  stroke: currentColor !important;
 }
 
 .btn-kontrate, .btn-rinovo {

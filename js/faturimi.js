@@ -251,13 +251,14 @@ function renderTabela() {
             '<td><div class="status-circles">' +
                 sDot('asgje',stAkt,idx,muajiZ) + sDot('kerkesa',stAkt,idx,muajiZ) + sDot('process',stAkt,idx,muajiZ) + sDot('leshuar',stAkt,idx,muajiZ) +
             '</div></td>' +
-            '<td><div class="action-icon-btns">' +
-                '<button onclick="editoKlient('+idx+')" title="Edito"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>' +
-                '<button onclick="fshijKlient('+idx+')" title="Fshi"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>' +
-                '<button onclick="dergoEmail('+idx+')" title="Dërgo Email"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></button>' +
+            '<td style="text-align:right;"><div class="action-icon-btns" style="justify-content:flex-end;">' +
+                '<button onclick="editoKlient('+idx+')" title="Modifiko"><i data-lucide="pencil"></i></button>' +
+                '<button onclick="dergoEmail('+idx+')" title="Email"><i data-lucide="mail"></i></button>' +
+                '<button onclick="fshijKlient('+idx+')" title="Fshi"><i data-lucide="trash-2"></i></button>' +
             '</div></td>' +
         '</tr>';
     }).join('');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function sDot(status, aktual, idx, muaji) {

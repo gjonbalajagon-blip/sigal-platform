@@ -703,11 +703,12 @@ function renderTabela(){
             '<td><span class="skadon-cell '+ditet.cls+'"><span class="skadon-dot"></span>'+ditet.teksti+'</span></td>'+
             '<td>'+trackBadge(st)+'</td>'+
             '<td style="text-align:right;"><div class="action-icon-btns" style="justify-content:flex-end;">'+
-                '<button onclick="editoOferte('+idx+')" title="Ndrysho" aria-label="Ndrysho"><i data-lucide="pencil"></i></button>'+
-                '<button class="btn-word" onclick="gjeneroWord('+idx+')" title="Word" aria-label="Word"><i data-lucide="file-text"></i></button>'+
-                '<button onclick="dergoEmail('+idx+')" title="Email" aria-label="Email"><i data-lucide="mail"></i></button>'+
-                '<button onclick="fshijOferte('+idx+')" title="Fshij" aria-label="Fshij"><i data-lucide="trash-2"></i></button>'+
-                (showKontrate?'<span class="action-divider" aria-hidden="true"></span><button class="btn-kontrate-text" onclick="krijoKontrate('+idx+')" title="Kontratë"><i data-lucide="file-text"></i> Kontratë</button>':'')+
+                (showKontrate?'<button class="btn-kontrate-text" onclick="krijoKontrate('+idx+')" title="Kontratë"><i data-lucide="file-check"></i> Kontratë</button>':'')+
+                '<button onclick="editoOferte('+idx+')" title="Modifiko"><i data-lucide="pencil"></i></button>'+
+                '<button class="btn-word" onclick="gjeneroWord('+idx+')" title="Word"><i data-lucide="file-text"></i> Word</button>'+
+                '<button onclick="dergoEmail('+idx+')" title="Email"><i data-lucide="mail"></i></button>'+
+                '<button onclick="kopjoLink('+idx+')" title="Kopjo"><i data-lucide="link"></i></button>'+
+                '<button onclick="fshijOferte('+idx+')" title="Fshi"><i data-lucide="trash-2"></i></button>'+
             '</div></td>'+
         '</tr>';
     }).join('');
