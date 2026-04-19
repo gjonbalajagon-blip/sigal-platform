@@ -17,9 +17,9 @@ function ruajNeStorage() {
 
 function shtoStaf() {
     const user = JSON.parse(localStorage.getItem('user_aktual'));
-    if (user.role !== 'superadmin') { alert('Nuk keni qasje!'); return; }
+    if (!user || user.role !== 'superadmin') { alert('Nuk keni qasje!'); return; }
     editIndex = -1;
-    document.getElementById('modal-title').textContent = 'Shto Staf';
+    document.getElementById('modal-title').innerHTML = 'Shto <span style="font-weight:500">Anëtar</span>';
     document.getElementById('m-emri').value = '';
     document.getElementById('m-mbiemri').value = '';
     document.getElementById('m-pozita').value = '';
@@ -68,7 +68,7 @@ function ruajStaf() {
 
 function fshijStaf(index) {
     const user = JSON.parse(localStorage.getItem('user_aktual'));
-    if (user.role !== 'superadmin') { alert('Nuk keni qasje!'); return; }
+    if (!user || user.role !== 'superadmin') { alert('Nuk keni qasje!'); return; }
     if (confirm('A jeni i sigurt që doni të fshini këtë anëtar?')) {
         stafi.splice(index, 1);
         ruajNeStorage();
@@ -79,10 +79,10 @@ function fshijStaf(index) {
 
 function editoStaf(index) {
     const user = JSON.parse(localStorage.getItem('user_aktual'));
-    if (user.role !== 'superadmin') { alert('Nuk keni qasje!'); return; }
+    if (!user || user.role !== 'superadmin') { alert('Nuk keni qasje!'); return; }
     editIndex = index;
     const s = stafi[index];
-    document.getElementById('modal-title').textContent = 'Edito Staf';
+    document.getElementById('modal-title').innerHTML = 'Edito <span style="font-weight:500">Anëtar</span>';
     document.getElementById('m-emri').value = s.emri;
     document.getElementById('m-mbiemri').value = s.mbiemri || '';
     document.getElementById('m-pozita').value = s.pozita || '';
@@ -97,50 +97,89 @@ function editoStaf(index) {
 
 function filtro() { renderTabela(); }
 
+// Helper: bashkon management + dep_management për filtrim nga KPI
+function roleMatch(sRole, filterVal) {
+    if (filterVal === 'all') return true;
+    if (filterVal === 'management') return sRole === 'management' || sRole === 'dep_management';
+    return sRole === filterVal;
+}
+
+// Helper: render roli si tag
+function renderRoleTag(role) {
+    const map = {
+        management:     { cls: 'tag-biznes',  text: 'Management' },
+        dep_management: { cls: 'tag-biznes',  text: 'Dep. Management' },
+        staff_hq:       { cls: 'tag-familje', text: 'Staff HQ' },
+        staff:          { cls: 'tag-individ', text: 'Staff' },
+        superadmin:     { cls: 'tag-biznes',  text: 'Super Admin' }
+    };
+    const r = map[role] || { cls: '', text: role };
+    return `<span class="badge-lloji ${r.cls}">${r.text}</span>`;
+}
+
 function renderTabela() {
-    const filterRole = document.getElementById('filter-role').value;
+    const filterRoleEl = document.getElementById('filter-role');
+    const filterRole = filterRoleEl ? filterRoleEl.value : 'all';
     const filterDega = document.getElementById('filter-dega').value;
     const search = document.getElementById('search-staf').value.toLowerCase();
 
     const filtered = stafi.filter(s => {
-        const roleOk = filterRole === 'all' || s.role === filterRole;
+        const roleOk = roleMatch(s.role, filterRole);
         const degaOk = filterDega === 'all' || s.dega === filterDega;
-        const searchOk = (s.emri + ' ' + s.mbiemri).toLowerCase().includes(search);
+        const searchOk = (s.emri + ' ' + (s.mbiemri || '')).toLowerCase().includes(search);
         return roleOk && degaOk && searchOk;
     });
 
-    document.getElementById('count-total').textContent = stafi.length;
-    document.getElementById('count-hq').textContent = stafi.filter(s => s.dega === 'HQ').length;
+    // KPI counts — gjithmonë nga totali (jo nga filtered)
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setText('count-total', stafi.length);
+    setText('count-mgmt',  stafi.filter(s => s.role === 'management' || s.role === 'dep_management').length);
+    setText('count-hq',    stafi.filter(s => s.role === 'staff_hq').length);
+    setText('count-staff', stafi.filter(s => s.role === 'staff').length);
 
     const tbody = document.getElementById('stafi-tbody');
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#888;">Nuk ka anëtarë.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--s-text-faint);">Nuk ka anëtarë që përputhen.</td></tr>';
         return;
     }
 
+    const user = JSON.parse(localStorage.getItem('user_aktual') || '{}');
+    const mund = user && user.role === 'superadmin';
+
     tbody.innerHTML = filtered.map(s => {
         const idx = stafi.indexOf(s);
-        const user = JSON.parse(localStorage.getItem('user_aktual'));
-        const mund = user.role === 'superadmin';
+        const emriPlote = `${s.emri} ${s.mbiemri || ''}`.trim();
+        const iniciali = (s.emri[0] || '') + ((s.mbiemri || '')[0] || '');
         return `<tr>
-            <td><strong>${s.emri} ${s.mbiemri || ''}</strong></td>
+            <td>
+                <div class="klient-name">
+                    <span style="display:inline-flex;align-items:center;gap:8px">
+                        <span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--s-brand-dark),var(--s-brand));color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800">${iniciali.toUpperCase()}</span>
+                        ${emriPlote}
+                    </span>
+                </div>
+            </td>
             <td>${s.pozita || '-'}</td>
-            <td><span class="badge-lloji ${s.role === 'management' || s.role === 'dep_management' ? 'biznes' : s.role === 'staff_hq' ? 'familje' : 'individ'}">${rolet[s.role] || s.role}</span></td>
+            <td>${renderRoleTag(s.role)}</td>
             <td>${s.dega || '-'}</td>
             <td>${s.email || '-'}</td>
             <td>${s.telefoni || '-'}</td>
-            <td>
-                <div class="action-btns">
-                    ${mund ? `<button class="btn-edit" onclick="editoStaf(${idx})" title="Edito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>` : ''}
-                    ${mund ? `<button class="btn-delete" onclick="fshijStaf(${idx})" title="Fshi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>` : ''}
+            <td style="text-align:right;">
+                <div class="action-icon-btns" style="justify-content:flex-end">
+                    ${mund ? `<button onclick="editoStaf(${idx})" title="Edito"><i data-lucide="pencil"></i></button>` : ''}
+                    ${mund ? `<button onclick="fshijStaf(${idx})" title="Fshi"><i data-lucide="trash-2"></i></button>` : ''}
                 </div>
             </td>
         </tr>`;
     }).join('');
+
+    if (window.lucide) lucide.createIcons();
 }
 
 function renderOrganogram() {
     const container = document.getElementById('organogram');
+    if (!container) return;
+
     const grouped = {};
     deget.forEach(d => grouped[d] = []);
     stafi.forEach(s => {
@@ -153,21 +192,30 @@ function renderOrganogram() {
         if (anetaret.length === 0) return '';
         return `
         <div class="org-dega">
-            <div class="org-dega-title">${dega}</div>
+            <div class="org-dega-title">
+                <i data-lucide="building-2"></i>
+                <span>${dega}</span>
+                <span class="org-count">${anetaret.length}</span>
+            </div>
             <div class="org-karta-list">
-                ${anetaret.map(s => `
-                <div class="org-karta">
-                    <div class="org-avatar">${s.emri[0]}${(s.mbiemri||'')[0]||''}</div>
-                    <div class="org-info">
-                        <div class="org-emri">${s.emri} ${s.mbiemri || ''}</div>
-                        <div class="org-pozita">${s.pozita || '-'}</div>
-                        <div class="org-role">${rolet[s.role] || s.role}</div>
-                        <div class="org-kontakt">${s.email || ''} ${s.telefoni ? '· ' + s.telefoni : ''}</div>
-                    </div>
-                </div>`).join('')}
+                ${anetaret.map(s => {
+                    const iniciali = (s.emri[0] || '') + ((s.mbiemri || '')[0] || '');
+                    return `
+                    <div class="org-karta">
+                        <div class="org-avatar">${iniciali.toUpperCase()}</div>
+                        <div class="org-info">
+                            <div class="org-emri">${s.emri} ${s.mbiemri || ''}</div>
+                            <div class="org-pozita">${s.pozita || '-'}</div>
+                            <div class="org-role-wrap">${renderRoleTag(s.role)}</div>
+                            ${s.email || s.telefoni ? `<div class="org-kontakt">${s.email || ''}${s.email && s.telefoni ? ' · ' : ''}${s.telefoni || ''}</div>` : ''}
+                        </div>
+                    </div>`;
+                }).join('')}
             </div>
         </div>`;
     }).join('');
+
+    if (window.lucide) lucide.createIcons();
 }
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -1706,3 +1706,91 @@ body {
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 10px rgba(239,68,68,0.45);
 }
+
+/* ============================================================
+   ORGANOGRAM (stafi)
+   ============================================================ */
+.org-dega { margin-bottom: 22px; }
+.org-dega-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--s-brand-dark);
+  padding: 8px 14px;
+  background: var(--s-glass);
+  border: 1px solid var(--s-glass-border);
+  border-left: 4px solid var(--s-brand);
+  border-radius: var(--r-sm);
+  margin-bottom: 12px;
+  box-shadow: var(--sh-sm);
+}
+.org-dega-title svg { width: 14px; height: 14px; stroke-width: 2.2; }
+.org-dega-title .org-count {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  min-width: 22px; height: 20px;
+  padding: 0 6px;
+  background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));
+  color: #fff;
+  font-size: 10.5px; font-weight: 800;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+.org-karta-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.org-karta {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--s-glass);
+  backdrop-filter: var(--s-glass-blur);
+  border: 1px solid var(--s-glass-border);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  box-shadow: var(--sh-sm);
+  transition: all 0.2s;
+}
+.org-karta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sh-md);
+  border-color: rgba(30,58,138,0.2);
+}
+.org-avatar {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 6px 14px rgba(30,58,138,0.3);
+}
+.org-info { flex: 1; min-width: 0; }
+.org-emri {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--s-text);
+  line-height: 1.2;
+}
+.org-pozita {
+  font-size: 11px;
+  color: var(--s-text-muted);
+  margin-top: 2px;
+}
+.org-role-wrap { margin-top: 6px; }
+.org-kontakt {
+  font-size: 10px;
+  color: var(--s-text-faint);
+  margin-top: 6px;
+  word-break: break-all;
+}
