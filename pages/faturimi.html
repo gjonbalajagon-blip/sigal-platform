@@ -40,12 +40,14 @@
     <div class="main-content">
         <div class="topbar">
             <h1>Faturimi</h1>
-            <div style="display:flex;gap:8px;align-items:center;">
-                <button class="btn-secondary" id="btn-dergo-email" style="display:none" onclick="dergoEmailZgjedhurve()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                    Dërgo Email (<span id="count-zgjedhur">0</span>)
-                </button>
-                <button class="btn-primary" onclick="shtoKlient()"><i data-lucide="plus" style="width:15px;height:15px;"></i> Shto Klient</button>
+            <div class="topbar-right">
+                <div class="topbar-actions">
+                    <button class="btn-secondary" id="btn-dergo-email" style="display:none" onclick="dergoEmailZgjedhurve()">
+                        <i data-lucide="mail"></i>
+                        Dërgo Email (<span id="count-zgjedhur">0</span>)
+                    </button>
+                    <button class="btn-primary" onclick="shtoKlient()"><i data-lucide="plus"></i> Shto Klient</button>
+                </div>
             </div>
         </div>
         <div class="content-area">

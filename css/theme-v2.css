@@ -306,7 +306,11 @@ body {
 .topbar-right {
   display: contents;
 }
-.topbar-right > .btn-primary { justify-self: center; }
+.topbar-right > .btn-primary,
+.topbar-right > .topbar-actions { justify-self: center; }
+.topbar-right > .topbar-actions {
+  display: inline-flex; align-items: center; gap: 8px;
+}
 .topbar-right > .topbar-utils,
 .topbar-right > .topbar-user { justify-self: end; }
 .topbar-utils {
@@ -361,6 +365,10 @@ body {
   transition: all 0.2s;
 }
 .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 28px rgba(30,58,138,0.4); }
+.btn-primary svg, .btn-primary i,
+.btn-secondary svg, .btn-secondary i {
+  width: 15px; height: 15px; flex-shrink: 0;
+}
 
 .btn-secondary {
   display: inline-flex; align-items: center; gap: 6px;
@@ -1492,14 +1500,6 @@ body {
 .kpi-card.kpi-active {
   border-color: rgba(59,130,246,0.45);
   box-shadow: 0 0 0 2px rgba(59,130,246,0.18), var(--sh-md);
-}
-.kpi-card.kpi-active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px; left: 16px; right: 16px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--s-brand-dark), var(--s-brand));
-  border-radius: 2px;
 }
 .kpi-card[data-filter]:hover .kpi-arrow {
   background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));

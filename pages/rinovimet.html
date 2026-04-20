@@ -199,10 +199,12 @@
     <div class="main-content">
         <div class="topbar">
             <h1>Rinovimet</h1>
-            <div style="display:flex;align-items:center;gap:8px;">
-                <button class="btn-primary" onclick="hapReportDrawer()" style="background:#475569;border-color:#475569;" title="Raport"><i data-lucide="bar-chart-2" style="width:15px;height:15px;"></i> Raport</button>
-                <button class="btn-primary" onclick="eksportoExcel()" style="background:#0f766e;border-color:#0f766e;" title="Eksporto"><i data-lucide="download" style="width:15px;height:15px;"></i> Eksporto</button>
-                <button class="btn-primary" onclick="hapImportModal()"><i data-lucide="upload" style="width:15px;height:15px;"></i> Importo</button>
+            <div class="topbar-right">
+                <div class="topbar-actions">
+                    <button class="btn-secondary" onclick="hapReportDrawer()" title="Raport"><i data-lucide="bar-chart-2"></i> Raport</button>
+                    <button class="btn-secondary" onclick="eksportoExcel()" title="Eksporto"><i data-lucide="download"></i> Eksporto</button>
+                    <button class="btn-primary" onclick="hapImportModal()"><i data-lucide="upload"></i> Importo</button>
+                </div>
             </div>
         </div>
         <div class="content-area">
