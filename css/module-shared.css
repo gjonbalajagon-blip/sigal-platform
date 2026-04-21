@@ -1,0 +1,560 @@
+/* =========================================================================
+   module-shared.css
+   Shared styles for module pages (rinovimet, debitoret).
+   Replaces legacy navy (#002B5C) with theme-v2 tokens.
+   Pairs with: theme-v2.css
+   ========================================================================= */
+
+/* ------------------------------------------------------------------ Drawer */
+.rin-overlay, .deb-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: none; z-index: 999;
+}
+.rin-overlay.active, .deb-overlay.active { display: block; }
+
+.rin-drawer, .deb-drawer {
+    position: fixed; top: 0; right: 0;
+    width: 460px; max-width: 100vw; height: 100vh;
+    background: var(--s-glass-strong, #fff);
+    backdrop-filter: var(--s-glass-blur, blur(20px));
+    -webkit-backdrop-filter: var(--s-glass-blur, blur(20px));
+    border-left: 1px solid var(--s-border, #e2e8f0);
+    box-shadow: -10px 0 40px rgba(15,23,42,0.12);
+    transform: translateX(100%);
+    transition: transform .25s cubic-bezier(.4,0,.2,1);
+    z-index: 1000;
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+}
+.rin-drawer.active, .deb-drawer.active { transform: translateX(0); }
+
+.rin-drawer-header, .deb-drawer-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--s-border, #e2e8f0);
+    background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(30,58,138,0.02));
+    position: sticky; top: 0; z-index: 2;
+}
+.rin-drawer-title, .deb-drawer-title {
+    font-size: 16px; font-weight: 800;
+    color: var(--s-text, #0f172a);
+    line-height: 1.25; margin: 0;
+}
+.rin-drawer-sub, .deb-drawer-sub {
+    font-size: 11.5px; color: var(--s-text-muted, #7c8aa8);
+    margin-top: 3px; font-weight: 500;
+}
+.rin-drawer-close, .deb-drawer-close {
+    cursor: pointer; font-size: 22px; line-height: 1;
+    color: var(--s-text-faint, #9ca8c0);
+    padding: 2px 6px; border-radius: 6px;
+    transition: all .15s;
+}
+.rin-drawer-close:hover, .deb-drawer-close:hover {
+    background: var(--s-bg-flat, #f2f3f5);
+    color: var(--s-text, #0f172a);
+}
+
+/* --------------------------------------------------------- Status pills */
+.rin-status-row, .deb-status-row {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--s-border, #e2e8f0);
+}
+.rin-status-pill, .deb-status-pill {
+    flex: 1; min-width: 70px;
+    padding: 6px 8px; border-radius: 8px;
+    font-size: 10px; font-weight: 700;
+    text-align: center; cursor: pointer;
+    background: #f1f5f9; color: #64748b;
+    border: 1px solid transparent;
+    transition: all .15s;
+    text-transform: uppercase; letter-spacing: 0.3px;
+}
+.rin-status-pill:hover, .deb-status-pill:hover { background: #e2e8f0; }
+.rin-status-pill.active, .deb-status-pill.active {
+    transform: scale(1.02);
+    box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+}
+
+/* rinovimet status colors */
+.rin-sp-pa_filluar.active { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+.rin-sp-kontaktuar.active { background: #fef3c7; color: #92400e; border-color: #fbbf24; }
+.rin-sp-rinovuar.active { background: #d1fae5; color: #065f46; border-color: #34d399; }
+.rin-sp-humbur.active { background: #fee2e2; color: #991b1b; border-color: #f87171; }
+
+/* debitoret status colors */
+.deb-sp-i_ri.active { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+.deb-sp-kontaktuar.active { background: #fef3c7; color: #92400e; border-color: #fbbf24; }
+.deb-sp-premtim.active { background: #dbeafe; color: #1e40af; border-color: #60a5fa; }
+.deb-sp-paguar.active { background: #d1fae5; color: #065f46; border-color: #34d399; }
+.deb-sp-pjesshem.active { background: #fde68a; color: #78350f; border-color: #f59e0b; }
+.deb-sp-kontestuar.active { background: #ede9fe; color: #5b21b6; border-color: #a78bfa; }
+.deb-sp-pamundshem.active { background: #fee2e2; color: #991b1b; border-color: #f87171; }
+
+/* --------------------------------------------------- Compact info section */
+.rin-compact-section, .deb-compact-section {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--s-border, #e2e8f0);
+}
+.rin-compact-grid, .deb-compact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+}
+.rin-cg-label, .deb-cg-label {
+    font-size: 10px; color: var(--s-text-muted, #7c8aa8);
+    text-transform: uppercase; letter-spacing: 0.4px;
+    font-weight: 600;
+}
+.rin-cg-value, .deb-cg-value {
+    font-size: 12.5px; color: var(--s-text, #0f172a);
+    font-weight: 600; margin-top: 1px;
+}
+
+.rin-section-title, .deb-section-title {
+    font-size: 10px; font-weight: 700;
+    color: var(--s-text-muted, #7c8aa8);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    padding: 12px 20px 6px;
+}
+
+/* ---------------------------------------------------------- Ratio (LR/CR) */
+.rin-ratio-good, .deb-ratio-good { color: var(--s-green, #059669); font-weight: 700; }
+.rin-ratio-warn, .deb-ratio-warn { color: var(--s-orange, #d97706); font-weight: 700; }
+.rin-ratio-bad, .deb-ratio-bad { color: var(--s-red, #dc2626); font-weight: 700; }
+
+/* ------------------------------------------------------- Humbje (loss) */
+.rin-humbje-section {
+    padding: 12px 20px;
+    background: #fef2f2;
+    border-bottom: 1px solid #fecaca;
+}
+.rin-humbje-title {
+    font-size: 11px; font-weight: 700;
+    color: #991b1b;
+    text-transform: uppercase; letter-spacing: 0.4px;
+    margin-bottom: 6px;
+}
+.rin-humbje-arsye {
+    font-size: 12.5px; font-weight: 600;
+    color: var(--s-text, #0f172a);
+}
+.rin-humbje-koment {
+    font-size: 11.5px; color: var(--s-text-sub, #4b5563);
+    margin-top: 4px; font-style: italic;
+}
+
+/* --------------------------------------------------------- Comments */
+.rin-comments-section, .deb-comments-section {
+    padding: 12px 20px 16px;
+    flex: 1; min-height: 200px;
+}
+.rin-comment, .deb-comment {
+    background: #f8fafc;
+    border: 1px solid var(--s-border, #e2e8f0);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+}
+.rin-comment.sistem, .deb-comment.sistem {
+    background: rgba(59,130,246,0.05);
+    border-color: rgba(59,130,246,0.2);
+}
+.rin-comment-header, .deb-comment-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 3px;
+}
+.rin-comment-author, .deb-comment-author {
+    font-size: 11px; font-weight: 700;
+    color: var(--s-text, #0f172a);
+}
+.rin-comment-date, .deb-comment-date {
+    font-size: 10px; color: var(--s-text-faint, #9ca8c0);
+}
+.rin-comment-text, .deb-comment-text {
+    font-size: 12px; color: var(--s-text-sub, #4b5563);
+    line-height: 1.4;
+}
+.rin-comment-input-row, .deb-comment-input-row {
+    display: flex; gap: 6px; margin-top: 10px;
+}
+.rin-comment-input, .deb-comment-input {
+    flex: 1;
+    padding: 8px 10px; font-size: 12.5px;
+    border: 1px solid var(--s-border, #e2e8f0);
+    border-radius: 8px;
+    transition: border-color .15s, box-shadow .15s;
+    background: #fff;
+}
+.rin-comment-input:focus, .deb-comment-input:focus {
+    outline: none;
+    border-color: var(--s-brand, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+.rin-comment-btn, .deb-comment-btn {
+    background: linear-gradient(135deg, var(--s-brand-dark, #1e3a8a), var(--s-brand, #3b82f6));
+    color: #fff; border: none;
+    padding: 8px 14px; font-size: 12px; font-weight: 700;
+    border-radius: 8px; cursor: pointer;
+    transition: all .15s;
+}
+.rin-comment-btn:hover, .deb-comment-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(30,58,138,0.3);
+}
+
+/* --------------------------------------------------- Modal (import etc.) */
+.rin-modal-overlay, .deb-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: none; z-index: 1100;
+    align-items: center; justify-content: center;
+}
+.rin-modal-overlay.active, .deb-modal-overlay.active { display: flex; }
+
+.rin-modal, .deb-modal {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(15,23,42,0.25);
+    width: 560px; max-width: 95vw;
+    max-height: 90vh;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+}
+.rin-modal-header, .deb-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--s-border, #e2e8f0);
+    background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(30,58,138,0.02));
+}
+.rin-modal-header h3, .deb-modal-header h3 {
+    margin: 0; font-size: 15px; font-weight: 800;
+    color: var(--s-text, #0f172a);
+}
+.rin-modal-close, .deb-modal-close {
+    cursor: pointer; font-size: 22px;
+    color: var(--s-text-faint, #9ca8c0);
+    padding: 0 6px; border-radius: 6px;
+    transition: all .15s;
+}
+.rin-modal-close:hover, .deb-modal-close:hover {
+    background: var(--s-bg-flat, #f2f3f5);
+    color: var(--s-text, #0f172a);
+}
+.rin-modal-body, .deb-modal-body {
+    padding: 18px 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+.rin-modal-footer, .deb-modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--s-border, #e2e8f0);
+    display: flex; gap: 8px; justify-content: flex-end;
+    background: #fafbfc;
+}
+
+/* ------------------------------------------------------------ Steps */
+.rin-steps {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 20px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--s-border, #e2e8f0);
+    font-size: 11px;
+}
+.rin-step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #e2e8f0; color: #64748b;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 11px;
+    transition: all .2s;
+}
+.rin-step-num.active {
+    background: linear-gradient(135deg, var(--s-brand-dark, #1e3a8a), var(--s-brand, #3b82f6));
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(59,130,246,0.3);
+}
+.rin-step-num.done {
+    background: var(--s-green, #059669); color: #fff;
+}
+.rin-step-text {
+    color: #94a3b8; font-weight: 600;
+    margin-right: 4px;
+}
+.rin-step-text.active { color: var(--s-brand-dark, #1e3a8a); }
+.rin-step-sep { color: #cbd5e1; }
+
+/* ----------------------------------------------- Upload zone */
+.rin-upload-zone {
+    border: 2px dashed var(--s-border, #cbd5e1);
+    border-radius: 12px;
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: #fafbfc;
+}
+.rin-upload-zone:hover, .rin-upload-zone.dragover {
+    border-color: var(--s-brand, #3b82f6);
+    background: rgba(59,130,246,0.04);
+}
+.rin-upload-icon {
+    font-size: 36px;
+    color: var(--s-brand, #3b82f6);
+    margin-bottom: 6px;
+}
+.rin-upload-title {
+    font-size: 13px; font-weight: 700;
+    color: var(--s-text, #0f172a);
+}
+.rin-upload-sub {
+    font-size: 11px; color: var(--s-text-muted, #7c8aa8);
+    margin-top: 3px;
+}
+.rin-month-select {
+    margin-top: 14px;
+    display: flex; align-items: center; gap: 8px;
+}
+.rin-month-select label {
+    font-size: 12px; font-weight: 600;
+    color: var(--s-text-sub, #4b5563);
+}
+.rin-month-select select {
+    padding: 6px 10px;
+    border: 1px solid var(--s-border, #e2e8f0);
+    border-radius: 6px;
+    font-size: 12px;
+    background: #fff;
+}
+
+/* --------------------------------------------------- Validation/preview */
+.rin-validation-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+.rin-v-ok { background: rgba(16,185,129,0.08); color: var(--s-green, #059669); }
+.rin-v-warn { background: rgba(245,158,11,0.08); color: var(--s-orange, #d97706); }
+.rin-match-info {
+    font-size: 12px; color: var(--s-text-sub, #4b5563);
+    padding: 8px 10px;
+    background: #f8fafc;
+    border-radius: 6px;
+    margin-top: 8px;
+}
+.rin-file-info {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+.rin-file-name { font-size: 12.5px; font-weight: 700; color: var(--s-text, #0f172a); }
+.rin-file-meta { font-size: 11px; color: var(--s-text-muted, #7c8aa8); }
+
+/* ------------------------------------------------- Buttons (modal) */
+.rin-btn-secondary {
+    background: #fff;
+    color: var(--s-text-sub, #4b5563);
+    border: 1px solid var(--s-border, #e2e8f0);
+    padding: 8px 16px;
+    font-size: 12.5px; font-weight: 600;
+    border-radius: 8px; cursor: pointer;
+    transition: all .15s;
+}
+.rin-btn-secondary:hover {
+    background: var(--s-bg-flat, #f2f3f5);
+    border-color: #cbd5e1;
+}
+.rin-btn-primary {
+    background: linear-gradient(135deg, var(--s-brand-dark, #1e3a8a), var(--s-brand, #3b82f6));
+    color: #fff; border: none;
+    padding: 8px 16px;
+    font-size: 12.5px; font-weight: 700;
+    border-radius: 8px; cursor: pointer;
+    transition: all .15s;
+}
+.rin-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(30,58,138,0.32);
+}
+.rin-btn-primary:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    transform: none; box-shadow: none;
+}
+
+/* --------------------------------------------------- Humbje modal */
+.rin-humbje-modal {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: none; z-index: 1200;
+    align-items: center; justify-content: center;
+}
+.rin-humbje-modal.active { display: flex; }
+.rin-humbje-box {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px;
+    width: 440px; max-width: 95vw;
+    box-shadow: 0 24px 60px rgba(15,23,42,0.25);
+}
+.rin-humbje-box h3 {
+    margin: 0 0 14px;
+    font-size: 15px; font-weight: 800;
+    color: var(--s-text, #0f172a);
+}
+.rin-arsye-list {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+    margin-bottom: 12px;
+}
+.rin-arsye-opt {
+    padding: 8px 10px;
+    border: 1px solid var(--s-border, #e2e8f0);
+    border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    color: var(--s-text-sub, #4b5563);
+    cursor: pointer;
+    transition: all .15s;
+    text-align: center;
+    background: #fff;
+}
+.rin-arsye-opt:hover { border-color: #cbd5e1; background: #f8fafc; }
+.rin-arsye-opt.selected {
+    background: rgba(220,38,38,0.08);
+    border-color: var(--s-red, #dc2626);
+    color: var(--s-red, #dc2626);
+}
+.rin-arsye-koment {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--s-border, #e2e8f0);
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 60px;
+    box-sizing: border-box;
+}
+.rin-arsye-koment:focus {
+    outline: none;
+    border-color: var(--s-brand, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+.rin-humbje-footer {
+    display: flex; gap: 8px; justify-content: flex-end;
+    margin-top: 14px;
+}
+
+/* --------------------------------------------------- Report drawer */
+.rin-report-drawer {
+    position: fixed; top: 0; right: 0;
+    width: 560px; max-width: 100vw; height: 100vh;
+    background: var(--s-glass-strong, #fff);
+    backdrop-filter: var(--s-glass-blur, blur(20px));
+    -webkit-backdrop-filter: var(--s-glass-blur, blur(20px));
+    border-left: 1px solid var(--s-border, #e2e8f0);
+    box-shadow: -10px 0 40px rgba(15,23,42,0.12);
+    transform: translateX(100%);
+    transition: transform .25s cubic-bezier(.4,0,.2,1);
+    z-index: 1000;
+    overflow-y: auto;
+}
+.rin-report-drawer.active { transform: translateX(0); }
+.rin-report-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--s-border, #e2e8f0);
+    background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(30,58,138,0.02));
+    position: sticky; top: 0; z-index: 2;
+}
+.rin-report-header h3 {
+    margin: 0; font-size: 15px; font-weight: 800;
+    color: var(--s-text, #0f172a);
+}
+.rin-report-section { padding: 14px 20px; border-bottom: 1px solid var(--s-border, #e2e8f0); }
+.rin-report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+.rin-report-table th, .rin-report-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--s-border-light, rgba(220,230,250,0.6));
+    text-align: left;
+}
+.rin-report-table th {
+    font-size: 10px;
+    color: var(--s-text-muted, #7c8aa8);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-weight: 700;
+}
+
+/* --------------------------------------------------- Empty state */
+.rin-empty, .deb-empty {
+    text-align: center;
+    padding: 48px 16px;
+    color: var(--s-text-muted, #7c8aa8);
+}
+.rin-empty-icon, .deb-empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.5; }
+.rin-empty-title, .deb-empty-title {
+    font-size: 14px; font-weight: 700;
+    color: var(--s-text-sub, #4b5563);
+    margin-bottom: 4px;
+}
+.rin-empty-sub, .deb-empty-sub { font-size: 12px; }
+
+.rin-no-results, .deb-no-results {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--s-text-muted, #7c8aa8);
+    font-size: 13px;
+}
+
+/* --------------------------------------------------- Cell helpers */
+.rin-primi { font-weight: 700; color: var(--s-text, #0f172a); }
+.rin-deme-val { font-weight: 600; color: var(--s-text-sub, #4b5563); }
+.rin-deme-none { color: var(--s-text-faint, #9ca8c0); font-size: 11px; }
+.rin-lr-good { color: var(--s-green, #059669); font-weight: 700; }
+.rin-lr-warn { color: var(--s-orange, #d97706); font-weight: 700; }
+.rin-lr-bad { color: var(--s-red, #dc2626); font-weight: 700; }
+
+/* --------------------------------------------------- Status badges (table) */
+.rin-badge, .deb-badge {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.3px;
+}
+.rin-badge-pa_filluar { background: #f1f5f9; color: #475569; }
+.rin-badge-kontaktuar { background: #fef3c7; color: #92400e; }
+.rin-badge-rinovuar { background: #d1fae5; color: #065f46; }
+.rin-badge-humbur { background: #fee2e2; color: #991b1b; }
+
+.deb-badge-i_ri { background: #f1f5f9; color: #475569; }
+.deb-badge-kontaktuar { background: #fef3c7; color: #92400e; }
+.deb-badge-premtim { background: #dbeafe; color: #1e40af; }
+.deb-badge-paguar { background: #d1fae5; color: #065f46; }
+.deb-badge-pjesshem { background: #fde68a; color: #78350f; }
+.deb-badge-kontestuar { background: #ede9fe; color: #5b21b6; }
+.deb-badge-pamundshem { background: #fee2e2; color: #991b1b; }
+
+/* --------------------------------------------------- Drawer footer slot */
+.rin-drawer-actions, .deb-drawer-actions {
+    padding: 12px 20px;
+    border-top: 1px solid var(--s-border, #e2e8f0);
+    display: flex; gap: 8px;
+    background: #fafbfc;
+    margin-top: auto;
+}

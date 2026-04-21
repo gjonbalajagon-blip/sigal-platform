@@ -61,7 +61,7 @@ function renderSpreadsheet(){
     let h='<div class="sp-container">';
     h+='<div class="sp-toolbar"><div class="sp-toolbar-left">';
     if(!spLocked)h+='<label class="sp-select-all"><input type="checkbox" id="sp-sel-all" onchange="spToggleAll(this.checked)"> Selekto të gjitha</label>';
-    else h+='<button onclick="zhbllokoSpreadsheet()" style="font-size:11px;padding:4px 10px;border:1px solid #e5e9f0;border-radius:6px;background:#fff;color:#0047AB;cursor:pointer;font-weight:600;font-family:inherit">🔓 Zhblloko</button>';
+    else h+='<button onclick="zhbllokoSpreadsheet()" style="font-size:11px;padding:4px 10px;border:1px solid #e5e9f0;border-radius:6px;background:#fff;color:#1e3a8a;cursor:pointer;font-weight:600;font-family:inherit">🔓 Zhblloko</button>';
     h+='</div><span class="sp-hint">'+(spLocked?'🔒 Kyçur':'Kliko çelulën për edit')+'</span></div>';
 
     h+='<div class="sp-table-wrap"><table class="sp-table"><thead><tr><td></td>';
@@ -352,7 +352,7 @@ function renderTabela(){
     const vitetSorted=Object.keys(sipasVitit).sort((a,b)=>b.localeCompare(a));
     let html='';
     vitetSorted.forEach(viti=>{const lista=sipasVitit[viti];const isOpen=skadVitetOpen[viti]!==false;
-        html+='<tr><td colspan="8" style="padding:0;border:none;"><div onclick="toggleSkadViti(\''+viti+'\')" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f0f4ff;cursor:pointer;border-bottom:1px solid #e5e9f0;user-select:none;"><span style="font-size:10px;color:#002B5C;">'+(isOpen?'▾':'▸')+'</span><span style="font-size:12px;font-weight:700;color:#002B5C;">'+viti+'</span><span style="font-size:10px;background:#002B5C;color:white;padding:1px 8px;border-radius:10px;font-weight:700;">'+lista.length+'</span></div></td></tr>';
+        html+='<tr><td colspan="8" style="padding:0;border:none;"><div onclick="toggleSkadViti(\''+viti+'\')" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f0f4ff;cursor:pointer;border-bottom:1px solid #e5e9f0;user-select:none;"><span style="font-size:10px;color:#1e3a8a;">'+(isOpen?'▾':'▸')+'</span><span style="font-size:12px;font-weight:700;color:#1e3a8a;">'+viti+'</span><span style="font-size:10px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;padding:1px 8px;border-radius:10px;font-weight:700;">'+lista.length+'</span></div></td></tr>';
         if(isOpen){const sorted=[...lista].sort((a,b)=>{if(!a.mbarimi)return 1;if(!b.mbarimi)return-1;return parseDate(b.mbarimi)-parseDate(a.mbarimi);});html+=sorted.map(k=>renderRow(k)).join('');}
     });
     tbody.innerHTML=html;
@@ -367,7 +367,7 @@ function renderRow(k){
     var dotColor='#10b981',skadonCls='green';if(ditet.klasa==='skadon-warning'){dotColor='#f59e0b';skadonCls='orange';}if(ditet.klasa==='skadon-expired'){dotColor='#ef4444';skadonCls='red';}
     const pakotArr=k.pakot||[];let pakotTxt='-';
     if(pakotArr.length<=2)pakotTxt=pakotArr.join(', ');
-    else pakotTxt=pakotArr.slice(0,2).join(', ')+' <span style="background:#e5e9f0;color:#002B5C;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">+'+(pakotArr.length-2)+'</span>';
+    else pakotTxt=pakotArr.slice(0,2).join(', ')+' <span style="background:#e5e9f0;color:#1e3a8a;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">+'+(pakotArr.length-2)+'</span>';
     return '<tr><td><div class="klient-name">'+k.emri+(k.arkivuar?' <span style="font-size:9px;color:#94a3b8;font-weight:600;">RINOVUAR</span>':'')+'</div><div class="klient-sub">'+(k.adresa||'')+'</div></td><td style="font-size:11px;color:#6b7a8d;">'+nrId+'</td><td><span class="badge-lloji '+k.lloji+'">'+(llojiLabels[k.lloji]||k.lloji)+'</span></td><td style="font-size:11px;color:#6b7a8d;">'+pakotTxt+'</td><td style="font-size:11px;color:#6b7a8d;">'+formatData(k.fillimi)+'</td><td><div class="skadon-cell '+skadonCls+'"><span class="skadon-dot"></span>'+ditet.teksti+'</div></td><td><span class="badge-status '+statusi+'">'+(statusLabels[statusi]||statusi)+'</span></td><td style="text-align:right;"><div class="action-icon-btns" style="justify-content:flex-end;"><button onclick="editoKontrate('+idx+')" title="Modifiko"><i data-lucide="pencil"></i></button><button class="btn-word" onclick="gjeneroWord('+idx+')" title="Word"><i data-lucide="file-text"></i> Word</button><button onclick="dergoEmail('+idx+')" title="Email"><i data-lucide="mail"></i></button><button onclick="fshijKontrate('+idx+')" title="Fshi"><i data-lucide="trash-2"></i></button></div></td></tr>';
 }
 

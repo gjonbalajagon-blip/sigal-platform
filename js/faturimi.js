@@ -140,6 +140,12 @@ function dergoEmailZgjedhurve() {
 // ====== FILTER + RENDER ======
 function filtroKlientet() { renderTabela(); }
 
+function filtroStatusCard(status) {
+    const sel = document.getElementById('filter-status');
+    sel.value = (sel.value === status) ? 'all' : status;
+    renderTabela();
+}
+
 function renderTabela() {
     const filterStatus = document.getElementById('filter-status').value;
     const filterMuaji = parseInt(document.getElementById('filter-muaji').value) || muajiAktual();
@@ -186,30 +192,17 @@ function renderTabela() {
     document.getElementById('st-process').textContent = stProcess;
     document.getElementById('st-leshuar').textContent = stLeshuar;
 
-    // Llojet chips
-    document.getElementById('st-llojet').innerHTML =
-        '<span class="strip-chip"><span class="sc-num">' + mujorCount + '</span> Mujor</span>' +
-        '<span class="strip-chip"><span class="sc-num">' + vjetorCount + '</span> Vjetor</span>';
+    // KPI card active state
+    document.querySelectorAll('.stats-strip .kpi-card[data-filter]').forEach(c => {
+        c.classList.toggle('kpi-active', c.dataset.filter === filterStatus);
+    });
 
-    // Funnel bar
-    const barEl = document.getElementById('st-bar');
-    const legEl = document.getElementById('st-legend');
-    if (stTotal > 0) {
-        const pL = Math.round(stLeshuar/stTotal*100), pP = Math.round(stProcess/stTotal*100), pK = Math.round(stKerkesa/stTotal*100), pA = 100-pL-pP-pK;
-        barEl.innerHTML =
-            '<div class="strip-bar-seg" style="width:'+pL+'%;background:#4ade80;"></div>' +
-            '<div class="strip-bar-seg" style="width:'+pP+'%;background:#60a5fa;"></div>' +
-            '<div class="strip-bar-seg" style="width:'+pK+'%;background:#fbbf24;"></div>' +
-            '<div class="strip-bar-seg" style="width:'+pA+'%;background:#94a3b8;"></div>';
-        legEl.innerHTML =
-            '<span><span class="sl-dot" style="background:#4ade80;"></span>Lëshuar</span>' +
-            '<span><span class="sl-dot" style="background:#60a5fa;"></span>Proces</span>' +
-            '<span><span class="sl-dot" style="background:#fbbf24;"></span>Kërkesë</span>' +
-            '<span><span class="sl-dot" style="background:#94a3b8;"></span>Asgjë</span>';
-    } else {
-        barEl.innerHTML = '<div class="strip-bar-seg" style="width:100%;background:rgba(255,255,255,.08);border-radius:3px;"></div>';
-        legEl.innerHTML = '';
-    }
+    // Info chips (Mujor / Vjetor)
+    document.getElementById('st-llojet').innerHTML =
+        '<span class="info-chip">Mujor <span class="ic-num">' + mujorCount + '</span></span>' +
+        '<span class="info-chip">Vjetor <span class="ic-num">' + vjetorCount + '</span></span>';
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 
     // Filter krijuar nga
     const krijuarSet = new Set();

@@ -725,7 +725,7 @@ function renderDebKrahasim(allData, viti) {
             <div class="rep-table-wrap">
                 <div class="rep-table-header"><h3 class="rep-table-title">Borxhi total</h3></div>
                 <div style="padding:18px 22px">
-                    ${buildBarChartHorizontal(muajRows, 'borxh', 'label', 'linear-gradient(90deg,#002B5C,#3b82f6)', formatMoneyShort)}
+                    ${buildBarChartHorizontal(muajRows, 'borxh', 'label', 'linear-gradient(90deg,#1e3a8a,#3b82f6)', formatMoneyShort)}
                 </div>
             </div>
             <div class="rep-table-wrap">
@@ -807,7 +807,7 @@ function renderDebDeget(data) {
                     ${sorted.map(d => `
                         <div class="rep-bar-row">
                             <div class="rep-bar-label" title="${esc(d.emri)}">${esc(d.emri)}</div>
-                            <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${(d.borxh/maxBorxh*100).toFixed(1)}%;background:linear-gradient(90deg,#002B5C,#3b82f6)"></div></div>
+                            <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${(d.borxh/maxBorxh*100).toFixed(1)}%;background:linear-gradient(90deg,#1e3a8a,#3b82f6)"></div></div>
                             <div class="rep-bar-value">${formatMoneyShort(d.borxh)}</div>
                         </div>
                     `).join('')}
@@ -926,7 +926,7 @@ function renderDebTopKlient(data) {
                             <td class="right" style="color:${Number(r.borxh_mbi_365||0)>0?'#ef4444':'#94a3b8'};font-weight:600">${formatMoney(r.borxh_mbi_365||0)}</td>
                             <td class="center" style="font-size:11px;color:#64748b">${agingLabel(r)}</td>
                             <td class="center">${statusBadge(r.statusi)}</td>
-                            <td class="center"><a href="debitoret.html?hap=${esc(r.id)}" style="font-size:11px;color:#002B5C;font-weight:600;text-decoration:none">Hap →</a></td>
+                            <td class="center"><a href="debitoret.html?hap=${esc(r.id)}" style="font-size:11px;color:#1e3a8a;font-weight:600;text-decoration:none">Hap →</a></td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -1068,7 +1068,7 @@ function renderRinKrahasim(allData, viti) {
         <div class="rep-3col">
             <div class="rep-table-wrap">
                 <div class="rep-table-header"><h3 class="rep-table-title">Primi total</h3></div>
-                <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'primi', 'label', 'linear-gradient(90deg,#002B5C,#3b82f6)', formatMoneyShort)}</div>
+                <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'primi', 'label', 'linear-gradient(90deg,#1e3a8a,#3b82f6)', formatMoneyShort)}</div>
             </div>
             <div class="rep-table-wrap">
                 <div class="rep-table-header"><h3 class="rep-table-title">Renewal Rate %</h3></div>
@@ -1849,7 +1849,7 @@ function renderOfeDeget(data) {
             </div>
             <div class="rep-table-wrap">
                 <div class="rep-table-header"><h3 class="rep-table-title">Vizualizim</h3></div>
-                <div style="padding:14px 18px">${buildBarChartHorizontal(sorted, 'total', 'emri', 'linear-gradient(90deg,#002B5C,#3b82f6)', n=>n)}</div>
+                <div style="padding:14px 18px">${buildBarChartHorizontal(sorted, 'total', 'emri', 'linear-gradient(90deg,#1e3a8a,#3b82f6)', n=>n)}</div>
             </div>
         </div>
     `;

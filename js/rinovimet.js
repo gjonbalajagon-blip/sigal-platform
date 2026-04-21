@@ -63,31 +63,37 @@ function ndryshoMuaj(m){currentMuaj=m;currentDega='';currentAgjent='';renderTabs
 function formatMuajLabel(k){if(!k)return'';const[m,y]=k.split('_');return capitalizeFirst(m)+' '+y;}
 function capitalizeFirst(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
 
-// STATS STRIP
+// STATS STRIP — unified KPI cards
 function perditesoStats(){
     const data=filtroSipasRolit(rinovimet.filter(r=>r.muaji===currentMuaj));
     const counts={};Object.keys(STATUSET).forEach(s=>counts[s]=0);
     let tP=0,tD=0;data.forEach(r=>{if(counts[r.statusi]!==undefined)counts[r.statusi]++;tP+=(r.primi_vjetor||0);tD+=(r.deme_total_vlera||0);});
     const total=data.length,avgLR=tP>0?(tD/tP*100):0;
     const af=currentStatusFilter||'total';
-    const ms=(k)=>`cursor:pointer;${af===k?'opacity:1;border-bottom:2px solid #fff;padding-bottom:14px':'opacity:0.7'}`;
-    document.getElementById('stripMetrics').innerHTML=`
-        <div class="strip-metric" style="${ms('total')}" onclick="filtroStatusStrip('total')"><div class="sm-num">${total}</div><div class="sm-lbl">Total</div></div>
-        <div class="strip-metric s-pafilluar" style="${ms('pa_filluar')}" onclick="filtroStatusStrip('pa_filluar')"><div class="sm-num">${counts.pa_filluar}</div><div class="sm-lbl">Pa filluar</div></div>
-        <div class="strip-metric s-kontaktuar" style="${ms('kontaktuar')}" onclick="filtroStatusStrip('kontaktuar')"><div class="sm-num">${counts.kontaktuar}</div><div class="sm-lbl">Kontaktuar</div></div>
-        <div class="strip-metric s-rinovuar" style="${ms('rinovuar')}" onclick="filtroStatusStrip('rinovuar')"><div class="sm-num">${counts.rinovuar}</div><div class="sm-lbl">Rinovuar</div></div>
-        <div class="strip-metric s-humbur" style="${ms('humbur')}" onclick="filtroStatusStrip('humbur')"><div class="sm-num">${counts.humbur}</div><div class="sm-lbl">Humbur</div></div>`;
+    const card=(k,label,num,icon,iconCls,numCls)=>`
+        <div class="kpi-card${af===k?' kpi-active':''}" data-filter="${k}" onclick="filtroStatusStrip('${k}')">
+            <div class="kpi-icon ${iconCls}"><i data-lucide="${icon}"></i></div>
+            <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+            <div class="kpi-body">
+                <div class="sm-lbl">${label}</div>
+                <div class="sm-num${numCls?' '+numCls:''}">${num}</div>
+            </div>
+        </div>`;
+    document.getElementById('stripMetrics').innerHTML=
+        card('total','Total',total,'bar-chart-3','kpi-icon-total','')+
+        card('pa_filluar','Pa filluar',counts.pa_filluar,'circle-dashed','kpi-icon-muted','muted-num')+
+        card('kontaktuar','Kontaktuar',counts.kontaktuar,'phone-call','kpi-icon-skadon','skadon-num')+
+        card('rinovuar','Rinovuar',counts.rinovuar,'check-circle','kpi-icon-aktive','aktive-num')+
+        card('humbur','Humbur',counts.humbur,'alert-triangle','kpi-icon-skaduar','skaduar-num');
     const rPct=total>0?(counts.rinovuar/total*100):0;
     document.getElementById('stripChips').innerHTML=`
-        <div class="strip-chip">Primi <span class="sc-num">${formatMoneyShort(tP)}</span></div>
-        <div class="strip-chip">Dëme <span class="sc-num">${formatMoneyShort(tD)}</span></div>
-        <div class="strip-chip">LR <span class="sc-num">${avgLR.toFixed(1)}%</span></div>
-        <div class="strip-chip" style="gap:8px;min-width:140px">Rinovuar <span class="sc-num">${counts.rinovuar}/${total}</span>
-            <span style="flex:1;height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;min-width:30px;display:inline-block"><span style="display:block;height:100%;width:${rPct}%;background:#4ade80;border-radius:2px"></span></span>
-            <span style="font-size:10px;font-weight:700;color:#4ade80">${rPct.toFixed(0)}%</span></div>`;
-    const bar=document.getElementById('stripBar'),leg=document.getElementById('stripLegend');
-    if(total>0){let bH='',lH='';Object.keys(STATUSET).forEach(s=>{const p=(counts[s]/total*100).toFixed(1);bH+=`<div class="strip-bar-seg" style="width:${p}%;background:${STATUSET[s].bar}"></div>`;lH+=`<span><span class="sl-dot" style="background:${STATUSET[s].bar}"></span>${STATUSET[s].emri} ${counts[s]}</span>`;});bar.innerHTML=bH;leg.innerHTML=lH;}
-    else{bar.innerHTML='<div class="strip-bar-seg" style="width:100%;background:rgba(255,255,255,.1)"></div>';leg.innerHTML='';}
+        <div class="info-chip">Primi <span class="ic-num">${formatMoneyShort(tP)}</span></div>
+        <div class="info-chip">Dëme <span class="ic-num">${formatMoneyShort(tD)}</span></div>
+        <div class="info-chip">LR <span class="ic-num">${avgLR.toFixed(1)}%</span></div>
+        <div class="info-chip progress">Rinovuar <span class="ic-num">${counts.rinovuar}/${total}</span>
+            <span class="ic-bar"><span class="ic-bar-fill" style="width:${rPct}%"></span></span>
+            <span class="ic-pct">${rPct.toFixed(0)}%</span></div>`;
+    if(typeof lucide!=='undefined')lucide.createIcons();
 }
 
 // CHIPS — HIERARKIKE (1 rresht degë, klik zgjeron agjentët)
@@ -242,11 +248,11 @@ function renderKontrateBtn(r){
             <span style="font-size:12px;color:#166534;font-weight:500">Kontrata e dërguar ${r.kontrata_derguar_data?formatKomentDate(r.kontrata_derguar_data):''}</span>
         </div>`;
     } else if(r.statusi==='rinovuar'){
-        el.innerHTML=`<button onclick="krijoKontrate()" style="width:100%;padding:10px;background:#002B5C;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
+        el.innerHTML=`<button onclick="krijoKontrate()" style="width:100%;padding:10px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
             📄 Krijo Kontratën në Sistem
         </button>`;
     } else {
-        el.innerHTML=`<button onclick="hapKontrateWizard()" style="width:100%;padding:10px;background:#002B5C;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
+        el.innerHTML=`<button onclick="hapKontrateWizard()" style="width:100%;padding:10px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
             📄 Përgatit & Dërgo Kontratën
         </button>`;
     }
@@ -356,7 +362,7 @@ function hapReportDrawer(){
     let html=`<div class="rin-report-section"><div style="font-size:13px;font-weight:600;color:#1a2332;margin-bottom:4px">${formatMuajLabel(currentMuaj)}</div><div style="font-size:12px;color:#64748b">${data.length} kontrata · Primi ${formatMoney(data.reduce((s,r)=>s+(r.primi_vjetor||0),0))}</div></div>`;
     Object.keys(byDega).sort().forEach(dega=>{
         const g=byDega[dega];const lr=g.primi>0?(g.deme/g.primi*100):0;const rPct=g.total>0?(g.rinovuar/g.total*100):0;
-        html+=`<div class="rin-report-section"><div style="font-size:13px;font-weight:600;color:#002B5C;margin-bottom:8px">${esc(dega)} <span style="font-size:11px;font-weight:400;color:#64748b">(${g.total} kontrata)</span></div>`;
+        html+=`<div class="rin-report-section"><div style="font-size:13px;font-weight:600;color:#1e3a8a;margin-bottom:8px">${esc(dega)} <span style="font-size:11px;font-weight:400;color:#64748b">(${g.total} kontrata)</span></div>`;
         html+=`<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
             <span style="font-size:11px;padding:3px 8px;border-radius:10px;background:#f1f5f9;color:#64748b">Pa filluar ${g.pa_filluar||0}</span>
             <span style="font-size:11px;padding:3px 8px;border-radius:10px;background:#fef3c7;color:#92400e">Kontaktuar ${g.kontaktuar||0}</span>

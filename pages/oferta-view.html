@@ -8,48 +8,48 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
-.header{background:#002B5C;padding:14px 20px;display:flex;align-items:center;gap:12px}
+.header{background:#1e3a8a;padding:14px 20px;display:flex;align-items:center;gap:12px}
 .header img{height:40px}
 .header h1{color:white;font-size:15px;font-weight:600}
 .container{max-width:640px;margin:0 auto;padding:20px 14px 60px}
 .oferta-header{background:white;border-radius:10px;padding:20px;margin-bottom:16px;border:1px solid #e5e9f0}
-.oferta-header h2{font-size:17px;color:#002B5C;margin-bottom:4px;font-weight:700}
+.oferta-header h2{font-size:17px;color:#1e3a8a;margin-bottom:4px;font-weight:700}
 .oferta-header p{color:#6b7a8d;font-size:12px;line-height:1.5}
 .oferta-meta{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .oferta-meta span{font-size:10px;color:#6b7a8d;background:#f4f6f9;padding:3px 8px;border-radius:14px}
 .countdown{background:#fff3cd !important;color:#856404 !important;font-weight:600}
 .countdown.urgent{background:#f8d7da !important;color:#721c24 !important}
-.section-title{font-size:11px;font-weight:700;color:#002B5C;margin:16px 0 8px;text-transform:uppercase;letter-spacing:0.5px}
+.section-title{font-size:11px;font-weight:700;color:#1e3a8a;margin:16px 0 8px;text-transform:uppercase;letter-spacing:0.5px}
 .tab-bar{display:flex;background:white;border-radius:10px;border:1px solid #e5e9f0;overflow:hidden;margin-bottom:8px;flex-wrap:wrap}
 .tab-item{flex:1;padding:8px 2px;text-align:center;cursor:pointer;border-right:1px solid #e5e9f0;min-width:0;transition:all 0.15s}
 .tab-item:last-child{border-right:none}
 .tab-item .ti-name{font-size:9px;font-weight:700;color:#6b7a8d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tab-item .ti-price{font-size:13px;font-weight:800;color:#002B5C;margin-top:1px}
+.tab-item .ti-price{font-size:13px;font-weight:800;color:#1e3a8a;margin-top:1px}
 .tab-item .ti-per{font-size:7px;color:#6b7a8d}
-.tab-item.active{background:#002B5C}
+.tab-item.active{background:#1e3a8a}
 .tab-item.active .ti-name,.tab-item.active .ti-price{color:white}
 .tab-item.active .ti-per{color:rgba(255,255,255,0.6)}
 .tab-item:hover:not(.active){background:#f8fafc}
 .tab-item.sel-mark{box-shadow:inset 0 -3px 0 #22c55e}
 .tab-detail{background:white;border-radius:10px;border:1px solid #e5e9f0;overflow:hidden}
-.td-hdr{padding:16px;border-bottom:3px solid #002B5C}
+.td-hdr{padding:16px;border-bottom:3px solid #1e3a8a}
 .td-row1{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .td-info{flex:1;min-width:0}
-.td-name{font-size:20px;font-weight:800;color:#002B5C}
+.td-name{font-size:20px;font-weight:800;color:#1e3a8a}
 .td-zone{font-size:10px;color:#6b7a8d;margin-top:3px;line-height:1.4}
 .td-shuma-wrap{text-align:right;flex-shrink:0}
-.td-shuma{font-size:22px;font-weight:800;color:#002B5C}
+.td-shuma{font-size:22px;font-weight:800;color:#1e3a8a}
 .td-shuma-lbl{font-size:9px;color:#6b7a8d;text-transform:uppercase}
 .td-primi{display:flex;gap:8px;margin-top:10px}
 .td-pi{padding:8px 10px;background:#f0f4ff;border-radius:8px;text-align:center;min-width:0}
 .td-pi .pl{font-size:8px;color:#4a5568;display:block;white-space:nowrap}
-.td-pi .pv{font-size:15px;font-weight:800;color:#002B5C;display:block;margin-top:2px}
-.float-pill{position:fixed;bottom:20px;right:16px;z-index:100;background:#002B5C;color:white;border:none;padding:10px 18px;border-radius:24px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:none;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(0,43,92,0.3);transition:all 0.2s}
-.float-pill:hover{background:#0047AB;transform:translateY(-2px)}
+.td-pi .pv{font-size:15px;font-weight:800;color:#1e3a8a;display:block;margin-top:2px}
+.float-pill{position:fixed;bottom:20px;right:16px;z-index:100;background:#1e3a8a;color:white;border:none;padding:10px 18px;border-radius:24px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:none;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(30,58,138,0.3);transition:all 0.2s}
+.float-pill:hover{background:#3b82f6;transform:translateY(-2px)}
 .float-pill.show{display:flex}
 .float-pill .fp-count{background:#22c55e;color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
 .float-pill svg{width:12px;height:12px;stroke:white;stroke-width:2.5;fill:none}
-.cat-hdr{padding:10px 14px;background:#002B5C;color:white;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.cat-hdr{padding:10px 14px;background:#1e3a8a;color:white;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .cat-hdr:hover{background:#003570}
 .ch-left{display:flex;align-items:center;gap:8px;flex:1}
 .ch-icon{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -79,21 +79,21 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .dr .dv{font-weight:600;color:#1a2332;text-align:right}
 .nota{padding:8px 14px;font-size:9px;color:#6b7a8d;background:#f8f9fa;border-top:1px solid #f0f0f0;font-style:italic}
 .btn-z-wrap{padding:10px 14px;border-top:1px solid #e5e9f0}
-.btn-z{display:block;width:100%;padding:11px;text-align:center;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;font-family:inherit;border:2px solid #002B5C;background:white;color:#002B5C;transition:all 0.2s}
+.btn-z{display:block;width:100%;padding:11px;text-align:center;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;font-family:inherit;border:2px solid #1e3a8a;background:white;color:#1e3a8a;transition:all 0.2s}
 .btn-z:hover{background:#f0f4ff}
-.btn-z.active{background:#002B5C;color:white}
+.btn-z.active{background:#1e3a8a;color:white}
 .btn-z-note{text-align:center;font-size:9px;color:#6b7a8d;margin-top:6px}
 /* Opt cards — NO checkbox, full clickable expand/collapse */
 .opt-card{background:white;border:2px solid #e5e9f0;border-radius:10px;margin-bottom:8px;overflow:hidden;cursor:pointer;transition:all 0.2s}
 .opt-card:hover{border-color:#b0c4de}
-.opt-card.open{border-color:#002B5C;box-shadow:0 2px 12px rgba(0,43,92,0.1)}
+.opt-card.open{border-color:#1e3a8a;box-shadow:0 2px 12px rgba(30,58,138,0.1)}
 .opt-card.selected{border-color:#22c55e;box-shadow:0 2px 12px rgba(34,197,94,0.2)}
 .opt-preview{padding:12px 14px;display:flex;align-items:flex-start;gap:10px}
 .opt-main{flex:1;min-width:0}
 .opt-title-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.opt-title{font-size:13px;font-weight:700;color:#002B5C}
+.opt-title{font-size:13px;font-weight:700;color:#1e3a8a}
 .opt-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:12px}
-.opt-badge.rec{background:#002B5C;color:white}
+.opt-badge.rec{background:#1e3a8a;color:white}
 .opt-badge.new{background:#22c55e;color:white}
 .opt-tagline{font-size:10px;color:#4a5568;margin-top:3px;line-height:1.4}
 .opt-highlights{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
@@ -102,42 +102,42 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .opt-hl.zona{background:#fef3c7;color:#92400e}
 .opt-hl.benefit{background:#dcfce7;color:#166534}
 .opt-hl svg{width:10px;height:10px;stroke:currentColor;stroke-width:2.5;fill:none}
-.opt-toggle-hint{font-size:9px;color:#0047AB;margin-top:6px;font-weight:600;display:flex;align-items:center;gap:3px}
+.opt-toggle-hint{font-size:9px;color:#3b82f6;margin-top:6px;font-weight:600;display:flex;align-items:center;gap:3px}
 .opt-toggle-hint svg{width:10px;height:10px;stroke:currentColor;stroke-width:2.5;fill:none;transition:transform 0.2s}
 .opt-card.open .opt-toggle-hint svg{transform:rotate(180deg)}
 .opt-price-side{text-align:right;flex-shrink:0;padding-top:2px}
-.ops-price{font-size:17px;font-weight:800;color:#002B5C}
+.ops-price{font-size:17px;font-weight:800;color:#1e3a8a}
 .ops-per{font-size:9px;color:#6b7a8d}
 .opt-details{display:none;border-top:1px solid #f0f0f0;background:#fafbfc}
 .opt-card.open .opt-details{display:block}
-.opt-det-hdr{padding:6px 14px;background:#002B5C;color:white;font-size:10px;font-weight:700}
+.opt-det-hdr{padding:6px 14px;background:#1e3a8a;color:white;font-size:10px;font-weight:700}
 .opt-det-r{display:flex;padding:5px 14px;font-size:11px;border-bottom:1px solid #f0f0f0}
 .opt-det-r:last-child{border-bottom:none}
 .opt-det-r .dl{flex:1;color:#4a5568}
-.opt-det-r .dv{font-weight:600;color:#002B5C}
+.opt-det-r .dv{font-weight:600;color:#1e3a8a}
 .opt-note{padding:6px 14px;font-size:9px;color:#6b7a8d;line-height:1.4;font-style:italic;border-top:1px solid #f0f0f0}
 /* Zgjedh pakon button inside opt-details */
 .opt-zgjedh-wrap{padding:10px 14px;border-top:1px solid #e5e9f0;background:white}
-.opt-zgjedh-btn{display:block;width:100%;padding:10px;text-align:center;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;font-family:inherit;border:2px solid #002B5C;background:white;color:#002B5C;transition:all 0.2s}
+.opt-zgjedh-btn{display:block;width:100%;padding:10px;text-align:center;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;font-family:inherit;border:2px solid #1e3a8a;background:white;color:#1e3a8a;transition:all 0.2s}
 .opt-zgjedh-btn:hover{background:#f0f4ff}
-.opt-zgjedh-btn.sel{background:#002B5C;color:white;border-color:#002B5C}
+.opt-zgjedh-btn.sel{background:#1e3a8a;color:white;border-color:#1e3a8a}
 .opt-zgjedh-note{text-align:center;font-size:8px;color:#6b7a8d;margin-top:4px}
 /* Selected state badge on preview */
 .opt-sel-badge{display:none;font-size:8px;font-weight:700;background:#22c55e;color:white;padding:2px 8px;border-radius:10px;margin-left:auto}
 .opt-card.selected .opt-sel-badge{display:inline-block}
 /* Price table static */
 .price-table-wrap{padding:8px 14px;border-top:1px solid #e5e9f0}
-.price-table-title{font-size:10px;font-weight:700;color:#002B5C;margin-bottom:2px}
+.price-table-title{font-size:10px;font-weight:700;color:#1e3a8a;margin-bottom:2px}
 .price-table-sub{font-size:9px;color:#6b7a8d;margin-bottom:6px}
 .price-table{width:100%;border-collapse:collapse;font-size:9px}
-.price-table th{background:#002B5C;color:white;padding:4px 6px;font-weight:600;text-align:center}
+.price-table th{background:#1e3a8a;color:white;padding:4px 6px;font-weight:600;text-align:center}
 .price-table th:first-child{text-align:left;border-radius:4px 0 0 0}
 .price-table th:last-child{border-radius:0 4px 0 0}
 .price-table td{padding:3px 6px;border-bottom:1px solid #f0f0f0;text-align:center}
 .price-table td:first-child{text-align:left;font-weight:600;color:#1a2332}
 .price-table tr:nth-child(even){background:#f8fafc}
 /* Rest */
-.app-banner{background:#002B5C;border-radius:10px;padding:14px 16px;margin:16px 0;display:flex;align-items:center;gap:12px}
+.app-banner{background:#1e3a8a;border-radius:10px;padding:14px 16px;margin:16px 0;display:flex;align-items:center;gap:12px}
 .app-logo{width:44px;height:44px;border-radius:10px;flex-shrink:0;overflow:hidden;background:white}
 .app-logo img{width:44px;height:44px;border-radius:10px;display:block}
 .app-text{flex:1;min-width:0}
@@ -149,47 +149,47 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f4f6f9;color:#1a2332}
 .store-btn svg{width:12px;height:12px;fill:white}
 .net-trigger{background:white;border-radius:10px;border:1px solid #e5e9f0;margin:12px 0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .net-trigger:hover{background:#f8fafc}
-.net-trigger h4{font-size:12px;font-weight:700;color:#002B5C;display:flex;align-items:center;gap:6px}
+.net-trigger h4{font-size:12px;font-weight:700;color:#1e3a8a;display:flex;align-items:center;gap:6px}
 .net-trigger .net-desc{font-size:10px;color:#6b7a8d;margin-top:2px}
-.net-count{background:#002B5C;color:white;font-size:9px;padding:1px 7px;border-radius:10px}
+.net-count{background:#1e3a8a;color:white;font-size:9px;padding:1px 7px;border-radius:10px}
 .net-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-end;justify-content:center}
 .net-overlay.active{display:flex}
 .net-popup{background:white;border-radius:16px 16px 0 0;width:100%;max-width:640px;max-height:80vh;overflow-y:auto;animation:slideUp 0.3s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .net-popup-hdr{padding:14px 16px;border-bottom:1px solid #e5e9f0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:white;z-index:1;border-radius:16px 16px 0 0}
-.net-popup-hdr h3{font-size:14px;font-weight:700;color:#002B5C}
+.net-popup-hdr h3{font-size:14px;font-weight:700;color:#1e3a8a}
 .net-close{width:28px;height:28px;border-radius:50%;background:#f4f6f9;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6b7a8d}
 .nk{padding:10px 14px;background:#f0f4ff;border-bottom:1px solid #e5e9f0;display:flex;align-items:center;gap:10px}
-.nk-icon{width:36px;height:24px;border-radius:4px;background:#002B5C;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nk-icon{width:36px;height:24px;border-radius:4px;background:#1e3a8a;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nk-icon svg{width:16px;height:16px;stroke:white;stroke-width:2;fill:none}
-.nk-text{flex:1}.nk-text .nkt{font-size:11px;font-weight:700;color:#002B5C}.nk-text .nkd{font-size:9px;color:#4a5568;margin-top:1px}
-.net-cat{padding:5px 14px;background:#002B5C;color:white;font-size:10px;font-weight:700}
+.nk-text{flex:1}.nk-text .nkt{font-size:11px;font-weight:700;color:#1e3a8a}.nk-text .nkd{font-size:9px;color:#4a5568;margin-top:1px}
+.net-cat{padding:5px 14px;background:#1e3a8a;color:white;font-size:10px;font-weight:700}
 .net-item{display:flex;align-items:center;padding:5px 14px;font-size:11px;border-bottom:1px solid #f8f8f8;gap:6px}
 .net-item:last-child{border-bottom:none}
-.net-dot{width:5px;height:5px;border-radius:50%;background:#0047AB;flex-shrink:0}
+.net-dot{width:5px;height:5px;border-radius:50%;background:#3b82f6;flex-shrink:0}
 .net-item .nn{font-weight:600;color:#1a2332;flex:1}.net-item .nl{font-size:10px;color:#6b7a8d}
 .koment-box{background:white;border-radius:10px;padding:16px;margin-top:16px;border:1px solid #e5e9f0}
-.koment-box h3{margin-bottom:6px;color:#002B5C;font-size:12px;font-weight:700}
+.koment-box h3{margin-bottom:6px;color:#1e3a8a;font-size:12px;font-weight:700}
 .koment-box textarea{width:100%;border:1px solid #e5e9f0;border-radius:6px;padding:8px 10px;font-family:inherit;font-size:11px;resize:vertical;min-height:60px}
 .action-btns{margin-top:12px}
-.btn-confirm{display:block;width:100%;background:#002B5C;color:white;border:none;padding:13px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
-.btn-confirm:hover{background:#0047AB}
+.btn-confirm{display:block;width:100%;background:#1e3a8a;color:white;border:none;padding:13px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-confirm:hover{background:#3b82f6}
 .popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center}
 .popup-overlay.active{display:flex}
 .popup{background:white;border-radius:12px;padding:24px;max-width:400px;width:90%;text-align:center}
-.popup h3{font-size:15px;color:#002B5C;margin-bottom:6px}
+.popup h3{font-size:15px;color:#1e3a8a;margin-bottom:6px}
 .popup p{font-size:12px;color:#6b7a8d;margin-bottom:16px;line-height:1.5}
 .popup-btns{display:flex;gap:8px}
 .popup-btns button{flex:1;padding:10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
 .popup-skip{background:#f4f6f9;border:1px solid #e5e9f0;color:#6b7a8d}
-.popup-add{background:#002B5C;border:none;color:white}
+.popup-add{background:#1e3a8a;border:none;color:white}
 .success-msg{text-align:center;padding:50px 16px}
 .success-msg .check{width:50px;height:50px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
 .success-msg .check svg{stroke:white}
-.success-msg h2{color:#002B5C;margin-bottom:6px;font-size:18px}
+.success-msg h2{color:#1e3a8a;margin-bottom:6px;font-size:18px}
 .success-msg p{color:#6b7a8d;font-size:13px;line-height:1.5}
 .oferta-footer{text-align:center;margin-top:24px;font-size:10px;color:#aaa;padding:12px}
-.oferta-footer a{color:#0047AB}
+.oferta-footer a{color:#3b82f6}
 @media(max-width:480px){.action-btns{flex-direction:column}.app-banner{flex-wrap:wrap}}
 </style>
 </head>
@@ -299,12 +299,12 @@ function optJete(){
     h+='<div class="opt-det-r"><div class="dl">Shërbimi i përkthimit gjatë trajtimit</div><div class="dv">E përfshirë</div></div>';
     h+='<div class="opt-note">Periudha e pritjes: 180 ditë për individët; 90 ditë për grupet mbi 50 persona.</div>';
     h+='<div class="price-table-wrap"><div class="price-table-title">Çmimet sipas moshës dhe gjinisë (€/vit)</div><div class="price-table-sub">Kolonat tregojnë shumën e mbulimit</div><table class="price-table"><thead><tr><th>Mosha</th><th>Gjinia</th><th>€ 5,000</th><th>€ 10,000</th><th>€ 20,000</th><th>€ 50,000</th></tr></thead><tbody>';
-    h+='<tr><td rowspan="2" style="font-weight:700">21-30</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 30</td><td>€ 35</td><td>€ 50</td><td>€ 90</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 30</td><td>€ 40</td><td>€ 60</td><td>€ 100</td></tr>';
-    h+='<tr><td rowspan="2" style="font-weight:700">31-40</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 35</td><td>€ 45</td><td>€ 80</td><td>€ 120</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 45</td><td>€ 65</td><td>€ 90</td><td>€ 200</td></tr>';
-    h+='<tr><td rowspan="2" style="font-weight:700">41-50</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 50</td><td>€ 70</td><td>€ 90</td><td>€ 250</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 65</td><td>€ 80</td><td>€ 120</td><td>€ 350</td></tr>';
-    h+='<tr><td rowspan="2" style="font-weight:700">51-60</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr>';
-    h+='<tr><td rowspan="2" style="font-weight:700">61-70</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 200</td><td>€ 380</td><td>€ 750</td><td>€ 1,800</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 120</td><td>€ 250</td><td>€ 420</td><td>€ 1,000</td></tr>';
-    h+='<tr><td rowspan="2" style="font-weight:700">71-80</td><td style="color:#0047AB;font-weight:700">M</td><td>€ 250</td><td>€ 380</td><td>€ 980</td><td>€ 2,400</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 150</td><td>€ 220</td><td>€ 520</td><td>€ 1,200</td></tr>';
+    h+='<tr><td rowspan="2" style="font-weight:700">21-30</td><td style="color:#3b82f6;font-weight:700">M</td><td>€ 30</td><td>€ 35</td><td>€ 50</td><td>€ 90</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 30</td><td>€ 40</td><td>€ 60</td><td>€ 100</td></tr>';
+    h+='<tr><td rowspan="2" style="font-weight:700">31-40</td><td style="color:#3b82f6;font-weight:700">M</td><td>€ 35</td><td>€ 45</td><td>€ 80</td><td>€ 120</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 45</td><td>€ 65</td><td>€ 90</td><td>€ 200</td></tr>';
+    h+='<tr><td rowspan="2" style="font-weight:700">41-50</td><td style="color:#3b82f6;font-weight:700">M</td><td>€ 50</td><td>€ 70</td><td>€ 90</td><td>€ 250</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 65</td><td>€ 80</td><td>€ 120</td><td>€ 350</td></tr>';
+    h+='<tr><td rowspan="2" style="font-weight:700">51-60</td><td style="color:#3b82f6;font-weight:700">M</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 100</td><td>€ 150</td><td>€ 300</td><td>€ 600</td></tr>';
+    h+='<tr><td rowspan="2" style="font-weight:700">61-70</td><td style="color:#3b82f6;font-weight:700">M</td><td>€ 200</td><td>€ 380</td><td>€ 750</td><td>€ 1,800</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 120</td><td>€ 250</td><td>€ 420</td><td>€ 1,000</td></tr>';
+    h+='<tr><td rowspan="2" style="font-weight:700">71-80</td><td style="color:#3b82f6;font-weight:700">M</td><td>€ 250</td><td>€ 380</td><td>€ 980</td><td>€ 2,400</td></tr><tr><td style="color:#e11d48;font-weight:700">F</td><td>€ 150</td><td>€ 220</td><td>€ 520</td><td>€ 1,200</td></tr>';
     h+='</tbody></table></div>';
     // Zgjedh pakon button
     h+='<div class="opt-zgjedh-wrap"><button class="opt-zgjedh-btn" onclick="toggleOptSel(\'jete\',event)">Zgjedh pakon</button><div class="opt-zgjedh-note">Opsionale — shtohet mbi paketën bazë</div></div>';
@@ -340,7 +340,7 @@ function optOpinion(){
     h+='<div class="opt-det-r"><div class="dl">Rekomandim për trajtim mjekësor</div><div class="dv">E përfshirë</div></div>';
     h+='<div class="opt-det-r"><div class="dl">Kostot e opinionit mbulohen nga SIGAL</div><div class="dv">E përfshirë</div></div>';
     h+='<div class="opt-note">Shërbimet mjekësore në qendrën e zgjedhur paguhen nga pacienti.</div>';
-    h+='<div style="display:flex;padding:8px 14px;background:#f0f4ff;border-top:1px solid #e5e9f0"><div style="flex:1;font-size:11px;font-weight:600;color:#002B5C">Primi</div><div style="font-size:13px;font-weight:800;color:#002B5C">€ 1/muaj · € 12/vit</div></div>';
+    h+='<div style="display:flex;padding:8px 14px;background:#f0f4ff;border-top:1px solid #e5e9f0"><div style="flex:1;font-size:11px;font-weight:600;color:#1e3a8a">Primi</div><div style="font-size:13px;font-weight:800;color:#1e3a8a">€ 1/muaj · € 12/vit</div></div>';
     // Zgjedh pakon button
     h+='<div class="opt-zgjedh-wrap"><button class="opt-zgjedh-btn" onclick="toggleOptSel(\'opinion\',event)">Zgjedh pakon</button><div class="opt-zgjedh-note">Opsionale — shtohet mbi paketën bazë</div></div>';
     h+='</div>'; // opt-details
@@ -359,7 +359,7 @@ function mbyllRrjetin(){document.getElementById('net-overlay').classList.remove(
 
 function ngarko(){
     const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[],oferta=ofertat[ofertaId];
-    if(!oferta){document.getElementById('container').innerHTML='<div style="text-align:center;padding:60px"><h2 style="color:#002B5C">Oferta nuk u gjet.</h2><p style="color:#6b7a8d;margin-top:4px">Kontaktoni agentin tuaj.</p></div>';return;}
+    if(!oferta){document.getElementById('container').innerHTML='<div style="text-align:center;padding:60px"><h2 style="color:#1e3a8a">Oferta nuk u gjet.</h2><p style="color:#6b7a8d;margin-top:4px">Kontaktoni agentin tuaj.</p></div>';return;}
     ofertaData=oferta;
     const pakotList=oferta.lloji==='individ'?PAKOT.individ:PAKOT.familje_biznes;
         pakotGlobal=pakotList.filter(p=>(oferta.pakot||[]).some(op=>(typeof op==='object'?op.id:op)===p.id||(typeof op==='string'&&op.toLowerCase().includes(p.emri.toLowerCase())))).map(p=>{
@@ -386,7 +386,7 @@ function ngarko(){
     h+='</div><div class="tab-detail" id="tab-detail"></div>';
     h+='<div class="section-title">Mbrojtje shtesë (opsionale)</div>'+optJete()+optOpinion();
     h+='<div class="app-banner"><div class="app-logo"><img src="../sigal-app-icon.png" alt="" onerror="this.style.display=\'none\'"></div><div class="app-text"><div class="at-title">Sigal Kosova App</div><div class="at-free">FALAS: Paraqitja e rimbursimeve 100% online</div><div class="at-features">Aplikim online · Upload dokumentesh · Lexim automatik · Ndjekja e statusit</div><div class="app-stores"><a href="https://apps.apple.com/us/app/sigal-kosova/id6756305258" target="_blank" class="store-btn"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83"/><path d="M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg> App Store</a><a href="https://play.google.com/store/apps/details?id=com.sigalkosova.einsureapp" target="_blank" class="store-btn"><svg viewBox="0 0 24 24"><path d="M3 20.5V3.5c0-.59.34-1.11.84-1.35L13.69 12l-9.85 9.85c-.5-.24-.84-.76-.84-1.35zm13.81-5.38L6.05 21.34l8.49-8.49 2.27 2.27zm2.59-1.46c.37.22.6.63.6 1.04s-.23.82-.6 1.04l-1.94 1.13-2.5-2.5 2.5-2.5 1.94 1.13zM6.05 2.66l10.76 6.22-2.27 2.27-8.49-8.49z"/></svg> Google Play</a></div></div></div>';
-    h+='<div class="net-trigger" onclick="hapRrjetin()"><div><h4>Rrjeti Mjekësor SIGAL <span class="net-count">'+ti+'</span></h4><div class="net-desc">Institucionet për Kartelën SIGAL. Prezantoni kartelën, përfitoni mbulim direkt.</div></div><span style="font-size:11px;color:#0047AB;font-weight:600">Shiko →</span></div>';
+    h+='<div class="net-trigger" onclick="hapRrjetin()"><div><h4>Rrjeti Mjekësor SIGAL <span class="net-count">'+ti+'</span></h4><div class="net-desc">Institucionet për Kartelën SIGAL. Prezantoni kartelën, përfitoni mbulim direkt.</div></div><span style="font-size:11px;color:#3b82f6;font-weight:600">Shiko →</span></div>';
     h+='<div class="koment-box"><h3>Koment (opsional)</h3><textarea id="koment" placeholder="Keni pyetje? Shkruani këtu..."></textarea></div>';
     h+='<div class="action-btns"><button class="btn-confirm" id="btn-konfirmo" onclick="paraKonfirmimit()">Konfirmoj Zgjedhjen</button></div>';
     h+='<div class="oferta-footer">© '+new Date().getFullYear()+' SIGAL Insurance Group Kosovo<br><a href="https://sigal-ks.com">sigal-ks.com</a> · demet.shendetsore@sigal-ks.com · +383 38 240 241</div>';

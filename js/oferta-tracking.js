@@ -18,14 +18,14 @@ function statusProgressBar(data) {
     const stepKeys = ['e_krijuar','e_derguar','e_pare','e_konfirmuar','kontrate'];
     const cur = stepKeys.indexOf(data.statusi);
     let h = '<div style="padding:12px 16px;background:#f8fafc;border-radius:8px;margin:12px 0">';
-    h += '<div style="font-size:11px;font-weight:700;color:#002B5C;margin-bottom:10px">Statusi i ofertës</div>';
+    h += '<div style="font-size:11px;font-weight:700;color:#1e3a8a;margin-bottom:10px">Statusi i ofertës</div>';
     h += '<div style="display:flex;align-items:center;gap:0;margin-bottom:10px">';
     steps.forEach((label, i) => {
         const done = i <= cur;
         h += '<div style="flex:1;text-align:center">';
-        h += '<div style="width:24px;height:24px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:' + (done ? '#002B5C;color:white' : '#e5e9f0;color:#6b7a8d') + '">' + (i + 1) + '</div>';
-        h += '<div style="font-size:8px;margin-top:3px;color:' + (i === cur ? '#002B5C;font-weight:700' : '#6b7a8d') + '">' + label + '</div></div>';
-        if (i < steps.length - 1) h += '<div style="flex:0.5;height:2px;background:' + (i < cur ? '#002B5C' : '#e5e9f0') + ';margin-top:-12px"></div>';
+        h += '<div style="width:24px;height:24px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:' + (done ? '#1e3a8a;color:white' : '#e5e9f0;color:#6b7a8d') + '">' + (i + 1) + '</div>';
+        h += '<div style="font-size:8px;margin-top:3px;color:' + (i === cur ? '#1e3a8a;font-weight:700' : '#6b7a8d') + '">' + label + '</div></div>';
+        if (i < steps.length - 1) h += '<div style="flex:0.5;height:2px;background:' + (i < cur ? '#1e3a8a' : '#e5e9f0') + ';margin-top:-12px"></div>';
     });
     h += '</div>';
     if (data.hapjet > 0) {

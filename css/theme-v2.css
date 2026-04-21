@@ -427,12 +427,13 @@ body {
    ============================================================ */
 .stats-strip, .stats-grid, .stats-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
   margin-bottom: 14px;
   background: transparent;
   border-radius: 0;
   overflow: visible;
+  padding: 0;
 }
 .kpi-card, .stat-card {
   background: var(--s-glass);
@@ -474,6 +475,24 @@ body {
   background: linear-gradient(135deg, #f87171, #ef4444 60%, #dc2626);
   box-shadow: 0 10px 20px -4px rgba(239,68,68,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
 }
+.kpi-icon-muted, .stat-icon.muted {
+  background: linear-gradient(135deg, #cbd5e1, #94a3b8 60%, #64748b);
+  box-shadow: 0 10px 20px -4px rgba(100,116,139,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.sm-num.muted-num, .stat-num.grey { color: #64748b; }
+
+/* Info chips row under KPI cards */
+.info-chips-row { display: flex; gap: 8px; flex-wrap: wrap; margin: -4px 0 14px; align-items: center; }
+.info-chip { font-size: 11px; padding: 6px 12px; border-radius: 20px; font-weight: 500; color: #64748b; background: #fff; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; gap: 6px; line-height: 1; }
+.info-chip .ic-num { font-weight: 800; font-size: 12px; color: #1a2332; }
+.info-chip.progress { gap: 8px; min-width: 180px; }
+.info-chip .ic-bar { flex: 1; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; min-width: 40px; display: inline-block; }
+.info-chip .ic-bar-fill { display: block; height: 100%; background: var(--s-green, #22c55e); border-radius: 2px; }
+.info-chip .ic-pct { font-size: 10px; font-weight: 700; color: var(--s-green, #22c55e); }
+.info-chip.chip-click { cursor: pointer; transition: all .15s; }
+.info-chip.chip-click:hover { border-color: #cbd5e1; background: #f8fafc; }
+.info-chip.chip-click.active { background: #1e293b; color: #fff; border-color: #1e293b; }
+.info-chip.chip-click.active .ic-num { color: #fff; }
 /* Raportet extra icons */
 .stat-icon.borxh  { background: linear-gradient(135deg, #f87171, #ef4444 60%, #dc2626); box-shadow: 0 10px 20px -4px rgba(239,68,68,0.45); }
 .stat-icon.risk   { background: linear-gradient(135deg, #fbbf24, #f59e0b 60%, #d97706); box-shadow: 0 10px 20px -4px rgba(245,158,11,0.45); }
@@ -1430,7 +1449,7 @@ body {
    RESPONSIVE
    ============================================================ */
 @media (max-width: 1100px) {
-  .stats-strip, .stats-grid, .stats-container { grid-template-columns: repeat(2, 1fr); }
+  .stats-strip, .stats-grid, .stats-container { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
 }
 @media (max-width: 768px) {
   .sidebar {
@@ -1486,7 +1505,7 @@ body {
   .content-area { padding: 12px; }
   .topbar h1 { font-size: 19px; }
   .topbar .btn-primary { padding: 8px 12px; font-size: 11px; }
-  .stats-strip, .stats-grid, .stats-container { grid-template-columns: 1fr 1fr; }
+  .stats-strip, .stats-grid, .stats-container { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
   .kpi-card, .stat-card { padding: 10px 12px; }
   .kpi-icon, .stat-icon { width: 34px; height: 34px; }
   .kpi-card .sm-num, .stat-num { font-size: 18px; }

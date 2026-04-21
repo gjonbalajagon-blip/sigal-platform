@@ -376,39 +376,35 @@ function perditesoStats() {
     });
 
     const total = data.length;
-    const ms = (k) => `cursor:pointer;${currentStatusFilter===k?'opacity:1;border-bottom:2px solid #fff;padding-bottom:14px':'opacity:.72'}`;
+    const af = currentStatusFilter || 'total';
+    const card = (k, label, num, icon, iconCls, numCls) => `
+        <div class="kpi-card${af===k?' kpi-active':''}" data-filter="${k}" onclick="filtroStatusStrip('${k}')">
+            <div class="kpi-icon ${iconCls}"><i data-lucide="${icon}"></i></div>
+            <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+            <div class="kpi-body">
+                <div class="sm-lbl">${label}</div>
+                <div class="sm-num${numCls?' '+numCls:''}">${num}</div>
+            </div>
+        </div>`;
+    document.getElementById('stripMetrics').innerHTML =
+        card('total', 'Total', total, 'bar-chart-3', 'kpi-icon-total', '') +
+        card('i_ri', 'I ri', counts.i_ri || 0, 'circle-dashed', 'kpi-icon-muted', 'muted-num') +
+        card('kontaktuar', 'Kontaktuar', counts.kontaktuar || 0, 'phone-call', 'kpi-icon-skadon', 'skadon-num') +
+        card('premtim_pagese', 'Premtim', counts.premtim_pagese || 0, 'clock', 'kpi-icon-total', '') +
+        card('paguar_total', 'Paguar', counts.paguar_total || 0, 'check-circle', 'kpi-icon-aktive', 'aktive-num');
 
-    document.getElementById('stripMetrics').innerHTML = `
-        <div class="strip-metric" style="${ms('total')}" onclick="filtroStatusStrip('total')"><div class="sm-num">${total}</div><div class="sm-lbl">Total</div></div>
-        <div class="strip-metric s-i_ri" style="${ms('i_ri')}" onclick="filtroStatusStrip('i_ri')"><div class="sm-num">${counts.i_ri}</div><div class="sm-lbl">I ri</div></div>
-        <div class="strip-metric s-kontaktuar" style="${ms('kontaktuar')}" onclick="filtroStatusStrip('kontaktuar')"><div class="sm-num">${counts.kontaktuar}</div><div class="sm-lbl">Kontaktuar</div></div>
-        <div class="strip-metric s-premtim_pagese" style="${ms('premtim_pagese')}" onclick="filtroStatusStrip('premtim_pagese')"><div class="sm-num">${counts.premtim_pagese}</div><div class="sm-lbl">Premtim</div></div>
-        <div class="strip-metric s-paguar_total" style="${ms('paguar_total')}" onclick="filtroStatusStrip('paguar_total')"><div class="sm-num">${counts.paguar_total}</div><div class="sm-lbl">Paguar total</div></div>
-        <div class="strip-metric s-paguar_pjesshem" style="${ms('paguar_pjesshem')}" onclick="filtroStatusStrip('paguar_pjesshem')"><div class="sm-num">${counts.paguar_pjesshem}</div><div class="sm-lbl">Pjesshem</div></div>
-    `;
-
+    const chipCls = k => 'info-chip chip-click' + (af===k?' active':'');
     document.getElementById('stripChips').innerHTML = `
-        <div class="strip-chip">Borxhi <span class="sc-num">${formatMoneyShort(totalBorxh)}</span></div>
-        <div class="strip-chip">&gt;365 <span class="sc-num">${formatMoneyShort(totalRisk)}</span></div>
-        <div class="strip-chip">Paguar <span class="sc-num">${formatMoneyShort(totalPaguar)}</span></div>
-        <div class="strip-chip">Kredit <span class="sc-num">${totalKredit}</span></div>
-        <div class="strip-chip">Zero <span class="sc-num">${totalZero}</span></div>
+        <span class="info-chip">Borxhi <span class="ic-num">${formatMoneyShort(totalBorxh)}</span></span>
+        <span class="info-chip">&gt;365 <span class="ic-num">${formatMoneyShort(totalRisk)}</span></span>
+        <span class="info-chip">Paguar <span class="ic-num">${formatMoneyShort(totalPaguar)}</span></span>
+        <span class="${chipCls('paguar_pjesshem')}" onclick="filtroStatusStrip('paguar_pjesshem')">Pjesshëm <span class="ic-num">${counts.paguar_pjesshem||0}</span></span>
+        <span class="${chipCls('kontestuar')}" onclick="filtroStatusStrip('kontestuar')">Kontestuar <span class="ic-num">${counts.kontestuar||0}</span></span>
+        <span class="${chipCls('i_pamundshem')}" onclick="filtroStatusStrip('i_pamundshem')">Pamundshëm <span class="ic-num">${counts.i_pamundshem||0}</span></span>
+        <span class="info-chip">Kredit <span class="ic-num">${totalKredit}</span></span>
+        <span class="info-chip">Zero <span class="ic-num">${totalZero}</span></span>
     `;
-
-    if (total > 0) {
-        const items = ['i_ri','kontaktuar','premtim_pagese','paguar_total','paguar_pjesshem','kontestuar','i_pamundshem'];
-        document.getElementById('stripBar').innerHTML = items.map(k => {
-            const p = ((counts[k] || 0) / total * 100).toFixed(1);
-            return `<div class="strip-bar-seg" style="width:${p}%;background:${STATUSET[k].bar}"></div>`;
-        }).join('');
-
-        document.getElementById('stripLegend').innerHTML = items.map(k => `
-            <span><span class="sl-dot" style="background:${STATUSET[k].bar}"></span>${STATUSET[k].emri} ${counts[k] || 0}</span>
-        `).join('');
-    } else {
-        document.getElementById('stripBar').innerHTML = '<div class="strip-bar-seg" style="width:100%;background:rgba(255,255,255,.1)"></div>';
-        document.getElementById('stripLegend').innerHTML = '';
-    }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function ndryshoSort(t) {

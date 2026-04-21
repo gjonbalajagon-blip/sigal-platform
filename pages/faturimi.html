@@ -8,15 +8,11 @@
     <script src="../js/auth.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .tabs-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.tabs{display:flex;gap:0;background:#e5e9f0;border-radius:8px;padding:2px}.tab-btn{padding:7px 18px;font-size:12px;font-weight:600;color:#6b7a8d;border-radius:6px;cursor:pointer;border:none;background:none;font-family:inherit;transition:all .15s}.tab-btn.active{background:#fff;color:#002B5C;box-shadow:0 1px 3px rgba(0,0,0,.08)}.tab-btn .tab-count{font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px;font-weight:700;background:#e5e9f0;color:#6b7a8d}.tab-btn.active .tab-count{background:#002B5C;color:#fff}
-        .stats-strip{background:#002B5C;border-radius:14px;overflow:hidden;margin-bottom:14px}.strip-top{padding:16px 24px;display:flex;align-items:flex-end;justify-content:space-between}.strip-metrics{display:flex;gap:0}.strip-metric{padding:0 20px;border-right:1px solid rgba(255,255,255,.08)}.strip-metric:first-child{padding-left:0}.strip-metric:last-child{border-right:none}.strip-metric .sm-num{font-size:28px;font-weight:800;color:#fff;line-height:1}.strip-metric .sm-lbl{font-size:9px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}.strip-metric.asgje .sm-num{color:#94a3b8}.strip-metric.kerkesa .sm-num{color:#fbbf24}.strip-metric.process .sm-num{color:#60a5fa}.strip-metric.leshuar .sm-num{color:#4ade80}.strip-llojet{display:flex;gap:5px;padding-bottom:4px}.strip-chip{font-size:10px;padding:5px 10px;border-radius:10px;font-weight:500;color:rgba(255,255,255,.6);background:rgba(255,255,255,.07);display:flex;align-items:center;gap:6px;line-height:1}.strip-chip .sc-num{font-weight:800;font-size:13px;color:#fff}.strip-bottom{background:rgba(0,0,0,.15);padding:10px 24px;display:flex;align-items:center;gap:14px}.strip-bar{flex:1;display:flex;gap:2px;height:6px;border-radius:3px;overflow:hidden}.strip-bar-seg{height:100%;transition:width .4s ease}.strip-legend{display:flex;gap:10px;flex-shrink:0}.strip-legend span{font-size:9px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:4px}.strip-legend .sl-dot{width:5px;height:5px;border-radius:1.5px}
-        .filters-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}.filters-row select,.filters-row input{font-family:inherit;font-size:11px;padding:6px 10px;border:1px solid #e5e9f0;border-radius:6px;background:#fff;color:#1a2332}.filters-row input{flex:1;max-width:260px}
-        .table-container table th{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;padding:8px 12px}.table-container table td{padding:8px 12px;font-size:12px}.table-container tbody tr:nth-child(even){background:#f8fafc}.table-container tbody tr:hover{background:#f0f4ff}.klient-name{font-weight:600;font-size:12px;color:#1a2332}.klient-sub{font-size:10px;color:#b0b8c4;margin-top:1px}.skadon-cell{display:flex;align-items:center;gap:4px;font-size:11px}.skadon-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-        .status-circles{display:flex;gap:4px;align-items:center}.status-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}.status-dot:hover{transform:scale(1.15);box-shadow:0 2px 8px rgba(0,0,0,.15)}
-        .muaji-select{font-size:10px;padding:4px 6px;border:1px solid #e5e9f0;border-radius:6px;background:#fff;font-family:inherit;min-width:80px}
-        /* Modal */
-        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}.modal-overlay.active{display:flex}.modal{background:#fff;border-radius:12px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto}.modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e5e9f0}.modal-header h2{font-size:16px;color:#002B5C}.modal-header button{width:28px;height:28px;border:none;background:#f4f6f9;border-radius:6px;cursor:pointer;font-size:16px;color:#6b7a8d}.modal-body{padding:16px 20px}.form-group{margin-bottom:12px}.form-group label{display:block;font-size:11px;font-weight:600;color:#6b7a8d;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}.form-group input,.form-group select{width:100%;padding:8px 10px;border:1px solid #e5e9f0;border-radius:6px;font-size:12px;font-family:inherit}.modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid #e5e9f0}
-        .lloji-selector{display:flex;gap:0}.lloji-btn{flex:1;padding:8px;font-size:11px;font-weight:700;border:1px solid #e5e9f0;background:#fff;color:#6b7a8d;cursor:pointer;font-family:inherit;transition:all .15s}.lloji-btn:first-child{border-radius:6px 0 0 6px}.lloji-btn:last-child{border-radius:0 6px 6px 0}.lloji-btn.active{background:#002B5C;color:#fff;border-color:#002B5C}
+        /* faturimi-only extras (theme-v2 covers tables, modal, form, lloji-selector, filters) */
+        .status-circles{display:flex;gap:4px;align-items:center}
+        .status-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+        .status-dot:hover{transform:scale(1.15);box-shadow:0 2px 8px rgba(15,23,42,.15)}
+        .muaji-select{font-size:10px;padding:4px 6px;border:1px solid var(--s-border,#e2e8f0);border-radius:6px;background:#fff;font-family:inherit;min-width:80px}
     </style>
 </head>
 <body>
@@ -58,20 +54,35 @@
                     <button class="tab-btn" id="tab-vjetor" onclick="ndryshoTab('vjetor')">Vjetor <span class="tab-count" id="tab-count-vjetor">0</span></button>
                 </div>
             </div>
-            <!-- NAVY STRIP -->
+            <!-- KPI CARDS -->
             <div class="stats-strip">
-                <div class="strip-top">
-                    <div class="strip-metrics">
-                        <div class="strip-metric"><div class="sm-num" id="st-total">0</div><div class="sm-lbl">Total</div></div>
-                        <div class="strip-metric asgje"><div class="sm-num" id="st-asgje">0</div><div class="sm-lbl">Asgjë</div></div>
-                        <div class="strip-metric kerkesa"><div class="sm-num" id="st-kerkesa">0</div><div class="sm-lbl">Kërkesë</div></div>
-                        <div class="strip-metric process"><div class="sm-num" id="st-process">0</div><div class="sm-lbl">Në Proces</div></div>
-                        <div class="strip-metric leshuar"><div class="sm-num" id="st-leshuar">0</div><div class="sm-lbl">E Lëshuar</div></div>
-                    </div>
-                    <div class="strip-llojet" id="st-llojet"></div>
+                <div class="kpi-card" data-filter="all" onclick="filtroStatusCard('all')">
+                    <div class="kpi-icon kpi-icon-total"><i data-lucide="bar-chart-3"></i></div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    <div class="kpi-body"><div class="sm-lbl">Total</div><div class="sm-num" id="st-total">0</div></div>
                 </div>
-                <div class="strip-bottom"><div class="strip-bar" id="st-bar"></div><div class="strip-legend" id="st-legend"></div></div>
+                <div class="kpi-card" data-filter="asgje" onclick="filtroStatusCard('asgje')">
+                    <div class="kpi-icon kpi-icon-muted"><i data-lucide="circle-dashed"></i></div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    <div class="kpi-body"><div class="sm-lbl">Asgjë</div><div class="sm-num muted-num" id="st-asgje">0</div></div>
+                </div>
+                <div class="kpi-card" data-filter="kerkesa" onclick="filtroStatusCard('kerkesa')">
+                    <div class="kpi-icon kpi-icon-skadon"><i data-lucide="mail"></i></div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    <div class="kpi-body"><div class="sm-lbl">Kërkesë</div><div class="sm-num skadon-num" id="st-kerkesa">0</div></div>
+                </div>
+                <div class="kpi-card" data-filter="process" onclick="filtroStatusCard('process')">
+                    <div class="kpi-icon kpi-icon-total"><i data-lucide="loader"></i></div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    <div class="kpi-body"><div class="sm-lbl">Në Proces</div><div class="sm-num" id="st-process">0</div></div>
+                </div>
+                <div class="kpi-card" data-filter="leshuar" onclick="filtroStatusCard('leshuar')">
+                    <div class="kpi-icon kpi-icon-aktive"><i data-lucide="check-circle"></i></div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    <div class="kpi-body"><div class="sm-lbl">E Lëshuar</div><div class="sm-num aktive-num" id="st-leshuar">0</div></div>
+                </div>
             </div>
+            <div class="info-chips-row" id="st-llojet"></div>
             <!-- FILTERS -->
             <div class="filters-row">
                 <select id="filter-status" onchange="filtroKlientet()"><option value="all">Të gjithë statuset</option><option value="asgje">Asgjë</option><option value="kerkesa">Kërkesë</option><option value="process">Në Proces</option><option value="leshuar">E Lëshuar</option></select>

@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
             datasets: [{
                 label: 'Kontratat',
                 data: [individ, familje, biznes],
-                backgroundColor: ['#0047AB', '#166534', '#b45309'],
+                backgroundColor: ['#1e40af', '#166534', '#b45309'],
                 borderRadius: 6,
                 borderSkipped: false
             }]
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
             labels: ['Asgjë', 'Kërkesë', 'Në Proces', 'E Lëshuar'],
             datasets: [{
                 data: [asgje, kerkesa, process, leshuar],
-                backgroundColor: ['#e2e8f0', '#f59e0b', '#0047AB', '#22c55e'],
+                backgroundColor: ['#e2e8f0', '#f59e0b', '#1e40af', '#22c55e'],
                 borderWidth: 2,
                 borderColor: '#fff'
             }]

@@ -8,45 +8,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .kpi-card {
-            background: #fff;
-            border-radius: 10px;
-            border: 1px solid var(--sigal-border);
-            padding: 18px 20px;
-            border-left: 4px solid var(--sigal-navy);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .kpi-card .kpi-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--sigal-text-light);
-        }
-        .kpi-card .kpi-value {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--sigal-navy);
-            line-height: 1;
-        }
-        .kpi-card .kpi-sub {
-            font-size: 11px;
-            color: var(--sigal-text-muted);
-        }
-        .kpi-card.warning { border-left-color: #b45309; }
-        .kpi-card.warning .kpi-value { color: #b45309; }
-        .kpi-card.success { border-left-color: #166534; }
-        .kpi-card.success .kpi-value { color: #166534; }
-        .kpi-card.info { border-left-color: #0047AB; }
-        .kpi-card.info .kpi-value { color: #0047AB; }
+        /* Dashboard KPI subtitle — theme-v2 .kpi-card handles layout/icon */
+        .kpi-card .kpi-sub { font-size: 11px; color: var(--s-text-muted, #6b7a8d); margin-top: 2px; }
 
         .charts-grid {
             display: grid;
@@ -97,7 +60,7 @@
         .skadon-row:last-child { border-bottom: none; }
         .skadon-name { font-size: 13px; font-weight: 600; flex: 1; }
         .skadon-lloji { font-size: 11px; color: #fff; padding: 2px 7px; border-radius: 10px; }
-        .skadon-lloji.individ { background: #0047AB; }
+        .skadon-lloji.individ { background: #1e40af; }
         .skadon-lloji.familje { background: #166534; }
         .skadon-lloji.biznes { background: #b45309; }
         .skadon-bar-wrap { flex: 2; background: #f0f4fa; border-radius: 4px; height: 6px; }
@@ -174,26 +137,42 @@
         <div class="content-area">
 
             <!-- KPI Cards -->
-            <div class="kpi-grid">
+            <div class="stats-strip">
                 <div class="kpi-card">
-                    <div class="kpi-label">Kontratat Aktive</div>
-                    <div class="kpi-value" id="kpi-aktive">0</div>
-                    <div class="kpi-sub" id="kpi-aktive-sub">— individ / — familje / — biznes</div>
+                    <div class="kpi-icon kpi-icon-total"><i data-lucide="file-check"></i></div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Kontratat Aktive</div>
+                        <div class="sm-num" id="kpi-aktive">0</div>
+                        <div class="kpi-sub" id="kpi-aktive-sub">— individ / — familje / — biznes</div>
+                    </div>
                 </div>
-                <div class="kpi-card warning">
-                    <div class="kpi-label">Skadojnë ≤ 35 ditë</div>
-                    <div class="kpi-value" id="kpi-skadon">0</div>
-                    <div class="kpi-sub">kontrata kërkojnë vëmendje</div>
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-icon-skadon"><i data-lucide="clock"></i></div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Skadojnë ≤ 35 ditë</div>
+                        <div class="sm-num skadon-num" id="kpi-skadon">0</div>
+                        <div class="kpi-sub">kontrata kërkojnë vëmendje</div>
+                    </div>
                 </div>
-                <div class="kpi-card info">
-                    <div class="kpi-label">Ofertat Aktive</div>
-                    <div class="kpi-value" id="kpi-ofertat">0</div>
-                    <div class="kpi-sub" id="kpi-ofertat-sub">— të realizuara</div>
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-icon-total"><i data-lucide="clipboard-list"></i></div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Ofertat Aktive</div>
+                        <div class="sm-num" id="kpi-ofertat">0</div>
+                        <div class="kpi-sub" id="kpi-ofertat-sub">— të realizuara</div>
+                    </div>
                 </div>
-                <div class="kpi-card success">
-                    <div class="kpi-label">Fatura të Lëshuara</div>
-                    <div class="kpi-value" id="kpi-leshuar">0</div>
-                    <div class="kpi-sub" id="kpi-leshuar-sub">muaji aktual</div>
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-icon-aktive"><i data-lucide="receipt"></i></div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Fatura të Lëshuara</div>
+                        <div class="sm-num aktive-num" id="kpi-leshuar">0</div>
+                        <div class="kpi-sub" id="kpi-leshuar-sub">muaji aktual</div>
+                    </div>
                 </div>
             </div>
 
