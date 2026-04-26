@@ -30,7 +30,7 @@
         <div class="topbar">
     <h1>Kontratat</h1>
     <div class="topbar-right">
-        <button class="btn-primary" onclick="shtoKontrate()"><i data-lucide="plus"></i> Kontratë e Re</button>
+        <button class="btn-primary" onclick="shtoKontrate()"><i data-lucide="plus" style="width:15px;height:15px;"></i> Kontratë e Re</button>
         <div class="topbar-user">
             <div class="tu-avatar">A</div>
             <div class="tu-info">
@@ -120,7 +120,7 @@
                     <div class="form-group"><label>Data e Kontratës</label><input id="m-data-kontrates" placeholder="dd/mm/yyyy" maxlength="10"></div>
                     <div class="form-group"><label>Data Fillimit</label><input id="m-fillimi" placeholder="dd/mm/yyyy" maxlength="10"></div>
                     <div class="form-group"><label>Data Mbarimit</label><input id="m-mbarimi" placeholder="dd/mm/yyyy" maxlength="10"></div>
-                    <div class="form-group"><label>Faturimi</label><select id="m-faturimi-lloji"><option value="mujor">Mujor</option><option value="vjetor">Vjetor</option></select></div>
+                    <div class="form-group"><label>Faturimi</label><input type="hidden" id="m-faturimi-lloji" value="mujor"><div class="drawer-lloji-row" style="margin:0;gap:6px"><button type="button" class="drawer-lloji-btn active" onclick="this.parentNode.querySelectorAll('.drawer-lloji-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');document.getElementById('m-faturimi-lloji').value='mujor'">Mujor</button><button type="button" class="drawer-lloji-btn" onclick="this.parentNode.querySelectorAll('.drawer-lloji-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');document.getElementById('m-faturimi-lloji').value='vjetor'">Vjetor</button></div></div>
                 </div>
                 <div class="sp-actions">
                     <button class="sp-btn" onclick="mbyllDrawer()">Anulo</button>

@@ -255,15 +255,17 @@ function populoChips() {
         if (r.statusi === 'paguar_total') degaStats[d].agjentet[a].paguar++;
     });
 
-    const totalPaguar = data.filter(r => r.statusi === 'paguar_total').length;
     const deget = Object.keys(degaStats).sort();
 
-    let h = `<button class="chip-filter ${currentDega===''?'active':''}" onclick="filtroDega('')">Te gjitha <span class="chip-count">${data.length}/${totalPaguar}✓</span></button>`;
+    let h = `<span class="dega-filter-label">Dega:</span>`;
+    h += `<button class="dega-chip ${currentDega===''?'active':''}" onclick="filtroDega('')">Të gjitha · <span class="dega-count">${data.length}</span></button>`;
     deget.forEach(d => {
         const s = degaStats[d];
-        h += `<button class="chip-filter ${currentDega===d?'active':''}" onclick="filtroDega('${escAttr(d)}')">${esc(d)} <span class="chip-count">${s.total}/${s.paguar}✓</span></button>`;
+        const isPa = (d === 'Pa dege' || d === 'Pa degë' || !d);
+        const cls = isPa ? 'dega-chip no-dega' : 'dega-chip';
+        h += `<button class="${cls} ${currentDega===d?'active':''}" onclick="filtroDega('${escAttr(d)}')">${esc(d)} · <span class="dega-count">${s.total}</span></button>`;
     });
-    document.getElementById('chipsDega').innerHTML = h;
+    document.getElementById('degaFilterRow').innerHTML = h;
 
     const agjEl = document.getElementById('chipsAgjent');
     if (currentDega && degaStats[currentDega]) {
@@ -361,48 +363,45 @@ function perditesoStats() {
     Object.keys(STATUSET).forEach(s => counts[s] = 0);
 
     let totalBorxh = 0;
-    let totalRisk = 0;
-    let totalKredit = 0;
-    let totalZero = 0;
+    let totalRisk = 0;        // mbi 365
+    let total91_180 = 0;
     let totalPaguar = 0;
+    let totalMbetur = 0;
 
     data.forEach(r => {
         if (counts[r.statusi] !== undefined) counts[r.statusi]++;
         totalBorxh += Number(r.debitori_total || 0);
         totalRisk += Number(r.borxh_mbi_365 || 0);
-        if (r.kategori_balance === 'kredit') totalKredit++;
-        if (r.kategori_balance === 'zero') totalZero++;
+        total91_180 += Number(r.borxh_91_180 || r.borxh_91 || 0);
         totalPaguar += Number(r.shuma_paguar || 0);
+        totalMbetur += Number(r.mbetur || (Number(r.debitori_total || 0) - Number(r.shuma_paguar || 0)));
     });
 
-    const total = data.length;
-    const af = currentStatusFilter || 'total';
-    const card = (k, label, num, icon, iconCls, numCls) => `
-        <div class="kpi-card${af===k?' kpi-active':''}" data-filter="${k}" onclick="filtroStatusStrip('${k}')">
-            <div class="kpi-icon ${iconCls}"><i data-lucide="${icon}"></i></div>
-            <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
-            <div class="kpi-body">
-                <div class="sm-lbl">${label}</div>
-                <div class="sm-num${numCls?' '+numCls:''}">${num}</div>
-            </div>
-        </div>`;
-    document.getElementById('stripMetrics').innerHTML =
-        card('total', 'Total', total, 'bar-chart-3', 'kpi-icon-total', '') +
-        card('i_ri', 'I ri', counts.i_ri || 0, 'circle-dashed', 'kpi-icon-muted', 'muted-num') +
-        card('kontaktuar', 'Kontaktuar', counts.kontaktuar || 0, 'phone-call', 'kpi-icon-skadon', 'skadon-num') +
-        card('premtim_pagese', 'Premtim', counts.premtim_pagese || 0, 'clock', 'kpi-icon-total', '') +
-        card('paguar_total', 'Paguar', counts.paguar_total || 0, 'check-circle', 'kpi-icon-aktive', 'aktive-num');
+    // Niveli 1: Financiar (5 stats kryesore)
+    document.getElementById('stripFinanciar').innerHTML = `
+        <div class="stat-thin"><span class="stat-thin-label">BORXHI TOTAL</span><span class="stat-thin-value">${formatMoneyShort(totalBorxh)}</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label">MBI 365 DITË</span><span class="stat-thin-value">${formatMoneyShort(totalRisk)}</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label">91-180 DITË</span><span class="stat-thin-value">${formatMoneyShort(total91_180)}</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label">PAGUAR</span><span class="stat-thin-value">${formatMoneyShort(totalPaguar)}</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label">MBETUR</span><span class="stat-thin-value">${formatMoneyShort(totalMbetur)}</span></div>
+    `;
 
-    const chipCls = k => 'info-chip chip-click' + (af===k?' active':'');
-    document.getElementById('stripChips').innerHTML = `
-        <span class="info-chip">Borxhi <span class="ic-num">${formatMoneyShort(totalBorxh)}</span></span>
-        <span class="info-chip">&gt;365 <span class="ic-num">${formatMoneyShort(totalRisk)}</span></span>
-        <span class="info-chip">Paguar <span class="ic-num">${formatMoneyShort(totalPaguar)}</span></span>
-        <span class="${chipCls('paguar_pjesshem')}" onclick="filtroStatusStrip('paguar_pjesshem')">Pjesshëm <span class="ic-num">${counts.paguar_pjesshem||0}</span></span>
-        <span class="${chipCls('kontestuar')}" onclick="filtroStatusStrip('kontestuar')">Kontestuar <span class="ic-num">${counts.kontestuar||0}</span></span>
-        <span class="${chipCls('i_pamundshem')}" onclick="filtroStatusStrip('i_pamundshem')">Pamundshëm <span class="ic-num">${counts.i_pamundshem||0}</span></span>
-        <span class="info-chip">Kredit <span class="ic-num">${totalKredit}</span></span>
-        <span class="info-chip">Zero <span class="ic-num">${totalZero}</span></span>
+    // Niveli 2: Statuset (5 nën-statuse)
+    document.getElementById('stripStatuset').innerHTML = `
+        <span class="stats-thin-prefix">STATUSET</span>
+        <div class="stat-thin"><span class="stat-thin-label-sm">Kontaktuar</span><span class="stat-thin-value-sm">${counts.kontaktuar || 0}</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label-sm">Premtim</span><span class="stat-thin-value-sm">${counts.premtim_pagese || 0}</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label-sm">Pjesshëm</span><span class="stat-thin-value-sm">${counts.paguar_pjesshem || 0}</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label-sm">Kontestuar</span><span class="stat-thin-value-sm">${counts.kontestuar || 0}</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label-sm">Pamundshëm</span><span class="stat-thin-value-sm">${counts.i_pamundshem || 0}</span></div>
     `;
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
@@ -692,6 +691,7 @@ function hapImportModal() {
     document.getElementById('importStep2').style.display = 'none';
     document.getElementById('importConfirmBtn').style.display = 'none';
     importParsedData = null;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 function mbyllImportModal() {
     document.getElementById('debImportModal').classList.remove('open');

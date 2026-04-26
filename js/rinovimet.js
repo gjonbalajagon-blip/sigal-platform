@@ -86,13 +86,14 @@ function perditesoStats(){
         card('rinovuar','Rinovuar',counts.rinovuar,'check-circle','kpi-icon-aktive','aktive-num')+
         card('humbur','Humbur',counts.humbur,'alert-triangle','kpi-icon-skaduar','skaduar-num');
     const rPct=total>0?(counts.rinovuar/total*100):0;
-    document.getElementById('stripChips').innerHTML=`
-        <div class="info-chip">Primi <span class="ic-num">${formatMoneyShort(tP)}</span></div>
-        <div class="info-chip">Dëme <span class="ic-num">${formatMoneyShort(tD)}</span></div>
-        <div class="info-chip">LR <span class="ic-num">${avgLR.toFixed(1)}%</span></div>
-        <div class="info-chip progress">Rinovuar <span class="ic-num">${counts.rinovuar}/${total}</span>
-            <span class="ic-bar"><span class="ic-bar-fill" style="width:${rPct}%"></span></span>
-            <span class="ic-pct">${rPct.toFixed(0)}%</span></div>`;
+    document.getElementById('stripThinStats').innerHTML=`
+        <div class="stat-thin"><span class="stat-thin-label">PRIMI</span><span class="stat-thin-value">${formatMoneyShort(tP)}</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label">DËME</span><span class="stat-thin-value">${formatMoneyShort(tD)}</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label">LR</span><span class="stat-thin-value">${avgLR.toFixed(1)}%</span></div>
+        <div class="stat-thin-divider"></div>
+        <div class="stat-thin"><span class="stat-thin-label">RINOVUAR</span><span class="stat-thin-value">${counts.rinovuar}/${total} · ${rPct.toFixed(0)}%</span></div>`;
     if(typeof lucide!=='undefined')lucide.createIcons();
 }
 
@@ -107,12 +108,12 @@ function populoChips(){
         if(!degaStats[d].agjentet[a])degaStats[d].agjentet[a]={total:0,rinovuar:0};
         degaStats[d].agjentet[a].total++;if(r.statusi==='rinovuar')degaStats[d].agjentet[a].rinovuar++;
     });
-    const totalRin=data.filter(r=>r.statusi==='rinovuar').length;
     const deget=Object.keys(degaStats).sort();
-    // Dega row
-    let h=`<button class="chip-filter ${currentDega===''?'active':''}" onclick="filtroDega('')">Të gjitha <span class="chip-count">${data.length}/${totalRin}✓</span></button>`;
-    deget.forEach(d=>{const s=degaStats[d];h+=`<button class="chip-filter ${currentDega===d?'active':''}" onclick="filtroDega('${esc(d)}')">${esc(d)} <span class="chip-count">${s.total}/${s.rinovuar}✓</span></button>`;});
-    document.getElementById('chipsDega').innerHTML=h;
+    // Dega filter row (gray pill chips)
+    let h=`<span class="dega-filter-label">Dega:</span>`;
+    h+=`<button class="dega-chip ${currentDega===''?'active':''}" onclick="filtroDega('')">Të gjitha · <span class="dega-count">${data.length}</span></button>`;
+    deget.forEach(d=>{const s=degaStats[d];const cls=(d==='Pa degë'||!d)?'dega-chip no-dega':'dega-chip';h+=`<button class="${cls} ${currentDega===d?'active':''}" onclick="filtroDega('${esc(d)}')">${esc(d)} · <span class="dega-count">${s.total}</span></button>`;});
+    document.getElementById('degaFilterRow').innerHTML=h;
     // Agjent sub-row (only if dega selected)
     const agjEl=document.getElementById('chipsAgjent');
     if(currentDega&&degaStats[currentDega]){

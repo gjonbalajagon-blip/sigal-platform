@@ -277,7 +277,6 @@ function gjenerKontrate(k, outputDir) {
 
     const pakotEmra = k.pakot || [];
     const pakotRenditura = PAKO_RENDITJA.filter(p => pakotEmra.includes(p));
-
     let allPakoContent = '';
 
     pakotRenditura.forEach((pakoEmri, pakoIdx) => {

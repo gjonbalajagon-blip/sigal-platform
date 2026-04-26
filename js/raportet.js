@@ -568,6 +568,7 @@ function renderRaportiDebitoret() {
     if (sub === 'agjentet') container.innerHTML = renderDebAgjentet(filtered);
     if (sub === 'topklient') container.innerHTML = renderDebTopKlient(filtered);
     if (window.lucide) lucide.createIcons();
+    mountPendingCharts();
 }
 
 function renderDebPermbledhje(data, allData, viti, muaji) {
@@ -667,23 +668,50 @@ function renderDebPermbledhje(data, allData, viti, muaji) {
 }
 
 function renderDebKrahasim(allData, viti) {
-    const muajRows = MUAJT_REP.map((m,i) => {
+    const vitiPrev = String(Number(viti) - 1);
+    const muajRowsAll = MUAJT_REP.map((m,i) => {
         const monthData = allData.filter(r => r.muaji === `${m}_${viti}`);
+        const prevMonthData = allData.filter(r => r.muaji === `${m}_${vitiPrev}`);
         return {
-            muaji: m, label: MUAJT_LABEL[i],
+            muaji: m, label: MUAJT_LABEL[i].slice(0,3),
             klient: monthData.length,
             borxh: monthData.reduce((s,r) => s + Number(r.debitori_total || 0), 0),
+            borxhPrev: prevMonthData.reduce((s,r) => s + Number(r.debitori_total || 0), 0),
             risk: monthData.reduce((s,r) => s + Number(r.borxh_mbi_365 || 0), 0),
             paguar: monthData.filter(r => STATUSET_DEB_PAGUAR.includes(r.statusi)).length
         };
-    }).filter(r => r.klient > 0);
+    });
+    const muajRows = muajRowsAll.filter(r => r.klient > 0);
 
     if (muajRows.length === 0) {
         return `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna për krahasim</div></div>`;
     }
 
+    repLineDual('chartDebKrahasimLine',
+        muajRowsAll.map(r => r.label),
+        muajRowsAll.map(r => +(r.borxhPrev/1000).toFixed(0)),
+        muajRowsAll.map(r => +(r.borxh/1000).toFixed(0)),
+        viti - 1, viti
+    );
+    repBarVertical('chartDebKrahasimBar',
+        muajRows.map(r => r.label),
+        muajRows.map(r => r.klient),
+        '#1e3a8a', ''
+    );
+
     return `
-        <div class="rep-table-wrap" style="margin-bottom:18px">
+        <div class="rep-grid-2col">
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Borxhi total · ${viti-1} vs ${viti} (në K€)</h3></div>
+                <div style="padding:14px 18px">${repCanvas('chartDebKrahasimLine', 200)}</div>
+            </div>
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Klientë me borxh · mujor</h3></div>
+                <div style="padding:14px 18px">${repCanvas('chartDebKrahasimBar', 200)}</div>
+            </div>
+        </div>
+
+        <div class="rep-table-wrap">
             <div class="rep-table-header"><h3 class="rep-table-title">Detaje mujore me delta</h3></div>
             <table class="rep-table">
                 <thead>
@@ -720,27 +748,6 @@ function renderDebKrahasim(allData, viti) {
                 </tbody>
             </table>
         </div>
-
-        <div class="rep-3col">
-            <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Borxhi total</h3></div>
-                <div style="padding:18px 22px">
-                    ${buildBarChartHorizontal(muajRows, 'borxh', 'label', 'linear-gradient(90deg,#1e3a8a,#3b82f6)', formatMoneyShort)}
-                </div>
-            </div>
-            <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Klientë me borxh</h3></div>
-                <div style="padding:18px 22px">
-                    ${buildBarChartHorizontal(muajRows, 'klient', 'label', 'linear-gradient(90deg,#7c3aed,#a855f7)', n=>n)}
-                </div>
-            </div>
-            <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Mbi 365 ditë</h3></div>
-                <div style="padding:18px 22px">
-                    ${buildBarChartHorizontal(muajRows, 'risk', 'label', 'linear-gradient(90deg,#dc2626,#f87171)', formatMoneyShort)}
-                </div>
-            </div>
-        </div>
     `;
 }
 
@@ -765,54 +772,66 @@ function renderDebDeget(data) {
     }));
 
     const sorted = sortRows(rows, 'debDeget', 'borxh', 'desc');
-    const maxBorxh = Math.max(...rows.map(d => d.borxh), 1);
+    const ranked = [...rows].sort((a,b) => b.borxh - a.borxh);
+    const canvasH = Math.max(240, ranked.length * 36 + 60);
+
+    repBarHorizontal('chartDebDegetH',
+        ranked.map(d => d.emri),
+        ranked.map(d => +(d.borxh/1000).toFixed(1)),
+        '#1e3a8a', ''
+    );
+    const top4 = ranked.slice(0, 4);
+    const restSum = ranked.slice(4).reduce((s,d) => s + d.borxh, 0);
+    const donutLabels = top4.map(d => d.emri).concat(restSum > 0 ? ['Të tjera'] : []);
+    const donutData = top4.map(d => d.borxh).concat(restSum > 0 ? [restSum] : []);
+    repDonut('chartDebDegetDonut', donutData);
 
     return `
-        <div class="rep-2col left-bigger">
+        <div class="rep-grid-2col">
             <div class="rep-table-wrap">
-                <div class="rep-table-header">
-                    <h3 class="rep-table-title">Performanca sipas degëve</h3>
-                    <input class="rep-table-search" placeholder="Kërko degë..." onkeyup="filtroTabelen(this,'#tblDebDeget')">
-                </div>
-                <table class="rep-table sortable" id="tblDebDeget">
-                    <thead>
-                        <tr>
-                            <th onclick="sortTable('debDeget','emri','debitoret')">Dega ${sortArrow('debDeget','emri')}</th>
-                            <th class="right" onclick="sortTable('debDeget','klient','debitoret')">Kl. ${sortArrow('debDeget','klient')}</th>
-                            <th class="right" onclick="sortTable('debDeget','borxh','debitoret')">Borxhi ${sortArrow('debDeget','borxh')}</th>
-                            <th class="right" onclick="sortTable('debDeget','recovery','debitoret')">Rec% ${sortArrow('debDeget','recovery')}</th>
-                            <th class="right" onclick="sortTable('debDeget','riskRatio','debitoret')">Risk% ${sortArrow('debDeget','riskRatio')}</th>
-                            <th class="right" onclick="sortTable('debDeget','risk','debitoret')">Mbi 365 ${sortArrow('debDeget','risk')}</th>
-                            <th class="right" onclick="sortTable('debDeget','paguarVal','debitoret')">Paguar ${sortArrow('debDeget','paguarVal')}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${sorted.map(d => `
-                            <tr data-name="${esc(d.emri).toLowerCase()}">
-                                <td><strong>${esc(d.emri)}</strong></td>
-                                <td class="right">${d.klient}</td>
-                                <td class="right"><strong>${formatMoneyShort(d.borxh)}</strong></td>
-                                <td class="right" style="color:${d.recovery<20?'#ef4444':d.recovery<40?'#f59e0b':'#22c55e'};font-weight:700">${d.recovery.toFixed(1)}%</td>
-                                <td class="right" style="color:${d.riskRatio>30?'#ef4444':d.riskRatio>15?'#f59e0b':'#22c55e'};font-weight:600">${d.riskRatio.toFixed(1)}%</td>
-                                <td class="right" style="color:${d.risk>0?'#ef4444':'#94a3b8'}">${formatMoneyShort(d.risk)}</td>
-                                <td class="right" style="color:#22c55e;font-weight:600">${formatMoneyShort(d.paguarVal)}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                <div class="rep-table-header"><h3 class="rep-table-title">Renditja e degëve sipas borxhit</h3></div>
+                <div style="padding:14px 18px">${repCanvasTall('chartDebDegetH', canvasH)}</div>
             </div>
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Vizualizim</h3></div>
-                <div style="padding:18px 22px">
+                <div class="rep-table-header"><h3 class="rep-table-title">Shpërndarja e borxhit</h3></div>
+                <div style="padding:14px 18px">
+                    ${repCanvas('chartDebDegetDonut', 180)}
+                    ${repDonutLegendHTML(donutLabels, donutData)}
+                </div>
+            </div>
+        </div>
+
+        <div class="rep-table-wrap">
+            <div class="rep-table-header">
+                <h3 class="rep-table-title">Performanca sipas degëve</h3>
+                <input class="rep-table-search" placeholder="Kërko degë..." onkeyup="filtroTabelen(this,'#tblDebDeget')">
+            </div>
+            <table class="rep-table sortable" id="tblDebDeget">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('debDeget','emri','debitoret')">Dega ${sortArrow('debDeget','emri')}</th>
+                        <th class="right" onclick="sortTable('debDeget','klient','debitoret')">Kl. ${sortArrow('debDeget','klient')}</th>
+                        <th class="right" onclick="sortTable('debDeget','borxh','debitoret')">Borxhi ${sortArrow('debDeget','borxh')}</th>
+                        <th class="right" onclick="sortTable('debDeget','recovery','debitoret')">Rec% ${sortArrow('debDeget','recovery')}</th>
+                        <th class="right" onclick="sortTable('debDeget','riskRatio','debitoret')">Risk% ${sortArrow('debDeget','riskRatio')}</th>
+                        <th class="right" onclick="sortTable('debDeget','risk','debitoret')">Mbi 365 ${sortArrow('debDeget','risk')}</th>
+                        <th class="right" onclick="sortTable('debDeget','paguarVal','debitoret')">Paguar ${sortArrow('debDeget','paguarVal')}</th>
+                    </tr>
+                </thead>
+                <tbody>
                     ${sorted.map(d => `
-                        <div class="rep-bar-row">
-                            <div class="rep-bar-label" title="${esc(d.emri)}">${esc(d.emri)}</div>
-                            <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${(d.borxh/maxBorxh*100).toFixed(1)}%;background:linear-gradient(90deg,#1e3a8a,#3b82f6)"></div></div>
-                            <div class="rep-bar-value">${formatMoneyShort(d.borxh)}</div>
-                        </div>
+                        <tr data-name="${esc(d.emri).toLowerCase()}">
+                            <td><strong>${esc(d.emri)}</strong></td>
+                            <td class="right">${d.klient}</td>
+                            <td class="right"><strong>${formatMoneyShort(d.borxh)}</strong></td>
+                            <td class="right" style="color:${d.recovery<20?'#ef4444':d.recovery<40?'#f59e0b':'#22c55e'};font-weight:700">${d.recovery.toFixed(1)}%</td>
+                            <td class="right" style="color:${d.riskRatio>30?'#ef4444':d.riskRatio>15?'#f59e0b':'#22c55e'};font-weight:600">${d.riskRatio.toFixed(1)}%</td>
+                            <td class="right" style="color:${d.risk>0?'#ef4444':'#94a3b8'}">${formatMoneyShort(d.risk)}</td>
+                            <td class="right" style="color:#22c55e;font-weight:600">${formatMoneyShort(d.paguarVal)}</td>
+                        </tr>
                     `).join('')}
-                </div>
-            </div>
+                </tbody>
+            </table>
         </div>
     `;
 }
@@ -960,6 +979,7 @@ function renderRaportiRinovimet() {
     if (sub === 'agjentet') container.innerHTML = renderRinAgjentet(filtered);
     if (sub === 'performanca') container.innerHTML = renderRinPerformanca(filtered);
     if (window.lucide) lucide.createIcons();
+    mountPendingCharts();
 }
 
 function renderRinPermbledhje(data, allData, viti, muaji) {
@@ -1016,26 +1036,54 @@ function renderRinPermbledhje(data, allData, viti, muaji) {
 }
 
 function renderRinKrahasim(allData, viti) {
-    const muajRows = MUAJT_REP.map((m,i) => {
+    const vitiPrev = String(Number(viti) - 1);
+    const muajRowsAll = MUAJT_REP.map((m,i) => {
         const monthData = allData.filter(r => r.muaji === `${m}_${viti}`);
+        const prevMonthData = allData.filter(r => r.muaji === `${m}_${vitiPrev}`);
         const primi = monthData.reduce((s,r) => s + Number(r.primi_vjetor || r.total_primi || 0), 0);
+        const primiPrev = prevMonthData.reduce((s,r) => s + Number(r.primi_vjetor || r.total_primi || 0), 0);
         const deme = monthData.reduce((s,r) => s + Number(r.deme_total_vlera || 0), 0);
         const rinovuar = monthData.filter(r => r.statusi === 'rinovuar').length;
         const shpenz = monthData.reduce((s,r) => s + Number(r.shpenzimet || 0), 0);
         return {
-            muaji: m, label: MUAJT_LABEL[i],
+            muaji: m, label: MUAJT_LABEL[i].slice(0,3),
             total: monthData.length, rinovuar,
             humbur: monthData.filter(r => r.statusi === 'humbur').length,
-            primi, deme,
+            primi, primiPrev, deme,
+            lr: primi ? (deme/primi*100) : 0,
             cr: primi ? ((deme+shpenz)/primi*100) : 0,
             renewalRate: monthData.length ? (rinovuar/monthData.length*100) : 0
         };
-    }).filter(r => r.total > 0);
+    });
+    const muajRows = muajRowsAll.filter(r => r.total > 0);
 
     if (muajRows.length === 0) return `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna për krahasim</div></div>`;
 
+    repLineDual('chartRinKrahasimLine',
+        muajRowsAll.map(r => r.label),
+        muajRowsAll.map(r => +(r.primiPrev/1000).toFixed(0)),
+        muajRowsAll.map(r => +(r.primi/1000).toFixed(0)),
+        viti - 1, viti
+    );
+    repBarVertical('chartRinKrahasimBar',
+        muajRows.map(r => r.label),
+        muajRows.map(r => +r.lr.toFixed(1)),
+        '#1e3a8a', '%'
+    );
+
     return `
-        <div class="rep-table-wrap" style="margin-bottom:18px">
+        <div class="rep-grid-2col">
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Primi · ${viti-1} vs ${viti} (në K€)</h3></div>
+                <div style="padding:14px 18px">${repCanvas('chartRinKrahasimLine', 200)}</div>
+            </div>
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">LR% mujor</h3></div>
+                <div style="padding:14px 18px">${repCanvas('chartRinKrahasimBar', 200)}</div>
+            </div>
+        </div>
+
+        <div class="rep-table-wrap">
             <div class="rep-table-header"><h3 class="rep-table-title">Detaje mujore me delta</h3></div>
             <table class="rep-table">
                 <thead>
@@ -1064,21 +1112,6 @@ function renderRinKrahasim(allData, viti) {
                 </tbody>
             </table>
         </div>
-
-        <div class="rep-3col">
-            <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Primi total</h3></div>
-                <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'primi', 'label', 'linear-gradient(90deg,#1e3a8a,#3b82f6)', formatMoneyShort)}</div>
-            </div>
-            <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Renewal Rate %</h3></div>
-                <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'renewalRate', 'label', 'linear-gradient(90deg,#22c55e,#84cc16)', n=>n.toFixed(1)+'%')}</div>
-            </div>
-            <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Combined Ratio %</h3></div>
-                <div style="padding:18px 22px">${buildBarChartHorizontal(muajRows, 'cr', 'label', 'linear-gradient(90deg,#dc2626,#f87171)', n=>n.toFixed(1)+'%')}</div>
-            </div>
-        </div>
     `;
 }
 
@@ -1102,8 +1135,35 @@ function renderRinDeget(data) {
         cr: dege[d].primi ? ((dege[d].deme+dege[d].shpenz)/dege[d].primi*100) : 0
     }));
     const sorted = sortRows(rows, 'rinDeget', 'primi', 'desc');
+    const ranked = [...rows].sort((a,b) => b.primi - a.primi);
+    const canvasH = Math.max(240, ranked.length * 36 + 60);
+
+    repBarHorizontal('chartRinDegetH',
+        ranked.map(d => d.emri),
+        ranked.map(d => +(d.primi/1000).toFixed(1)),
+        '#1e3a8a', ''
+    );
+    const top4 = ranked.slice(0, 4);
+    const restSum = ranked.slice(4).reduce((s,d) => s + d.primi, 0);
+    const donutLabels = top4.map(d => d.emri).concat(restSum > 0 ? ['Të tjera'] : []);
+    const donutData = top4.map(d => d.primi).concat(restSum > 0 ? [restSum] : []);
+    repDonut('chartRinDegetDonut', donutData);
 
     return `
+        <div class="rep-grid-2col">
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Renditja e degëve sipas primit</h3></div>
+                <div style="padding:14px 18px">${repCanvasTall('chartRinDegetH', canvasH)}</div>
+            </div>
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Shpërndarja e primit</h3></div>
+                <div style="padding:14px 18px">
+                    ${repCanvas('chartRinDegetDonut', 180)}
+                    ${repDonutLegendHTML(donutLabels, donutData)}
+                </div>
+            </div>
+        </div>
+
         <div class="rep-table-wrap">
             <div class="rep-table-header">
                 <h3 class="rep-table-title">Performanca sipas degëve</h3>
@@ -1267,6 +1327,7 @@ function renderRaportiKontratat() {
     if (sub === 'deget') container.innerHTML = renderKonDeget(dataToUse);
     if (sub === 'agjentet') container.innerHTML = renderKonAgjentet(dataToUse);
     if (window.lucide) lucide.createIcons();
+    mountPendingCharts();
 }
 
 function renderKonPermbledhje(data, allData, viti, muaji) {
@@ -1318,43 +1379,61 @@ function renderKonPermbledhje(data, allData, viti, muaji) {
 }
 
 function renderKonKrahasim(allData, viti) {
+    const vitiPrev = String(Number(viti) - 1);
     const groups = groupByMonth(allData, viti);
-    const muajRows = MUAJT_REP.map((m,i) => {
-        const dataReal = groups[m];
-        return {
-            label: MUAJT_LABEL[i],
-            total: dataReal.length,
-            individ: dataReal.filter(k => k.lloji === 'individ').length,
-            familje: dataReal.filter(k => k.lloji === 'familje').length,
-            biznes: dataReal.filter(k => k.lloji === 'biznes').length
-        };
-    }).filter(r => r.total > 0);
+    const groupsPrev = groupByMonth(allData, vitiPrev);
+    const muajRowsAll = MUAJT_REP.map((m,i) => ({
+        label: MUAJT_LABEL[i].slice(0,3),
+        total: (groups[m] || []).length,
+        totalPrev: (groupsPrev[m] || []).length,
+        individ: (groups[m] || []).filter(k => k.lloji === 'individ').length,
+        familje: (groups[m] || []).filter(k => k.lloji === 'familje').length,
+        biznes: (groups[m] || []).filter(k => k.lloji === 'biznes').length
+    }));
+    const muajRows = muajRowsAll.filter(r => r.total > 0);
 
     if (muajRows.length === 0) return `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna</div></div>`;
 
+    repLineDual('chartKonKrahasimLine',
+        muajRowsAll.map(r => r.label),
+        muajRowsAll.map(r => r.totalPrev),
+        muajRowsAll.map(r => r.total),
+        viti - 1, viti
+    );
+    repBarVertical('chartKonKrahasimBar',
+        muajRows.map(r => r.label),
+        muajRows.map(r => r.total),
+        '#1e3a8a', ''
+    );
+
     return `
-        <div class="rep-2col left-bigger">
+        <div class="rep-grid-2col">
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Kontrata sipas muajit</h3></div>
-                <table class="rep-table">
-                    <thead><tr><th>Muaji</th><th class="right">Total</th><th class="right">Individ</th><th class="right">Familje</th><th class="right">Biznes</th></tr></thead>
-                    <tbody>
-                        ${muajRows.map(r => `
-                            <tr>
-                                <td><strong>${r.label}</strong></td>
-                                <td class="right"><strong>${r.total}</strong></td>
-                                <td class="right">${r.individ}</td>
-                                <td class="right">${r.familje}</td>
-                                <td class="right">${r.biznes}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                <div class="rep-table-header"><h3 class="rep-table-title">Kontrata · ${viti-1} vs ${viti}</h3></div>
+                <div style="padding:14px 18px">${repCanvas('chartKonKrahasimLine', 200)}</div>
             </div>
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Trend i kontratave</h3></div>
-                <div style="padding:14px 18px">${buildBarChartHorizontal(muajRows, 'total', 'label', 'linear-gradient(90deg,#10b981,#047857)', n=>n)}</div>
+                <div class="rep-table-header"><h3 class="rep-table-title">Kontrata mujore · ${viti}</h3></div>
+                <div style="padding:14px 18px">${repCanvas('chartKonKrahasimBar', 200)}</div>
             </div>
+        </div>
+
+        <div class="rep-table-wrap">
+            <div class="rep-table-header"><h3 class="rep-table-title">Detaje sipas muajit</h3></div>
+            <table class="rep-table">
+                <thead><tr><th>Muaji</th><th class="right">Total</th><th class="right">Individ</th><th class="right">Familje</th><th class="right">Biznes</th></tr></thead>
+                <tbody>
+                    ${muajRows.map(r => `
+                        <tr>
+                            <td><strong>${r.label}</strong></td>
+                            <td class="right"><strong>${r.total}</strong></td>
+                            <td class="right">${r.individ}</td>
+                            <td class="right">${r.familje}</td>
+                            <td class="right">${r.biznes}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         </div>
     `;
 }
@@ -1414,14 +1493,41 @@ function renderKonDeget(data) {
         retention: dege[d].total ? (dege[d].aktive/dege[d].total*100) : 0
     }));
     const sorted = sortRows(rows, 'konDeget', 'total', 'desc');
+    const ranked = [...rows].sort((a,b) => b.total - a.total);
+    const canvasH = Math.max(240, ranked.length * 36 + 60);
+
+    repBarHorizontal('chartKonDegetH',
+        ranked.map(d => d.emri),
+        ranked.map(d => d.total),
+        '#1e3a8a', ''
+    );
+    const top4 = ranked.slice(0, 4);
+    const restSum = ranked.slice(4).reduce((s,d) => s + d.total, 0);
+    const donutLabels = top4.map(d => d.emri).concat(restSum > 0 ? ['Të tjera'] : []);
+    const donutData = top4.map(d => d.total).concat(restSum > 0 ? [restSum] : []);
+    repDonut('chartKonDegetDonut', donutData);
+
     return `
-        <div class="rep-2col left-bigger">
+        <div class="rep-grid-2col">
             <div class="rep-table-wrap">
-                <div class="rep-table-header">
-                    <h3 class="rep-table-title">Performanca sipas degëve</h3>
-                    <input class="rep-table-search" placeholder="Kërko degë..." onkeyup="filtroTabelen(this,'#tblKonDeget')">
+                <div class="rep-table-header"><h3 class="rep-table-title">Renditja e degëve sipas kontratave</h3></div>
+                <div style="padding:14px 18px">${repCanvasTall('chartKonDegetH', canvasH)}</div>
+            </div>
+            <div class="rep-table-wrap">
+                <div class="rep-table-header"><h3 class="rep-table-title">Shpërndarja e kontratave</h3></div>
+                <div style="padding:14px 18px">
+                    ${repCanvas('chartKonDegetDonut', 180)}
+                    ${repDonutLegendHTML(donutLabels, donutData)}
                 </div>
-                <table class="rep-table sortable" id="tblKonDeget">
+            </div>
+        </div>
+
+        <div class="rep-table-wrap">
+            <div class="rep-table-header">
+                <h3 class="rep-table-title">Performanca sipas degëve</h3>
+                <input class="rep-table-search" placeholder="Kërko degë..." onkeyup="filtroTabelen(this,'#tblKonDeget')">
+            </div>
+            <table class="rep-table sortable" id="tblKonDeget">
                     <thead><tr>
                         <th onclick="sortTable('konDeget','emri','kontratat')">Dega ${sortArrow('konDeget','emri')}</th>
                         <th class="right" onclick="sortTable('konDeget','total','kontratat')">Total ${sortArrow('konDeget','total')}</th>
@@ -1447,11 +1553,6 @@ function renderKonDeget(data) {
                         `).join('')}
                     </tbody>
                 </table>
-            </div>
-            <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Vizualizim</h3></div>
-                <div style="padding:14px 18px">${buildBarChartHorizontal(sorted, 'total', 'emri', 'linear-gradient(90deg,#10b981,#047857)', n=>n)}</div>
-            </div>
         </div>
     `;
 }
@@ -1544,6 +1645,7 @@ function renderRaportiFaturimi() {
     if (sub === 'agjentet') container.innerHTML = renderFatAgjentet(filtered);
     if (sub === 'probleme') container.innerHTML = renderFatProbleme(filtered);
     if (window.lucide) lucide.createIcons();
+    mountPendingCharts();
 }
 
 function renderFatPermbledhje(data, viti, muaji) {
@@ -1689,6 +1791,7 @@ function renderRaportiOferta() {
     if (sub === 'agjentet') container.innerHTML = renderOfeAgjentet(filtered);
     if (sub === 'topoferta') container.innerHTML = renderOfeTop(filtered);
     if (window.lucide) lucide.createIcons();
+    mountPendingCharts();
 }
 
 function renderOfePermbledhje(data, viti, muaji) {
@@ -1729,42 +1832,63 @@ function renderOfePermbledhje(data, viti, muaji) {
 }
 
 function renderOfeKrahasim(allData, viti) {
+    const vitiPrev = String(Number(viti) - 1);
     const groups = groupByMonth(allData, viti);
-    const muajRows = MUAJT_REP.map((m,i) => {
-        const monthData = groups[m];
+    const groupsPrev = groupByMonth(allData, vitiPrev);
+    const muajRowsAll = MUAJT_REP.map((m,i) => {
+        const monthData = groups[m] || [];
+        const prevMonthData = groupsPrev[m] || [];
         const realizuar = monthData.filter(o => o.statusi === 'realizuar' || o.statusi === 'kontrate').length;
         return {
-            label: MUAJT_LABEL[i],
-            total: monthData.length,
+            label: MUAJT_LABEL[i].slice(0,3),
+            total: monthData.length, totalPrev: prevMonthData.length,
             realizuar,
             conversionRate: monthData.length ? (realizuar/monthData.length*100) : 0
         };
-    }).filter(r => r.total > 0);
+    });
+    const muajRows = muajRowsAll.filter(r => r.total > 0);
 
     if (muajRows.length === 0) return `<div class="rep-empty"><div class="rep-empty-title">Nuk ka të dhëna</div></div>`;
 
+    repLineDual('chartOfeKrahasimLine',
+        muajRowsAll.map(r => r.label),
+        muajRowsAll.map(r => r.totalPrev),
+        muajRowsAll.map(r => r.total),
+        viti - 1, viti
+    );
+    repBarVertical('chartOfeKrahasimBar',
+        muajRows.map(r => r.label),
+        muajRows.map(r => +r.conversionRate.toFixed(1)),
+        '#1e3a8a', '%'
+    );
+
     return `
-        <div class="rep-2col left-bigger">
+        <div class="rep-grid-2col">
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Oferta sipas muajit</h3></div>
-                <table class="rep-table">
-                    <thead><tr><th>Muaji</th><th class="right">Total</th><th class="right">Realizuar</th><th class="right">Conversion %</th></tr></thead>
-                    <tbody>
-                        ${muajRows.map(r => `
-                            <tr>
-                                <td><strong>${r.label}</strong></td>
-                                <td class="right"><strong>${r.total}</strong></td>
-                                <td class="right" style="color:#22c55e;font-weight:600">${r.realizuar}</td>
-                                <td class="right" style="color:${r.conversionRate>=30?'#22c55e':'#f59e0b'};font-weight:700">${r.conversionRate.toFixed(1)}%</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                <div class="rep-table-header"><h3 class="rep-table-title">Oferta · ${viti-1} vs ${viti}</h3></div>
+                <div style="padding:14px 18px">${repCanvas('chartOfeKrahasimLine', 200)}</div>
             </div>
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Trend i ofertave</h3></div>
-                <div style="padding:14px 18px">${buildBarChartHorizontal(muajRows, 'total', 'label', 'linear-gradient(90deg,#3b82f6,#1d4ed8)', n=>n)}</div>
+                <div class="rep-table-header"><h3 class="rep-table-title">Conversion % mujor</h3></div>
+                <div style="padding:14px 18px">${repCanvas('chartOfeKrahasimBar', 200)}</div>
             </div>
+        </div>
+
+        <div class="rep-table-wrap">
+            <div class="rep-table-header"><h3 class="rep-table-title">Detaje sipas muajit</h3></div>
+            <table class="rep-table">
+                <thead><tr><th>Muaji</th><th class="right">Total</th><th class="right">Realizuar</th><th class="right">Conversion %</th></tr></thead>
+                <tbody>
+                    ${muajRows.map(r => `
+                        <tr>
+                            <td><strong>${r.label}</strong></td>
+                            <td class="right"><strong>${r.total}</strong></td>
+                            <td class="right" style="color:#22c55e;font-weight:600">${r.realizuar}</td>
+                            <td class="right" style="color:${r.conversionRate>=30?'#22c55e':'#f59e0b'};font-weight:700">${r.conversionRate.toFixed(1)}%</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         </div>
     `;
 }
@@ -1822,35 +1946,57 @@ function renderOfeDeget(data) {
         conversionRate: dege[d].total ? (dege[d].realizuar/dege[d].total*100) : 0
     }));
     const sorted = sortRows(rows, 'ofeDeget', 'total', 'desc');
+    const ranked = [...rows].sort((a,b) => b.total - a.total);
+    const canvasH = Math.max(240, ranked.length * 36 + 60);
+
+    repBarHorizontal('chartOfeDegetH',
+        ranked.map(d => d.emri),
+        ranked.map(d => d.total),
+        '#1e3a8a', ''
+    );
+    const top4 = ranked.slice(0, 4);
+    const restSum = ranked.slice(4).reduce((s,d) => s + d.total, 0);
+    const donutLabels = top4.map(d => d.emri).concat(restSum > 0 ? ['Të tjera'] : []);
+    const donutData = top4.map(d => d.total).concat(restSum > 0 ? [restSum] : []);
+    repDonut('chartOfeDegetDonut', donutData);
+
     return `
-        <div class="rep-2col left-bigger">
+        <div class="rep-grid-2col">
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Performanca sipas degeve</h3></div>
-                <table class="rep-table sortable">
-                    <thead><tr>
-                        <th onclick="sortTable('ofeDeget','emri','oferta')">Dega ${sortArrow('ofeDeget','emri')}</th>
-                        <th class="right" onclick="sortTable('ofeDeget','total','oferta')">Total ${sortArrow('ofeDeget','total')}</th>
-                        <th class="right" onclick="sortTable('ofeDeget','realizuar','oferta')">Realizuar ${sortArrow('ofeDeget','realizuar')}</th>
-                        <th class="right" onclick="sortTable('ofeDeget','presin','oferta')">Presin ${sortArrow('ofeDeget','presin')}</th>
-                        <th class="right" onclick="sortTable('ofeDeget','conversionRate','oferta')">Conv% ${sortArrow('ofeDeget','conversionRate')}</th>
-                    </tr></thead>
-                    <tbody>
-                        ${sorted.map(d => `
-                            <tr>
-                                <td><strong>${esc(d.emri)}</strong></td>
-                                <td class="right">${d.total}</td>
-                                <td class="right" style="color:#22c55e;font-weight:600">${d.realizuar}</td>
-                                <td class="right" style="color:#f59e0b">${d.presin}</td>
-                                <td class="right" style="color:${d.conversionRate>=30?'#22c55e':'#f59e0b'};font-weight:700">${d.conversionRate.toFixed(1)}%</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                <div class="rep-table-header"><h3 class="rep-table-title">Renditja e degëve sipas ofertave</h3></div>
+                <div style="padding:14px 18px">${repCanvasTall('chartOfeDegetH', canvasH)}</div>
             </div>
             <div class="rep-table-wrap">
-                <div class="rep-table-header"><h3 class="rep-table-title">Vizualizim</h3></div>
-                <div style="padding:14px 18px">${buildBarChartHorizontal(sorted, 'total', 'emri', 'linear-gradient(90deg,#1e3a8a,#3b82f6)', n=>n)}</div>
+                <div class="rep-table-header"><h3 class="rep-table-title">Shpërndarja e ofertave</h3></div>
+                <div style="padding:14px 18px">
+                    ${repCanvas('chartOfeDegetDonut', 180)}
+                    ${repDonutLegendHTML(donutLabels, donutData)}
+                </div>
             </div>
+        </div>
+
+        <div class="rep-table-wrap">
+            <div class="rep-table-header"><h3 class="rep-table-title">Performanca sipas degeve</h3></div>
+            <table class="rep-table sortable">
+                <thead><tr>
+                    <th onclick="sortTable('ofeDeget','emri','oferta')">Dega ${sortArrow('ofeDeget','emri')}</th>
+                    <th class="right" onclick="sortTable('ofeDeget','total','oferta')">Total ${sortArrow('ofeDeget','total')}</th>
+                    <th class="right" onclick="sortTable('ofeDeget','realizuar','oferta')">Realizuar ${sortArrow('ofeDeget','realizuar')}</th>
+                    <th class="right" onclick="sortTable('ofeDeget','presin','oferta')">Presin ${sortArrow('ofeDeget','presin')}</th>
+                    <th class="right" onclick="sortTable('ofeDeget','conversionRate','oferta')">Conv% ${sortArrow('ofeDeget','conversionRate')}</th>
+                </tr></thead>
+                <tbody>
+                    ${sorted.map(d => `
+                        <tr>
+                            <td><strong>${esc(d.emri)}</strong></td>
+                            <td class="right">${d.total}</td>
+                            <td class="right" style="color:#22c55e;font-weight:600">${d.realizuar}</td>
+                            <td class="right" style="color:#f59e0b">${d.presin}</td>
+                            <td class="right" style="color:${d.conversionRate>=30?'#22c55e':'#f59e0b'};font-weight:700">${d.conversionRate.toFixed(1)}%</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         </div>
     `;
 }
@@ -1986,4 +2132,139 @@ function formatMoneyShort(v) {
     if (Math.abs(n) >= 1000000) return (n / 1000000).toFixed(1) + 'M€';
     if (Math.abs(n) >= 1000) return (n / 1000).toFixed(0) + 'K€';
     return formatMoney(n);
+}
+
+// ============================================================
+// CHART.JS HELPERS
+// ============================================================
+let __pendingCharts = [];
+let __activeCharts = {};
+
+function repCanvas(id, height) {
+    const h = height || 180;
+    return `<div class="rep-chart-wrap" style="height:${h}px"><canvas id="${id}"></canvas></div>`;
+}
+
+function repCanvasTall(id, height) {
+    return `<div class="rep-chart-wrap-tall" style="height:${height || 240}px"><canvas id="${id}"></canvas></div>`;
+}
+
+function queueChart(id, type, data, options) {
+    __pendingCharts.push({ id, type, data, options: options || {} });
+}
+
+function mountPendingCharts() {
+    if (typeof Chart === 'undefined') { __pendingCharts = []; return; }
+    __pendingCharts.forEach(cfg => {
+        const el = document.getElementById(cfg.id);
+        if (!el) return;
+        if (__activeCharts[cfg.id]) { try { __activeCharts[cfg.id].destroy(); } catch {} }
+        __activeCharts[cfg.id] = new Chart(el, {
+            type: cfg.type,
+            data: cfg.data,
+            options: Object.assign({
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }, cfg.options)
+        });
+    });
+    __pendingCharts = [];
+}
+
+function repLineDual(id, labels, prevData, currData, prevLabel, currLabel) {
+    queueChart(id, 'line', {
+        labels,
+        datasets: [
+            {
+                label: prevLabel || 'Vit i kaluar',
+                data: prevData,
+                borderColor: '#cbd5e1',
+                backgroundColor: 'transparent',
+                borderWidth: 1.5,
+                borderDash: [4, 3],
+                tension: 0.4,
+                pointRadius: 0
+            },
+            {
+                label: currLabel || 'Vit aktual',
+                data: currData,
+                borderColor: '#1e3a8a',
+                backgroundColor: 'rgba(30,58,138,0.06)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 0
+            }
+        ]
+    }, {
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 }, color: '#94a3b8' } },
+            x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#94a3b8' } }
+        }
+    });
+}
+
+function repBarVertical(id, labels, data, color, suffix) {
+    queueChart(id, 'bar', {
+        labels,
+        datasets: [{
+            data,
+            backgroundColor: color || '#1e3a8a',
+            borderRadius: 4,
+            barPercentage: 0.6
+        }]
+    }, {
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 }, color: '#94a3b8', callback: v => v + (suffix || '') } },
+            x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#94a3b8' } }
+        }
+    });
+}
+
+function repBarHorizontal(id, labels, data, color, suffix) {
+    queueChart(id, 'bar', {
+        labels,
+        datasets: [{
+            data,
+            backgroundColor: color || '#1e3a8a',
+            borderRadius: 4,
+            barPercentage: 0.7
+        }]
+    }, {
+        indexAxis: 'y',
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => formatMoneyShort(ctx.parsed.x) + (suffix === '%' ? '%' : '') } }
+        },
+        scales: {
+            x: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 }, color: '#94a3b8', callback: v => formatMoneyShort(v) } },
+            y: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#475569' } }
+        }
+    });
+}
+
+function repDonut(id, data) {
+    queueChart(id, 'doughnut', {
+        datasets: [{
+            data,
+            backgroundColor: ['#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'],
+            borderWidth: 0
+        }]
+    }, {
+        cutout: '65%'
+    });
+}
+
+function repDonutLegendHTML(labels, data, colors) {
+    const total = data.reduce((s, v) => s + v, 0);
+    const cs = colors || ['#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'];
+    return `<div class="rep-donut-legend">${labels.map((l, i) => {
+        const v = data[i] || 0, pct = total > 0 ? (v / total * 100).toFixed(0) : 0;
+        return `<div class="rep-donut-legend-item">
+            <span class="dot" style="background:${cs[i % cs.length]}"></span>
+            <span class="name">${esc(l)}</span>
+            <span class="pct">${pct}%</span>
+        </div>`;
+    }).join('')}</div>`;
 }

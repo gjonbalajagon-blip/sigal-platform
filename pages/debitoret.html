@@ -208,10 +208,10 @@
                 <div class="tabs" id="debTabs"></div>
             </div>
 
-            <div class="stats-strip" id="stripMetrics"></div>
-            <div class="info-chips-row" id="stripChips"></div>
+            <div class="stats-thin-row" id="stripFinanciar"></div>
+            <div class="stats-thin-row stats-thin-secondary" id="stripStatuset"></div>
 
-            <div class="chips-row" id="chipsDega"></div>
+            <div class="dega-filter-row" id="degaFilterRow"></div>
             <div class="chips-row" id="chipsAgjent"></div>
 
             <div class="filters-row">
@@ -310,25 +310,36 @@
 </div>
 
     <div class="deb-modal-overlay" id="debImportModal">
-        <div class="deb-modal">
-            <div class="deb-modal-header">
-                <h3>Importo raportin e debitorëve</h3>
-                <span class="deb-modal-close" onclick="mbyllImportModal()">&times;</span>
+        <div class="deb-modal" style="max-width:460px;">
+            <div class="deb-modal-header" style="border-bottom:1px solid rgba(226,232,240,0.6);background:rgba(255,255,255,0.5);">
+                <div>
+                    <div class="drawer-title-gradient">Importo raportin e debitorëve</div>
+                    <div class="drawer-subtitle">Ngarko skedar Excel për të shtuar të dhënat</div>
+                </div>
+                <button class="drawer-close" onclick="mbyllImportModal()" type="button">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
             <div class="deb-modal-body" id="importStep1">
-                <div class="deb-upload-zone" id="uploadZone"
+                <div class="form-field" style="margin-bottom:14px;">
+                    <label style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Muaji i raportit</label>
+                    <select id="importMuaji" style="width:100%;padding:10px 12px;border:1px solid #e5e9f0;border-radius:10px;font-size:13px;font-family:inherit;background:#fff;outline:none;"></select>
+                </div>
+
+                <div class="dropzone" id="uploadZone"
                      onclick="document.getElementById('fileInput').click()"
                      ondragover="event.preventDefault();this.classList.add('dragover')"
                      ondragleave="this.classList.remove('dragover')"
                      ondrop="handleDrop(event)">
-                    <div class="deb-upload-icon">⬆</div>
-                    <div class="deb-upload-title">Tërhiq Excel këtu</div>
-                    <div class="deb-upload-sub">ose kliko për të zgjedhur (.xlsx, .xls)</div>
+                    <div class="dropzone-icon"><i data-lucide="upload"></i></div>
+                    <div class="dropzone-title">Tërhiq skedarin këtu</div>
+                    <div class="dropzone-subtitle">ose <span class="dropzone-link">kliko për të zgjedhur</span></div>
+                    <div class="dropzone-meta">Formate: .xlsx, .xls · Maks 10MB</div>
                 </div>
 
-                <div style="margin-top:14px;">
-                    <label style="font-size:13px;color:#64748b;font-weight:500;display:block;margin-bottom:6px;">Muaji i raportit</label>
-                    <select id="importMuaji" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;"></select>
+                <div class="info-box">
+                    <div class="info-box-title">ℹ Udhëzim</div>
+                    <div class="info-box-text">Skedari duhet të ketë kolonat: Klienti · NRB · Borxhi · Dega · Agjenti</div>
                 </div>
 
                 <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFileSelect(event)">
@@ -336,9 +347,11 @@
 
             <div class="deb-modal-body" id="importStep2" style="display:none;"></div>
 
-            <div class="deb-modal-footer">
-                <button class="deb-btn-secondary" onclick="mbyllImportModal()">Anulo</button>
-                <button class="deb-btn-primary" id="importConfirmBtn" style="display:none;" onclick="konfirmoImportin()">Konfirmo importin</button>
+            <div class="drawer-footer">
+                <button class="btn-cancel" onclick="mbyllImportModal()" type="button">Anulo</button>
+                <button class="btn-save" id="importConfirmBtn" style="display:none;" onclick="konfirmoImportin()" type="button">
+                    <i data-lucide="upload"></i> Importo
+                </button>
             </div>
         </div>
     </div>
@@ -352,9 +365,9 @@
             <div class="deb-modal-body">
                 <div id="statusDynamicFields"></div>
             </div>
-            <div class="deb-modal-footer">
-                <button class="deb-btn-secondary" onclick="mbyllStatusModal()">Anulo</button>
-                <button class="deb-btn-primary" onclick="ruajStatusin()">Ruaj</button>
+            <div class="drawer-footer">
+                <button class="btn-cancel" onclick="mbyllStatusModal()" type="button">Anulo</button>
+                <button class="btn-save" onclick="ruajStatusin()" type="button"><i data-lucide="check"></i> Ruaj</button>
             </div>
         </div>
     </div>
@@ -366,9 +379,9 @@
             <span class="deb-drawer-close" onclick="mbyllMenaxhoAgjentet()">&times;</span>
         </div>
         <div style="padding:20px 24px;overflow-y:auto" id="agjentModalBody"></div>
-        <div style="padding:14px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:8px;background:#f8fafc">
-            <button class="deb-btn-secondary" onclick="mbyllMenaxhoAgjentet()">Anulo</button>
-            <button class="deb-btn-primary" onclick="ruajAgjentMapping()">Ruaj dhe aplikoj</button>
+        <div class="drawer-footer">
+            <button class="btn-cancel" onclick="mbyllMenaxhoAgjentet()" type="button">Anulo</button>
+            <button class="btn-save" onclick="ruajAgjentMapping()" type="button"><i data-lucide="check"></i> Ruaj dhe aplikoj</button>
         </div>
     </div>
 </div>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sq">
 <head>
     <meta charset="UTF-8">
@@ -6,67 +6,7 @@
     <title>Sigal Health | Dashboard</title>
     <link rel="stylesheet" href="../css/theme-v2.css">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* Dashboard KPI subtitle — theme-v2 .kpi-card handles layout/icon */
-        .kpi-card .kpi-sub { font-size: 11px; color: var(--s-text-muted, #6b7a8d); margin-top: 2px; }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-        .chart-card {
-            background: #fff;
-            border-radius: 10px;
-            border: 1px solid var(--sigal-border);
-            padding: 18px 20px;
-        }
-        .chart-card h3 {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--sigal-text-light);
-            margin-bottom: 16px;
-        }
-        .chart-wrap {
-            position: relative;
-            height: 200px;
-        }
-
-        .skadon-card-wrap {
-            background: #fff;
-            border-radius: 10px;
-            border: 1px solid var(--sigal-border);
-            padding: 18px 20px;
-        }
-        .skadon-card-wrap h3 {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--sigal-text-light);
-            margin-bottom: 14px;
-        }
-        .skadon-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--sigal-border);
-        }
-        .skadon-row:last-child { border-bottom: none; }
-        .skadon-name { font-size: 13px; font-weight: 600; flex: 1; }
-        .skadon-lloji { font-size: 11px; color: #fff; padding: 2px 7px; border-radius: 10px; }
-        .skadon-lloji.individ { background: #1e40af; }
-        .skadon-lloji.familje { background: #166534; }
-        .skadon-lloji.biznes { background: #b45309; }
-        .skadon-bar-wrap { flex: 2; background: #f0f4fa; border-radius: 4px; height: 6px; }
-        .skadon-bar { height: 6px; border-radius: 4px; }
-        .skadon-dite { font-size: 12px; font-weight: 700; min-width: 60px; text-align: right; }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 </head>
 <body>
 
@@ -95,15 +35,15 @@
                 <span class="nav-icon"><i data-lucide="receipt"></i></span>
                 <span class="nav-label">Faturimi</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="rinovimet.html" class="nav-item" data-label="Rinovimet">
                 <span class="nav-icon"><i data-lucide="refresh-cw"></i></span>
                 <span class="nav-label">Rinovimet</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="debitoret.html" class="nav-item" data-label="Debitorët">
                 <span class="nav-icon"><i data-lucide="wallet"></i></span>
                 <span class="nav-label">Debitorët</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="raportet.html" class="nav-item" data-label="Raportet">
                 <span class="nav-icon"><i data-lucide="bar-chart-3"></i></span>
                 <span class="nav-label">Raportet</span>
             </a>
@@ -136,66 +76,108 @@
 
         <div class="content-area">
 
+            <!-- Greeting + period filter -->
+            <div class="dash-period-row">
+                <div class="dashboard-greeting">
+                    <h2 id="dashGreeting">Përshëndetje 👋</h2>
+                    <p id="dashSubtitle">—</p>
+                </div>
+                <div class="dash-period-chips">
+                    <button class="dash-period-chip active" data-period="muaj" onclick="ndryshoPeriod('muaj')" id="periodMuajBtn">Muaji</button>
+                    <button class="dash-period-chip" data-period="vit" onclick="ndryshoPeriod('vit')" id="periodVitBtn">Viti</button>
+                </div>
+            </div>
+
             <!-- KPI Cards -->
             <div class="stats-strip">
                 <div class="kpi-card">
-                    <div class="kpi-icon kpi-icon-total"><i data-lucide="file-check"></i></div>
+                    <div class="kpi-icon kpi-icon-blue"><i data-lucide="file-check"></i></div>
                     <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
                     <div class="kpi-body">
                         <div class="sm-lbl">Kontratat Aktive</div>
                         <div class="sm-num" id="kpi-aktive">0</div>
-                        <div class="kpi-sub" id="kpi-aktive-sub">— individ / — familje / — biznes</div>
+                        <div class="kpi-sub" id="kpi-aktive-sub">— individ · — familje · — biznes</div>
                     </div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-icon kpi-icon-skadon"><i data-lucide="clock"></i></div>
+                    <div class="kpi-icon kpi-icon-orange"><i data-lucide="clock"></i></div>
                     <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
                     <div class="kpi-body">
                         <div class="sm-lbl">Skadojnë ≤ 35 ditë</div>
-                        <div class="sm-num skadon-num" id="kpi-skadon">0</div>
-                        <div class="kpi-sub">kontrata kërkojnë vëmendje</div>
+                        <div class="sm-num" id="kpi-skadon">0</div>
+                        <div class="kpi-sub">Kërkojnë vëmendje</div>
                     </div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-icon kpi-icon-total"><i data-lucide="clipboard-list"></i></div>
+                    <div class="kpi-icon kpi-icon-blue"><i data-lucide="clipboard-list"></i></div>
                     <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
                     <div class="kpi-body">
                         <div class="sm-lbl">Ofertat Aktive</div>
                         <div class="sm-num" id="kpi-ofertat">0</div>
-                        <div class="kpi-sub" id="kpi-ofertat-sub">— të realizuara</div>
+                        <div class="kpi-sub" id="kpi-ofertat-sub">— të realizuara këtë vit</div>
                     </div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-icon kpi-icon-aktive"><i data-lucide="receipt"></i></div>
+                    <div class="kpi-icon kpi-icon-green"><i data-lucide="receipt"></i></div>
                     <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
                     <div class="kpi-body">
                         <div class="sm-lbl">Fatura të Lëshuara</div>
-                        <div class="sm-num aktive-num" id="kpi-leshuar">0</div>
+                        <div class="sm-num" id="kpi-leshuar">0</div>
                         <div class="kpi-sub" id="kpi-leshuar-sub">muaji aktual</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Grafikët -->
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <h3>Kontratat sipas Llojit</h3>
-                    <div class="chart-wrap">
-                        <canvas id="chart-lloji"></canvas>
+            <!-- Row 2: Two donut charts -->
+            <div class="dash-charts-row-2">
+                <div class="dash-chart-card">
+                    <h3 class="dash-chart-title">Kontratat Sipas Llojit</h3>
+                    <div class="dash-chart-subtitle" id="donutLlojiSub">Shpërndarja aktuale</div>
+                    <div class="dash-donut-wrap">
+                        <div class="dash-donut-canvas"><canvas id="chart-lloji"></canvas></div>
+                        <div class="dash-donut-legend" id="legendLloji"></div>
                     </div>
                 </div>
-                <div class="chart-card">
-                    <h3>Statusi i Faturimit — Muaji Aktual</h3>
-                    <div class="chart-wrap">
-                        <canvas id="chart-faturimi"></canvas>
+                <div class="dash-chart-card">
+                    <h3 class="dash-chart-title">Statusi i Faturimit</h3>
+                    <div class="dash-chart-subtitle" id="donutFatSub">Muaji aktual</div>
+                    <div class="dash-donut-wrap">
+                        <div class="dash-donut-canvas"><canvas id="chart-faturimi"></canvas></div>
+                        <div class="dash-donut-legend" id="legendFaturimi"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Skadojnë së shpejti -->
-            <div class="skadon-card-wrap">
-                <h3>⚠️ Kontratat që skadojnë së shpejti</h3>
-                <div id="lista-skadon"><p style="color:#94a3b8;font-size:13px;">Duke ngarkuar...</p></div>
+            <!-- Row 3: Line chart 12-month -->
+            <div class="dash-chart-card" style="margin-bottom:14px;">
+                <div class="dash-chart-header">
+                    <div>
+                        <h3 class="dash-chart-title">Trendi i Kontratave · 12 Muaj</h3>
+                        <div class="dash-chart-subtitle" style="margin-bottom:0">Kontratat e reja vs kontratat e rinovuara</div>
+                    </div>
+                    <div class="dash-line-legend">
+                        <span class="dash-line-legend-item"><span class="swatch" style="background:#3b82f6"></span> Të reja</span>
+                        <span class="dash-line-legend-item"><span class="swatch" style="background:#10b981"></span> Rinovuar</span>
+                    </div>
+                </div>
+                <div class="dash-line-wrap"><canvas id="chart-trend"></canvas></div>
+            </div>
+
+            <!-- Row 4: Two panels -->
+            <div class="dash-panels-row">
+                <div class="dash-panel">
+                    <div class="dash-panel-header">
+                        <div class="dash-panel-title"><i data-lucide="alert-triangle" style="width:14px;height:14px;color:#d97706"></i> Skadojnë Së Shpejti</div>
+                        <span class="dash-panel-badge" id="badgeSkadon">0</span>
+                    </div>
+                    <div id="lista-skadon"><div class="dash-panel-empty">Duke ngarkuar...</div></div>
+                </div>
+                <div class="dash-panel">
+                    <div class="dash-panel-header">
+                        <div class="dash-panel-title"><i data-lucide="activity" style="width:14px;height:14px;color:#3b82f6"></i> Veprimet e Fundit</div>
+                    </div>
+                    <div id="lista-veprime"><div class="dash-panel-empty">Asnjë veprim së fundi</div></div>
+                </div>
             </div>
 
         </div>
