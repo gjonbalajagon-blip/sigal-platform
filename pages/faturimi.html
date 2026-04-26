@@ -59,39 +59,86 @@
             </div>
         </div>
         <div class="content-area">
-            <!-- TABS -->
+            <!-- TABS + Period filter -->
             <div class="tabs-row">
                 <div class="tabs">
                     <button class="tab-btn active" id="tab-mujor" onclick="ndryshoTab('mujor')">Mujor <span class="tab-count" id="tab-count-mujor">0</span></button>
                     <button class="tab-btn" id="tab-vjetor" onclick="ndryshoTab('vjetor')">Vjetor <span class="tab-count" id="tab-count-vjetor">0</span></button>
                 </div>
+                <div class="tabs-filters">
+                    <label style="font-size:11px;color:var(--s-text-muted);font-weight:600;">Viti:</label>
+                    <select id="filter-viti" class="filter-select" onchange="filtroKlientet()">
+                        <option value="all">Të gjitha</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                    <label style="font-size:11px;color:var(--s-text-muted);font-weight:600;margin-left:4px;">Muaji:</label>
+                    <select id="filter-muaji" class="filter-select" onchange="filtroKlientet()">
+                        <option value="1">Janar</option><option value="2">Shkurt</option><option value="3">Mars</option><option value="4">Prill</option><option value="5">Maj</option><option value="6">Qershor</option><option value="7">Korrik</option><option value="8">Gusht</option><option value="9">Shtator</option><option value="10">Tetor</option><option value="11">Nëntor</option><option value="12">Dhjetor</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- THIN STATS — pa ngjyra te numrat -->
-            <div class="stats-thin-row">
-                <div class="stat-thin"><span class="stat-thin-label">TOTAL</span><span class="stat-thin-value" id="st-total">0</span></div>
-                <div class="stat-thin-divider"></div>
-                <div class="stat-thin"><span class="stat-thin-label">ASGJË</span><span class="stat-thin-value" id="st-asgje">0</span></div>
-                <div class="stat-thin-divider"></div>
-                <div class="stat-thin"><span class="stat-thin-label">KËRKESË</span><span class="stat-thin-value" id="st-kerkesa">0</span></div>
-                <div class="stat-thin-divider"></div>
-                <div class="stat-thin"><span class="stat-thin-label">NË PROCES</span><span class="stat-thin-value" id="st-process">0</span></div>
-                <div class="stat-thin-divider"></div>
-                <div class="stat-thin"><span class="stat-thin-label">E LËSHUAR</span><span class="stat-thin-value" id="st-leshuar">0</span></div>
+            <!-- KPI Cards (clickable) -->
+            <div class="stats-strip">
+                <div class="kpi-card" data-filter="all" onclick="filtroStatusCard('all')">
+                    <div class="kpi-icon kpi-icon-total"><i data-lucide="bar-chart-3"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Total</div>
+                        <div class="sm-num" id="st-total">0</div>
+                    </div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                </div>
+                <div class="kpi-card" data-filter="asgje" onclick="filtroStatusCard('asgje')">
+                    <div class="kpi-icon kpi-icon-muted"><i data-lucide="circle-dashed"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Asgjë</div>
+                        <div class="sm-num" id="st-asgje">0</div>
+                    </div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                </div>
+                <div class="kpi-card" data-filter="kerkesa" onclick="filtroStatusCard('kerkesa')">
+                    <div class="kpi-icon kpi-icon-skadon"><i data-lucide="mail"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Kërkesë</div>
+                        <div class="sm-num skadon-num" id="st-kerkesa">0</div>
+                    </div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                </div>
+                <div class="kpi-card" data-filter="process" onclick="filtroStatusCard('process')">
+                    <div class="kpi-icon kpi-icon-blue"><i data-lucide="clock"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">Në Proces</div>
+                        <div class="sm-num" id="st-process">0</div>
+                    </div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                </div>
+                <div class="kpi-card" data-filter="leshuar" onclick="filtroStatusCard('leshuar')">
+                    <div class="kpi-icon kpi-icon-aktive"><i data-lucide="check-circle"></i></div>
+                    <div class="kpi-body">
+                        <div class="sm-lbl">E Lëshuar</div>
+                        <div class="sm-num aktive-num" id="st-leshuar">0</div>
+                    </div>
+                    <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                </div>
             </div>
 
-            <!-- LLOJET CHIPS (rendered by faturimi.js) -->
-            <div class="info-chips-row" id="st-llojet"></div>
+            <!-- Mujor/Vjetor info chips fshehur (mbahen për kompatibilitet me js) -->
+            <div class="info-chips-row" id="st-llojet" style="display:none"></div>
 
             <!-- FILTERS -->
             <div class="filters-row">
-                <select id="filter-status" onchange="filtroKlientet()"><option value="all">Të gjithë statuset</option><option value="asgje">Asgjë</option><option value="kerkesa">Kërkesë</option><option value="process">Në Proces</option><option value="leshuar">E Lëshuar</option></select>
-                <select id="filter-muaji" onchange="filtroKlientet()">
-                    <option value="1">Janar</option><option value="2">Shkurt</option><option value="3">Mars</option><option value="4">Prill</option><option value="5">Maj</option><option value="6">Qershor</option><option value="7">Korrik</option><option value="8">Gusht</option><option value="9">Shtator</option><option value="10">Tetor</option><option value="11">Nëntor</option><option value="12">Dhjetor</option>
+                <!-- filter-status fshehur — KPI cards e zëvendësojnë -->
+                <select id="filter-status" onchange="filtroKlientet()" style="display:none">
+                    <option value="all">Të gjithë statuset</option>
+                    <option value="asgje">Asgjë</option>
+                    <option value="kerkesa">Kërkesë</option>
+                    <option value="process">Në Proces</option>
+                    <option value="leshuar">E Lëshuar</option>
                 </select>
-                <select id="filter-krijuar" onchange="filtroKlientet()"><option value="all">Të gjithë agjentët</option></select>
+                <select id="filter-krijuar" class="filter-select" onchange="filtroKlientet()"><option value="all">Të gjithë agjentët</option></select>
                 <input type="text" id="search-klient" placeholder="Kërko klient..." onkeyup="filtroKlientet()">
-                <select id="filter-viti" onchange="filtroKlientet()"><option value="all">Të gjitha vitet</option><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option></select>
             </div>
 
             <!-- TABELA -->

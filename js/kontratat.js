@@ -311,8 +311,21 @@ function toggleSkadViti(viti){skadVitetOpen[viti]=!skadVitetOpen[viti];renderTab
 
 function renderTabela(){
     const filterLloji=document.getElementById('filter-lloji').value;
+    const filterViti=document.getElementById('filter-viti')?.value||'all';
+    const filterMuaji=document.getElementById('filter-muaji')?.value||'all';
     const search=document.getElementById('search-kontrate').value.toLowerCase();
-    const kontratatRolit=filtroSipasRolit(kontratat,'krijuarNga');
+    const matchesPeriudha=k=>{
+        if(filterViti==='all'&&filterMuaji==='all')return true;
+        const dt=k.fillimi||k.dataKontrates||k.dataKrijimit||'';
+        if(!dt)return false;
+        let y='',m='';
+        if(dt.includes('-')){const p=dt.split('-');y=p[0]||'';m=p[1]||'';}
+        else if(dt.includes('/')){const p=dt.split('/');m=p[1]||'';y=p[2]||'';}
+        if(filterViti!=='all'&&y!==filterViti)return false;
+        if(filterMuaji!=='all'&&m!==filterMuaji)return false;
+        return true;
+    };
+    const kontratatRolit=filtroSipasRolit(kontratat,'krijuarNga').filter(matchesPeriudha);
     const aktive=kontratatRolit.filter(k=>!k.arkivuar&&llogaritStatus(k.mbarimi)!=='skaduar');
     const skaduar=kontratatRolit.filter(k=>llogaritStatus(k.mbarimi)==='skaduar'||k.arkivuar);
 

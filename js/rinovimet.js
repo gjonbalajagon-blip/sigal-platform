@@ -114,13 +114,15 @@ function populoChips(){
     h+=`<button class="dega-chip ${currentDega===''?'active':''}" onclick="filtroDega('')">Të gjitha · <span class="dega-count">${data.length}</span></button>`;
     deget.forEach(d=>{const s=degaStats[d];const cls=(d==='Pa degë'||!d)?'dega-chip no-dega':'dega-chip';h+=`<button class="${cls} ${currentDega===d?'active':''}" onclick="filtroDega('${esc(d)}')">${esc(d)} · <span class="dega-count">${s.total}</span></button>`;});
     document.getElementById('degaFilterRow').innerHTML=h;
-    // Agjent sub-row (only if dega selected)
+    // Agjent sub-row (only if dega selected) — same dega-chip style
     const agjEl=document.getElementById('chipsAgjent');
     if(currentDega&&degaStats[currentDega]){
         const agj=degaStats[currentDega].agjentet;const aKeys=Object.keys(agj).sort();
         const degaStat=degaStats[currentDega];
-        let aH=`<button class="chip-filter ${currentAgjent===''?'active':''}" onclick="filtroAgjent('')" style="margin-left:16px">Të gjithë <span class="chip-count">${degaStat.total}/${degaStat.rinovuar}✓</span></button>`;
-        aKeys.forEach(a=>{const s=agj[a];aH+=`<button class="chip-filter ${currentAgjent===a?'active':''}" onclick="filtroAgjent('${esc(a)}')">${esc(a)} <span class="chip-count">${s.total}/${s.rinovuar}✓</span></button>`;});
+        agjEl.classList.add('dega-filter-row');agjEl.classList.remove('chips-row');
+        let aH=`<span class="dega-filter-label">Agjenti:</span>`;
+        aH+=`<button class="dega-chip ${currentAgjent===''?'active':''}" onclick="filtroAgjent('')" type="button">Të gjithë · <span class="dega-count">${degaStat.total}</span></button>`;
+        aKeys.forEach(a=>{const s=agj[a];aH+=`<button class="dega-chip ${currentAgjent===a?'active':''}" onclick="filtroAgjent('${esc(a)}')" type="button">${esc(a)} · <span class="dega-count">${s.total}</span></button>`;});
         agjEl.innerHTML=aH;agjEl.style.display='';
     }else{agjEl.innerHTML='';agjEl.style.display='none';}
 }

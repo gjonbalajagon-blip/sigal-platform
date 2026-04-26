@@ -308,7 +308,14 @@ function aplikoFiltrat() {
 
     const search = (document.getElementById('debSearch')?.value || '').toLowerCase().trim();
     const balanceFilter = document.getElementById('balanceFilter')?.value || 'all';
+    const filterViti = document.getElementById('filter-viti')?.value || 'all';
 
+    if (filterViti !== 'all') {
+        data = data.filter(r => {
+            const m = (r.muaji || '').toString();
+            return m.endsWith('_' + filterViti) || m.startsWith(filterViti) || m.includes(filterViti);
+        });
+    }
     if (currentStatusFilter !== 'total') data = data.filter(r => r.statusi === currentStatusFilter);
     if (currentDega) data = data.filter(r => r.dega === currentDega);
     if (currentAgjent) data = data.filter(r => r.agjenti === currentAgjent);
@@ -380,18 +387,43 @@ function perditesoStats() {
         totalMbetur += Number(r.mbetur || (Number(r.debitori_total || 0) - Number(r.shuma_paguar || 0)));
     });
 
-    // Niveli 1: 4 stats financiare (pa 91-180)
+    // Niveli 1: 4 KPI cards (Borxhi · Mbi 365 · Paguar · Mbetur)
     document.getElementById('stripFinanciar').innerHTML = `
-        <div class="stat-thin"><span class="stat-thin-label">BORXHI TOTAL</span><span class="stat-thin-value">${formatMoneyShort(totalBorxh)}</span></div>
-        <div class="stat-thin-divider"></div>
-        <div class="stat-thin"><span class="stat-thin-label">MBI 365 DITË</span><span class="stat-thin-value">${formatMoneyShort(totalRisk)}</span></div>
-        <div class="stat-thin-divider"></div>
-        <div class="stat-thin"><span class="stat-thin-label">PAGUAR</span><span class="stat-thin-value">${formatMoneyShort(totalPaguar)}</span></div>
-        <div class="stat-thin-divider"></div>
-        <div class="stat-thin"><span class="stat-thin-label">MBETUR</span><span class="stat-thin-value">${formatMoneyShort(totalMbetur)}</span></div>
+        <div class="kpi-card">
+            <div class="kpi-icon kpi-icon-blue"><i data-lucide="wallet"></i></div>
+            <div class="kpi-body">
+                <div class="sm-lbl">Borxhi total</div>
+                <div class="sm-num">${formatMoneyShort(totalBorxh)}</div>
+            </div>
+            <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon kpi-icon-red"><i data-lucide="alert-triangle"></i></div>
+            <div class="kpi-body">
+                <div class="sm-lbl">Mbi 365 ditë</div>
+                <div class="sm-num">${formatMoneyShort(totalRisk)}</div>
+            </div>
+            <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon kpi-icon-green"><i data-lucide="check-circle"></i></div>
+            <div class="kpi-body">
+                <div class="sm-lbl">Paguar</div>
+                <div class="sm-num">${formatMoneyShort(totalPaguar)}</div>
+            </div>
+            <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon kpi-icon-orange"><i data-lucide="clock"></i></div>
+            <div class="kpi-body">
+                <div class="sm-lbl">Mbetur</div>
+                <div class="sm-num">${formatMoneyShort(totalMbetur)}</div>
+            </div>
+            <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+        </div>
     `;
 
-    // Niveli 2: Statuset clickable (5 në një rresht me numër · €)
+    // Niveli 2: Statuset clickable (7 — me I ri dhe Paguar total)
     const af = currentStatusFilter || '';
     const sBtn = (key, label) => `
         <button class="stat-thin-filter${af===key?' active':''}" data-status="${key}" onclick="filtroStatusStrip('${key}')" type="button">
@@ -400,9 +432,13 @@ function perditesoStats() {
         </button>`;
     document.getElementById('stripStatuset').innerHTML = `
         <span class="stats-thin-prefix">STATUSET</span>
+        ${sBtn('i_ri','I ri')}
+        <div class="stat-thin-divider"></div>
         ${sBtn('kontaktuar','Kontaktuar')}
         <div class="stat-thin-divider"></div>
         ${sBtn('premtim_pagese','Premtim')}
+        <div class="stat-thin-divider"></div>
+        ${sBtn('paguar_total','Paguar total')}
         <div class="stat-thin-divider"></div>
         ${sBtn('paguar_pjesshem','Pjesshëm')}
         <div class="stat-thin-divider"></div>

@@ -46,6 +46,20 @@
                     <button class="tab-btn active" id="tab-aktive" onclick="ndryshoTab('aktive')">Aktive <span class="tab-count" id="tab-count-aktive">0</span></button>
                     <button class="tab-btn" id="tab-skaduar" onclick="ndryshoTab('skaduar')">Skaduar <span class="tab-count" id="tab-count-skaduar">0</span></button>
                 </div>
+                <div class="tabs-filters">
+                    <label style="font-size:11px;color:var(--s-text-muted);font-weight:600;">Viti:</label>
+                    <select id="filter-viti" class="filter-select" onchange="filtro()">
+                        <option value="all">Të gjitha</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                    <label style="font-size:11px;color:var(--s-text-muted);font-weight:600;margin-left:4px;">Muaji:</label>
+                    <select id="filter-muaji" class="filter-select" onchange="filtro()">
+                        <option value="all">Total</option>
+                        <option value="01">Janar</option><option value="02">Shkurt</option><option value="03">Mars</option><option value="04">Prill</option><option value="05">Maj</option><option value="06">Qershor</option><option value="07">Korrik</option><option value="08">Gusht</option><option value="09">Shtator</option><option value="10">Tetor</option><option value="11">Nëntor</option><option value="12">Dhjetor</option>
+                    </select>
+                </div>
             </div>
        <div class="stats-strip">
     <div class="kpi-card">
