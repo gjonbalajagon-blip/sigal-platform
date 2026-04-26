@@ -203,3 +203,62 @@ function toggleSidebar() {
 
     function escNj(s) { return s ? String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''; }
 })();
+
+// ============================================================
+// SIDEBAR — auto-active state per faqen aktuale
+// ============================================================
+(function() {
+    function setActive() {
+        const path = (window.location.pathname.split('/').pop() || '').toLowerCase();
+        if (!path) return;
+        document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+            const href = (item.getAttribute('href') || '').toLowerCase();
+            if (!href || href === '#') return;
+            const target = href.split('/').pop();
+            if (target === path) {
+                item.classList.add('active');
+            } else if (item.classList.contains('active') && target !== path) {
+                item.classList.remove('active');
+            }
+        });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setActive);
+    } else {
+        setActive();
+    }
+})();
+
+// ============================================================
+// GLOBAL DRAWER CLOSE — overlay click + ESC
+// ============================================================
+(function() {
+    function closeOverlay(el) {
+        if (!el) return;
+        el.classList.remove('open', 'active');
+    }
+    document.addEventListener('click', function(e) {
+        const t = e.target;
+        if (!t || !t.classList) return;
+        if (t.classList.contains('drawer-overlay') ||
+            t.classList.contains('modal-overlay') ||
+            t.classList.contains('rin-overlay') ||
+            t.classList.contains('rin-modal-overlay') ||
+            t.classList.contains('deb-modal-overlay') ||
+            t.classList.contains('deb-overlay') ||
+            t.classList.contains('deb-report-modal') ||
+            t.classList.contains('rin-humbje-modal')) {
+            closeOverlay(t);
+        }
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key !== 'Escape') return;
+        document.querySelectorAll(
+            '.drawer-overlay.open, .drawer-overlay.active, ' +
+            '.modal-overlay.active, .modal-overlay.open, ' +
+            '.rin-overlay.open, .rin-modal-overlay.open, ' +
+            '.deb-modal-overlay.open, .deb-overlay.open, ' +
+            '.deb-report-modal.open, .rin-humbje-modal.open'
+        ).forEach(closeOverlay);
+    });
+})();

@@ -2433,3 +2433,163 @@ body {
   color: #94a3b8;
   font-size: 11px;
 }
+
+/* ============================================================
+   FAZA 13 OVERRIDES — KPI flat icons + standard drawer buttons
+   (these use !important to override any leftover module CSS)
+   ============================================================ */
+
+/* KPI / Stat icons — flat solid colors, no shadow, no gloss */
+.kpi-icon,
+.stat-icon {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+  flex-shrink: 0 !important;
+}
+.kpi-icon i, .kpi-icon svg,
+.stat-icon i, .stat-icon svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke-width: 2.2 !important;
+  fill: none !important;
+  stroke: white !important;
+  color: white !important;
+}
+.kpi-icon::before { content: none !important; }
+.stat-icon::before { content: none !important; }
+
+.kpi-icon-total,
+.kpi-icon-blue,
+.stat-icon-blue,
+.stat-icon-total { background: #3b82f6 !important; }
+.kpi-icon-aktive,
+.kpi-icon-green,
+.stat-icon-green,
+.stat-icon-aktive { background: #10b981 !important; }
+.kpi-icon-skadon,
+.kpi-icon-orange,
+.stat-icon-orange,
+.stat-icon-skadon { background: #f59e0b !important; }
+.kpi-icon-skaduar,
+.kpi-icon-red,
+.stat-icon-red,
+.stat-icon-skaduar { background: #ef4444 !important; }
+.kpi-icon-muted,
+.stat-icon-muted { background: #94a3b8 !important; }
+.kpi-icon-purple { background: #6366f1 !important; }
+
+/* Drawer footer buttons — strict overrides */
+.drawer-footer {
+  padding: 14px 22px !important;
+  border-top: 1px solid rgba(226,232,240,0.6) !important;
+  background: rgba(248,250,252,0.5) !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+}
+.btn-cancel {
+  padding: 10px 20px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  font-family: inherit !important;
+  color: #4b5563 !important;
+  background: white !important;
+  border: 1.5px solid #e5e9f0 !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+.btn-cancel:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+.btn-save {
+  padding: 10px 24px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  font-family: inherit !important;
+  color: white !important;
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  box-shadow: 0 2px 10px rgba(59,130,246,0.3) !important;
+  transition: all 0.15s !important;
+}
+.btn-save:hover {
+  box-shadow: 0 4px 14px rgba(59,130,246,0.4) !important;
+  transform: translateY(-1px) !important;
+}
+.btn-save i, .btn-save svg {
+  width: 13px !important;
+  height: 13px !important;
+  stroke-width: 2.5 !important;
+  fill: none !important;
+  stroke: currentColor !important;
+}
+
+/* Drawer header (faza 13 — unified version) */
+.drawer-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(226,232,240,0.6);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.5);
+}
+.drawer-body {
+  flex: 1;
+  padding: 20px 22px;
+  overflow-y: auto;
+}
+
+/* Statuset clickable filter buttons */
+.stat-thin-filter {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.stat-thin-filter:hover {
+  background: rgba(59,130,246,0.06);
+}
+.stat-thin-filter.active {
+  background: rgba(59,130,246,0.12);
+}
+.stat-thin-filter.active .stat-thin-label-sm,
+.stat-thin-filter.active .stat-thin-value-sm {
+  color: #1e3a8a;
+}
+
+/* Aging columns clickable headers */
+.col-aging {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+}
+.col-aging:hover {
+  background: rgba(59,130,246,0.06);
+  color: #1e3a8a;
+}
+.col-aging.active {
+  background: rgba(59,130,246,0.12);
+  color: #1e3a8a;
+  font-weight: 700;
+}

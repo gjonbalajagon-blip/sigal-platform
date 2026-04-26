@@ -149,9 +149,12 @@
     <!-- Drawer për shtim/edit -->
     <div class="drawer-overlay" id="modal-overlay" onclick="mbyllModal()">
         <div class="drawer-panel" onclick="event.stopPropagation()">
-            <div class="drawer-panel-header">
-                <h2 id="modal-title">Shto <span style="font-weight:500">Anëtar</span></h2>
-                <button class="drawer-close" onclick="mbyllModal()">
+            <div class="drawer-header">
+                <div>
+                    <div class="drawer-title-gradient" id="modal-title">Shto Anëtar</div>
+                    <div class="drawer-subtitle">Plotëso të dhënat për anëtarin e ekipit</div>
+                </div>
+                <button class="drawer-close" onclick="mbyllModal()" type="button">
                     <i data-lucide="x"></i>
                 </button>
             </div>

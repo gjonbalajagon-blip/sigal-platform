@@ -255,9 +255,12 @@
     <!-- ====== DRAWER ====== -->
     <div class="drawer-overlay" id="drawer-overlay" onclick="if(event.target===this)mbyllDrawer()">
         <div class="drawer-panel">
-            <div class="drawer-panel-header">
-                <h2 id="modal-title">Ofertë <span style="font-weight:500">e Re</span></h2>
-                <button class="drawer-close" onclick="mbyllDrawer()">
+            <div class="drawer-header">
+                <div>
+                    <div class="drawer-title-gradient" id="modal-title">Ofertë e Re</div>
+                    <div class="drawer-subtitle">Plotëso fushat për të ruajtur ofertën</div>
+                </div>
+                <button class="drawer-close" onclick="mbyllDrawer()" type="button">
                     <i data-lucide="x"></i>
                 </button>
             </div>

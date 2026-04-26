@@ -389,8 +389,17 @@ var origOverlayClick=document.getElementById('rinOverlay');
 if(origOverlayClick)origOverlayClick.addEventListener('click',function(){if(document.getElementById('reportDrawer').classList.contains('open'))mbyllReportDrawer();});
 
 // ===== IMPORT =====
-function populoImportMuajt(){const sel=document.getElementById('importMuaji'),now=new Date();let h='';for(let i=-1;i<6;i++){const d=new Date(now.getFullYear(),now.getMonth()+i,1);const k=MUAJT[d.getMonth()].toLowerCase()+'_'+d.getFullYear();h+=`<option value="${k}" ${i===0?'selected':''}>${MUAJT[d.getMonth()]+' '+d.getFullYear()}</option>`;}sel.innerHTML=h;}
-function hapImportModal(){importStep=1;importParsedData=null;document.getElementById('rinImportModal').classList.add('open');document.getElementById('fileInput').value='';showImportStep(1);document.body.style.overflow='hidden';}
+function populoImportMuajt(){
+    const sel=document.getElementById('importMuaji');if(!sel)return;
+    const now=new Date();let h='';
+    for(let i=0;i<12;i++){
+        const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+        const k=MUAJT[d.getMonth()].toLowerCase()+'_'+d.getFullYear();
+        h+=`<option value="${k}" ${i===0?'selected':''}>${MUAJT[d.getMonth()]+' '+d.getFullYear()}</option>`;
+    }
+    sel.innerHTML=h;
+}
+function hapImportModal(){importStep=1;importParsedData=null;populoImportMuajt();document.getElementById('rinImportModal').classList.add('open');document.getElementById('fileInput').value='';showImportStep(1);document.body.style.overflow='hidden';if(typeof lucide!=='undefined')lucide.createIcons();}
 function mbyllImportModal(){document.getElementById('rinImportModal').classList.remove('open');if(!currentDrawerId)document.body.style.overflow='';importParsedData=null;}
 function showImportStep(step){
     importStep=step;[1,2,3].forEach(i=>{document.getElementById('importStep'+i).style.display=i===step?'':'none';const n=document.getElementById('stepNum'+i),t=document.getElementById('stepText'+i);n.classList.remove('active','done');t.classList.remove('active');if(i<step)n.classList.add('done');if(i===step){n.classList.add('active');t.classList.add('active');}});

@@ -18,8 +18,8 @@
             <a href="kontratat.html" class="nav-item active" data-label="Kontratat"><span class="nav-icon"><i data-lucide="file-text"></i></span><span class="nav-label">Kontratat</span></a>
             <a href="faturimi.html" class="nav-item" data-label="Faturimi"><span class="nav-icon"><i data-lucide="receipt"></i></span><span class="nav-label">Faturimi</span></a>
             <a href="rinovimet.html" class="nav-item" data-label="Rinovimet"><span class="nav-icon"><i data-lucide="refresh-cw"></i></span><span class="nav-label">Rinovimet</span></a>
-            <a href="#" class="nav-item" data-label="Debitorët"><span class="nav-icon"><i data-lucide="wallet"></i></span><span class="nav-label">Debitorët</span></a>
-            <a href="#" class="nav-item" data-label="Raportet"><span class="nav-icon"><i data-lucide="bar-chart-3"></i></span><span class="nav-label">Raportet</span></a>
+            <a href="debitoret.html" class="nav-item" data-label="Debitorët"><span class="nav-icon"><i data-lucide="wallet"></i></span><span class="nav-label">Debitorët</span></a>
+            <a href="raportet.html" class="nav-item" data-label="Raportet"><span class="nav-icon"><i data-lucide="bar-chart-3"></i></span><span class="nav-label">Raportet</span></a>
             <a href="#" class="nav-item" data-label="Detyrat"><span class="nav-icon"><i data-lucide="check-circle"></i></span><span class="nav-label">Detyrat</span></a>
             <a href="#" class="nav-item" data-label="Dokumentet"><span class="nav-icon"><i data-lucide="folder-open"></i></span><span class="nav-label">Dokumentet</span></a>
             <a href="stafi.html" class="nav-item" data-label="Stafi"><span class="nav-icon"><i data-lucide="users"></i></span><span class="nav-label">Stafi</span></a>
@@ -98,7 +98,13 @@
     <!-- DRAWER -->
     <div class="drawer-overlay" id="drawer-overlay" onclick="if(event.target===this)mbyllDrawer()">
         <div class="drawer-panel">
-            <div class="drawer-panel-header"><h2 id="modal-title">Kontratë e Re</h2><button class="drawer-close" onclick="mbyllDrawer()">✕</button></div>
+            <div class="drawer-header">
+                <div>
+                    <div class="drawer-title-gradient" id="modal-title">Kontratë e Re</div>
+                    <div class="drawer-subtitle">Plotëso fushat për të ruajtur kontratën</div>
+                </div>
+                <button class="drawer-close" onclick="mbyllDrawer()" type="button"><i data-lucide="x"></i></button>
+            </div>
             <div class="drawer-body">
                 <div class="form-row">
                     <div class="form-group"><label>Emri Mbiemri / Kompania</label><input id="m-emri" placeholder="Emri Mbiemri / Kompania"></div>
@@ -122,10 +128,10 @@
                     <div class="form-group"><label>Data Mbarimit</label><input id="m-mbarimi" placeholder="dd/mm/yyyy" maxlength="10"></div>
                     <div class="form-group"><label>Faturimi</label><input type="hidden" id="m-faturimi-lloji" value="mujor"><div class="drawer-lloji-row" style="margin:0;gap:6px"><button type="button" class="drawer-lloji-btn active" onclick="this.parentNode.querySelectorAll('.drawer-lloji-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');document.getElementById('m-faturimi-lloji').value='mujor'">Mujor</button><button type="button" class="drawer-lloji-btn" onclick="this.parentNode.querySelectorAll('.drawer-lloji-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');document.getElementById('m-faturimi-lloji').value='vjetor'">Vjetor</button></div></div>
                 </div>
-                <div class="sp-actions">
-                    <button class="sp-btn" onclick="mbyllDrawer()">Anulo</button>
-                    <button class="sp-btn primary" onclick="ruajKontrate()">Ruaj</button>
-                </div>
+            </div>
+            <div class="drawer-footer">
+                <button class="btn-cancel" onclick="mbyllDrawer()" type="button">Anulo</button>
+                <button class="btn-save" onclick="ruajKontrate()" type="button"><i data-lucide="check"></i> Ruaj</button>
             </div>
         </div>
     </div>

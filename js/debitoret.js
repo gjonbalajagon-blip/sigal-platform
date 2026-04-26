@@ -271,10 +271,13 @@ function populoChips() {
     if (currentDega && degaStats[currentDega]) {
         const agj = degaStats[currentDega].agjentet;
         const keys = Object.keys(agj).sort();
-        let ah = `<button class="chip-filter ${currentAgjent===''?'active':''}" onclick="filtroAgjent('')" style="margin-left:16px">Te gjithe <span class="chip-count">${degaStats[currentDega].total}/${degaStats[currentDega].paguar}✓</span></button>`;
+        agjEl.classList.add('dega-filter-row');
+        agjEl.classList.remove('chips-row');
+        let ah = `<span class="dega-filter-label">Agjenti:</span>`;
+        ah += `<button class="dega-chip ${currentAgjent===''?'active':''}" onclick="filtroAgjent('')" type="button">Të gjithë · <span class="dega-count">${degaStats[currentDega].total}</span></button>`;
         keys.forEach(a => {
             const s = agj[a];
-            ah += `<button class="chip-filter ${currentAgjent===a?'active':''}" onclick="filtroAgjent('${escAttr(a)}')">${esc(a)} <span class="chip-count">${s.total}/${s.paguar}✓</span></button>`;
+            ah += `<button class="dega-chip ${currentAgjent===a?'active':''}" onclick="filtroAgjent('${escAttr(a)}')" type="button">${esc(a)} · <span class="dega-count">${s.total}</span></button>`;
         });
         agjEl.innerHTML = ah;
         agjEl.style.display = '';
@@ -360,48 +363,52 @@ function hapStatusModalDirekt(id, statusKey) {
 function perditesoStats() {
     const data = filtroSipasRolit(debitoret.filter(r => r.muaji === currentMuaj));
     const counts = {};
-    Object.keys(STATUSET).forEach(s => counts[s] = 0);
+    const sums = {};
+    Object.keys(STATUSET).forEach(s => { counts[s] = 0; sums[s] = 0; });
 
     let totalBorxh = 0;
     let totalRisk = 0;        // mbi 365
-    let total91_180 = 0;
     let totalPaguar = 0;
     let totalMbetur = 0;
 
     data.forEach(r => {
         if (counts[r.statusi] !== undefined) counts[r.statusi]++;
+        if (sums[r.statusi] !== undefined) sums[r.statusi] += Number(r.debitori_total || 0);
         totalBorxh += Number(r.debitori_total || 0);
         totalRisk += Number(r.borxh_mbi_365 || 0);
-        total91_180 += Number(r.borxh_91_180 || r.borxh_91 || 0);
         totalPaguar += Number(r.shuma_paguar || 0);
         totalMbetur += Number(r.mbetur || (Number(r.debitori_total || 0) - Number(r.shuma_paguar || 0)));
     });
 
-    // Niveli 1: Financiar (5 stats kryesore)
+    // Niveli 1: 4 stats financiare (pa 91-180)
     document.getElementById('stripFinanciar').innerHTML = `
         <div class="stat-thin"><span class="stat-thin-label">BORXHI TOTAL</span><span class="stat-thin-value">${formatMoneyShort(totalBorxh)}</span></div>
         <div class="stat-thin-divider"></div>
         <div class="stat-thin"><span class="stat-thin-label">MBI 365 DITË</span><span class="stat-thin-value">${formatMoneyShort(totalRisk)}</span></div>
-        <div class="stat-thin-divider"></div>
-        <div class="stat-thin"><span class="stat-thin-label">91-180 DITË</span><span class="stat-thin-value">${formatMoneyShort(total91_180)}</span></div>
         <div class="stat-thin-divider"></div>
         <div class="stat-thin"><span class="stat-thin-label">PAGUAR</span><span class="stat-thin-value">${formatMoneyShort(totalPaguar)}</span></div>
         <div class="stat-thin-divider"></div>
         <div class="stat-thin"><span class="stat-thin-label">MBETUR</span><span class="stat-thin-value">${formatMoneyShort(totalMbetur)}</span></div>
     `;
 
-    // Niveli 2: Statuset (5 nën-statuse)
+    // Niveli 2: Statuset clickable (5 në një rresht me numër · €)
+    const af = currentStatusFilter || '';
+    const sBtn = (key, label) => `
+        <button class="stat-thin-filter${af===key?' active':''}" data-status="${key}" onclick="filtroStatusStrip('${key}')" type="button">
+            <span class="stat-thin-label-sm">${label}</span>
+            <span class="stat-thin-value-sm">${counts[key]||0} · ${formatMoneyShort(sums[key]||0)}</span>
+        </button>`;
     document.getElementById('stripStatuset').innerHTML = `
         <span class="stats-thin-prefix">STATUSET</span>
-        <div class="stat-thin"><span class="stat-thin-label-sm">Kontaktuar</span><span class="stat-thin-value-sm">${counts.kontaktuar || 0}</span></div>
+        ${sBtn('kontaktuar','Kontaktuar')}
         <div class="stat-thin-divider"></div>
-        <div class="stat-thin"><span class="stat-thin-label-sm">Premtim</span><span class="stat-thin-value-sm">${counts.premtim_pagese || 0}</span></div>
+        ${sBtn('premtim_pagese','Premtim')}
         <div class="stat-thin-divider"></div>
-        <div class="stat-thin"><span class="stat-thin-label-sm">Pjesshëm</span><span class="stat-thin-value-sm">${counts.paguar_pjesshem || 0}</span></div>
+        ${sBtn('paguar_pjesshem','Pjesshëm')}
         <div class="stat-thin-divider"></div>
-        <div class="stat-thin"><span class="stat-thin-label-sm">Kontestuar</span><span class="stat-thin-value-sm">${counts.kontestuar || 0}</span></div>
+        ${sBtn('kontestuar','Kontestuar')}
         <div class="stat-thin-divider"></div>
-        <div class="stat-thin"><span class="stat-thin-label-sm">Pamundshëm</span><span class="stat-thin-value-sm">${counts.i_pamundshem || 0}</span></div>
+        ${sBtn('i_pamundshem','Pamundshëm')}
     `;
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
@@ -421,26 +428,53 @@ function sortoListen(list) {
     });
 }
 
+function getMaxAging(r) {
+    if (Number(r.borxh_mbi_365 || 0) > 0) return '>365';
+    if (Number(r.borxh_181_365 || 0) > 0) return '>365';
+    if (Number(r.borxh_91_180 || 0) > 0) return '91-180';
+    if (Number(r.borxh_61_90 || 0) > 0) return '61-90';
+    if (Number(r.borxh_31_60 || 0) > 0) return '31-60';
+    if (Number(r.borxh_0_31 || 0) > 0) return '0-31';
+    return null;
+}
+
+function filtroAging(a) {
+    window.__activeAging = (window.__activeAging === a) ? null : a;
+    document.querySelectorAll('.col-aging').forEach(t => t.classList.remove('active'));
+    if (window.__activeAging) {
+        document.querySelectorAll(`.col-aging[data-aging="${window.__activeAging}"]`).forEach(t => t.classList.add('active'));
+    }
+    aplikoFiltrat();
+}
+
 function renderTabela() {
     const tbody = document.getElementById('debTableBody');
 
     if (!currentMuaj || debitoret.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7"><div class="deb-empty"><div class="deb-empty-icon">📋</div><div class="deb-empty-title">Asnje debitor ende</div><div class="deb-empty-sub">Kliko "Importo" per te ngarkuar raportin e debitoreve</div></div></td></tr>`;
-        return;
-    }
-    if (filteredList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7"><div class="deb-no-results">Asnje rezultat me keto filtra</div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9"><div class="deb-empty"><div class="deb-empty-icon">📋</div><div class="deb-empty-title">Asnje debitor ende</div><div class="deb-empty-sub">Kliko "Importo" per te ngarkuar raportin e debitoreve</div></div></td></tr>`;
         return;
     }
 
-    const sorted = sortoListen(filteredList);
+    let listToRender = filteredList;
+    const agingFilter = window.__activeAging;
+    if (agingFilter) {
+        listToRender = listToRender.filter(r => getMaxAging(r) === agingFilter);
+    }
+
+    if (listToRender.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9"><div class="deb-no-results">Asnje rezultat me keto filtra</div></td></tr>`;
+        return;
+    }
+
+    const sorted = sortoListen(listToRender);
     let html = '';
 
     sorted.forEach(r => {
         const total = Number(r.debitori_total || 0);
         const risk = Number(r.borxh_mbi_365 || 0);
-        const riskClass = risk > 0 ? 'deb-risk-high' : Number(r.borxh_91_180 || 0) > 0 ? 'deb-risk-mid' : 'deb-risk-low';
-        const rowBg = risk > 0 ? 'background:rgba(254,202,202,.16);' : '';
+        const p91_180 = Number(r.borxh_91_180 || 0);
+        const epamaturuar = Number(r.borxh_e_pamaturuar || r.borxh_pamaturuar || r.borxh_e_pa_maturuar || 0);
+        const riskClass = risk > 0 ? 'deb-risk-high' : p91_180 > 0 ? 'deb-risk-mid' : 'deb-risk-low';
 
         html += `
         <tr onclick="hapDrawer('${r.id}')" data-risk="${risk > 0 ? 1 : 0}" style="cursor:pointer">
@@ -452,7 +486,9 @@ function renderTabela() {
             <td style="text-align:right">${formatMoney(Number(r.borxh_0_31 || 0))}</td>
             <td style="text-align:right">${formatMoney(Number(r.borxh_31_60 || 0))}</td>
             <td style="text-align:right">${formatMoney(Number(r.borxh_61_90 || 0))}</td>
+            <td style="text-align:right">${formatMoney(p91_180)}</td>
             <td style="text-align:right" class="${riskClass}">${formatMoney(risk)}</td>
+            <td style="text-align:right">${epamaturuar ? formatMoney(epamaturuar) : '—'}</td>
             <td onclick="event.stopPropagation()" style="text-align:center">${renderStatusIcons(r)}</td>
         </tr>
     `;
