@@ -4,286 +4,306 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sigal Health | Oferta Juaj</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,'Inter','Segoe UI',sans-serif;background:linear-gradient(135deg,#f4f5f7 0%,#f0f1f4 40%,#ecedf0 100%);color:#0f172a;font-size:12px;min-height:100vh;padding-bottom:80px}
+body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:linear-gradient(135deg,#f4f5f7 0%,#f0f1f4 40%,#ecedf0 100%);color:#0f172a;font-size:12px;min-height:100vh;padding-bottom:30px}
 
 /* TOPBAR */
-.header{background:linear-gradient(135deg,#002B5C,#1e40af 60%,#3b82f6);padding:14px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(0,43,92,0.15);position:sticky;top:0;z-index:50}
-.header img{height:40px;filter:brightness(0) invert(1)}
+.header{background:linear-gradient(135deg,#002B5C 0%,#1e3a8a 30%,#3b82f6 70%,#60a5fa 100%);padding:11px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(0,43,92,0.15);position:sticky;top:0;z-index:50}
+.header img{height:34px;filter:brightness(0) invert(1)}
 
 /* LAYOUT 3-col */
-.oferta-layout{display:grid;grid-template-columns:280px 1fr 280px;gap:14px;max-width:1320px;margin:0 auto;padding:14px;align-items:start}
-.col-left,.col-right{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:16px;border:1px solid rgba(255,255,255,0.95);box-shadow:0 8px 24px rgba(30,64,175,0.06);position:sticky;top:84px;max-height:calc(100vh - 100px);overflow-y:auto}
-.col-center{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:18px 22px;border:1px solid rgba(255,255,255,0.95);box-shadow:0 8px 24px rgba(30,64,175,0.06);min-height:600px}
+.oferta-layout{display:grid;grid-template-columns:230px 1fr 270px;gap:10px;max-width:1320px;margin:0 auto;padding:10px}
+.col-left,.col-center,.col-right{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:12px;border:1px solid rgba(255,255,255,0.95);box-shadow:0 6px 18px rgba(30,64,175,0.05)}
+.col-left{padding:13px}
+.col-center{padding:14px 18px;min-height:560px}
+.col-right{padding:13px}
 
 /* OFERTA INFO */
-.oferta-info{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(220,230,250,0.6)}
-.oferta-info h2{font-size:15px;font-weight:700;background:linear-gradient(135deg,#0f172a,#002B5C 40%,#3b82f6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.3px;margin-bottom:5px;line-height:1.3}
-.oferta-info p{font-size:11px;color:#64748b;line-height:1.45;margin-bottom:8px}
-.oferta-info .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.oferta-info .meta span{font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:#dbeafe;color:#1e40af;letter-spacing:0.1px}
+.oferta-info{margin-bottom:11px;padding-bottom:11px;border-bottom:1px solid rgba(220,230,250,0.6)}
+.oferta-info h2{font-size:13.5px;font-weight:700;background:linear-gradient(135deg,#0f172a,#002B5C 40%,#3b82f6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.2px;margin-bottom:5px;line-height:1.3}
+.oferta-info p{font-size:10.5px;color:#64748b;line-height:1.45;margin-bottom:7px}
+.oferta-info .meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.oferta-info .meta span{font-size:9.5px;font-weight:600;padding:3px 7px;border-radius:5px;background:#dbeafe;color:#1e40af;letter-spacing:0.1px}
 .oferta-info .meta .countdown{background:#fef3c7;color:#b45309}
 .oferta-info .meta .countdown.urgent{background:#fee2e2;color:#b91c1c}
 .oferta-info .meta .skaduar{background:#fee2e2;color:#991b1b;font-weight:700}
 
-.section-title{font-size:9.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;padding-left:3px}
-.section-title.with-spacing{margin-top:14px}
+.section-title{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:2px}
+.section-title.with-spacing{margin-top:11px}
 
 /* PAKETA buttons (sidebar) */
-.paketa-list{display:flex;flex-direction:column;gap:6px}
-.paketa-btn{width:100%;background:#f8fafc;border:1px solid #e5e9f0;padding:10px 12px;border-radius:10px;cursor:pointer;text-align:left;font-family:inherit;display:flex;justify-content:space-between;align-items:center;gap:8px;transition:all 0.15s;position:relative}
+.paketa-list{display:flex;flex-direction:column;gap:5px}
+.paketa-btn{width:100%;background:#f8fafc;border:1px solid #e5e9f0;padding:8px 10px;border-radius:9px;cursor:pointer;text-align:left;font-family:inherit;display:block;transition:all 0.15s;position:relative}
 .paketa-btn:hover{border-color:#3b82f6;background:white}
-.paketa-btn.active{background:linear-gradient(135deg,#1e3a8a,#3b82f6);border-color:transparent;box-shadow:0 4px 12px rgba(59,130,246,0.3)}
-.paketa-btn.active .pi-name,.paketa-btn.active .pi-desc,.paketa-btn.active .pi-price,.paketa-btn.active .pi-per{color:white}
-.paketa-btn.active .pi-desc{opacity:0.85}
+.paketa-btn.active{background:linear-gradient(135deg,#1e3a8a,#3b82f6);border-color:transparent;box-shadow:0 4px 11px rgba(59,130,246,0.3)}
+.paketa-btn.active .pi-name,.paketa-btn.active .pi-shuma,.paketa-btn.active .pp-lbl,.paketa-btn.active .pp-val{color:white}
+.paketa-btn.active .pi-shuma,.paketa-btn.active .pp-lbl{opacity:0.85}
 .paketa-btn.selected:not(.active){border-color:#22c55e;border-width:1.5px;background:#f0fdf4}
-.paketa-btn.selected::after{content:'✓';position:absolute;top:6px;right:8px;background:#22c55e;color:white;width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1}
+.paketa-btn.selected::after{content:'✓';position:absolute;top:5px;right:7px;background:#22c55e;color:white;width:15px;height:15px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1}
 .paketa-btn.selected.active::after{background:white;color:#1e3a8a}
-.paketa-btn .pi-info{flex:1;min-width:0}
-.pi-name{font-size:11.5px;font-weight:700;color:#0f172a;margin-bottom:1px}
-.pi-desc{font-size:9.5px;color:#94a3b8;font-weight:500;line-height:1.3}
-.pi-price{font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap}
-.pi-per{font-size:9.5px;color:#94a3b8;font-weight:500}
+.pi-name{font-size:11.5px;font-weight:700;color:#0f172a;margin-bottom:2px;letter-spacing:-0.1px}
+.pi-shuma{font-size:9.5px;color:#94a3b8;font-weight:500;margin-bottom:4px}
+.pi-pricing{display:flex;flex-direction:column;gap:2px}
+.pp-row{display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px}
+.pp-lbl{color:#64748b;font-weight:600}
+.pp-val{color:#0f172a;font-weight:700;letter-spacing:-0.1px}
+
+/* MBULIM TOTAL + INFO BLOCK in sidebar */
+.left-summary{margin-top:11px;padding-top:11px;border-top:1px dashed #e5e9f0}
+.left-summary .lbl{font-size:9px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:2px}
+.left-summary .val{font-size:17px;font-weight:800;color:#1e3a8a;letter-spacing:-0.3px;line-height:1.1}
+.left-summary .val small{font-size:10px;color:#94a3b8;font-weight:500}
+.left-summary .summary-text{font-size:10px;color:#64748b;margin-top:8px;line-height:1.5}
+
+.left-info-bar{margin-top:10px;background:linear-gradient(135deg,#f0f6ff,#e4edff);border:1px solid #dbeafe;border-radius:9px;padding:9px 11px;font-size:10px;color:#1e40af;line-height:1.45}
+.left-info-bar b{color:#1e3a8a;font-weight:700}
 
 /* CENTER: Detail */
-.center-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.center-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px;flex-wrap:wrap}
 .center-top-left{flex:1;min-width:0}
-.td-name{font-size:18px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;margin-bottom:5px}
-.td-zona{font-size:11.5px;color:#475569;line-height:1.5}
-.td-zona-lbl{display:inline-block;color:#1e3a8a;font-weight:800;font-size:10.5px;text-transform:uppercase;letter-spacing:0.4px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);padding:2px 8px;border-radius:6px;margin-right:6px}
-.center-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.mbulim-pill{background:linear-gradient(135deg,#f0f6ff,#e4edff);border:1px solid rgba(200,220,250,0.7);padding:8px 14px;border-radius:10px;text-align:right;min-width:130px}
-.mbulim-pill .lbl{font-size:9px;color:#7c8aa8;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:2px}
-.mbulim-pill .val{font-size:16px;font-weight:800;color:#1e3a8a;letter-spacing:-0.3px;line-height:1}
+.td-name{font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;margin-bottom:4px}
+.td-zona{font-size:11px;color:#475569;line-height:1.5}
+.td-zona-lbl{display:inline-block;color:#1e3a8a;font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);padding:2px 7px;border-radius:5px;margin-right:5px}
+.center-top-right{text-align:right;flex-shrink:0}
+.td-shuma{font-size:21px;font-weight:800;background:linear-gradient(135deg,#002B5C,#3b82f6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;line-height:1}
+.td-shuma-lbl{font-size:9px;color:#7c8aa8;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
 
-/* PRIMI mbi/nen 18 */
-.td-primi{display:flex;gap:8px;margin:0 0 14px}
-.td-pi{flex:1;background:linear-gradient(135deg,#f0f6ff,#e4edff);padding:9px 12px;border-radius:10px;border:1px solid rgba(200,220,250,0.7);min-width:0}
-.td-pi .pl{font-size:9.5px;color:#7c8aa8;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;display:block}
-.td-pi .pv{font-size:14px;font-weight:800;color:#1e3a8a;display:block;margin-top:1px;letter-spacing:-0.2px}
-
-/* CAT (Coverage section) */
-.cat-hdr{padding:9px 14px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-radius:9px;margin-top:7px;border:1px solid transparent;transition:filter 0.15s}
+/* CAT (Coverage section) - kompakt */
+.cat-hdr{padding:7px 11px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-radius:8px;margin-top:6px;border:1px solid transparent;transition:filter 0.15s}
 .cat-hdr:first-of-type{margin-top:0}
 .cat-hdr:hover{filter:brightness(1.08)}
-.cat-hdr:has(+ .cat-body.open){border-radius:9px 9px 0 0}
-.ch-left{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
-.ch-icon{width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ch-icon svg{width:13px;height:13px;stroke:white;stroke-width:2;fill:none}
-.ch-t{font-size:11.5px;font-weight:700;line-height:1.2}
-.ch-sub{font-size:9.5px;opacity:0.78;margin-top:1px}
-.ch-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.ch-badge{font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:999px;max-width:200px;text-align:center;line-height:1.3;letter-spacing:0.1px}
+.cat-hdr:has(+ .cat-body.open){border-radius:8px 8px 0 0}
+.ch-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.ch-icon{width:22px;height:22px;border-radius:5px;background:rgba(255,255,255,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ch-icon svg{width:12px;height:12px;stroke:white;stroke-width:2;fill:none}
+.ch-t{font-size:11px;font-weight:700;line-height:1.2}
+.ch-sub{font-size:9px;opacity:0.78;margin-top:1px}
+.ch-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.ch-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:999px;max-width:200px;text-align:center;line-height:1.3;letter-spacing:0.1px}
 .ch-badge.g{background:rgba(255,255,255,0.25);color:white}
 .ch-badge.b{background:rgba(255,255,255,0.25);color:white}
 .ch-badge.gr{background:rgba(255,255,255,0.18);color:white}
-.ch-toggle{font-size:9.5px;opacity:0.92;white-space:nowrap;font-weight:600}
-.cat-body{display:none;background:white;padding:11px 14px;border:1px solid #e5e9f0;border-top:none;border-radius:0 0 9px 9px}
+.ch-toggle{font-size:9px;opacity:0.92;white-space:nowrap;font-weight:600}
+.cat-body{display:none;background:white;padding:9px 12px;border:1px solid #e5e9f0;border-top:none;border-radius:0 0 8px 8px}
 .cat-body.open{display:block}
 
-.mi-wrap{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px;padding:0}
-.mi-item{display:flex;align-items:center;gap:6px;padding:0;font-size:11px;color:#4b5563;line-height:1.35;border-bottom:none}
-.mi-dot{width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0}
+.mi-wrap{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;padding:0}
+.mi-item{display:flex;align-items:flex-start;gap:6px;padding:0;font-size:10.5px;color:#4b5563;line-height:1.4;border-bottom:none}
+.mi-item.span-2{grid-column:1/-1}
+.mi-dot{width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;margin-top:5px}
 .mi-dot.b{background:#60a5fa}
 
-.nc{padding:7px 11px;background:#fff8f0;font-size:10.5px;color:#9a3412;font-weight:600;border-radius:7px;margin-bottom:7px}
-.nc-items{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px;padding:0 0 4px}
+.nc{padding:6px 10px;background:#fff8f0;font-size:10px;color:#9a3412;font-weight:600;border-radius:6px;margin-bottom:6px}
+.nc-items{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;padding:0 0 3px}
 .nc-items .mi-item{color:#9a3412}
 .nc-items .mi-dot{background:#f59e0b}
 
-.dr{display:flex;padding:6px 0;font-size:11px;border-top:1px solid #f1f5f9;gap:10px}
+.dr{display:flex;padding:5px 0;font-size:10.5px;border-top:1px solid #f1f5f9;gap:10px}
 .dr:first-child{border-top:none}
 .dr .dl{flex:1;color:#4b5563;line-height:1.35}
 .dr .dv{font-weight:700;color:#0f172a;text-align:right;flex-shrink:0;white-space:nowrap}
 
-.nota{padding:8px 4px 0;font-size:10px;color:#7c8aa8;font-style:italic;line-height:1.5}
+.nota{padding:7px 4px 0;font-size:9.5px;color:#7c8aa8;font-style:italic;line-height:1.5}
 
-/* PAKETA ACTIONS (CTA) */
-.paketa-actions{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
-.btn-z{flex:1;min-width:200px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border:none;padding:13px;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0.2px;box-shadow:0 6px 16px rgba(59,130,246,0.3);transition:all 0.15s}
-.btn-z:hover{transform:translateY(-1px);box-shadow:0 9px 22px rgba(59,130,246,0.4)}
-.btn-modifiko{flex:1;min-width:140px;background:white;color:#1e3a8a;border:1.5px solid #1e3a8a;padding:11px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
+/* PAKETA ACTIONS */
+.paketa-actions{margin-top:11px;display:flex;gap:7px;flex-wrap:wrap}
+.btn-z{flex:1;min-width:200px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border:none;padding:11px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0.2px;box-shadow:0 5px 14px rgba(59,130,246,0.3);transition:all 0.15s}
+.btn-z:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(59,130,246,0.4)}
+.btn-modifiko{flex:1;min-width:140px;background:white;color:#1e3a8a;border:1.5px solid #1e3a8a;padding:9px;border-radius:9px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
 .btn-modifiko:hover{background:#f0f6ff}
-.btn-hiq{flex:1;min-width:140px;background:white;color:#dc2626;border:1.5px solid #fecaca;padding:11px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-hiq{flex:1;min-width:140px;background:white;color:#dc2626;border:1.5px solid #fecaca;padding:9px;border-radius:9px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
 .btn-hiq:hover{background:#fee2e2}
-.btn-z-note{text-align:center;font-size:11px;color:#7c8aa8;margin-top:8px;font-weight:600}
+.btn-z-note{text-align:center;font-size:10.5px;color:#7c8aa8;margin-top:6px;font-weight:600}
 
-/* RIGHT: Extras */
-.opt-card{background:#fafbfc;border:1px solid #e5e9f0;border-radius:11px;padding:12px 14px;margin-bottom:10px;transition:all 0.15s}
-.opt-card.selected{border-color:#22c55e;background:#f0fdf4;box-shadow:0 4px 12px rgba(34,197,94,0.15)}
-.opt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px}
-.opt-title{font-size:12px;font-weight:700;color:#0f172a}
-.opt-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;flex-shrink:0;letter-spacing:0.1px}
-.opt-badge.rec{background:#fef3c7;color:#92400e}
-.opt-badge.new{background:#d1fae5;color:#047857}
-.opt-price{font-size:13px;font-weight:700;color:#1e3a8a;margin-bottom:6px}
-.opt-price small{font-size:9.5px;color:#7c8aa8;font-weight:500}
-.opt-desc{font-size:10.5px;color:#64748b;line-height:1.45;margin-bottom:8px}
-.opt-actions{display:flex;gap:6px}
-.opt-btn{flex:1;background:white;border:1.5px solid #1e3a8a;color:#1e3a8a;padding:8px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
-.opt-btn:hover{background:#f0f6ff}
-.opt-btn.added{background:linear-gradient(135deg,#22c55e,#16a34a);border-color:transparent;color:white;box-shadow:0 4px 10px rgba(34,197,94,0.25)}
-.opt-btn.added:hover{filter:brightness(1.08)}
-.opt-btn-rm{flex:0 0 auto;width:34px;background:white;border:1.5px solid #fecaca;color:#dc2626;padding:8px;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;line-height:1}
-.opt-btn-rm:hover{background:#fee2e2}
+/* RIGHT: Extras (Mbrojtje shtesë) - cards mini me "Shih" */
+.opt-card-mini{background:#fafbfc;border:1px solid #e5e9f0;border-radius:10px;padding:10px 12px;margin-bottom:8px;transition:all 0.15s}
+.opt-card-mini.selected{border-color:#22c55e;background:#f0fdf4;box-shadow:0 3px 10px rgba(34,197,94,0.15)}
+.opt-mini-head{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:3px}
+.opt-mini-title{font-size:11.5px;font-weight:700;color:#0f172a}
+.opt-mini-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;flex-shrink:0;letter-spacing:0.1px}
+.opt-mini-badge.rec{background:#fef3c7;color:#92400e}
+.opt-mini-badge.new{background:#d1fae5;color:#047857}
+.opt-mini-badge.cnt{background:#1e3a8a;color:white;font-weight:800}
+.opt-mini-price{font-size:12.5px;font-weight:700;color:#1e3a8a;margin-bottom:3px}
+.opt-mini-price small{font-size:9px;color:#7c8aa8;font-weight:500}
+.opt-mini-desc{font-size:10px;color:#64748b;line-height:1.4;margin-bottom:7px}
+.opt-mini-actions{display:flex;gap:5px}
+.opt-shih-btn{flex:1;background:white;border:1px solid #1e3a8a;color:#1e3a8a;padding:6px;border-radius:6px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;letter-spacing:0.1px}
+.opt-shih-btn:hover{background:#f0f6ff}
+.opt-shih-btn.added{background:linear-gradient(135deg,#22c55e,#16a34a);border-color:transparent;color:white;box-shadow:0 3px 9px rgba(34,197,94,0.25)}
+.opt-shih-btn.added:hover{filter:brightness(1.08)}
+.opt-rm-btn{flex:0 0 auto;width:30px;background:white;border:1px solid #fecaca;color:#dc2626;padding:6px;border-radius:6px;font-size:13px;font-weight:800;cursor:pointer;line-height:1}
+.opt-rm-btn:hover{background:#fee2e2}
 
-/* APP card mini */
-.app-card-mini{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border-radius:11px;padding:11px 13px;margin-bottom:9px;position:relative;overflow:hidden}
+/* APP card mini me logo */
+.app-card-mini{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border-radius:10px;padding:10px 12px;margin-bottom:8px;position:relative;overflow:hidden}
 .app-card-mini::before{content:'';position:absolute;top:-30%;right:-15%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(96,165,250,0.4),transparent 70%);pointer-events:none}
-.app-card-mini .a-title{font-size:11.5px;font-weight:700;margin-bottom:2px;position:relative;z-index:1}
-.app-card-mini .a-free{font-size:10px;color:#86efac;font-weight:700;margin-bottom:5px;position:relative;z-index:1}
-.app-card-mini .a-stores{display:flex;gap:4px;position:relative;z-index:1}
-.app-card-mini .a-stores a{flex:1;background:rgba(0,0,0,0.5);color:white;font-size:9.5px;padding:5px 6px;border-radius:6px;text-decoration:none;text-align:center;font-weight:700;transition:background 0.15s}
-.app-card-mini .a-stores a:hover{background:rgba(0,0,0,0.75)}
+.app-mini-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;position:relative;z-index:1}
+.app-mini-logo{width:36px;height:36px;border-radius:8px;background:white;flex-shrink:0;overflow:hidden}
+.app-mini-logo img{width:36px;height:36px;display:block}
+.app-mini-text{flex:1;min-width:0}
+.app-mini-text .a-title{font-size:11px;font-weight:800;line-height:1.2}
+.app-mini-text .a-free{font-size:9.5px;color:#86efac;font-weight:700;margin-top:1px}
+.app-stores{display:flex;gap:5px;position:relative;z-index:1}
+.store-btn{flex:1;background:rgba(0,0,0,0.55);color:white;font-size:10px;padding:5px 7px;border-radius:6px;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,0.15);display:inline-flex;align-items:center;gap:5px;justify-content:center;transition:background 0.15s}
+.store-btn:hover{background:rgba(0,0,0,0.78)}
+.store-btn svg{width:11px;height:11px;fill:white;flex-shrink:0}
 
-/* NET trigger mini */
-.net-card-mini{background:#fafbfc;border:1px solid #e5e9f0;border-radius:11px;padding:11px 13px}
-.net-card-mini .n-title{font-size:11.5px;font-weight:700;color:#0f172a;display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;gap:8px}
-.net-card-mini .n-count{background:#1e3a8a;color:white;font-size:9.5px;padding:2px 7px;border-radius:5px;font-weight:700}
-.net-card-mini .n-desc{font-size:10px;color:#64748b;line-height:1.4;margin-bottom:7px}
-.net-card-mini button{width:100%;background:white;border:1.5px solid #e5e9f0;color:#1e3a8a;padding:7px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
-.net-card-mini button:hover{background:#f0f6ff;border-color:#1e3a8a}
-
-/* KOMENT (ne col-center fund) */
-.koment-box{background:#fafbfc;border:1px solid #e5e9f0;border-radius:11px;padding:12px 14px;margin-top:14px}
-.koment-box label{font-size:11px;font-weight:700;color:#0f172a;display:block;margin-bottom:6px}
-.koment-box textarea{width:100%;border:1px solid #e5e9f0;border-radius:8px;padding:9px 11px;font-family:inherit;font-size:11.5px;resize:vertical;min-height:60px;background:white;color:#0f172a;outline:none;transition:border-color 0.15s}
+/* KOMENT */
+.koment-box{background:#fafbfc;border:1px solid #e5e9f0;border-radius:10px;padding:10px 12px;margin-top:11px}
+.koment-box label{font-size:10.5px;font-weight:700;color:#0f172a;display:block;margin-bottom:5px}
+.koment-box textarea{width:100%;border:1px solid #e5e9f0;border-radius:7px;padding:8px 10px;font-family:inherit;font-size:11px;resize:vertical;min-height:54px;background:white;color:#0f172a;outline:none;transition:border-color 0.15s}
 .koment-box textarea:focus{border-color:#3b82f6}
 .koment-box textarea::placeholder{color:#9ca8c0}
 
-/* FOOTER fixed */
-.oferta-footer-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(220,230,250,0.6);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:14px;z-index:100;box-shadow:0 -4px 16px rgba(30,64,175,0.08)}
-.footer-info{display:flex;flex-direction:column;flex-shrink:0}
-.footer-info .lbl{font-size:9.5px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.4px}
-.footer-info .val{font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.3px;line-height:1.1}
-.footer-info .val small{font-size:11px;color:#94a3b8;font-weight:500}
-.footer-summary{font-size:11px;color:#475569;flex:1;text-align:center;line-height:1.4;padding:0 10px}
-.footer-summary b{color:#1e3a8a;font-weight:700}
-.btn-confirm{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border:none;padding:11px 28px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0.2px;box-shadow:0 4px 14px rgba(59,130,246,0.3);transition:all 0.15s;flex-shrink:0}
-.btn-confirm:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 18px rgba(59,130,246,0.4)}
-.btn-confirm:disabled{background:#cbd5e1;cursor:not-allowed;box-shadow:none;color:#f1f5f9}
+/* FLOATING CONFIRM PILL */
+.float-pill{position:fixed;bottom:18px;right:18px;z-index:100;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border:none;padding:11px 22px;border-radius:30px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;display:none;align-items:center;gap:8px;box-shadow:0 10px 26px rgba(0,43,92,0.4);transition:all 0.2s;letter-spacing:0.2px}
+.float-pill:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(0,43,92,0.5)}
+.float-pill.show{display:inline-flex}
+.float-pill .fp-count{background:#22c55e;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0}
+.float-pill svg{width:13px;height:13px;stroke:white;stroke-width:2.5;fill:none}
 
 /* POPUP */
 .popup-overlay{display:none;position:fixed;inset:0;background:rgba(15,26,48,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:14px}
 .popup-overlay.active{display:flex}
-.popup{background:white;border-radius:16px;padding:22px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,43,92,0.3);animation:popIn 0.2s ease-out}
-@keyframes popIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
-.popup h3{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:5px}
-.popup-sub{font-size:11.5px;color:#64748b;margin-bottom:14px;line-height:1.5}
-.popup-row{margin-bottom:10px}
-.popup-row label{display:block;font-size:10px;font-weight:700;color:#475569;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px}
-.popup-row input,.popup-row select{width:100%;padding:10px 12px;border:1px solid #e5e9f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none;transition:border-color 0.15s;background:white;color:#0f172a}
+.popup{background:white;border-radius:14px;padding:18px 20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,43,92,0.3);animation:popIn 0.2s ease-out}
+.popup.large{max-width:660px}
+@keyframes popIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+.popup h3{font-size:15px;font-weight:700;color:#0f172a;margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.popup-badge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:5px}
+.popup-badge.rec{background:#fef3c7;color:#92400e}
+.popup-badge.new{background:#d1fae5;color:#047857}
+.popup-sub{font-size:11.5px;color:#64748b;margin-bottom:11px;line-height:1.5}
+.popup-row{margin-bottom:9px}
+.popup-row label{display:block;font-size:9.5px;font-weight:700;color:#475569;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px}
+.popup-row input,.popup-row select{width:100%;padding:8px 10px;border:1px solid #e5e9f0;border-radius:7px;font-size:12.5px;font-family:inherit;outline:none;transition:border-color 0.15s;background:white;color:#0f172a}
 .popup-row input:focus,.popup-row select:focus{border-color:#3b82f6}
-.popup-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.popup-total{background:#f0f6ff;border:1px solid #dbeafe;border-radius:10px;padding:11px 14px;margin:12px 0;display:flex;justify-content:space-between;align-items:center}
-.popup-total .lbl{font-size:10.5px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:0.3px}
-.popup-total .val{font-size:18px;font-weight:800;color:#1e3a8a;letter-spacing:-0.3px}
-.popup-btns{display:flex;gap:8px;margin-top:12px}
-.popup-btns button{flex:1;padding:11px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:all 0.15s;letter-spacing:0.1px}
+.popup-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.popup-total{background:#f0f6ff;border:1px solid #dbeafe;border-radius:9px;padding:9px 12px;margin:11px 0;display:flex;justify-content:space-between;align-items:center}
+.popup-total .lbl{font-size:10px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:0.3px}
+.popup-total .val{font-size:17px;font-weight:800;color:#1e3a8a;letter-spacing:-0.3px}
+.popup-btns{display:flex;gap:7px;margin-top:11px}
+.popup-btns button{flex:1;padding:10px;border-radius:9px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:all 0.15s;letter-spacing:0.1px}
 .popup-btns .btn-skip{background:#f1f5f9;color:#475569}
 .popup-btns .btn-skip:hover{background:#e2e8f0}
-.popup-btns .btn-save{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;box-shadow:0 4px 12px rgba(59,130,246,0.3)}
+.popup-btns .btn-save{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;box-shadow:0 4px 11px rgba(59,130,246,0.3)}
 .popup-btns .btn-save:hover{transform:translateY(-1px)}
+.popup-btns .btn-rm{background:white;color:#dc2626;border:1.5px solid #fecaca}
+.popup-btns .btn-rm:hover{background:#fee2e2}
 
-/* JETE multi-row */
-.jete-note{background:#fef3c7;color:#92400e;font-size:11px;padding:9px 11px;border-radius:8px;margin-bottom:10px;line-height:1.45}
-.jete-rows{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
-.jete-row{background:#f8fafc;border:1px solid #e5e9f0;border-radius:10px;padding:10px}
-.jete-row-grid{display:grid;grid-template-columns:80px 1fr 1fr 36px;gap:6px;align-items:end}
-.jete-row label{font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:3px}
-.jete-row input,.jete-row select{width:100%;padding:7px 9px;border:1px solid #e5e9f0;border-radius:6px;font-size:12px;font-family:inherit;outline:none;background:white;transition:border-color 0.15s}
+/* POPUP info sub-section (per Jete + Opinion) */
+.popup-section{background:#f8fafc;border:1px solid #e5e9f0;border-radius:9px;padding:10px 12px;margin-bottom:8px}
+.popup-section-hdr{font-size:10.5px;font-weight:700;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.popup-section-hdr::before{content:'';display:inline-block;width:3px;height:11px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);border-radius:2px}
+.psr{display:flex;justify-content:space-between;padding:4px 0;font-size:10.5px;border-top:1px solid #f1f5f9;gap:8px}
+.psr:first-child{border-top:none}
+.psr .dl{flex:1;color:#4b5563;line-height:1.4}
+.psr .dv{font-weight:700;color:#047857;flex-shrink:0;font-size:10px}
+.psr .dv.step{color:#1e40af;background:#dbeafe;padding:1px 7px;border-radius:5px;font-weight:700;font-size:9.5px}
+
+/* JETE matrix table */
+.jete-matrix{width:100%;border-collapse:collapse;font-size:10px;margin-top:6px}
+.jete-matrix th{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;padding:5px 4px;font-weight:700;text-align:center;border:1px solid transparent}
+.jete-matrix th:first-child{text-align:left;padding-left:8px;border-radius:5px 0 0 0}
+.jete-matrix th:last-child{border-radius:0 5px 0 0}
+.jete-matrix td{padding:4px;text-align:center;border:1px solid #eef2fa;color:#4b5563;font-size:10px}
+.jete-matrix td:first-child{text-align:left;padding-left:8px;font-weight:700;color:#0f172a}
+.jete-matrix tr:nth-child(even) td:not(:first-child){background:#fafbff}
+.jete-matrix .gm{color:#3b82f6;font-weight:700}
+.jete-matrix .gf{color:#ec4899;font-weight:700}
+
+/* JETE multi-row (kalkulator) */
+.jete-note{background:#fef3c7;color:#92400e;font-size:10.5px;padding:8px 10px;border-radius:7px;margin-bottom:10px;line-height:1.45}
+.jete-rows{display:flex;flex-direction:column;gap:7px;margin-bottom:7px}
+.jete-row{background:#f8fafc;border:1px solid #e5e9f0;border-radius:9px;padding:9px}
+.jete-row-grid{display:grid;grid-template-columns:62px 1fr 60px 1fr 30px;gap:5px;align-items:end}
+.jete-row label{font-size:8.5px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:2px}
+.jete-row input,.jete-row select{width:100%;padding:6px 7px;border:1px solid #e5e9f0;border-radius:6px;font-size:11.5px;font-family:inherit;outline:none;background:white;transition:border-color 0.15s}
 .jete-row input:focus,.jete-row select:focus{border-color:#3b82f6}
-.jete-row .row-rm{background:#fee2e2;color:#dc2626;border:none;width:34px;height:34px;border-radius:7px;cursor:pointer;font-size:18px;font-weight:800;line-height:1;display:flex;align-items:center;justify-content:center}
+.jete-row .row-rm{background:#fee2e2;color:#dc2626;border:none;width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:16px;font-weight:800;line-height:1;display:flex;align-items:center;justify-content:center}
 .jete-row .row-rm:hover{background:#fecaca}
-.jete-row-price{margin-top:6px;text-align:right;font-size:11px;font-weight:700;color:#1e3a8a;padding-top:6px;border-top:1px dashed #e5e9f0}
+.jete-row-price{margin-top:5px;text-align:right;font-size:10.5px;font-weight:700;color:#1e3a8a;padding-top:5px;border-top:1px dashed #e5e9f0}
 .jete-row-price.warn{color:#dc2626}
-.jete-add-btn{width:100%;background:white;border:1.5px dashed #1e3a8a;color:#1e3a8a;padding:9px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;transition:all 0.15s}
+.jete-add-btn{width:100%;background:white;border:1.5px dashed #1e3a8a;color:#1e3a8a;padding:8px;border-radius:9px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:7px;transition:all 0.15s}
 .jete-add-btn:hover{background:#f0f6ff;border-style:solid}
 
-/* Success */
+/* SUCCESS */
 .success-msg{text-align:center;padding:50px 20px;max-width:560px;margin:0 auto}
-.success-msg .check{width:64px;height:64px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 12px 28px rgba(34,197,94,0.35)}
+.success-msg .check{width:60px;height:60px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 12px 28px rgba(34,197,94,0.35)}
 .success-msg .check svg{stroke:white}
-.success-msg h2{color:#0f172a;margin-bottom:8px;font-size:22px;font-weight:700;letter-spacing:-0.3px}
-.success-msg p{color:#475569;font-size:13.5px;line-height:1.6;margin-bottom:14px}
-.success-msg .next-info{background:rgba(255,255,255,0.85);backdrop-filter:blur(10px);border:1px solid rgba(220,230,250,0.7);border-radius:12px;padding:16px 20px;margin-top:20px;font-size:12.5px;color:#475569;line-height:1.6;text-align:left;box-shadow:0 8px 20px rgba(30,64,175,0.06)}
+.success-msg h2{color:#0f172a;margin-bottom:7px;font-size:20px;font-weight:700;letter-spacing:-0.3px}
+.success-msg p{color:#475569;font-size:13px;line-height:1.55;margin-bottom:12px}
+.success-msg .next-info{background:rgba(255,255,255,0.85);backdrop-filter:blur(10px);border:1px solid rgba(220,230,250,0.7);border-radius:11px;padding:14px 18px;margin-top:18px;font-size:12px;color:#475569;line-height:1.6;text-align:left;box-shadow:0 8px 20px rgba(30,64,175,0.06)}
 .success-msg .next-info b{color:#1e3a8a;font-weight:700}
 
-/* NET popup (rrjeti mjekesor) */
+/* NET popup */
 .net-overlay{display:none;position:fixed;inset:0;background:rgba(15,26,48,0.6);backdrop-filter:blur(8px);z-index:1001;align-items:flex-end;justify-content:center}
 .net-overlay.active{display:flex}
-.net-popup{background:white;border-radius:16px 16px 0 0;width:100%;max-width:680px;max-height:80vh;overflow-y:auto;animation:slideUp 0.3s ease}
+.net-popup{background:white;border-radius:14px 14px 0 0;width:100%;max-width:680px;max-height:80vh;overflow-y:auto;animation:slideUp 0.3s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.net-popup-hdr{padding:14px 18px;border-bottom:1px solid #eef2fa;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:white;z-index:1;border-radius:16px 16px 0 0}
-.net-popup-hdr h3{font-size:14px;font-weight:700;color:#0f172a}
-.net-close{width:30px;height:30px;border-radius:50%;background:#f4f6f9;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7c8aa8}
-.nk{padding:10px 18px;background:linear-gradient(135deg,#f0f6ff,#e4edff);border-bottom:1px solid #eef2fa;display:flex;align-items:center;gap:10px}
-.nk-icon{width:36px;height:24px;border-radius:4px;background:#1e3a8a;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.nk-icon svg{width:16px;height:16px;stroke:white;stroke-width:2;fill:none}
-.nk-text{flex:1}.nk-text .nkt{font-size:11.5px;font-weight:700;color:#1e3a8a}.nk-text .nkd{font-size:10px;color:#4b5563;margin-top:2px}
-.net-cat{padding:6px 18px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;font-size:10.5px;font-weight:700;letter-spacing:0.2px}
-.net-item{display:flex;align-items:center;padding:7px 18px;font-size:11px;border-bottom:1px solid #f8f8f8;gap:8px}
+.net-popup-hdr{padding:13px 16px;border-bottom:1px solid #eef2fa;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:white;z-index:1;border-radius:14px 14px 0 0}
+.net-popup-hdr h3{font-size:13.5px;font-weight:700;color:#0f172a}
+.net-close{width:28px;height:28px;border-radius:50%;background:#f4f6f9;border:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7c8aa8}
+.nk{padding:9px 16px;background:linear-gradient(135deg,#f0f6ff,#e4edff);border-bottom:1px solid #eef2fa;display:flex;align-items:center;gap:9px}
+.nk-icon{width:32px;height:22px;border-radius:4px;background:#1e3a8a;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nk-icon svg{width:14px;height:14px;stroke:white;stroke-width:2;fill:none}
+.nk-text{flex:1}.nk-text .nkt{font-size:11px;font-weight:700;color:#1e3a8a}.nk-text .nkd{font-size:9.5px;color:#4b5563;margin-top:2px}
+.net-cat{padding:6px 16px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;font-size:10px;font-weight:700;letter-spacing:0.2px}
+.net-item{display:flex;align-items:center;padding:6px 16px;font-size:10.5px;border-bottom:1px solid #f8f8f8;gap:8px}
 .net-item:last-child{border-bottom:none}
-.net-dot{width:6px;height:6px;border-radius:50%;background:#3b82f6;flex-shrink:0}
-.net-item .nn{font-weight:600;color:#0f172a;flex:1}.net-item .nl{font-size:10px;color:#7c8aa8}
+.net-dot{width:5px;height:5px;border-radius:50%;background:#3b82f6;flex-shrink:0}
+.net-item .nn{font-weight:600;color:#0f172a;flex:1}.net-item .nl{font-size:9.5px;color:#7c8aa8}
 
 /* RESPONSIVE */
 @media(max-width:1100px){
-  .oferta-layout{grid-template-columns:240px 1fr 240px;gap:10px;padding:12px}
-  .col-left,.col-right{padding:14px}
-  .col-center{padding:16px 18px}
+  .oferta-layout{grid-template-columns:210px 1fr 250px;gap:8px;padding:8px}
+  .col-left{padding:11px}
+  .col-right{padding:11px}
+  .col-center{padding:13px 16px}
 }
 
 @media(max-width:900px){
-  .oferta-layout{grid-template-columns:1fr;gap:12px;padding:12px}
-  .col-left,.col-right{position:relative;top:auto;max-height:none;overflow-y:visible}
-  .paketa-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-  .col-right{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+  .oferta-layout{grid-template-columns:1fr;gap:10px;padding:10px}
+  .paketa-list{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+  .col-right{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}
   .col-right .section-title{grid-column:1/-1;margin-bottom:0}
-  .col-right .section-title.with-spacing{margin-top:6px}
-  #extras-list{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  #extras-list .opt-card{margin-bottom:0}
+  .col-right .section-title.with-spacing{margin-top:5px}
+  #extras-list{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #extras-list .opt-card-mini{margin-bottom:0}
+  .app-card-mini{margin-bottom:0}
 }
 
 @media(max-width:640px){
-  .oferta-layout{padding:10px;gap:10px}
-  .col-left,.col-center,.col-right{padding:14px;border-radius:12px}
+  .oferta-layout{padding:8px;gap:8px}
+  .col-left,.col-center,.col-right{padding:12px;border-radius:11px}
   .paketa-list{grid-template-columns:1fr}
   .col-right{grid-template-columns:1fr}
   #extras-list{grid-template-columns:1fr}
-  .center-top{flex-direction:column;align-items:stretch}
-  .center-top-right{align-items:stretch}
-  .mbulim-pill{text-align:left;min-width:0}
-  .td-name{font-size:17px}
-  .td-primi{flex-direction:column;gap:6px}
-  .mi-wrap,.nc-items{grid-template-columns:1fr;gap:4px}
+  .center-top{flex-direction:column;align-items:flex-start}
+  .center-top-right{align-self:flex-start;text-align:left}
+  .td-name{font-size:16px}
+  .mi-wrap,.nc-items{grid-template-columns:1fr;gap:3px}
+  .mi-item.span-2{grid-column:auto}
   .paketa-actions{flex-direction:column}
   .btn-z,.btn-modifiko,.btn-hiq{width:100%;min-width:0}
-  .oferta-footer-bar{flex-wrap:wrap;gap:8px;padding:11px 14px}
-  .footer-info{flex:1}
-  .footer-summary{display:none}
-  .btn-confirm{padding:10px 18px;font-size:12.5px}
-  body{padding-bottom:74px}
-  .ch-toggle{display:none}
   .ch-sub{display:none}
-  .popup{padding:18px;border-radius:14px}
+  .popup{padding:16px;border-radius:12px}
   .popup-grid-2{grid-template-columns:1fr}
-  .jete-row-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .jete-row .row-rm{grid-column:2;justify-self:end;margin-top:4px}
-  .header{padding:12px 14px}
-  .header img{height:32px}
-  .net-popup{max-width:100%;border-radius:14px 14px 0 0}
+  .jete-row-grid{grid-template-columns:1fr 1fr;gap:7px}
+  .jete-row .row-rm{grid-column:2;justify-self:end;margin-top:3px;width:100%;max-width:80px}
+  .jete-matrix{font-size:9px}
+  .jete-matrix th,.jete-matrix td{padding:3px 2px}
+  .header{padding:10px 12px}
+  .header img{height:30px}
+  .net-popup{max-width:100%;border-radius:12px 12px 0 0}
+  .float-pill{bottom:14px;right:14px;padding:10px 18px;font-size:11.5px}
 }
 
 @media(max-width:380px){
-  .opt-actions{flex-direction:column}
-  .footer-info .val{font-size:16px}
-  .footer-info .val small{font-size:10px}
-  .btn-confirm{width:100%;padding:11px}
-  .oferta-footer-bar{flex-direction:column;align-items:stretch}
-  .footer-info{flex-direction:row;justify-content:space-between;align-items:baseline;gap:8px}
-  body{padding-bottom:120px}
+  .opt-mini-actions{flex-wrap:wrap}
+  .float-pill{left:14px;right:14px;justify-content:center}
 }
 </style>
 </head>
@@ -291,60 +311,60 @@ body{font-family:-apple-system,'Inter','Segoe UI',sans-serif;background:linear-g
 <div class="header"><img src="../Sigal-KS-Logo.webp" alt="Sigal"></div>
 
 <div class="oferta-layout" id="oferta-layout">
-  <!-- LEFT: Paketat -->
   <div class="col-left">
     <div class="oferta-info" id="oferta-info"><div style="font-size:11px;color:#94a3b8">Duke ngarkuar...</div></div>
     <div class="section-title">Zgjidh paketat</div>
     <div class="paketa-list" id="paketa-list"></div>
+    <div class="left-summary" id="left-summary" style="display:none">
+      <span class="lbl">Total mujor</span>
+      <div class="val">€<span id="total-mujor">0.00</span><small>/muaj</small></div>
+      <div class="summary-text" id="left-summary-text"></div>
+    </div>
+    <div class="left-info-bar"><b>Kalkulo ofertën dhe konfirmo zgjedhjen.</b><br>Pas pranimit, stafi ynë do t'ju dërgojë e-mail për plotësimin e pyetësorit.</div>
   </div>
 
-  <!-- CENTER: Detail aktivi -->
   <div class="col-center" id="col-center">
     <div style="text-align:center;padding:60px 20px;color:#94a3b8;font-size:13px">Duke ngarkuar...</div>
   </div>
 
-  <!-- RIGHT: Extras -->
   <div class="col-right">
     <div class="section-title">Mbrojtje shtesë</div>
     <div id="extras-list"></div>
     <div class="section-title with-spacing">Më shumë</div>
     <div class="app-card-mini">
-      <div class="a-title">Sigal Kosova App</div>
-      <div class="a-free">FALAS · Rimbursime online</div>
-      <div class="a-stores">
-        <a href="https://apps.apple.com/us/app/sigal-kosova/id6756305258" target="_blank">App Store</a>
-        <a href="https://play.google.com/store/apps/details?id=com.sigalkosova.einsureapp" target="_blank">Google Play</a>
+      <div class="app-mini-top">
+        <div class="app-mini-logo"><img src="../sigal-app-icon.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="app-mini-text">
+          <div class="a-title">Sigal Kosova App</div>
+          <div class="a-free">FALAS · Rimbursime online</div>
+        </div>
+      </div>
+      <div class="app-stores">
+        <a href="https://apps.apple.com/us/app/sigal-kosova/id6756305258" target="_blank" class="store-btn"><svg viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.41-1.09-.47-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.41C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.08zM12 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>App Store</a>
+        <a href="https://play.google.com/store/apps/details?id=com.sigalkosova.einsureapp" target="_blank" class="store-btn"><svg viewBox="0 0 24 24"><path d="M3 2.41v19.18c0 .77.86 1.23 1.5.81l15.9-9.59a.97.97 0 0 0 0-1.62L4.5 1.6C3.86 1.18 3 1.64 3 2.41z"/></svg>Google Play</a>
       </div>
     </div>
-    <div class="net-card-mini">
-      <div class="n-title">Rrjeti Mjekësor <span class="n-count" id="rrjeti-count">31</span></div>
-      <div class="n-desc">Institucionet për Kartelën SIGAL — prezantoni kartelën, përfitoni mbulim direkt.</div>
-      <button onclick="hapRrjetin()">Shiko të gjitha →</button>
-    </div>
   </div>
 </div>
 
-<!-- FOOTER FIX -->
-<div class="oferta-footer-bar" id="footer-bar">
-  <div class="footer-info">
-    <div class="lbl">Total mujor</div>
-    <div class="val">€<span id="total-mujor">0.00</span><small>/muaj</small></div>
-  </div>
-  <div class="footer-summary" id="footer-summary">Asnjë pako e zgjedhur</div>
-  <button class="btn-confirm" id="btn-konfirmo" onclick="paraKonfirmimit()" disabled>Konfirmoj Zgjedhjen</button>
-</div>
+<!-- FLOATING CONFIRM PILL -->
+<button class="float-pill" id="float-pill" onclick="paraKonfirmimit()">
+  <span class="fp-count" id="fp-count">0</span>
+  Konfirmo Zgjedhjen
+  <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
 
-<!-- POPUP: Numri i personave për paketë -->
+<!-- POPUP: Numri i personave per paketë -->
 <div class="popup-overlay" id="popup-paketa">
   <div class="popup">
     <h3>Numri i personave për <span id="pp-pako-name">paketën</span></h3>
-    <div class="popup-sub">Sa persona do të mbulohen me këtë paketë? Plotësoni numrin për të llogaritur primin total.</div>
+    <div class="popup-sub">Sa persona do të mbulohen me këtë paketë?</div>
     <div class="popup-grid-2">
       <div class="popup-row">
         <label>Mbi 18 vjeç</label>
         <input type="number" id="pp-mbi18" min="0" value="1" oninput="recalcPaketaPopup()">
       </div>
-      <div class="popup-row">
+      <div class="popup-row" id="pp-nen18-row">
         <label>Nën 18 vjeç</label>
         <input type="number" id="pp-nen18" min="0" value="0" oninput="recalcPaketaPopup()">
       </div>
@@ -360,34 +380,109 @@ body{font-family:-apple-system,'Inter','Segoe UI',sans-serif;background:linear-g
   </div>
 </div>
 
-<!-- POPUP: Jetë Plus Cash multi-row -->
+<!-- POPUP: Jetë Plus Cash -->
 <div class="popup-overlay" id="popup-jete">
-  <div class="popup" style="max-width:600px">
-    <h3>Jetë Plus Cash</h3>
-    <div class="popup-sub">Shto persona <strong>mbi 21 vjeç</strong>. Shëno moshën, gjininë dhe shumën e sigurimit për secilin.</div>
-    <div class="jete-note">Fëmijët <b>nën 21 vjeç</b> janë <b>falas</b> — nuk ka nevojë t'i shtoni këtu.</div>
+  <div class="popup large">
+    <h3>Jetë Plus Cash <span class="popup-badge rec">Rekomanduar</span></h3>
+    <div class="popup-sub">Mbështetje financiare e menjëhershme nëse diagnostikoheni me sëmundje të rënda.</div>
+
+    <div class="popup-section">
+      <div class="popup-section-hdr">Sëmundjet që mbulohen</div>
+      <div class="psr"><div class="dl">Tumor malinj invaziv</div><div class="dv">E mbuluar</div></div>
+      <div class="psr"><div class="dl">Tumor beninj në kokë</div><div class="dv">E mbuluar</div></div>
+      <div class="psr"><div class="dl">Opinion i dytë mjekësor për çdo diagnozë</div><div class="dv">E mbuluar</div></div>
+    </div>
+
+    <div class="popup-section">
+      <div class="popup-section-hdr">Shërbimet që mbulohen</div>
+      <div class="psr"><div class="dl">Gjetja e spitalit më të specializuar</div><div class="dv">E përfshirë</div></div>
+      <div class="psr"><div class="dl">Organizimi i akomodimit dhe udhëtimit</div><div class="dv">E përfshirë</div></div>
+      <div class="psr"><div class="dl">Shërbimi i përkthimit gjatë trajtimit</div><div class="dv">E përfshirë</div></div>
+    </div>
+
+    <div class="popup-section">
+      <div class="popup-section-hdr">Çmimet (€/vit)</div>
+      <table class="jete-matrix">
+        <thead><tr><th>Mosha</th><th>Gjinia</th><th>€5,000</th><th>€10,000</th><th>€20,000</th><th>€50,000</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2">21–30</td><td class="gm">M</td><td>30</td><td>35</td><td>50</td><td>90</td></tr>
+          <tr><td class="gf">F</td><td>30</td><td>40</td><td>60</td><td>100</td></tr>
+          <tr><td rowspan="2">31–40</td><td class="gm">M</td><td>35</td><td>45</td><td>80</td><td>120</td></tr>
+          <tr><td class="gf">F</td><td>45</td><td>65</td><td>90</td><td>200</td></tr>
+          <tr><td rowspan="2">41–50</td><td class="gm">M</td><td>50</td><td>70</td><td>90</td><td>250</td></tr>
+          <tr><td class="gf">F</td><td>65</td><td>80</td><td>120</td><td>350</td></tr>
+          <tr><td rowspan="2">51–60</td><td class="gm">M</td><td>100</td><td>150</td><td>300</td><td>600</td></tr>
+          <tr><td class="gf">F</td><td>100</td><td>150</td><td>300</td><td>600</td></tr>
+          <tr><td rowspan="2">61–70</td><td class="gm">M</td><td>200</td><td>380</td><td>750</td><td>1,800</td></tr>
+          <tr><td class="gf">F</td><td>120</td><td>250</td><td>420</td><td>1,000</td></tr>
+          <tr><td rowspan="2">71–80</td><td class="gm">M</td><td>250</td><td>380</td><td>980</td><td>2,400</td></tr>
+          <tr><td class="gf">F</td><td>150</td><td>220</td><td>520</td><td>1,200</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="jete-note">Periudha e pritjes: <b>180 ditë</b> për individ, <b>90 ditë</b> për grupe mbi 50 persona. Fëmijët <b>nën 21 vjeç</b> janë <b>falas</b>.</div>
+
+    <div class="popup-section-hdr" style="margin-top:11px">Llogarit primin</div>
     <div id="jete-rows" class="jete-rows"></div>
-    <button class="jete-add-btn" onclick="addJeteRow()">+ Shto person</button>
+    <button class="jete-add-btn" onclick="addJeteRow()">+ Shto kategori</button>
+
     <div class="popup-total">
       <span class="lbl">Total mujor</span>
       <span class="val">€<span id="jete-total">0.00</span></span>
     </div>
     <div class="popup-btns">
       <button class="btn-skip" onclick="closeJetePopup()">Anulo</button>
+      <button class="btn-rm" id="btn-jete-rm" onclick="hiqJete()" style="display:none">Hiq zgjedhjen</button>
       <button class="btn-save" onclick="saveJete()">Ruaj zgjedhjen</button>
     </div>
   </div>
 </div>
 
-<!-- NET overlay (rrjeti mjekesor) -->
+<!-- POPUP: Opinioni i Dytë -->
+<div class="popup-overlay" id="popup-opinion">
+  <div class="popup">
+    <h3>Opinioni i Dytë Mjekësor <span class="popup-badge new">I ri</span></h3>
+    <div class="popup-sub">Mendim ndërkombëtar nga Qendrat Mjekësore Botërore përmes MediGuide. <b>€1/muaj/person.</b></div>
+
+    <div class="popup-section">
+      <div class="popup-section-hdr">Si funksionon</div>
+      <div class="psr"><div class="dl">Dërgohen formularët për plotësim</div><div class="dv step">Hapi 1</div></div>
+      <div class="psr"><div class="dl">Propozohen 3 Qendra Botërore</div><div class="dv step">Hapi 2</div></div>
+      <div class="psr"><div class="dl">Zgjedhni Qendrën, MediGuide mbledh të dhënat</div><div class="dv step">Hapi 3</div></div>
+      <div class="psr"><div class="dl">Analiza dhe rekomandimet brenda 10 ditëve</div><div class="dv step">Hapi 4</div></div>
+      <div class="psr"><div class="dl">Opinioni dërgohet ju dhe mjekut tuaj</div><div class="dv step">Hapi 5</div></div>
+    </div>
+
+    <div class="popup-section">
+      <div class="popup-section-hdr">Gjetja e Qendrës</div>
+      <div class="psr"><div class="dl">Rekomandim për trajtim mjekësor</div><div class="dv">E përfshirë</div></div>
+      <div class="psr"><div class="dl">Kostot e opinionit mbulohen nga SIGAL</div><div class="dv">E përfshirë</div></div>
+    </div>
+
+    <div class="jete-note" style="background:#dbeafe;color:#1e40af">Shërbimet mjekësore në qendrën e zgjedhur paguhen nga pacienti.</div>
+
+    <div class="popup-total">
+      <span class="lbl">Total mujor (<span id="op-persons">0</span> persona)</span>
+      <span class="val">€<span id="op-total">0.00</span></span>
+    </div>
+    <div class="popup-btns">
+      <button class="btn-skip" onclick="closeOpinionPopup()">Anulo</button>
+      <button class="btn-rm" id="btn-op-rm" onclick="hiqOpinion()" style="display:none">Hiq</button>
+      <button class="btn-save" onclick="shtoOpinion()">Shto në ofertë</button>
+    </div>
+  </div>
+</div>
+
+<!-- NET overlay -->
 <div class="net-overlay" id="net-overlay" onclick="if(event.target===this)mbyllRrjetin()"><div class="net-popup" id="net-popup"></div></div>
 
 <script src="../js/pakot.js"></script>
 <script>
 const params=new URLSearchParams(window.location.search),ofertaId=params.get('id');
 let ofertaData=null,pakotGlobal=[],activeTab=0;
-let selectedPakot=new Map(); // id -> {mbi18, nen18}
-let jetePlusCash=null; // {rows:[{age,gender,shuma}], total}
+let selectedPakot=new Map();
+let jetePlusCash=null;
 let opinionSelected=false;
 let openSections={};
 let pendingPaketaId=null;
@@ -397,7 +492,6 @@ const RRJETI={spitalet:[{e:'Spitali Amerikan',q:'Prishtinë'},{e:'Spitali "Lindj
 
 const ICN={h:'<svg viewBox="0 0 24 24"><path d="M3 21h18M9 8h6M12 8v6M9 21V8a3 3 0 0 1 3-3h0a3 3 0 0 1 3 3v13" stroke-linecap="round" stroke-linejoin="round"/></svg>',a:'<svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M12 11v6M9 14h6" stroke-linecap="round"/></svg>',t:'<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
 
-// Jete Plus Cash matrix (€/vit) sipas grupmoshes, gjinise, shumes
 const JETE_PRICES={
     '21-30':{M:{5000:30,10000:35,20000:50,50000:90},F:{5000:30,10000:40,20000:60,50000:100}},
     '31-40':{M:{5000:35,10000:45,20000:80,50000:120},F:{5000:45,10000:65,20000:90,50000:200}},
@@ -422,8 +516,7 @@ function calcJetePriceYearly(age,gender,shuma){
     return t[gender][shuma];
 }
 
-// Helper: konverto cmim te paketes ne mujor
-function paketaMonthlyPrice(p, mbi18, nen18){
+function paketaMonthlyPrice(p,mbi18,nen18){
     const suffix=p.primi_suffix||'/muaj';
     const div=suffix==='/vit'?12:1;
     const m=parseFloat(String(p.primi_madh).replace(/[^\d.]/g,''))/div;
@@ -439,156 +532,138 @@ function openPaketaPopup(pakaId){
     const existing=selectedPakot.get(pakaId);
     document.getElementById('pp-mbi18').value=existing?existing.mbi18:1;
     document.getElementById('pp-nen18').value=existing?existing.nen18:0;
-    // Ne baze te llojit te ofertes, fshih nen 18 nese individ + nuk ka primi_femije
-    const nen18Row=document.getElementById('pp-nen18').closest('.popup-row');
-    if(ofertaData && ofertaData.lloji==='individ' && !p.primi_femije){
+    const nen18Row=document.getElementById('pp-nen18-row');
+    if(ofertaData&&ofertaData.lloji==='individ'&&!p.primi_femije){
         nen18Row.style.display='none';
         document.getElementById('pp-nen18').value=0;
-    } else {
-        nen18Row.style.display='block';
-    }
+    }else{nen18Row.style.display='block';}
     recalcPaketaPopup();
     document.getElementById('popup-paketa').classList.add('active');
     setTimeout(()=>document.getElementById('pp-mbi18').focus(),100);
 }
-function closePaketaPopup(){
-    document.getElementById('popup-paketa').classList.remove('active');
-    pendingPaketaId=null;
-}
+function closePaketaPopup(){document.getElementById('popup-paketa').classList.remove('active');pendingPaketaId=null;}
 function recalcPaketaPopup(){
     if(!pendingPaketaId) return;
     const p=pakotGlobal.find(x=>x.id===pendingPaketaId);if(!p)return;
     const mbi18=Math.max(0,parseInt(document.getElementById('pp-mbi18').value)||0);
     const nen18=Math.max(0,parseInt(document.getElementById('pp-nen18').value)||0);
-    const total=paketaMonthlyPrice(p,mbi18,nen18);
-    document.getElementById('pp-total').textContent=total.toFixed(2);
+    document.getElementById('pp-total').textContent=paketaMonthlyPrice(p,mbi18,nen18).toFixed(2);
 }
 function savePaketa(){
     if(!pendingPaketaId) return;
     const mbi18=Math.max(0,parseInt(document.getElementById('pp-mbi18').value)||0);
     const nen18=Math.max(0,parseInt(document.getElementById('pp-nen18').value)||0);
-    if(mbi18<1 && nen18<1){alert('Duhet të ketë të paktën 1 person.');return;}
+    if(mbi18<1&&nen18<1){alert('Duhet të ketë të paktën 1 person.');return;}
     selectedPakot.set(pendingPaketaId,{mbi18,nen18});
-    closePaketaPopup();
-    renderPaketaList();
-    renderDetail();
-    renderExtras();
-    updateFooter();
+    closePaketaPopup();renderPaketaList();renderDetail();renderExtras();updateAll();
 }
 function modifikoPaketa(pakaId){openPaketaPopup(pakaId);}
 function hiqPaketa(pakaId){
     selectedPakot.delete(pakaId);
-    // Nese opinion i selektuar dhe nuk ka me persona, hiqe edhe atë
-    if(opinionSelected && getTotalPersons()===0) opinionSelected=false;
-    renderPaketaList();
-    renderDetail();
-    renderExtras();
-    updateFooter();
+    if(opinionSelected&&getTotalPersons()===0)opinionSelected=false;
+    renderPaketaList();renderDetail();renderExtras();updateAll();
 }
 
 // ===== POPUP JETE PLUS CASH =====
 function openJetePopup(){
-    if(jetePlusCash && jetePlusCash.rows.length) jeteRows=jetePlusCash.rows.map(r=>({...r}));
-    else jeteRows=[{age:'',gender:'M',shuma:50000}];
+    if(jetePlusCash&&jetePlusCash.rows.length)jeteRows=jetePlusCash.rows.map(r=>({...r}));
+    else jeteRows=[{age:'',gender:'M',count:1,shuma:50000},{age:'',gender:'F',count:1,shuma:50000}];
     renderJeteRows();
+    document.getElementById('btn-jete-rm').style.display=jetePlusCash?'block':'none';
     document.getElementById('popup-jete').classList.add('active');
 }
 function closeJetePopup(){document.getElementById('popup-jete').classList.remove('active');}
-function addJeteRow(){jeteRows.push({age:'',gender:'M',shuma:50000});renderJeteRows();setTimeout(()=>{const inputs=document.querySelectorAll('#jete-rows input[type=number]');if(inputs.length)inputs[inputs.length-1].focus();},50);}
-function rmJeteRow(idx){jeteRows.splice(idx,1);if(jeteRows.length===0)jeteRows.push({age:'',gender:'M',shuma:50000});renderJeteRows();}
+function addJeteRow(){jeteRows.push({age:'',gender:'M',count:1,shuma:50000});renderJeteRows();setTimeout(()=>{const inputs=document.querySelectorAll('#jete-rows input[type=number]');if(inputs.length)inputs[inputs.length-2].focus();},50);}
+function rmJeteRow(idx){jeteRows.splice(idx,1);if(jeteRows.length===0)jeteRows.push({age:'',gender:'M',count:1,shuma:50000});renderJeteRows();}
 function updateJeteRow(idx,field,val){jeteRows[idx][field]=val;renderJeteRows();}
 function renderJeteRows(){
     const wrap=document.getElementById('jete-rows');
     let h='',totalMonthly=0;
     jeteRows.forEach((r,i)=>{
-        const a=parseInt(r.age)||0;
+        const a=parseInt(r.age)||0,c=Math.max(1,parseInt(r.count)||1);
         const yearly=calcJetePriceYearly(r.age,r.gender,parseInt(r.shuma));
-        const monthly=yearly/12;
-        if(yearly>0) totalMonthly+=monthly;
+        const monthly=(yearly*c)/12;
+        if(yearly>0)totalMonthly+=monthly;
         h+='<div class="jete-row"><div class="jete-row-grid">';
         h+='<div><label>Mosha</label><input type="number" min="0" max="120" value="'+(r.age||'')+'" oninput="updateJeteRow('+i+',\'age\',this.value)" placeholder="—"></div>';
         h+='<div><label>Gjinia</label><select onchange="updateJeteRow('+i+',\'gender\',this.value)"><option value="M"'+(r.gender==='M'?' selected':'')+'>Mashkull</option><option value="F"'+(r.gender==='F'?' selected':'')+'>Femër</option></select></div>';
-        h+='<div><label>Shuma sigurimit</label><select onchange="updateJeteRow('+i+',\'shuma\',this.value)"><option value="5000"'+(r.shuma==5000?' selected':'')+'>€ 5,000</option><option value="10000"'+(r.shuma==10000?' selected':'')+'>€ 10,000</option><option value="20000"'+(r.shuma==20000?' selected':'')+'>€ 20,000</option><option value="50000"'+(r.shuma==50000?' selected':'')+'>€ 50,000</option></select></div>';
+        h+='<div><label>Numri</label><input type="number" min="1" value="'+(r.count||1)+'" oninput="updateJeteRow('+i+',\'count\',this.value)"></div>';
+        h+='<div><label>Shuma</label><select onchange="updateJeteRow('+i+',\'shuma\',this.value)"><option value="5000"'+(r.shuma==5000?' selected':'')+'>€5,000</option><option value="10000"'+(r.shuma==10000?' selected':'')+'>€10,000</option><option value="20000"'+(r.shuma==20000?' selected':'')+'>€20,000</option><option value="50000"'+(r.shuma==50000?' selected':'')+'>€50,000</option></select></div>';
         h+='<button class="row-rm" onclick="rmJeteRow('+i+')" title="Hiq">×</button>';
         h+='</div>';
-        if(a>0 && a<21) h+='<div class="jete-row-price warn">Nën 21 vjeç — falas, nuk shtohet</div>';
-        else if(a>80) h+='<div class="jete-row-price warn">Mbi 80 vjeç — nuk mbulohet</div>';
-        else if(yearly>0) h+='<div class="jete-row-price">€ '+yearly+'/vit · €'+monthly.toFixed(2)+'/muaj</div>';
+        if(a>0&&a<21)h+='<div class="jete-row-price warn">Nën 21 — falas, nuk shtohet</div>';
+        else if(a>80)h+='<div class="jete-row-price warn">Mbi 80 — nuk mbulohet</div>';
+        else if(yearly>0)h+='<div class="jete-row-price">'+c+'× €'+yearly+'/vit · €'+monthly.toFixed(2)+'/muaj</div>';
         h+='</div>';
     });
     wrap.innerHTML=h;
     document.getElementById('jete-total').textContent=totalMonthly.toFixed(2);
 }
 function saveJete(){
-    const valid=jeteRows.filter(r=>{const a=parseInt(r.age);return a>=21&&a<=80;});
-    if(valid.length===0){
-        if(confirm('Nuk ka asnjë person mbi 21 vjeç. A doni ta hiqni Jetë Plus Cash?')){
-            jetePlusCash=null;closeJetePopup();renderExtras();updateFooter();
-        }
-        return;
-    }
+    const valid=jeteRows.filter(r=>{const a=parseInt(r.age);const c=parseInt(r.count)||1;return a>=21&&a<=80&&c>=1;});
+    if(valid.length===0){alert('Shto së paku 1 kategori personash mbi 21 vjeç.');return;}
     let totalMonthly=0;
-    valid.forEach(r=>{totalMonthly+=calcJetePriceYearly(r.age,r.gender,parseInt(r.shuma))/12;});
-    jetePlusCash={rows:valid,total:totalMonthly};
-    closeJetePopup();renderExtras();updateFooter();
+    valid.forEach(r=>{const c=Math.max(1,parseInt(r.count)||1);totalMonthly+=(calcJetePriceYearly(r.age,r.gender,parseInt(r.shuma))*c)/12;});
+    jetePlusCash={rows:valid.map(r=>({...r,count:Math.max(1,parseInt(r.count)||1)})),total:totalMonthly};
+    closeJetePopup();renderExtras();updateAll();
 }
-function hiqJete(){jetePlusCash=null;renderExtras();updateFooter();}
+function hiqJete(){jetePlusCash=null;closeJetePopup();renderExtras();updateAll();}
 
-// ===== OPINION =====
-function toggleOpinion(){
-    if(opinionSelected){
-        opinionSelected=false;
-    } else {
-        const totalP=getTotalPersons();
-        if(totalP<1){alert('Së pari zgjedh së paku një paketë me numrin e personave.');return;}
-        opinionSelected=true;
-    }
-    renderExtras();updateFooter();
+// ===== POPUP OPINION =====
+function openOpinionPopup(){
+    refreshOpinionPopup();
+    document.getElementById('btn-op-rm').style.display=opinionSelected?'block':'none';
+    document.getElementById('popup-opinion').classList.add('active');
 }
-function getTotalPersons(){
-    let t=0;
-    selectedPakot.forEach(v=>{t+=(v.mbi18||0)+(v.nen18||0);});
-    return t;
+function closeOpinionPopup(){document.getElementById('popup-opinion').classList.remove('active');}
+function refreshOpinionPopup(){
+    const totalP=getTotalPersons();
+    document.getElementById('op-persons').textContent=totalP;
+    document.getElementById('op-total').textContent=totalP.toFixed(2);
 }
+function shtoOpinion(){
+    const totalP=getTotalPersons();
+    if(totalP<1){alert('Së pari zgjedh së paku një paketë me numrin e personave.');return;}
+    opinionSelected=true;
+    closeOpinionPopup();renderExtras();updateAll();
+}
+function hiqOpinion(){opinionSelected=false;closeOpinionPopup();renderExtras();updateAll();}
+function getTotalPersons(){let t=0;selectedPakot.forEach(v=>{t+=(v.mbi18||0)+(v.nen18||0);});return t;}
 
 // ===== TOTAL =====
 function calcTotalMujor(){
     let t=0;
-    selectedPakot.forEach((v,id)=>{
-        const p=pakotGlobal.find(x=>x.id===id);if(!p)return;
-        t+=paketaMonthlyPrice(p,v.mbi18,v.nen18);
-    });
-    if(jetePlusCash) t+=jetePlusCash.total;
-    if(opinionSelected) t+=1*getTotalPersons();
+    selectedPakot.forEach((v,id)=>{const p=pakotGlobal.find(x=>x.id===id);if(p)t+=paketaMonthlyPrice(p,v.mbi18,v.nen18);});
+    if(jetePlusCash)t+=jetePlusCash.total;
+    if(opinionSelected)t+=1*getTotalPersons();
     return t;
 }
-function updateFooter(){
+function updateAll(){
     const t=calcTotalMujor();
     document.getElementById('total-mujor').textContent=t.toFixed(2);
     let summary=[];
-    selectedPakot.forEach((v,id)=>{
-        const p=pakotGlobal.find(x=>x.id===id);if(!p)return;
-        summary.push('<b>'+p.emri+'</b>');
-    });
-    if(jetePlusCash) summary.push('Jetë Plus Cash');
-    if(opinionSelected) summary.push('Opinion i 2-të');
-    document.getElementById('footer-summary').innerHTML=summary.length?summary.join(' + '):'Asnjë pako e zgjedhur';
-    document.getElementById('btn-konfirmo').disabled=summary.length===0;
+    selectedPakot.forEach((v,id)=>{const p=pakotGlobal.find(x=>x.id===id);if(p)summary.push(p.emri);});
+    if(jetePlusCash)summary.push('Jetë Plus');
+    if(opinionSelected)summary.push('Opinion 2-të');
+    document.getElementById('left-summary-text').textContent=summary.length?summary.join(' + '):'Asnjë e zgjedhur';
+    document.getElementById('left-summary').style.display=summary.length?'block':'none';
+    const fp=document.getElementById('float-pill'),fc=document.getElementById('fp-count');
+    if(summary.length){fp.classList.add('show');fc.textContent=summary.length;}else{fp.classList.remove('show');}
 }
 
-// ===== CAT (Coverage section, mbahet logjika ekzistuese) =====
+// ===== CAT =====
 function catHTML(key,icon,title,sub,badge,badgeCls,p){
     const isOpen=openSections[key];
     let h='<div class="cat-hdr" onclick="toggleCat(\''+key+'\')"><div class="ch-left"><div class="ch-icon">'+icon+'</div><div><div class="ch-t">'+title+'</div><div class="ch-sub">'+sub+'</div></div></div><div class="ch-right"><span class="ch-badge '+badgeCls+'">'+badge+'</span><span class="ch-toggle">'+(isOpen?'Mbyll ▴':'Shih mbulimet ▾')+'</span></div></div>';
     h+='<div class="cat-body'+(isOpen?' open':'')+'">';
     if(key==='hosp'){
         const s=p.hospitalore_pikat&&p.hospitalore_pikat.every(x=>x.vlera===p.hospitalore_pikat[0].vlera);
-        if(s){h+='<div class="mi-wrap">';p.hospitalore_pikat.forEach(x=>{h+='<div class="mi-item"><span class="mi-dot"></span>'+x.emri+'</div>';});h+='</div>';}
+        if(s){h+='<div class="mi-wrap">';p.hospitalore_pikat.forEach(x=>{const long=x.emri.length>50;h+='<div class="mi-item'+(long?' span-2':'')+'"><span class="mi-dot"></span>'+x.emri+'</div>';});h+='</div>';}
         else p.hospitalore_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});
     }else if(key==='amb'){
-        if(p.ambulantore_zbritje){h+='<div class="nc">Nuk mbulohet — Zbritje brenda Rrjetit Mjekësor</div><div class="nc-items">';p.ambulantore_pikat.forEach(x=>{h+='<div class="mi-item"><span class="mi-dot"></span>'+x.emri+'</div>';});h+='</div>';}
+        if(p.ambulantore_zbritje){h+='<div class="nc">Nuk mbulohet — Zbritje brenda Rrjetit Mjekësor</div><div class="nc-items">';p.ambulantore_pikat.forEach(x=>{const long=x.emri.length>50;h+='<div class="mi-item'+(long?' span-2':'')+'"><span class="mi-dot"></span>'+x.emri+'</div>';});h+='</div>';}
         else{const s=p.ambulantore_pikat&&p.ambulantore_pikat.every(x=>x.vlera===p.ambulantore_pikat[0].vlera);
-            if(s){h+='<div class="mi-wrap">';p.ambulantore_pikat.forEach(x=>{h+='<div class="mi-item"><span class="mi-dot b"></span>'+x.emri+'</div>';});h+='</div>';}
+            if(s){h+='<div class="mi-wrap">';p.ambulantore_pikat.forEach(x=>{const long=x.emri.length>50;h+='<div class="mi-item'+(long?' span-2':'')+'"><span class="mi-dot b"></span>'+x.emri+'</div>';});h+='</div>';}
             else p.ambulantore_pikat.forEach(x=>{h+='<div class="dr"><div class="dl">'+x.emri+'</div><div class="dv">'+x.vlera+'</div></div>';});}
     }else{
         const tc=p.tjera_pikat.filter(x=>!x.zbritje),tn=p.tjera_pikat.filter(x=>x.zbritje);
@@ -602,14 +677,17 @@ function toggleCat(k){openSections[k]=!openSections[k];renderDetail();}
 // ===== RENDER =====
 function renderPaketaList(){
     const list=document.getElementById('paketa-list');
+    const ei=ofertaData&&ofertaData.lloji==='individ';
     let h='';
     pakotGlobal.forEach((p,i)=>{
-        const isActive=i===activeTab;
-        const isSel=selectedPakot.has(p.id);
+        const isActive=i===activeTab,isSel=selectedPakot.has(p.id);
         h+='<button class="paketa-btn'+(isActive?' active':'')+(isSel?' selected':'')+'" onclick="switchTab('+i+')">';
-        h+='<div class="pi-info"><div class="pi-name">'+p.emri+'</div><div class="pi-desc">Mbulim € '+p.shuma+'</div></div>';
-        h+='<div><span class="pi-price">€'+p.primi_madh+'</span><span class="pi-per">'+p.primi_suffix+'</span></div>';
-        h+='</button>';
+        h+='<div class="pi-name">'+p.emri+'</div>';
+        h+='<div class="pi-shuma">Mbulim € '+p.shuma+'</div>';
+        h+='<div class="pi-pricing">';
+        h+='<div class="pp-row"><span class="pp-lbl">Mbi 18</span><span class="pp-val">€'+p.primi_madh+p.primi_suffix+'</span></div>';
+        if(!ei&&p.primi_femije)h+='<div class="pp-row"><span class="pp-lbl">Nën 18</span><span class="pp-val">€'+p.primi_femije+'/muaj</span></div>';
+        h+='</div></button>';
     });
     list.innerHTML=h;
 }
@@ -617,18 +695,13 @@ function switchTab(i){activeTab=i;renderPaketaList();renderDetail();}
 
 function renderDetail(){
     const p=pakotGlobal[activeTab];if(!p)return;
-    const ei=ofertaData&&ofertaData.lloji==='individ',isSel=selectedPakot.has(p.id);
+    const isSel=selectedPakot.has(p.id);
     let abBadge=p.ambulantore,abCls='b';
     if(p.ambulantore==='Nuk mbulohet'||p.ambulantore_zbritje){abBadge='Zbritje';abCls='gr';}
     let tBadge='Mbulohet',tCls='b';
     if(p.tjera_pikat&&p.tjera_pikat.filter(x=>x.zbritje).length>0&&p.tjera_pikat.filter(x=>!x.zbritje).length<=3){tBadge='Zbritje';tCls='gr';}
 
-    let h='<div class="center-top"><div class="center-top-left"><div class="td-name">'+p.emri+'</div><div class="td-zona"><span class="td-zona-lbl">Zona e mbuluar</span>'+p.zona+'</div></div><div class="center-top-right"><div class="mbulim-pill"><span class="lbl">Mbulim total</span><span class="val">€ '+p.shuma+'</span></div></div></div>';
-
-    let primi='<div class="td-primi"><div class="td-pi"><span class="pl">Mbi 18 vjeç</span><span class="pv">€ '+p.primi_madh+p.primi_suffix+'</span></div>';
-    if(!ei&&p.primi_femije) primi+='<div class="td-pi"><span class="pl">Nën 18 vjeç</span><span class="pv">€ '+p.primi_femije+'/muaj</span></div>';
-    primi+='</div>';
-    h+=primi;
+    let h='<div class="center-top"><div class="center-top-left"><div class="td-name">'+p.emri+'</div><div class="td-zona"><span class="td-zona-lbl">Zona e mbuluar</span>'+p.zona+'</div></div><div class="center-top-right"><div class="td-shuma">€ '+p.shuma+'</div><div class="td-shuma-lbl">Mbulim total</div></div></div>';
 
     h+=catHTML('hosp',ICN.h,'Trajtimet Hospitalore','Shtrirje në spital · Dhomë gjysëmprivate',p.hospitalore,'g',p);
     h+=catHTML('amb',ICN.a,'Trajtimet Ambulantore','Jo-shtrirje në spital',abBadge,abCls,p);
@@ -639,15 +712,14 @@ function renderDetail(){
         const v=selectedPakot.get(p.id);
         const mp=paketaMonthlyPrice(p,v.mbi18,v.nen18);
         h+='<div class="paketa-actions">';
-        h+='<button class="btn-modifiko" onclick="modifikoPaketa(\''+p.id+'\')">Modifiko numrin ('+v.mbi18+(v.nen18>0?'+'+v.nen18:'')+' persona · €'+mp.toFixed(2)+'/muaj)</button>';
+        h+='<button class="btn-modifiko" onclick="modifikoPaketa(\''+p.id+'\')">Modifiko ('+v.mbi18+(v.nen18>0?'+'+v.nen18:'')+'p · €'+mp.toFixed(2)+'/muaj)</button>';
         h+='<button class="btn-hiq" onclick="hiqPaketa(\''+p.id+'\')">Hiq zgjedhjen</button>';
         h+='</div>';
-    } else {
+    }else{
         h+='<div class="paketa-actions"><button class="btn-z" onclick="openPaketaPopup(\''+p.id+'\')">Zgjedh '+p.emri+'</button></div>';
     }
     h+='<div class="btn-z-note">Mund të zgjidhni më shumë se një pako</div>';
 
-    // Koment-i ne fund (per te qene gjithmone i dukshem ne center-col)
     h+='<div class="koment-box"><label>Koment (opsional)</label><textarea id="koment" placeholder="Keni pyetje? Shkruani këtu...">'+(document.getElementById('koment')?document.getElementById('koment').value:'')+'</textarea></div>';
 
     document.getElementById('col-center').innerHTML=h;
@@ -655,25 +727,33 @@ function renderDetail(){
 
 function renderExtras(){
     const list=document.getElementById('extras-list');let h='';
-    // Jetë Plus Cash
-    h+='<div class="opt-card'+(jetePlusCash?' selected':'')+'">';
-    h+='<div class="opt-head"><div class="opt-title">Jetë Plus Cash</div><span class="opt-badge rec">Rekomanduar</span></div>';
-    if(jetePlusCash){h+='<div class="opt-price">€'+jetePlusCash.total.toFixed(2)+'<small>/muaj · '+jetePlusCash.rows.length+' '+(jetePlusCash.rows.length===1?'person':'persona')+'</small></div>';}
-    else{h+='<div class="opt-price">nga €2.50<small>/muaj</small></div>';}
-    h+='<div class="opt-desc">Mbështetje financiare e menjëhershme nëse diagnostikoheni me sëmundje të rënda.</div>';
-    if(jetePlusCash){h+='<div class="opt-actions"><button class="opt-btn added" onclick="openJetePopup()">✓ Shtuar — Modifiko</button><button class="opt-btn-rm" onclick="hiqJete()" title="Hiq">×</button></div>';}
-    else{h+='<button class="opt-btn" onclick="openJetePopup()">+ Shto</button>';}
+    // Jete
+    h+='<div class="opt-card-mini'+(jetePlusCash?' selected':'')+'">';
+    h+='<div class="opt-mini-head"><div class="opt-mini-title">Jetë Plus Cash</div><span class="opt-mini-badge rec">Rekomanduar</span></div>';
+    if(jetePlusCash){h+='<div class="opt-mini-price">€'+jetePlusCash.total.toFixed(2)+'<small>/muaj</small></div>';}
+    else{h+='<div class="opt-mini-price">nga €2.50<small>/muaj</small></div>';}
+    h+='<div class="opt-mini-desc">Mbështetje për sëmundje të rënda.</div>';
+    if(jetePlusCash){h+='<div class="opt-mini-actions"><button class="opt-shih-btn added" onclick="openJetePopup()">✓ Shih / Modifiko</button></div>';}
+    else{h+='<div class="opt-mini-actions"><button class="opt-shih-btn" onclick="openJetePopup()">Shih mbulimet</button></div>';}
     h+='</div>';
 
     // Opinion
     const totalP=getTotalPersons();
-    h+='<div class="opt-card'+(opinionSelected?' selected':'')+'">';
-    h+='<div class="opt-head"><div class="opt-title">Opinioni i Dytë Mjekësor</div><span class="opt-badge new">I ri</span></div>';
-    if(opinionSelected){h+='<div class="opt-price">€'+totalP.toFixed(2)+'<small>/muaj · '+totalP+' '+(totalP===1?'person':'persona')+'</small></div>';}
-    else{h+='<div class="opt-price">€1<small>/muaj/person</small></div>';}
-    h+='<div class="opt-desc">Mendim ndërkombëtar nga Qendrat Mjekësore Botërore përmes MediGuide.</div>';
-    if(opinionSelected){h+='<button class="opt-btn added" onclick="toggleOpinion()">✓ Shtuar — Hiq</button>';}
-    else{h+='<button class="opt-btn" onclick="toggleOpinion()"'+(totalP===0?' style="opacity:0.5"':'')+'>+ Shto</button>';}
+    h+='<div class="opt-card-mini'+(opinionSelected?' selected':'')+'">';
+    h+='<div class="opt-mini-head"><div class="opt-mini-title">Opinion i 2-të Mjekësor</div><span class="opt-mini-badge new">I ri</span></div>';
+    if(opinionSelected){h+='<div class="opt-mini-price">€'+totalP.toFixed(2)+'<small>/muaj · '+totalP+' p.</small></div>';}
+    else{h+='<div class="opt-mini-price">€1<small>/muaj/person</small></div>';}
+    h+='<div class="opt-mini-desc">MediGuide — qendrat botërore.</div>';
+    if(opinionSelected){h+='<div class="opt-mini-actions"><button class="opt-shih-btn added" onclick="openOpinionPopup()">✓ Shih / Hiq</button></div>';}
+    else{h+='<div class="opt-mini-actions"><button class="opt-shih-btn" onclick="openOpinionPopup()">Shih mbulimet</button></div>';}
+    h+='</div>';
+
+    // Rrjeti
+    const ti=RRJETI.spitalet.length+RRJETI.laboratoret.length+RRJETI.dentaret.length+RRJETI.ordinanca.length;
+    h+='<div class="opt-card-mini">';
+    h+='<div class="opt-mini-head"><div class="opt-mini-title">Rrjeti Mjekësor</div><span class="opt-mini-badge cnt">'+ti+'</span></div>';
+    h+='<div class="opt-mini-desc">Institucionet për Kartelën SIGAL — mbulim direkt.</div>';
+    h+='<div class="opt-mini-actions"><button class="opt-shih-btn" onclick="hapRrjetin()">Shiko të gjitha</button></div>';
     h+='</div>';
 
     list.innerHTML=h;
@@ -685,16 +765,15 @@ function hapRrjetin(){
     let h='<div class="net-popup-hdr"><h3>Rrjeti Mjekësor SIGAL ('+ti+')</h3><button class="net-close" onclick="mbyllRrjetin()">✕</button></div>';
     h+='<div class="nk"><div class="nk-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><div class="nk-text"><div class="nkt">Kartela SIGAL</div><div class="nkd">Paraqiteni kartelën për mbulim direkt pa pagesë</div></div></div>';
     [['Spitalet',RRJETI.spitalet],['Laboratoret',RRJETI.laboratoret],['Dentarët',RRJETI.dentaret],['Ordinanca',RRJETI.ordinanca]].forEach(([n,a])=>{h+='<div class="net-cat">'+n+' ('+a.length+')</div>';a.forEach(s=>{h+='<div class="net-item"><span class="net-dot"></span><span class="nn">'+s.e+'</span><span class="nl">'+s.q+(s.z?' · '+s.z:'')+'</span></div>';});});
-    document.getElementById('net-popup').innerHTML=h;document.getElementById('net-overlay').classList.add('active');document.body.style.overflow='hidden';
+    document.getElementById('net-popup').innerHTML=h;document.getElementById('net-overlay').classList.add('active');
 }
-function mbyllRrjetin(){document.getElementById('net-overlay').classList.remove('active');document.body.style.overflow='';}
+function mbyllRrjetin(){document.getElementById('net-overlay').classList.remove('active');}
 
 // ===== NGARKO =====
 function ngarko(){
     const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[],oferta=ofertat[ofertaId];
     if(!oferta){
         document.getElementById('oferta-layout').innerHTML='<div style="text-align:center;padding:60px;grid-column:1/-1"><h2 style="color:#1e3a8a;font-size:18px">Oferta nuk u gjet.</h2><p style="color:#7c8aa8;margin-top:6px;font-size:13px">Kontaktoni agjentin tuaj.</p></div>';
-        document.getElementById('footer-bar').style.display='none';
         return;
     }
     ofertaData=oferta;
@@ -703,33 +782,20 @@ function ngarko(){
         const c=(oferta.pakot||[]).find(op=>typeof op==='object'&&op.id===p.id);
         if(!c)return p;
         const merged={...p,...c};
-        if(merged.tjera_pikat){
-            for(let ti=0;ti<9;ti++){
-                const key='tjera_'+ti;
-                if(c[key]!==undefined&&c[key]!==''){merged.tjera_pikat[ti]={...merged.tjera_pikat[ti],vlera:c[key]};}
-            }
-        }
+        if(merged.tjera_pikat){for(let ti=0;ti<9;ti++){const key='tjera_'+ti;if(c[key]!==undefined&&c[key]!=='')merged.tjera_pikat[ti]={...merged.tjera_pikat[ti],vlera:c[key]};}}
         return merged;
     });
     if(!pakotGlobal.length){
         document.getElementById('oferta-layout').innerHTML='<div style="text-align:center;padding:60px;grid-column:1/-1"><h2 style="font-size:18px">Nuk ka paketa.</h2></div>';
-        document.getElementById('footer-bar').style.display='none';
         return;
     }
-    // Skadon / e skaduar
     const dm=Math.ceil((new Date(oferta.dataSkadon)-new Date())/86400000);
     let countdownHTML;
-    if(dm<=0) countdownHTML='<span class="skaduar">⚠ Ofertë e skaduar</span>';
-    else if(dm<=5) countdownHTML='<span class="countdown urgent">Skadon për '+dm+' '+(dm===1?'ditë':'ditë')+'</span>';
+    if(dm<=0)countdownHTML='<span class="skaduar">⚠ Ofertë e skaduar</span>';
+    else if(dm<=5)countdownHTML='<span class="countdown urgent">Skadon për '+dm+' ditë</span>';
     else countdownHTML='<span class="countdown">Skadon për '+dm+' ditë</span>';
-
-    // Oferta info
-    document.getElementById('oferta-info').innerHTML='<h2>Ofertë për '+oferta.emri+'</h2><p>Zgjidhni paketat që ju përshtaten dhe konfirmoni zgjedhjen tuaj.</p><div class="meta">'+countdownHTML+'<span>Krijuar: '+oferta.dataKrijimit+'</span></div>';
-
-    renderPaketaList();
-    renderDetail();
-    renderExtras();
-    updateFooter();
+    document.getElementById('oferta-info').innerHTML='<h2>Ofertë për '+oferta.emri+'</h2><p>Zgjidhni paketat dhe konfirmoni zgjedhjen.</p><div class="meta">'+countdownHTML+'<span>Krijuar: '+oferta.dataKrijimit+'</span></div>';
+    renderPaketaList();renderDetail();renderExtras();updateAll();
 }
 
 // ===== KONFIRMIM =====
@@ -737,66 +803,30 @@ async function paraKonfirmimit(){
     if(selectedPakot.size===0){alert('Ju lutem zgjidhni së paku një pako!');return;}
     dergoPako();
 }
-
 async function dergoPako(){
     const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[],oferta=ofertat[ofertaId];
-    // Build summary
     let pakaList=[],totalMonthly=0;
-    selectedPakot.forEach((v,id)=>{
-        const p=pakotGlobal.find(x=>x.id===id);if(!p)return;
-        const mp=paketaMonthlyPrice(p,v.mbi18,v.nen18);totalMonthly+=mp;
-        pakaList.push({id,emri:p.emri,mbi18:v.mbi18,nen18:v.nen18,primi_mujor:mp.toFixed(2)});
-    });
+    selectedPakot.forEach((v,id)=>{const p=pakotGlobal.find(x=>x.id===id);if(!p)return;const mp=paketaMonthlyPrice(p,v.mbi18,v.nen18);totalMonthly+=mp;pakaList.push({id,emri:p.emri,mbi18:v.mbi18,nen18:v.nen18,primi_mujor:mp.toFixed(2)});});
     let extras=[];
-    if(jetePlusCash){
-        totalMonthly+=jetePlusCash.total;
-        extras.push({tip:'Jetë Plus Cash',persona:jetePlusCash.rows.length,detaje:jetePlusCash.rows,primi_mujor:jetePlusCash.total.toFixed(2)});
-    }
-    if(opinionSelected){
-        const op=getTotalPersons();
-        totalMonthly+=op;
-        extras.push({tip:'Opinioni i Dytë Mjekësor',persona:op,primi_mujor:op.toFixed(2)});
-    }
+    if(jetePlusCash){totalMonthly+=jetePlusCash.total;extras.push({tip:'Jetë Plus Cash',rows:jetePlusCash.rows,primi_mujor:jetePlusCash.total.toFixed(2)});}
+    if(opinionSelected){const op=getTotalPersons();totalMonthly+=op;extras.push({tip:'Opinioni i Dytë Mjekësor',persona:op,primi_mujor:op.toFixed(2)});}
     const pakaEmrat=pakaList.map(x=>x.emri+' ('+x.mbi18+(x.nen18>0?'+'+x.nen18:'')+'p)').join(', ');
     const exNames=extras.map(x=>x.tip).join(', ');
     const zf=pakaEmrat+(exNames?' + '+exNames:'');
     const koment=document.getElementById('koment')?document.getElementById('koment').value:'';
-
-    // Versione me detaje te plota
     const versione=ofertat[ofertaId].versione||[];
-    versione.push({
-        data:new Date().toISOString().split('T')[0],
-        lloji:oferta.lloji,
-        pakot:pakaList,
-        extras,
-        totalMujor:totalMonthly.toFixed(2),
-        emri:oferta.emri,
-        burim:'konfirmim_klient',
-        pakaZgjedhur:zf,
-        koment
-    });
+    versione.push({data:new Date().toISOString().split('T')[0],lloji:oferta.lloji,pakot:pakaList,extras,totalMujor:totalMonthly.toFixed(2),emri:oferta.emri,burim:'konfirmim_klient',pakaZgjedhur:zf,koment});
     ofertat[ofertaId].versione=versione;
-    ofertat[ofertaId].pakaZgjedhur=zf;
-    ofertat[ofertaId].komentKlient=koment;
-    ofertat[ofertaId].konfirmuar=true;
+    ofertat[ofertaId].pakaZgjedhur=zf;ofertat[ofertaId].komentKlient=koment;ofertat[ofertaId].konfirmuar=true;
     ofertat[ofertaId].dataKonfirmimit=new Date().toISOString().split('T')[0];
     ofertat[ofertaId].totalMujor=totalMonthly.toFixed(2);
     ofertat[ofertaId].notification={type:'konfirmim',msg:'Klienti konfirmoi: '+zf+' (€'+totalMonthly.toFixed(2)+'/muaj)',data:new Date().toISOString().split('T')[0],lexuar:false};
     ofertat[ofertaId].statusi='e_konfirmuar';
     localStorage.setItem('ofertat',JSON.stringify(ofertat));
     trackKonfirmim(zf,extras.map(e=>e.tip),koment);
-    try{
-        const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);
-        await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{
-            method:'POST',signal:c.signal,headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({emriKlientit:oferta.emri,emailKlientit:oferta.email,pakaZgjedhur:zf,totalMujor:totalMonthly.toFixed(2),koment,emailAgjentit:oferta.krijuarNgaEmail||'gjonbalajagon@gmail.com'})
-        });
-        clearTimeout(t);
-    }catch(e){}
-
-    // Success
+    try{const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{method:'POST',signal:c.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({emriKlientit:oferta.emri,emailKlientit:oferta.email,pakaZgjedhur:zf,totalMujor:totalMonthly.toFixed(2),koment,emailAgjentit:oferta.krijuarNgaEmail||'gjonbalajagon@gmail.com'})});clearTimeout(t);}catch(e){}
     document.getElementById('oferta-layout').style.display='none';
-    document.getElementById('footer-bar').style.display='none';
+    document.getElementById('float-pill').style.display='none';
     const success=document.createElement('div');
     success.innerHTML='<div class="success-msg"><div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><h2>Faleminderit!</h2><p>Zgjedhja juaj u regjistrua me sukses. Total mujor: <b style="color:#1e3a8a">€'+totalMonthly.toFixed(2)+'/muaj</b></p><div class="next-info"><b>Hapi tjetër:</b> Në vijim do t\'ju dërgohet pyetësori për plotësim, dhe secili person do të zgjedhë paketën për vete.</div></div>';
     document.body.appendChild(success);
@@ -810,11 +840,11 @@ function trackKoha(){const s=Math.round((Date.now()-tStart)/1000);try{navigator.
 function trackKonfirmim(pakot,ops,kom){try{fetch(TAPI+'/api/oferta-track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId,event:'konfirmim',data:{pakot,opsionale:ops,koment:kom}})});}catch(e){}}
 if(ofertaId){trackHapje();window.addEventListener('beforeunload',trackKoha);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')trackKoha();});}
 
-// ESC për mbyllje popup-esh
 document.addEventListener('keydown',(e)=>{
     if(e.key==='Escape'){
         if(document.getElementById('popup-paketa').classList.contains('active'))closePaketaPopup();
         else if(document.getElementById('popup-jete').classList.contains('active'))closeJetePopup();
+        else if(document.getElementById('popup-opinion').classList.contains('active'))closeOpinionPopup();
         else if(document.getElementById('net-overlay').classList.contains('active'))mbyllRrjetin();
     }
 });
