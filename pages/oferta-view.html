@@ -7,14 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:linear-gradient(135deg,#f4f5f7 0%,#f0f1f4 40%,#ecedf0 100%);color:#0f172a;font-size:12px;min-height:100vh;padding-bottom:30px}
+body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:linear-gradient(135deg,#f4f5f7 0%,#f0f1f4 40%,#ecedf0 100%);color:#0f172a;font-size:12px;min-height:100vh;padding-bottom:120px}
 
 /* TOPBAR */
 .header{background:linear-gradient(135deg,#002B5C 0%,#1e3a8a 30%,#3b82f6 70%,#60a5fa 100%);padding:11px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(0,43,92,0.15);position:sticky;top:0;z-index:50}
 .header img{height:34px;filter:brightness(0) invert(1)}
 
 /* LAYOUT 3-col */
-.oferta-layout{display:grid;grid-template-columns:230px 1fr 270px;gap:10px;max-width:1320px;margin:0 auto;padding:10px}
+.oferta-layout{display:grid;grid-template-columns:280px 1fr 270px;gap:10px;max-width:1320px;margin:0 auto;padding:10px}
 .col-left,.col-center,.col-right{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:12px;border:1px solid rgba(255,255,255,0.95);box-shadow:0 6px 18px rgba(30,64,175,0.05)}
 .col-left{padding:13px}
 .col-center{padding:14px 18px;min-height:560px}
@@ -33,32 +33,21 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .section-title{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:2px}
 .section-title.with-spacing{margin-top:11px}
 
-/* PAKETA buttons (sidebar) */
-.paketa-list{display:flex;flex-direction:column;gap:5px}
-.paketa-btn{width:100%;background:#f8fafc;border:1px solid #e5e9f0;padding:8px 10px;border-radius:9px;cursor:pointer;text-align:left;font-family:inherit;display:block;transition:all 0.15s;position:relative}
+/* PAKETA buttons (sidebar) — 2-col layout */
+.paketa-list{display:flex;flex-direction:column;gap:6px}
+.paketa-btn{width:100%;background:#f8fafc;border:1px solid #e5e9f0;padding:10px 12px;border-radius:9px;cursor:pointer;text-align:left;font-family:inherit;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;transition:all 0.15s;position:relative}
 .paketa-btn:hover{border-color:#3b82f6;background:white}
 .paketa-btn.active{background:linear-gradient(135deg,#1e3a8a,#3b82f6);border-color:transparent;box-shadow:0 4px 11px rgba(59,130,246,0.3)}
-.paketa-btn.active .pi-name,.paketa-btn.active .pi-shuma,.paketa-btn.active .pp-lbl,.paketa-btn.active .pp-val{color:white}
-.paketa-btn.active .pi-shuma,.paketa-btn.active .pp-lbl{opacity:0.85}
+.paketa-btn.active .pi-name,.paketa-btn.active .pi-shuma,.paketa-btn.active .pp-row{color:white}
+.paketa-btn.active .pi-shuma,.paketa-btn.active .pp-row{opacity:0.92}
 .paketa-btn.selected:not(.active){border-color:#22c55e;border-width:1.5px;background:#f0fdf4}
 .paketa-btn.selected::after{content:'✓';position:absolute;top:5px;right:7px;background:#22c55e;color:white;width:15px;height:15px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1}
 .paketa-btn.selected.active::after{background:white;color:#1e3a8a}
-.pi-name{font-size:11.5px;font-weight:700;color:#0f172a;margin-bottom:2px;letter-spacing:-0.1px}
-.pi-shuma{font-size:9.5px;color:#94a3b8;font-weight:500;margin-bottom:4px}
-.pi-pricing{display:flex;flex-direction:column;gap:2px}
-.pp-row{display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px}
-.pp-lbl{color:#64748b;font-weight:600}
-.pp-val{color:#0f172a;font-weight:700;letter-spacing:-0.1px}
-
-/* MBULIM TOTAL + INFO BLOCK in sidebar */
-.left-summary{margin-top:11px;padding-top:11px;border-top:1px dashed #e5e9f0}
-.left-summary .lbl{font-size:9px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:2px}
-.left-summary .val{font-size:17px;font-weight:800;color:#1e3a8a;letter-spacing:-0.3px;line-height:1.1}
-.left-summary .val small{font-size:10px;color:#94a3b8;font-weight:500}
-.left-summary .summary-text{font-size:10px;color:#64748b;margin-top:8px;line-height:1.5}
-
-.left-info-bar{margin-top:10px;background:linear-gradient(135deg,#f0f6ff,#e4edff);border:1px solid #dbeafe;border-radius:9px;padding:9px 11px;font-size:10px;color:#1e40af;line-height:1.45}
-.left-info-bar b{color:#1e3a8a;font-weight:700}
+.pkb-left{min-width:0}
+.pi-name{font-size:12.5px;font-weight:700;color:#0f172a;letter-spacing:-0.1px;margin-bottom:2px}
+.pi-shuma{font-size:10px;color:#94a3b8;font-weight:500}
+.pkb-right{text-align:right;display:flex;flex-direction:column;gap:1px}
+.pp-row{font-size:10.5px;color:#475569;font-weight:400;line-height:1.35;white-space:nowrap}
 
 /* CENTER: Detail */
 .center-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px;flex-wrap:wrap}
@@ -70,7 +59,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .td-shuma{font-size:21px;font-weight:800;background:linear-gradient(135deg,#002B5C,#3b82f6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;line-height:1}
 .td-shuma-lbl{font-size:9px;color:#7c8aa8;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
 
-/* CAT (Coverage section) - kompakt */
+/* CAT (Coverage section) */
 .cat-hdr{padding:7px 11px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-radius:8px;margin-top:6px;border:1px solid transparent;transition:filter 0.15s}
 .cat-hdr:first-of-type{margin-top:0}
 .cat-hdr:hover{filter:brightness(1.08)}
@@ -89,14 +78,15 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .cat-body{display:none;background:white;padding:9px 12px;border:1px solid #e5e9f0;border-top:none;border-radius:0 0 8px 8px}
 .cat-body.open{display:block}
 
-.mi-wrap{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;padding:0}
+/* mi-wrap: long item span 2 rows in left column, others fill right column with dense */
+.mi-wrap{display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:row dense;gap:4px 14px;padding:0}
 .mi-item{display:flex;align-items:flex-start;gap:6px;padding:0;font-size:10.5px;color:#4b5563;line-height:1.4;border-bottom:none}
-.mi-item.span-2{grid-column:1/-1}
+.mi-item.span-2{grid-row:span 2;grid-column:1}
 .mi-dot{width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;margin-top:5px}
 .mi-dot.b{background:#60a5fa}
 
 .nc{padding:6px 10px;background:#fff8f0;font-size:10px;color:#9a3412;font-weight:600;border-radius:6px;margin-bottom:6px}
-.nc-items{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;padding:0 0 3px}
+.nc-items{display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:row dense;gap:4px 14px;padding:0 0 3px}
 .nc-items .mi-item{color:#9a3412}
 .nc-items .mi-dot{background:#f59e0b}
 
@@ -117,11 +107,13 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .btn-hiq:hover{background:#fee2e2}
 .btn-z-note{text-align:center;font-size:10.5px;color:#7c8aa8;margin-top:6px;font-weight:600}
 
-/* RIGHT: Extras (Mbrojtje shtesë) - cards mini me "Shih" */
+/* RIGHT: Extras cards mini */
 .opt-card-mini{background:#fafbfc;border:1px solid #e5e9f0;border-radius:10px;padding:10px 12px;margin-bottom:8px;transition:all 0.15s}
 .opt-card-mini.selected{border-color:#22c55e;background:#f0fdf4;box-shadow:0 3px 10px rgba(34,197,94,0.15)}
 .opt-mini-head{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:3px}
+.opt-mini-titlewrap{flex:1;min-width:0}
 .opt-mini-title{font-size:11.5px;font-weight:700;color:#0f172a}
+.opt-mini-sub{font-size:9.5px;color:#7c8aa8;font-weight:500;line-height:1.35;margin-top:1px}
 .opt-mini-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;flex-shrink:0;letter-spacing:0.1px}
 .opt-mini-badge.rec{background:#fef3c7;color:#92400e}
 .opt-mini-badge.new{background:#d1fae5;color:#047857}
@@ -134,36 +126,48 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .opt-shih-btn:hover{background:#f0f6ff}
 .opt-shih-btn.added{background:linear-gradient(135deg,#22c55e,#16a34a);border-color:transparent;color:white;box-shadow:0 3px 9px rgba(34,197,94,0.25)}
 .opt-shih-btn.added:hover{filter:brightness(1.08)}
-.opt-rm-btn{flex:0 0 auto;width:30px;background:white;border:1px solid #fecaca;color:#dc2626;padding:6px;border-radius:6px;font-size:13px;font-weight:800;cursor:pointer;line-height:1}
-.opt-rm-btn:hover{background:#fee2e2}
 
-/* APP card mini me logo */
-.app-card-mini{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border-radius:10px;padding:10px 12px;margin-bottom:8px;position:relative;overflow:hidden}
+/* APP card mini me detaje */
+.app-card-mini{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border-radius:10px;padding:11px 13px;margin-bottom:8px;position:relative;overflow:hidden}
 .app-card-mini::before{content:'';position:absolute;top:-30%;right:-15%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(96,165,250,0.4),transparent 70%);pointer-events:none}
-.app-mini-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;position:relative;z-index:1}
+.app-mini-top{display:flex;align-items:center;gap:8px;margin-bottom:5px;position:relative;z-index:1}
 .app-mini-logo{width:36px;height:36px;border-radius:8px;background:white;flex-shrink:0;overflow:hidden}
 .app-mini-logo img{width:36px;height:36px;display:block}
 .app-mini-text{flex:1;min-width:0}
 .app-mini-text .a-title{font-size:11px;font-weight:800;line-height:1.2}
 .app-mini-text .a-free{font-size:9.5px;color:#86efac;font-weight:700;margin-top:1px}
+.a-features{font-size:9.5px;color:rgba(255,255,255,0.86);line-height:1.45;margin:5px 0 7px;position:relative;z-index:1}
 .app-stores{display:flex;gap:5px;position:relative;z-index:1}
 .store-btn{flex:1;background:rgba(0,0,0,0.55);color:white;font-size:10px;padding:5px 7px;border-radius:6px;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,0.15);display:inline-flex;align-items:center;gap:5px;justify-content:center;transition:background 0.15s}
 .store-btn:hover{background:rgba(0,0,0,0.78)}
 .store-btn svg{width:11px;height:11px;fill:white;flex-shrink:0}
 
-/* KOMENT */
-.koment-box{background:#fafbfc;border:1px solid #e5e9f0;border-radius:10px;padding:10px 12px;margin-top:11px}
+/* KOMENT (i veçantë, jashtë layout-it) */
+.koment-outer{max-width:1320px;margin:0 auto;padding:0 10px 10px}
+.koment-box{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.95);border-radius:12px;padding:11px 14px;box-shadow:0 6px 18px rgba(30,64,175,0.05)}
 .koment-box label{font-size:10.5px;font-weight:700;color:#0f172a;display:block;margin-bottom:5px}
 .koment-box textarea{width:100%;border:1px solid #e5e9f0;border-radius:7px;padding:8px 10px;font-family:inherit;font-size:11px;resize:vertical;min-height:54px;background:white;color:#0f172a;outline:none;transition:border-color 0.15s}
 .koment-box textarea:focus{border-color:#3b82f6}
 .koment-box textarea::placeholder{color:#9ca8c0}
 
-/* FLOATING CONFIRM PILL */
-.float-pill{position:fixed;bottom:18px;right:18px;z-index:100;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border:none;padding:11px 22px;border-radius:30px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;display:none;align-items:center;gap:8px;box-shadow:0 10px 26px rgba(0,43,92,0.4);transition:all 0.2s;letter-spacing:0.2px}
-.float-pill:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(0,43,92,0.5)}
-.float-pill.show{display:inline-flex}
-.float-pill .fp-count{background:#22c55e;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0}
-.float-pill svg{width:13px;height:13px;stroke:white;stroke-width:2.5;fill:none}
+/* FLOATING BUTTON — kompakt, scroll-to-confirm */
+.float-pill{position:fixed;bottom:128px;right:14px;z-index:90;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,43,92,0.4);transition:all 0.15s}
+.float-pill:hover{transform:translateY(-2px);box-shadow:0 9px 22px rgba(0,43,92,0.5)}
+.float-pill.show{display:flex}
+.float-pill svg{width:14px;height:14px;stroke:white;stroke-width:2.5;fill:none}
+
+/* FOOTER BAR (sticky) */
+.footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(220,230,250,0.6);padding:11px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;box-shadow:0 -6px 18px rgba(30,64,175,0.08)}
+.footer-info{font-size:10.5px;color:#475569;line-height:1.45;max-width:440px}
+.footer-info b{color:#1e3a8a;font-weight:700}
+.footer-totals{display:flex;flex-direction:column;text-align:right;flex-shrink:0}
+.ft-lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.4px}
+.ft-val{font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.3px;line-height:1.1}
+.ft-val small{font-size:11px;color:#94a3b8;font-weight:500}
+.ft-summary{font-size:9.5px;color:#475569;font-weight:600;margin-top:1px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
+.btn-konfirmo{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;border:none;padding:11px 22px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0.2px;box-shadow:0 4px 14px rgba(59,130,246,0.3);transition:all 0.15s;flex-shrink:0}
+.btn-konfirmo:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 18px rgba(59,130,246,0.4)}
+.btn-konfirmo:disabled{background:#cbd5e1;cursor:not-allowed;box-shadow:none;color:#f1f5f9}
 
 /* POPUP */
 .popup-overlay{display:none;position:fixed;inset:0;background:rgba(15,26,48,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:14px}
@@ -184,8 +188,8 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .popup-total{background:#f0f6ff;border:1px solid #dbeafe;border-radius:9px;padding:9px 12px;margin:11px 0;display:flex;justify-content:space-between;align-items:center}
 .popup-total .lbl{font-size:10px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:0.3px}
 .popup-total .val{font-size:17px;font-weight:800;color:#1e3a8a;letter-spacing:-0.3px}
-.popup-btns{display:flex;gap:7px;margin-top:11px}
-.popup-btns button{flex:1;padding:10px;border-radius:9px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:all 0.15s;letter-spacing:0.1px}
+.popup-btns{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.popup-btns button{flex:1;min-width:120px;padding:10px;border-radius:9px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:all 0.15s;letter-spacing:0.1px}
 .popup-btns .btn-skip{background:#f1f5f9;color:#475569}
 .popup-btns .btn-skip:hover{background:#e2e8f0}
 .popup-btns .btn-save{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;box-shadow:0 4px 11px rgba(59,130,246,0.3)}
@@ -193,7 +197,6 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .popup-btns .btn-rm{background:white;color:#dc2626;border:1.5px solid #fecaca}
 .popup-btns .btn-rm:hover{background:#fee2e2}
 
-/* POPUP info sub-section (per Jete + Opinion) */
 .popup-section{background:#f8fafc;border:1px solid #e5e9f0;border-radius:9px;padding:10px 12px;margin-bottom:8px}
 .popup-section-hdr{font-size:10.5px;font-weight:700;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .popup-section-hdr::before{content:'';display:inline-block;width:3px;height:11px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);border-radius:2px}
@@ -203,7 +206,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .psr .dv{font-weight:700;color:#047857;flex-shrink:0;font-size:10px}
 .psr .dv.step{color:#1e40af;background:#dbeafe;padding:1px 7px;border-radius:5px;font-weight:700;font-size:9.5px}
 
-/* JETE matrix table */
+/* JETE matrix */
 .jete-matrix{width:100%;border-collapse:collapse;font-size:10px;margin-top:6px}
 .jete-matrix th{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;padding:5px 4px;font-weight:700;text-align:center;border:1px solid transparent}
 .jete-matrix th:first-child{text-align:left;padding-left:8px;border-radius:5px 0 0 0}
@@ -214,7 +217,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .jete-matrix .gm{color:#3b82f6;font-weight:700}
 .jete-matrix .gf{color:#ec4899;font-weight:700}
 
-/* JETE multi-row (kalkulator) */
+/* JETE multi-row */
 .jete-note{background:#fef3c7;color:#92400e;font-size:10.5px;padding:8px 10px;border-radius:7px;margin-bottom:10px;line-height:1.45}
 .jete-rows{display:flex;flex-direction:column;gap:7px;margin-bottom:7px}
 .jete-row{background:#f8fafc;border:1px solid #e5e9f0;border-radius:9px;padding:9px}
@@ -258,7 +261,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 
 /* RESPONSIVE */
 @media(max-width:1100px){
-  .oferta-layout{grid-template-columns:210px 1fr 250px;gap:8px;padding:8px}
+  .oferta-layout{grid-template-columns:240px 1fr 250px;gap:8px;padding:8px}
   .col-left{padding:11px}
   .col-right{padding:11px}
   .col-center{padding:13px 16px}
@@ -272,7 +275,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .col-right .section-title.with-spacing{margin-top:5px}
   #extras-list{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
   #extras-list .opt-card-mini{margin-bottom:0}
-  .app-card-mini{margin-bottom:0}
+  .app-card-mini{margin-bottom:0;grid-column:1/-1}
 }
 
 @media(max-width:640px){
@@ -285,7 +288,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .center-top-right{align-self:flex-start;text-align:left}
   .td-name{font-size:16px}
   .mi-wrap,.nc-items{grid-template-columns:1fr;gap:3px}
-  .mi-item.span-2{grid-column:auto}
+  .mi-item.span-2{grid-row:auto;grid-column:auto}
   .paketa-actions{flex-direction:column}
   .btn-z,.btn-modifiko,.btn-hiq{width:100%;min-width:0}
   .ch-sub{display:none}
@@ -298,12 +301,21 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .header{padding:10px 12px}
   .header img{height:30px}
   .net-popup{max-width:100%;border-radius:12px 12px 0 0}
-  .float-pill{bottom:14px;right:14px;padding:10px 18px;font-size:11.5px}
+  .footer-bar{grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px}
+  .footer-info{grid-column:1/-1;font-size:9.5px;text-align:center;max-width:none}
+  .footer-totals{text-align:left}
+  .ft-summary{max-width:none;white-space:normal}
+  .btn-konfirmo{padding:10px 14px;font-size:12px}
+  body{padding-bottom:170px}
+  .float-pill{bottom:174px;right:12px;width:34px;height:34px}
 }
 
 @media(max-width:380px){
-  .opt-mini-actions{flex-wrap:wrap}
-  .float-pill{left:14px;right:14px;justify-content:center}
+  .footer-bar{grid-template-columns:1fr;gap:6px}
+  .footer-totals{flex-direction:row;justify-content:space-between;align-items:baseline}
+  .btn-konfirmo{width:100%}
+  body{padding-bottom:200px}
+  .float-pill{bottom:206px}
 }
 </style>
 </head>
@@ -315,12 +327,6 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
     <div class="oferta-info" id="oferta-info"><div style="font-size:11px;color:#94a3b8">Duke ngarkuar...</div></div>
     <div class="section-title">Zgjidh paketat</div>
     <div class="paketa-list" id="paketa-list"></div>
-    <div class="left-summary" id="left-summary" style="display:none">
-      <span class="lbl">Total mujor</span>
-      <div class="val">€<span id="total-mujor">0.00</span><small>/muaj</small></div>
-      <div class="summary-text" id="left-summary-text"></div>
-    </div>
-    <div class="left-info-bar"><b>Kalkulo ofertën dhe konfirmo zgjedhjen.</b><br>Pas pranimit, stafi ynë do t'ju dërgojë e-mail për plotësimin e pyetësorit.</div>
   </div>
 
   <div class="col-center" id="col-center">
@@ -336,9 +342,10 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
         <div class="app-mini-logo"><img src="../sigal-app-icon.png" alt="" onerror="this.style.display='none'"></div>
         <div class="app-mini-text">
           <div class="a-title">Sigal Kosova App</div>
-          <div class="a-free">FALAS · Rimbursime online</div>
+          <div class="a-free">FALAS · Rimbursime 100% online</div>
         </div>
       </div>
+      <div class="a-features">Aplikim online · Upload dokumentesh · Lexim automatik · Ndjekja e statusit</div>
       <div class="app-stores">
         <a href="https://apps.apple.com/us/app/sigal-kosova/id6756305258" target="_blank" class="store-btn"><svg viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.41-1.09-.47-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.41C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.08zM12 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>App Store</a>
         <a href="https://play.google.com/store/apps/details?id=com.sigalkosova.einsureapp" target="_blank" class="store-btn"><svg viewBox="0 0 24 24"><path d="M3 2.41v19.18c0 .77.86 1.23 1.5.81l15.9-9.59a.97.97 0 0 0 0-1.62L4.5 1.6C3.86 1.18 3 1.64 3 2.41z"/></svg>Google Play</a>
@@ -347,15 +354,32 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   </div>
 </div>
 
-<!-- FLOATING CONFIRM PILL -->
-<button class="float-pill" id="float-pill" onclick="paraKonfirmimit()">
-  <span class="fp-count" id="fp-count">0</span>
-  Konfirmo Zgjedhjen
-  <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<!-- KOMENT (jashtë layout-it, në fund) -->
+<div class="koment-outer">
+  <div class="koment-box">
+    <label>Koment (opsional)</label>
+    <textarea id="koment" placeholder="Keni pyetje? Shkruani këtu..."></textarea>
+  </div>
+</div>
+
+<!-- FLOATING button (kompakt, scroll-to-confirm) -->
+<button class="float-pill" id="float-pill" onclick="scrollToConfirm()" title="Shko te konfirmimi">
+  <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
 
-<!-- POPUP: Numri i personave per paketë -->
-<div class="popup-overlay" id="popup-paketa">
+<!-- FOOTER BAR (sticky bottom) -->
+<div class="footer-bar" id="footer-bar">
+  <div class="footer-info"><b>Kalkulo ofertën dhe konfirmo zgjedhjen.</b><br>Pas pranimit, stafi ynë do t'ju dërgojë e-mail për plotësimin e pyetësorit.</div>
+  <div class="footer-totals">
+    <div class="ft-lbl">Total mujor</div>
+    <div class="ft-val">€<span id="total-mujor">0.00</span><small>/muaj</small></div>
+    <div class="ft-summary" id="footer-summary">Asnjë pako e zgjedhur</div>
+  </div>
+  <button class="btn-konfirmo" id="btn-konfirmo" onclick="paraKonfirmimit()" disabled>Konfirmoj Zgjedhjen</button>
+</div>
+
+<!-- POPUP: Numri i personave -->
+<div class="popup-overlay" id="popup-paketa" onclick="if(event.target===this)closePaketaPopup()">
   <div class="popup">
     <h3>Numri i personave për <span id="pp-pako-name">paketën</span></h3>
     <div class="popup-sub">Sa persona do të mbulohen me këtë paketë?</div>
@@ -380,11 +404,11 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   </div>
 </div>
 
-<!-- POPUP: Jetë Plus Cash -->
-<div class="popup-overlay" id="popup-jete">
+<!-- POPUP: Jetë Plus Cash — info (drawer 1) -->
+<div class="popup-overlay" id="popup-jete" onclick="if(event.target===this)closeJetePopup()">
   <div class="popup large">
     <h3>Jetë Plus Cash <span class="popup-badge rec">Rekomanduar</span></h3>
-    <div class="popup-sub">Mbështetje financiare e menjëhershme nëse diagnostikoheni me sëmundje të rënda.</div>
+    <div class="popup-sub">Mbështetje financiare e menjëhershme nëse diagnostikoheni me sëmundje të rënda.<br><b style="color:#1e3a8a">Zgjeron zonën në të gjithë botën për sëmundje të rënda.</b></div>
 
     <div class="popup-section">
       <div class="popup-section-hdr">Sëmundjet që mbulohen</div>
@@ -405,42 +429,53 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
       <table class="jete-matrix">
         <thead><tr><th>Mosha</th><th>Gjinia</th><th>€5,000</th><th>€10,000</th><th>€20,000</th><th>€50,000</th></tr></thead>
         <tbody>
-          <tr><td rowspan="2">21–30</td><td class="gm">M</td><td>30</td><td>35</td><td>50</td><td>90</td></tr>
-          <tr><td class="gf">F</td><td>30</td><td>40</td><td>60</td><td>100</td></tr>
-          <tr><td rowspan="2">31–40</td><td class="gm">M</td><td>35</td><td>45</td><td>80</td><td>120</td></tr>
-          <tr><td class="gf">F</td><td>45</td><td>65</td><td>90</td><td>200</td></tr>
-          <tr><td rowspan="2">41–50</td><td class="gm">M</td><td>50</td><td>70</td><td>90</td><td>250</td></tr>
-          <tr><td class="gf">F</td><td>65</td><td>80</td><td>120</td><td>350</td></tr>
-          <tr><td rowspan="2">51–60</td><td class="gm">M</td><td>100</td><td>150</td><td>300</td><td>600</td></tr>
-          <tr><td class="gf">F</td><td>100</td><td>150</td><td>300</td><td>600</td></tr>
-          <tr><td rowspan="2">61–70</td><td class="gm">M</td><td>200</td><td>380</td><td>750</td><td>1,800</td></tr>
-          <tr><td class="gf">F</td><td>120</td><td>250</td><td>420</td><td>1,000</td></tr>
-          <tr><td rowspan="2">71–80</td><td class="gm">M</td><td>250</td><td>380</td><td>980</td><td>2,400</td></tr>
-          <tr><td class="gf">F</td><td>150</td><td>220</td><td>520</td><td>1,200</td></tr>
+          <tr><td rowspan="2">21–30</td><td class="gm">M</td><td>€30</td><td>€35</td><td>€50</td><td>€90</td></tr>
+          <tr><td class="gf">F</td><td>€30</td><td>€40</td><td>€60</td><td>€100</td></tr>
+          <tr><td rowspan="2">31–40</td><td class="gm">M</td><td>€35</td><td>€45</td><td>€80</td><td>€120</td></tr>
+          <tr><td class="gf">F</td><td>€45</td><td>€65</td><td>€90</td><td>€200</td></tr>
+          <tr><td rowspan="2">41–50</td><td class="gm">M</td><td>€50</td><td>€70</td><td>€90</td><td>€250</td></tr>
+          <tr><td class="gf">F</td><td>€65</td><td>€80</td><td>€120</td><td>€350</td></tr>
+          <tr><td rowspan="2">51–60</td><td class="gm">M</td><td>€100</td><td>€150</td><td>€300</td><td>€600</td></tr>
+          <tr><td class="gf">F</td><td>€100</td><td>€150</td><td>€300</td><td>€600</td></tr>
+          <tr><td rowspan="2">61–70</td><td class="gm">M</td><td>€200</td><td>€380</td><td>€750</td><td>€1,800</td></tr>
+          <tr><td class="gf">F</td><td>€120</td><td>€250</td><td>€420</td><td>€1,000</td></tr>
+          <tr><td rowspan="2">71–80</td><td class="gm">M</td><td>€250</td><td>€380</td><td>€980</td><td>€2,400</td></tr>
+          <tr><td class="gf">F</td><td>€150</td><td>€220</td><td>€520</td><td>€1,200</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="jete-note">Periudha e pritjes: <b>180 ditë</b> për individ, <b>90 ditë</b> për grupe mbi 50 persona. Fëmijët <b>nën 21 vjeç</b> janë <b>falas</b>.</div>
 
-    <div class="popup-section-hdr" style="margin-top:11px">Llogarit primin</div>
+    <div class="popup-btns">
+      <button class="btn-skip" onclick="closeJetePopup()">Anulo</button>
+      <button class="btn-rm" id="btn-jete-rm" onclick="hiqJete()" style="display:none">Hiq zgjedhjen</button>
+      <button class="btn-save" id="btn-jete-zgjedh" onclick="openJeteCalc()">Zgjedh paketën</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP: Jetë Plus Cash — kalkulator (drawer 2) -->
+<div class="popup-overlay" id="popup-jete-calc" onclick="if(event.target===this)closeJeteCalc()">
+  <div class="popup">
+    <h3>Llogarit primin — Jetë Plus Cash</h3>
+    <div class="popup-sub">Shto persona <b>mbi 21 vjeç</b>. Zgjedh grupmoshën, gjininë, numrin dhe shumën e sigurimit për secilin.</div>
+    <div class="jete-note">Fëmijët <b>nën 21 vjeç</b> janë <b>falas</b> — nuk ka nevojë t'i shtoni këtu.</div>
     <div id="jete-rows" class="jete-rows"></div>
     <button class="jete-add-btn" onclick="addJeteRow()">+ Shto kategori</button>
-
     <div class="popup-total">
       <span class="lbl">Total mujor</span>
       <span class="val">€<span id="jete-total">0.00</span></span>
     </div>
     <div class="popup-btns">
-      <button class="btn-skip" onclick="closeJetePopup()">Anulo</button>
-      <button class="btn-rm" id="btn-jete-rm" onclick="hiqJete()" style="display:none">Hiq zgjedhjen</button>
+      <button class="btn-skip" onclick="closeJeteCalc()">Anulo</button>
       <button class="btn-save" onclick="saveJete()">Ruaj zgjedhjen</button>
     </div>
   </div>
 </div>
 
 <!-- POPUP: Opinioni i Dytë -->
-<div class="popup-overlay" id="popup-opinion">
+<div class="popup-overlay" id="popup-opinion" onclick="if(event.target===this)closeOpinionPopup()">
   <div class="popup">
     <h3>Opinioni i Dytë Mjekësor <span class="popup-badge new">I ri</span></h3>
     <div class="popup-sub">Mendim ndërkombëtar nga Qendrat Mjekësore Botërore përmes MediGuide. <b>€1/muaj/person.</b></div>
@@ -474,6 +509,29 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   </div>
 </div>
 
+<!-- POPUP: Mbrojtje shtesë (kthe pyetjen e vjetër) -->
+<div class="popup-overlay" id="popup-optional" onclick="if(event.target===this)closeOptionalPopup()">
+  <div class="popup">
+    <h3>Dëshironi të shtoni mbrojtje shtesë?</h3>
+    <div class="popup-sub">Para se të konfirmoni, mund të shtoni:</div>
+
+    <div class="popup-section">
+      <div class="popup-section-hdr">Jetë Plus Cash <span class="popup-badge rec" style="margin-left:auto">Rekomanduar</span></div>
+      <div style="font-size:11px;color:#64748b;line-height:1.5">Mbështetje financiare e menjëhershme nëse diagnostikoheni me sëmundje të rënda. <b style="color:#1e3a8a">Nga €2.50/muaj.</b></div>
+    </div>
+
+    <div class="popup-section">
+      <div class="popup-section-hdr">Opinioni i Dytë Mjekësor <span class="popup-badge new" style="margin-left:auto">I ri</span></div>
+      <div style="font-size:11px;color:#64748b;line-height:1.5">Mendim ndërkombëtar nga Qendrat Botërore përmes MediGuide. <b style="color:#1e3a8a">€1/muaj/person.</b></div>
+    </div>
+
+    <div class="popup-btns">
+      <button class="btn-skip" onclick="vazhdoKonfirmim(false)">Jo, faleminderit</button>
+      <button class="btn-save" onclick="vazhdoKonfirmim(true)">Po, shikoji</button>
+    </div>
+  </div>
+</div>
+
 <!-- NET overlay -->
 <div class="net-overlay" id="net-overlay" onclick="if(event.target===this)mbyllRrjetin()"><div class="net-popup" id="net-popup"></div></div>
 
@@ -500,19 +558,9 @@ const JETE_PRICES={
     '61-70':{M:{5000:200,10000:380,20000:750,50000:1800},F:{5000:120,10000:250,20000:420,50000:1000}},
     '71-80':{M:{5000:250,10000:380,20000:980,50000:2400},F:{5000:150,10000:220,20000:520,50000:1200}}
 };
-function ageToGroup(age){
-    age=parseInt(age)||0;
-    if(age<21||age>80) return null;
-    if(age<=30) return '21-30';
-    if(age<=40) return '31-40';
-    if(age<=50) return '41-50';
-    if(age<=60) return '51-60';
-    if(age<=70) return '61-70';
-    return '71-80';
-}
-function calcJetePriceYearly(age,gender,shuma){
-    const grp=ageToGroup(age);if(!grp) return 0;
-    const t=JETE_PRICES[grp];if(!t||!t[gender]||!t[gender][shuma]) return 0;
+function calcJetePriceYearly(ageGroup,gender,shuma){
+    if(!ageGroup) return 0;
+    const t=JETE_PRICES[ageGroup];if(!t||!t[gender]||!t[gender][shuma]) return 0;
     return t[gender][shuma];
 }
 
@@ -564,50 +612,61 @@ function hiqPaketa(pakaId){
     renderPaketaList();renderDetail();renderExtras();updateAll();
 }
 
-// ===== POPUP JETE PLUS CASH =====
+// ===== POPUP JETE — info (drawer 1) =====
 function openJetePopup(){
-    if(jetePlusCash&&jetePlusCash.rows.length)jeteRows=jetePlusCash.rows.map(r=>({...r}));
-    else jeteRows=[{age:'',gender:'M',count:1,shuma:50000},{age:'',gender:'F',count:1,shuma:50000}];
-    renderJeteRows();
-    document.getElementById('btn-jete-rm').style.display=jetePlusCash?'block':'none';
+    const rm=document.getElementById('btn-jete-rm');
+    const zgj=document.getElementById('btn-jete-zgjedh');
+    if(jetePlusCash){rm.style.display='block';zgj.textContent='Modifiko llogarinë';}
+    else{rm.style.display='none';zgj.textContent='Zgjedh paketën';}
     document.getElementById('popup-jete').classList.add('active');
 }
 function closeJetePopup(){document.getElementById('popup-jete').classList.remove('active');}
-function addJeteRow(){jeteRows.push({age:'',gender:'M',count:1,shuma:50000});renderJeteRows();setTimeout(()=>{const inputs=document.querySelectorAll('#jete-rows input[type=number]');if(inputs.length)inputs[inputs.length-2].focus();},50);}
-function rmJeteRow(idx){jeteRows.splice(idx,1);if(jeteRows.length===0)jeteRows.push({age:'',gender:'M',count:1,shuma:50000});renderJeteRows();}
+
+// ===== POPUP JETE — kalkulator (drawer 2) =====
+function openJeteCalc(){
+    closeJetePopup();
+    if(jetePlusCash&&jetePlusCash.rows.length)jeteRows=jetePlusCash.rows.map(r=>({...r}));
+    else jeteRows=[{ageGroup:'',gender:'M',count:1,shuma:50000},{ageGroup:'',gender:'F',count:1,shuma:50000}];
+    renderJeteRows();
+    document.getElementById('popup-jete-calc').classList.add('active');
+}
+function closeJeteCalc(){document.getElementById('popup-jete-calc').classList.remove('active');}
+function addJeteRow(){jeteRows.push({ageGroup:'',gender:'M',count:1,shuma:50000});renderJeteRows();}
+function rmJeteRow(idx){jeteRows.splice(idx,1);if(jeteRows.length===0)jeteRows.push({ageGroup:'',gender:'M',count:1,shuma:50000});renderJeteRows();}
 function updateJeteRow(idx,field,val){jeteRows[idx][field]=val;renderJeteRows();}
 function renderJeteRows(){
     const wrap=document.getElementById('jete-rows');
     let h='',totalMonthly=0;
+    const groups=['21-30','31-40','41-50','51-60','61-70','71-80'];
     jeteRows.forEach((r,i)=>{
-        const a=parseInt(r.age)||0,c=Math.max(1,parseInt(r.count)||1);
-        const yearly=calcJetePriceYearly(r.age,r.gender,parseInt(r.shuma));
+        const c=Math.max(1,parseInt(r.count)||1);
+        const yearly=calcJetePriceYearly(r.ageGroup,r.gender,parseInt(r.shuma));
         const monthly=(yearly*c)/12;
         if(yearly>0)totalMonthly+=monthly;
         h+='<div class="jete-row"><div class="jete-row-grid">';
-        h+='<div><label>Mosha</label><input type="number" min="0" max="120" value="'+(r.age||'')+'" oninput="updateJeteRow('+i+',\'age\',this.value)" placeholder="—"></div>';
+        let opts='<option value=""'+(!r.ageGroup?' selected':'')+'>—</option>';
+        groups.forEach(g=>{opts+='<option value="'+g+'"'+(r.ageGroup===g?' selected':'')+'>'+g.replace('-','–')+'</option>';});
+        h+='<div><label>Grupmosha</label><select onchange="updateJeteRow('+i+',\'ageGroup\',this.value)">'+opts+'</select></div>';
         h+='<div><label>Gjinia</label><select onchange="updateJeteRow('+i+',\'gender\',this.value)"><option value="M"'+(r.gender==='M'?' selected':'')+'>Mashkull</option><option value="F"'+(r.gender==='F'?' selected':'')+'>Femër</option></select></div>';
         h+='<div><label>Numri</label><input type="number" min="1" value="'+(r.count||1)+'" oninput="updateJeteRow('+i+',\'count\',this.value)"></div>';
         h+='<div><label>Shuma</label><select onchange="updateJeteRow('+i+',\'shuma\',this.value)"><option value="5000"'+(r.shuma==5000?' selected':'')+'>€5,000</option><option value="10000"'+(r.shuma==10000?' selected':'')+'>€10,000</option><option value="20000"'+(r.shuma==20000?' selected':'')+'>€20,000</option><option value="50000"'+(r.shuma==50000?' selected':'')+'>€50,000</option></select></div>';
         h+='<button class="row-rm" onclick="rmJeteRow('+i+')" title="Hiq">×</button>';
         h+='</div>';
-        if(a>0&&a<21)h+='<div class="jete-row-price warn">Nën 21 — falas, nuk shtohet</div>';
-        else if(a>80)h+='<div class="jete-row-price warn">Mbi 80 — nuk mbulohet</div>';
-        else if(yearly>0)h+='<div class="jete-row-price">'+c+'× €'+yearly+'/vit · €'+monthly.toFixed(2)+'/muaj</div>';
+        if(yearly>0)h+='<div class="jete-row-price">'+c+'× €'+yearly+'/vit · €'+monthly.toFixed(2)+'/muaj</div>';
         h+='</div>';
     });
     wrap.innerHTML=h;
     document.getElementById('jete-total').textContent=totalMonthly.toFixed(2);
 }
 function saveJete(){
-    const valid=jeteRows.filter(r=>{const a=parseInt(r.age);const c=parseInt(r.count)||1;return a>=21&&a<=80&&c>=1;});
-    if(valid.length===0){alert('Shto së paku 1 kategori personash mbi 21 vjeç.');return;}
+    const valid=jeteRows.filter(r=>r.ageGroup&&JETE_PRICES[r.ageGroup]&&(parseInt(r.count)||1)>=1);
+    if(valid.length===0){alert('Shto së paku 1 kategori — zgjedh grupmoshën, gjininë, numrin dhe shumën.');return;}
     let totalMonthly=0;
-    valid.forEach(r=>{const c=Math.max(1,parseInt(r.count)||1);totalMonthly+=(calcJetePriceYearly(r.age,r.gender,parseInt(r.shuma))*c)/12;});
+    valid.forEach(r=>{const c=Math.max(1,parseInt(r.count)||1);totalMonthly+=(calcJetePriceYearly(r.ageGroup,r.gender,parseInt(r.shuma))*c)/12;});
     jetePlusCash={rows:valid.map(r=>({...r,count:Math.max(1,parseInt(r.count)||1)})),total:totalMonthly};
-    closeJetePopup();renderExtras();updateAll();
+    closeJeteCalc();renderExtras();updateAll();
 }
-function hiqJete(){jetePlusCash=null;closeJetePopup();renderExtras();updateAll();}
+function hiqJete(){jetePlusCash=null;closeJetePopup();closeJeteCalc();renderExtras();updateAll();}
 
 // ===== POPUP OPINION =====
 function openOpinionPopup(){
@@ -630,6 +689,16 @@ function shtoOpinion(){
 function hiqOpinion(){opinionSelected=false;closeOpinionPopup();renderExtras();updateAll();}
 function getTotalPersons(){let t=0;selectedPakot.forEach(v=>{t+=(v.mbi18||0)+(v.nen18||0);});return t;}
 
+// ===== POPUP MBROJTJE SHTESË (pyetja) =====
+function closeOptionalPopup(){document.getElementById('popup-optional').classList.remove('active');}
+function vazhdoKonfirmim(shto){
+    document.getElementById('popup-optional').classList.remove('active');
+    if(shto){
+        // scroll te sidebar djathtas (extras)
+        const cr=document.querySelector('.col-right');if(cr)cr.scrollIntoView({behavior:'smooth',block:'start'});
+    }else{dergoPako();}
+}
+
 // ===== TOTAL =====
 function calcTotalMujor(){
     let t=0;
@@ -645,10 +714,10 @@ function updateAll(){
     selectedPakot.forEach((v,id)=>{const p=pakotGlobal.find(x=>x.id===id);if(p)summary.push(p.emri);});
     if(jetePlusCash)summary.push('Jetë Plus');
     if(opinionSelected)summary.push('Opinion 2-të');
-    document.getElementById('left-summary-text').textContent=summary.length?summary.join(' + '):'Asnjë e zgjedhur';
-    document.getElementById('left-summary').style.display=summary.length?'block':'none';
-    const fp=document.getElementById('float-pill'),fc=document.getElementById('fp-count');
-    if(summary.length){fp.classList.add('show');fc.textContent=summary.length;}else{fp.classList.remove('show');}
+    document.getElementById('footer-summary').textContent=summary.length?summary.join(' + '):'Asnjë pako e zgjedhur';
+    document.getElementById('btn-konfirmo').disabled=summary.length===0;
+    const fp=document.getElementById('float-pill');
+    if(summary.length)fp.classList.add('show');else fp.classList.remove('show');
 }
 
 // ===== CAT =====
@@ -682,11 +751,10 @@ function renderPaketaList(){
     pakotGlobal.forEach((p,i)=>{
         const isActive=i===activeTab,isSel=selectedPakot.has(p.id);
         h+='<button class="paketa-btn'+(isActive?' active':'')+(isSel?' selected':'')+'" onclick="switchTab('+i+')">';
-        h+='<div class="pi-name">'+p.emri+'</div>';
-        h+='<div class="pi-shuma">Mbulim € '+p.shuma+'</div>';
-        h+='<div class="pi-pricing">';
-        h+='<div class="pp-row"><span class="pp-lbl">Mbi 18</span><span class="pp-val">€'+p.primi_madh+p.primi_suffix+'</span></div>';
-        if(!ei&&p.primi_femije)h+='<div class="pp-row"><span class="pp-lbl">Nën 18</span><span class="pp-val">€'+p.primi_femije+'/muaj</span></div>';
+        h+='<div class="pkb-left"><div class="pi-name">'+p.emri+'</div><div class="pi-shuma">Mbulim €'+p.shuma+'</div></div>';
+        h+='<div class="pkb-right">';
+        h+='<div class="pp-row">mbi 18 €'+p.primi_madh+p.primi_suffix+'</div>';
+        if(!ei&&p.primi_femije)h+='<div class="pp-row">nën 18 €'+p.primi_femije+'/muaj</div>';
         h+='</div></button>';
     });
     list.innerHTML=h;
@@ -720,40 +788,35 @@ function renderDetail(){
     }
     h+='<div class="btn-z-note">Mund të zgjidhni më shumë se një pako</div>';
 
-    h+='<div class="koment-box"><label>Koment (opsional)</label><textarea id="koment" placeholder="Keni pyetje? Shkruani këtu...">'+(document.getElementById('koment')?document.getElementById('koment').value:'')+'</textarea></div>';
-
     document.getElementById('col-center').innerHTML=h;
 }
 
 function renderExtras(){
     const list=document.getElementById('extras-list');let h='';
-    // Jete
     h+='<div class="opt-card-mini'+(jetePlusCash?' selected':'')+'">';
-    h+='<div class="opt-mini-head"><div class="opt-mini-title">Jetë Plus Cash</div><span class="opt-mini-badge rec">Rekomanduar</span></div>';
-    if(jetePlusCash){h+='<div class="opt-mini-price">€'+jetePlusCash.total.toFixed(2)+'<small>/muaj</small></div>';}
-    else{h+='<div class="opt-mini-price">nga €2.50<small>/muaj</small></div>';}
-    h+='<div class="opt-mini-desc">Mbështetje për sëmundje të rënda.</div>';
-    if(jetePlusCash){h+='<div class="opt-mini-actions"><button class="opt-shih-btn added" onclick="openJetePopup()">✓ Shih / Modifiko</button></div>';}
-    else{h+='<div class="opt-mini-actions"><button class="opt-shih-btn" onclick="openJetePopup()">Shih mbulimet</button></div>';}
+    h+='<div class="opt-mini-head"><div class="opt-mini-titlewrap"><div class="opt-mini-title">Jetë Plus Cash</div><div class="opt-mini-sub">Zgjeron zonën në të gjithë botën për sëmundje të rënda.</div></div><span class="opt-mini-badge rec">Rekomanduar</span></div>';
+    if(jetePlusCash)h+='<div class="opt-mini-price">€'+jetePlusCash.total.toFixed(2)+'<small>/muaj</small></div>';
+    else h+='<div class="opt-mini-price">nga €2.50<small>/muaj</small></div>';
+    h+='<div class="opt-mini-desc">Mbështetje financiare e menjëhershme nëse diagnostikoheni me sëmundje të rënda.</div>';
+    if(jetePlusCash)h+='<div class="opt-mini-actions"><button class="opt-shih-btn added" onclick="openJetePopup()">✓ Shih / Modifiko</button></div>';
+    else h+='<div class="opt-mini-actions"><button class="opt-shih-btn" onclick="openJetePopup()">Shih mbulimet</button></div>';
     h+='</div>';
 
-    // Opinion
     const totalP=getTotalPersons();
     h+='<div class="opt-card-mini'+(opinionSelected?' selected':'')+'">';
-    h+='<div class="opt-mini-head"><div class="opt-mini-title">Opinion i 2-të Mjekësor</div><span class="opt-mini-badge new">I ri</span></div>';
-    if(opinionSelected){h+='<div class="opt-mini-price">€'+totalP.toFixed(2)+'<small>/muaj · '+totalP+' p.</small></div>';}
-    else{h+='<div class="opt-mini-price">€1<small>/muaj/person</small></div>';}
-    h+='<div class="opt-mini-desc">MediGuide — qendrat botërore.</div>';
-    if(opinionSelected){h+='<div class="opt-mini-actions"><button class="opt-shih-btn added" onclick="openOpinionPopup()">✓ Shih / Hiq</button></div>';}
-    else{h+='<div class="opt-mini-actions"><button class="opt-shih-btn" onclick="openOpinionPopup()">Shih mbulimet</button></div>';}
+    h+='<div class="opt-mini-head"><div class="opt-mini-titlewrap"><div class="opt-mini-title">Opinion i 2-të Mjekësor</div></div><span class="opt-mini-badge new">I ri</span></div>';
+    if(opinionSelected)h+='<div class="opt-mini-price">€'+totalP.toFixed(2)+'<small>/muaj · '+totalP+' p.</small></div>';
+    else h+='<div class="opt-mini-price">€1<small>/muaj/person</small></div>';
+    h+='<div class="opt-mini-desc">Mendim ndërkombëtar nga Qendrat Mjekësore Botërore përmes MediGuide.</div>';
+    if(opinionSelected)h+='<div class="opt-mini-actions"><button class="opt-shih-btn added" onclick="openOpinionPopup()">✓ Shih / Hiq</button></div>';
+    else h+='<div class="opt-mini-actions"><button class="opt-shih-btn" onclick="openOpinionPopup()">Shih mbulimet</button></div>';
     h+='</div>';
 
-    // Rrjeti
     const ti=RRJETI.spitalet.length+RRJETI.laboratoret.length+RRJETI.dentaret.length+RRJETI.ordinanca.length;
     h+='<div class="opt-card-mini">';
     h+='<div class="opt-mini-head"><div class="opt-mini-title">Rrjeti Mjekësor</div><span class="opt-mini-badge cnt">'+ti+'</span></div>';
     h+='<div class="opt-mini-desc">Institucionet për Kartelën SIGAL — mbulim direkt.</div>';
-    h+='<div class="opt-mini-actions"><button class="opt-shih-btn" onclick="hapRrjetin()">Shiko të gjitha</button></div>';
+    h+='<div class="opt-mini-actions"><button class="opt-shih-btn" onclick="hapRrjetin()">Shih mbulimet</button></div>';
     h+='</div>';
 
     list.innerHTML=h;
@@ -769,11 +832,15 @@ function hapRrjetin(){
 }
 function mbyllRrjetin(){document.getElementById('net-overlay').classList.remove('active');}
 
+// ===== SCROLL =====
+function scrollToConfirm(){document.getElementById('btn-konfirmo').scrollIntoView({behavior:'smooth',block:'center'});}
+
 // ===== NGARKO =====
 function ngarko(){
     const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[],oferta=ofertat[ofertaId];
     if(!oferta){
         document.getElementById('oferta-layout').innerHTML='<div style="text-align:center;padding:60px;grid-column:1/-1"><h2 style="color:#1e3a8a;font-size:18px">Oferta nuk u gjet.</h2><p style="color:#7c8aa8;margin-top:6px;font-size:13px">Kontaktoni agjentin tuaj.</p></div>';
+        document.getElementById('footer-bar').style.display='none';
         return;
     }
     ofertaData=oferta;
@@ -787,6 +854,7 @@ function ngarko(){
     });
     if(!pakotGlobal.length){
         document.getElementById('oferta-layout').innerHTML='<div style="text-align:center;padding:60px;grid-column:1/-1"><h2 style="font-size:18px">Nuk ka paketa.</h2></div>';
+        document.getElementById('footer-bar').style.display='none';
         return;
     }
     const dm=Math.ceil((new Date(oferta.dataSkadon)-new Date())/86400000);
@@ -801,6 +869,10 @@ function ngarko(){
 // ===== KONFIRMIM =====
 async function paraKonfirmimit(){
     if(selectedPakot.size===0){alert('Ju lutem zgjidhni së paku një pako!');return;}
+    if(!jetePlusCash&&!opinionSelected){
+        document.getElementById('popup-optional').classList.add('active');
+        return;
+    }
     dergoPako();
 }
 async function dergoPako(){
@@ -826,6 +898,8 @@ async function dergoPako(){
     trackKonfirmim(zf,extras.map(e=>e.tip),koment);
     try{const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{method:'POST',signal:c.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({emriKlientit:oferta.emri,emailKlientit:oferta.email,pakaZgjedhur:zf,totalMujor:totalMonthly.toFixed(2),koment,emailAgjentit:oferta.krijuarNgaEmail||'gjonbalajagon@gmail.com'})});clearTimeout(t);}catch(e){}
     document.getElementById('oferta-layout').style.display='none';
+    document.querySelector('.koment-outer').style.display='none';
+    document.getElementById('footer-bar').style.display='none';
     document.getElementById('float-pill').style.display='none';
     const success=document.createElement('div');
     success.innerHTML='<div class="success-msg"><div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><h2>Faleminderit!</h2><p>Zgjedhja juaj u regjistrua me sukses. Total mujor: <b style="color:#1e3a8a">€'+totalMonthly.toFixed(2)+'/muaj</b></p><div class="next-info"><b>Hapi tjetër:</b> Në vijim do t\'ju dërgohet pyetësori për plotësim, dhe secili person do të zgjedhë paketën për vete.</div></div>';
@@ -843,8 +917,10 @@ if(ofertaId){trackHapje();window.addEventListener('beforeunload',trackKoha);docu
 document.addEventListener('keydown',(e)=>{
     if(e.key==='Escape'){
         if(document.getElementById('popup-paketa').classList.contains('active'))closePaketaPopup();
+        else if(document.getElementById('popup-jete-calc').classList.contains('active'))closeJeteCalc();
         else if(document.getElementById('popup-jete').classList.contains('active'))closeJetePopup();
         else if(document.getElementById('popup-opinion').classList.contains('active'))closeOpinionPopup();
+        else if(document.getElementById('popup-optional').classList.contains('active'))closeOptionalPopup();
         else if(document.getElementById('net-overlay').classList.contains('active'))mbyllRrjetin();
     }
 });
