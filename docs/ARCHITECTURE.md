@@ -18,7 +18,9 @@
 - **Framework:** Express.js
 - **CORS:** `cors` package
 - **Document generation:** `docxtemplater` + `pizzip` + custom XML manipulation
+- **Document generation (shtesë):** officegen, fast-xml-parser, jszip
 - **Email:** Brevo API (HTTP, jo SMTP - sepse Railway bllokon SMTP)
+- **Email (DEPRECATED, ende në package.json):** nodemailer (Railway bllokon SMTP, mos përdor)
 - **Hosting:** Railway (auto-deploy nga `main` branch)
 
 ### Storage
@@ -39,6 +41,7 @@ sigal-platform/
 │   ├── dashboard.css      ← Module-specific (legacy)
 │   ├── faturimi.css       ← Module-specific (legacy)
 │   ├── oferta.css         ← Module-specific (legacy)
+│   ├── module-shared.css  ← Shared styles për module të ndryshëm
 │   └── style.css          ← Legacy
 ├── js/
 │   ├── auth.js                 ← Login/logout, role management
@@ -63,8 +66,7 @@ sigal-platform/
 │   ├── debitoret.html
 │   ├── dashboard.html
 │   ├── raportet.html
-│   ├── stafi.html
-│   └── (dokumentet.html, detyrat.html - placeholders)
+│   └── stafi.html
 ├── templates/                  ← Word templates (.docx)
 │   ├── kontrata-individ.docx
 │   ├── kontrata-familje.docx
@@ -166,6 +168,10 @@ EMAIL_PASS=<gmail_app_password>  # legacy, jo në përdorim
     pakaZgjedhur: 'emri',
     komentKlient: '',
     dataKonfirmimit,
+    totalMujor: number,          // Total i kalkuluar - Faza 14
+    extras: [                    // Extras të zgjedhura nga klienti - Faza 14
+        { type: 'jete' | 'opinion', data: {...} }
+    ],
     versione: [                  // history of changes
         {
             data, pakot,

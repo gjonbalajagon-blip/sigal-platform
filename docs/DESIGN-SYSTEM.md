@@ -12,6 +12,7 @@
 --s-brand-dark:  #1e3a8a;    /* navy i butë */
 --s-brand:       #3b82f6;    /* blu mesatare */
 --s-brand-light: #60a5fa;    /* blu e lehtë */
+--s-brand-glow:  rgba(59, 130, 246, 0.3); /* Glow për highlights */
 
 /* Brand gradient (përdoret kudo) */
 background: linear-gradient(135deg, #1e3a8a, #3b82f6, #60a5fa);
@@ -29,12 +30,35 @@ background: linear-gradient(135deg, #1e3a8a, #3b82f6, #60a5fa);
 --s-text:       #0f172a;   /* primar (i errët) */
 --s-text-sub:   #4b5563;   /* sekondar */
 --s-text-muted: #7c8aa8;   /* labels të vegjël, info */
+--s-text-faint: #9ca3af;   /* Tekst shumë i lehtë (placeholders) */
 ```
 
 ### Background
 ```css
 background: linear-gradient(135deg, #f4f5f7 0%, #f0f1f4 40%, #ecedf0 100%);
 /* Neutral gray, NUK ka tone blu */
+--s-bg-flat: #f0f1f4;       /* Background flat (jo gradient) */
+```
+
+### Glass System
+```css
+--s-glass-strong: rgba(255, 255, 255, 0.92);   /* Glass i fortë (kartat e mëdha) */
+--s-glass-border: rgba(226, 232, 240, 0.8);    /* Border i glass */
+--s-glass-blur:   20px;                         /* Backdrop-filter blur */
+```
+
+### Borders
+```css
+--s-border:       #e5e9f0;   /* Border standard */
+--s-border-light: #f1f5f9;   /* Border i lehtë */
+```
+
+### Status Backgrounds (soft)
+```css
+--s-green-bg:  #ecfdf5;   /* Background i lehtë jeshil */
+--s-orange-bg: #fffbeb;   /* Background i lehtë portokalli */
+--s-red-bg:    #fef2f2;   /* Background i lehtë i kuq */
+--s-blue-bg:   #eff6ff;   /* Background i lehtë blu */
 ```
 
 ### Glass (Glassmorphism)
@@ -620,6 +644,34 @@ Për çdo modul që migrohet në theme-v2:
 - [ ] JS: `<i data-lucide="...">` JO inline SVG
 - [ ] JS: thirr `lucide.createIcons()` pas çdo `innerHTML` update
 - [ ] Test në browser me hard refresh (Ctrl+Shift+R)
+
+---
+
+## 📄 Page-Specific Components (jo në theme-v2.css)
+
+Sipas DEC-015 (Hybrid CSS), këto komponente janë vetëm në `<style>` blloku të faqes përkatëse, jo në theme-v2.css. Listuar këtu për referencë.
+
+### Oferta-View (`pages/oferta-view.html`)
+
+- `.float-pill` — Floating button "Konfirmoj zgjedhjen"
+- `.opt-card-mini` — Karta të vogla për extras
+- `.opt-mini-head` / `.opt-mini-title` / `.opt-mini-price` — Struktura e mini cards
+- `.opt-tag` — Tags për extras (variantet: `rec`, `new`, `b`, `g`)
+- `.popup-overlay` + `.popup` — Popup sistem për Jetë/Opinion
+- `.popup-section` + `.popup-section-hdr` — Seksione brenda popup-eve
+- `.jete-row` + `.jete-row-grid` + `.jete-matrix` — Multi-row kalkulator (DEC-026)
+- `.net-info-block` + `.net-cat-note` — Sqarime për Kartela SIGAL (DEC-027)
+- `.paketa-btn` — Buttonat e paketave në sidebar (3-col layout - DEC-023)
+
+### Stafi (`pages/stafi.html`)
+
+- Organogram-specific styles
+
+### Dashboard (`pages/dashboard.html`)
+
+- Donut chart styles
+
+> Nëse një nga këto pattern-e fillon të përdoret në modul tjetër, **promovoje në theme-v2.css**.
 
 ---
 

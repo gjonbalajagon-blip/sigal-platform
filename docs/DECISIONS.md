@@ -519,6 +519,92 @@ function getMaxAging(klient) {
 
 ---
 
+## DEC-023: Oferta-View - 3-Col Layout (Paketat | Detail | Extras)
+**Data:** 2026-04-27
+**Statusi:** ✅ Approved (Faza 14)
+
+### Konteksti
+Oferta-view me single-column layout kërkonte shumë scroll për pakot dhe extras. Klienti humbiste fokusin.
+
+### Vendimi
+Layout 3-kolonësh: **Majtas:** Sidebar me lista e paketave (klikohen për të hapur detajet); **Qendër:** Detajet e paketës aktive + mbulimet; **Djathtas:** Extras (Jetë Plus Cash, Opinioni, Network info).
+
+### Konsekuencat
+- ✅ Pa scroll - gjithçka në një pamje
+- ✅ Krahasim më i lehtë midis paketave
+- ✅ Extras gjithmonë të dukshme
+- ⚠️ Kërkon ekran më të gjerë (>768px)
+
+---
+
+## DEC-024: Jetë Plus Cash - Popup i Ndarë (Info → Calculator)
+**Data:** 2026-04-27
+**Statusi:** ✅ Approved (Faza 14)
+
+### Konteksti
+Popup i vetëm me info + kalkulator ishte shumë i ngarkuar. Klienti hutohej.
+
+### Vendimi
+Dy popup të veçantë: **Popup Info** (sqarime për produktin: mbulimet, kushtet) dhe **Popup Calculator** (kalkulim i çmimit me grupmosha + numër personash). Click "Vazhdo te kalkulimi" e kalon nga info → calc.
+
+### Konsekuencat
+- ✅ Më pak konfuzion vizual
+- ✅ Klienti vendos pas leximit (jo paralel me kalkulim)
+
+---
+
+## DEC-025: Jetë Plus Cash - Dropdown Grupmoshë (jo Input Numerik)
+**Data:** 2026-04-27
+**Statusi:** ✅ Approved (Faza 14)
+
+### Konteksti
+Çmimet janë definuar sipas brackets fikse (21-30, 31-40, etj.), jo me formulë. Input numerik ishte i panevojshëm dhe klienti mund ta gabonte.
+
+### Vendimi
+Dropdown me grupmosha të paracaktuara: 21-30, 31-40, 41-50, 51-60, 61-70, 71-80 vjeç. Plus dropdown gjini (M/F) dhe dropdown shumë e siguruar.
+
+### Alternativat
+- Input numerik me logjikë "round to bracket" - kompleks dhe error-prone
+- **Dropdown grupmosha** - eksakt çka i nevojitet kalkulimit
+
+### Konsekuencat
+- ✅ Saktësi 100%
+- ✅ UI më i thjeshtë
+
+---
+
+## DEC-026: Jetë Plus Cash - Multi-Row Kalkulator me "Shto Kategori"
+**Data:** 2026-04-27
+**Statusi:** ✅ Approved (Faza 14)
+
+### Konteksti
+Familje mund të kenë anëtarë me grupmosha të ndryshme. Single-row kalkulator nuk e mbulonte këtë.
+
+### Vendimi
+Kalkulator multi-row: çdo rresht = një kategori (grupmoshë + gjini + shumë), field "Numri i personave" për këtë kategori, buton "+ Shto kategori" për familje me anëtarë të ndryshëm, total automatik.
+
+### Konsekuencat
+- ✅ Familje me 4 anëtarë (2 të rritur + 2 fëmijë) llogariten saktë
+- ✅ Përdorim flexible
+
+---
+
+## DEC-027: Kartela SIGAL - Sjellje e Ndryshme Sipas Kategorisë
+**Data:** 2026-04-27
+**Statusi:** ✅ Approved (Faza 14)
+
+### Konteksti
+Rrjeti SIGAL ka 4 kategori institucionesh, secila me sjellje të ndryshme: Spitalet/Laboratoret/Dentarët → mbulim direkt me kartelë; Optika/Farmaci → vetëm zbritje (jo mbulim direkt).
+
+### Vendimi
+Në oferta-view, çdo kategori e kartelës shfaq sqarim specifik: "**Spitalet/Lab/Dent:** Prezanto kartelën dhe përfito mbulim direkt." dhe "**Optika/Farmaci:** Prezanto kartelën dhe përfito zbritje në çmime."
+
+### Konsekuencat
+- ✅ Klienti kupton qartë çka pret nga çdo kategori
+- ✅ Pa keqkuptime për pagesë në vend
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase

@@ -3,13 +3,13 @@
 > **Gjendja AKTUALE** e platformës. Ky file ndryshon shpesh.
 > ⚠️ **UPDATE INKREMENTAL** - pas çdo task-u, jo në fund të sesionit.
 
-**Përditësuar i fundit:** 2026-05-04 (krijim fillestar nga 13 fazat)
+**Përditësuar i fundit:** 2026-05-04
 
 ---
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Pas Faza 13 → drejt Faza 14 (theme-v2 bug fixes)
+**Faza aktuale:** Faza 14 e përfunduar → drejt Faza 15
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -19,9 +19,7 @@
 - Email (Brevo)
 
 **Cka kërkon vëmendje urgjente:**
-- Faturimi + Rinovimet u kthyen në theme të vjetër
-- Drawers nuk janë të unifikuar
-- Sidebar disa link të prishur
+Aktualisht nuk ka bug kritik. Modulet e mbetura: Detyrat, Produkti, Dokumentet (pres triggers).
 
 ---
 
@@ -30,13 +28,13 @@
 | Moduli | Status | Detaje |
 |---|---|---|
 | **Login** | ✅ Funksional | superadmin: `agon` / `sigal2026` |
-| **Dashboard** | ⚠️ Migruar, KPI icons jo unik | Ka 2 donut + 12-month line chart |
-| **Oferta** | ⚠️ Migruar, polish nevojshëm | KPI nuk filtron, drawer jo unik, llojet chips position e gabuar |
-| **Oferta-View** | 🔄 Në redesign | 3-col compact layout në design phase |
+| **Dashboard** | ✅ | KPI flat icons, 2 donut + 12-month line chart |
+| **Oferta** | ✅ | Drawer unified, KPI filter, llojet chips në LEFT |
+| **Oferta-View** | ✅ 3-col layout implementuar | Faza 14 - glassmorphism, popup-based extras, kalkulator multi-row |
 | **Kontratat** | ✅ **REFERENCE** | Modeli për të gjitha modulet |
-| **Faturimi** | ❌ Theme i vjetër | U kthye në `#002B5C` strip + ngjyra në numra |
-| **Rinovimet** | ❌ Theme i vjetër | + dropdown importo bosh |
-| **Debitoret** | ⚠️ Stats të prishura | Kolona të mungueshme, status filters punë |
+| **Faturimi** | ✅ Komplet (ri-migruar) | theme-v2 i kthyer (commit b70f65a) |
+| **Rinovimet** | ✅ Komplet (ri-migruar) | theme-v2 i kthyer (commit b70f65a) |
+| **Debitoret** | ✅ Stats restructure aplikuar | 4 stats + statuset row + aging filters |
 | **Raportet** | ⚠️ CSS migruar | Pret Chart.js për grafikët |
 | **Stafi** | ✅ Komplet | KPI + drawer + organogram |
 | **Detyrat** | ❌ Nuk ka filluar | - |
@@ -49,40 +47,11 @@
 
 ### 🔴 Kritike (blokojnë përdorim)
 
-- **Sidebar:** Disa `<a>` kanë `href="#"` (jo funksionale). Shembull: tek `kontratat.html`, klikimi te `raportet` nuk punon.
-- **Faturimi:** I gjithë moduli u kthye në theme-v1 (`#002B5C` navy strip, ngjyra të kuqe/jeshile në numra). Duhet ri-migrim te theme-v2.
-- **Rinovimet:** I njëjti problem si Faturimi. Plus dropdown "Importo Excel" për muajin shfaqet bosh.
+_Asnjë bug kritik aktualisht._
 
 ### 🟠 Të rëndësishme
 
-- **Drawers nuk janë të unifikuar:**
-  - `+ Ofertë e re` - drawer i vjetër
-  - `+ Kontratë e re` - drawer i vjetër
-  - Të tjerat - inkonsistent
-  - Spec-i (DEC-020): mbyllen me click jashtë + ESC, kanë struktura të njëjtë
-
-- **Drawers nuk mbyllen me click jashtë** - mungojnë `onclick="if(event.target===this)"`
-- **Drawers nuk mbyllen me ESC** - duhet handler global në `main.js`
-
-- **Anulo / Ruaj butona:** disa drawer kanë plain text, disa ngjyra/madhësi tjera. Duhet standardizuar me `!important` (shih DESIGN-SYSTEM.md).
-
-- **Oferta KPI nuk filtron:** Klikimi shfaqet active state, por `renderTabela()` nuk respekton `window.__activeKpiFilter`.
-
-- **Oferta llojet chips position:** janë në djathtas (gabim), duhet në majtas të filter-row. Plus `<select id="filter-lloji">` ekziston ende - duhet hequr.
-
-- **KPI icons jo unik:** Disa kanë gloss/shadow (oferta, raportet old), tjera flat (dashboard). Duhet të gjithë flat (DEC-016).
-
 ### 🟡 Specifike për modul
-
-#### Debitoret (Faza 13 spec):
-- **Stats top:** Duhen 4 stats (Borxhi total, Mbi 365, Paguar, Mbetur). Mos shto 91-180 në stats (duhet kolonë).
-- **Statuset row:** Duhet të jetë në një rresht, clickable, me count + euro value:
-  - Kontaktuar (0 · 0€)
-  - Premtim (1 · 340€)
-  - Pjesshëm, Kontestuar, Pamundshëm
-- **Kolona shtesë:** 91-180, E pamaturuar
-- **Aging columns clickable:** Filter "max delinquency" - klienti shfaqet vetëm në bucket-in e tij më të keq
-- **Agent chips:** Kur dega zgjidhet → shfaq agent chips poshtë me `.dega-chip` (jo border-heavy old design)
 
 #### Word Kontrata:
 - **Nënshkrimi mund të ndahet mes 2 faqeve** kur pakot janë të shumta
@@ -150,11 +119,6 @@
   - **Mundësi:** Lexim i fushave të gabuara (`primi_vjetor` vs `total_primi` inconsistent)
   - **Action:** Kontrollo cila fushë përmban premium-in vjetor të saktë
 
-- **Kontratë drawer:**
-  - A duhet ridizajn me drawer të ri "+ Kontratë e re" sipas spec-it të theme-v2?
-  - Apo drawer aktual i kontratat.html është ai final?
-  - **Action:** Konfirmo me përdoruesin
-
 - **Aneks 2 embedded Word:**
   - A është e domosdoshme realisht aty në kontratë?
   - Apo është artifakt nga template e vjetër që mund të hiqet?
@@ -211,23 +175,14 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 
 ---
 
-## 📅 Çka vjen pastaj (Next Steps - Faza 14)
+## 📅 Çka vjen pastaj (Next Steps - Faza 15)
 
 ### Prioritet 1 (URGJENTE):
-1. ✅ Krijim i dokumentacionit (PO BËHET tash)
-2. 🔧 Sidebar fix - `href` real për të gjitha link-et
-3. 🔧 Faturimi ri-migrim te theme-v2
-4. 🔧 Rinovimet ri-migrim te theme-v2 + dropdown importo populim me 12 muaj
-5. 🔧 Drawers unification (oferta + kontratat especially)
-6. 🔧 ESC key handler + click-jashtë mbyllje për drawers
+1. Modulet e mbetura: Detyrat, Produkti, Dokumentet
+2. Verifikim funksionaliteti (testing pas çdo migrimi)
 
 ### Prioritet 2 (E rëndësishme):
-1. Debitoret restructure (4 stats + statuset row + 2 kolona të reja + aging filters)
-2. Action buttons standardize (Photo 2 spec)
-3. KPI icons unification (flat, no shadow)
-4. Oferta-view 3-col compact layout implementation
-5. Oferta KPI filter wire (`window.__activeKpiFilter`)
-6. Oferta llojet chips → LEFT, hiq filter-lloji select
+1. Action buttons standardize (Photo 2 spec)
 
 ### Prioritet 3 (Medium):
 1. Raportet - Chart.js implementation
@@ -243,7 +198,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 
 ---
 
-## 🚦 Workflow Recommended për Faza 14
+## 🚦 Workflow Recommended për Faza 15
 
 ```
 1. Hap Claude Code lokalisht
@@ -267,6 +222,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | Data | Ndryshim | Kush |
 |---|---|---|
 | 2026-05-04 | Krijim fillestar nga 13 fazat | Claude.ai sesion |
+| 2026-05-04 | Update pas verifikimit Claude Code: hequr bug fixes të zgjidhura | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 

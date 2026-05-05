@@ -26,6 +26,34 @@ Format:
 
 ---
 
+## 2026-04-27 → 2026-05-04 - Faza 14: Theme-v2 Bug Fixes + Oferta-View Redesign
+
+### Bug fixes të mëdha (commit b70f65a):
+- ✅ Sidebar nav rregulluar në të gjitha pages (href real)
+- ✅ Faturimi rikthyer në theme-v2
+- ✅ Rinovimet rikthyer në theme-v2
+- ✅ Drawers unified (struktura e njëjtë kudo)
+- ✅ Buttons standardized (Anulo / Ruaj)
+- ✅ Drawers mbyllen me click jashtë + ESC
+- ✅ Debitoret stats restructure (4 stats top + statuset row + aging filters)
+- ✅ Flat KPI icons (heqja e gloss/shadow)
+- ✅ Oferta KPI filter wire
+- ✅ Oferta llojet chips position (LEFT)
+
+### Oferta-View 3-col Redesign (5 commits):
+- f8ee768 - Migrate oferta-view to glass theme-v2 (topbar gradient brand)
+- fb1d9f8 - Redesign oferta-view: 3-col layout, total calculator, multi-pako
+- 5c46b06 - Compact: Montserrat, popup-based extras, "Shto kategori", floating pill
+- d7825d0 - Split Jete popup info+calc, age-group dropdown, click-outside dismiss
+- 0d447a9 - Refine: tags, restructured mini cards, network-card guidance
+
+### Vendime të marra: 5 (DEC-023 → DEC-027 në DECISIONS.md)
+
+### Çka mbetet për Faza 15:
+- Modulet e mbetura: Detyrat, Produkti, Dokumentet
+- Chart.js implementation (Raportet)
+- Mobile responsive verification
+
 ## 2026-04-27 - Faza 13: Theme-v2 Bug Reports & oferta-view redesign
 
 - 🔧 Faturimi u kthye në theme të vjetër (#002B5C strip + ngjyra në numra) - duhet ri-migrim
@@ -211,6 +239,7 @@ Format:
 | 2026-04-Mid | Raportet module (1989 lines) |
 | 2026-04-19 | **Theme-v2 migration** - glassmorphism + Montserrat |
 | 2026-04-27 | Theme-v2 bug reports + oferta-view redesign |
+| 2026-04-27 → 2026-05-04 | **Faza 14** - Theme-v2 bug fixes + Oferta-View 3-col redesign |
 
 ---
 
