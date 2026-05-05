@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Generated runtime files
+output/*.docx
+output/*.pdf
+
+# Backup / temp
+*.bak
+*.tmp
+*.old
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Env
+.env
+.env.local
