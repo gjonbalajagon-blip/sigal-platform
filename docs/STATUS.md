@@ -3,7 +3,7 @@
 > **Gjendja AKTUALE** e platformës. Ky file ndryshon shpesh.
 > ⚠️ **UPDATE INKREMENTAL** - pas çdo task-u, jo në fund të sesionit.
 
-**Përditësuar i fundit:** 2026-05-04
+**Përditësuar i fundit:** 2026-05-06
 
 ---
 
@@ -223,6 +223,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 |---|---|---|
 | 2026-05-04 | Krijim fillestar nga 13 fazat | Claude.ai sesion |
 | 2026-05-04 | Update pas verifikimit Claude Code: hequr bug fixes të zgjidhura | Claude Code |
+| 2026-05-06 | Cleanup: hequr 7 .bak files + 5 CSS legacy + migrate script + untrack node_modules + .gitignore | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 
