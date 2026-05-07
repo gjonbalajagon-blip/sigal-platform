@@ -69,7 +69,8 @@ editoOferte = async function(index) {
         if (!container) {
             container = document.createElement('div');
             container.id = 'tracking-bar';
-            const drawerBody = document.querySelector('.drawer-body');
+            // Mbështet të dy emrat e klases: .drawer-panel-body (oferta.html) + .drawer-body (legacy)
+            const drawerBody = document.querySelector('.drawer-panel-body') || document.querySelector('.drawer-body');
             if (drawerBody) drawerBody.insertBefore(container, drawerBody.firstChild);
         }
         container.innerHTML = statusProgressBar(data);
