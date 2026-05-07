@@ -303,6 +303,31 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .app-card-mini{margin-bottom:0;grid-column:1/-1}
 }
 
+/* ===== MOBILE (≤768px) — Pakot grid 2-kol + Bottom bar me badge ===== */
+@media(max-width:768px){
+  /* PAKOT: grid 2-kolonë (zëvendëson 1-rresht horizontal nga 900px) */
+  .paketa-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .paketa-btn{flex:none;min-width:0;padding:14px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;overflow:visible}
+  .paketa-btn .pkb-left{width:100%;text-align:center;margin-bottom:2px}
+  .paketa-btn .pkb-right{width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+  .paketa-btn .pi-name{font-size:13.5px;font-weight:700;line-height:1.1;margin-bottom:2px}
+  .paketa-btn .pi-shuma{display:block;font-size:10px;color:#94a3b8;font-weight:500;margin-bottom:4px}
+  .paketa-btn .pp-row{display:block;white-space:nowrap;overflow:visible;line-height:1.2;font-size:11px;text-align:center}
+  .paketa-btn .pp-lbl{display:inline;font-size:10px;color:#64748b;font-weight:500}
+  .paketa-btn .pp-val{display:inline;font-size:11px;font-weight:700}
+  .paketa-btn.selected::after{top:6px;right:8px;width:16px;height:16px;font-size:10px}
+
+  /* BOTTOM BAR: badge layout — total + summary inline, button full-width */
+  .footer-bar{grid-template-columns:1fr;gap:8px;padding:10px 14px}
+  .footer-info{display:none}
+  .footer-totals{flex-direction:row;align-items:center;gap:0;text-align:left;flex-wrap:nowrap}
+  .ft-lbl{display:none}
+  .ft-val{font-size:17px;line-height:1.2;flex-shrink:0}
+  .ft-summary{font-size:11px;font-weight:600;max-width:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;margin:0 0 0 8px;color:#1e40af;flex:1;min-width:0}
+  .ft-summary::before{content:'• ';color:#94a3b8;font-weight:700;margin-right:2px}
+  .btn-konfirmo{width:100%;padding:12px;font-size:13px}
+}
+
 @media(max-width:640px){
   .oferta-layout{padding:8px;gap:8px}
   .col-left,.col-right{padding:12px;border-radius:11px}
@@ -310,12 +335,6 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .paketa-actions{margin-top:8px}
   .btn-z-note{margin-top:4px;font-size:10px}
   .koment-outer{padding:0 8px 8px}
-  /* Paketat edhe më kompakte në mobile shumë të vogël */
-  .paketa-list{gap:3px}
-  .paketa-btn{padding:6px 2px}
-  .paketa-btn .pi-name{font-size:10px}
-  .paketa-btn .pp-lbl{font-size:7px}
-  .paketa-btn .pp-val{font-size:9px}
   .col-right{grid-template-columns:1fr}
   #extras-list{grid-template-columns:1fr}
   .center-top{flex-direction:column;align-items:flex-start}
@@ -338,11 +357,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .header{padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top))}
   .header img{height:30px}
   .net-popup{max-width:100%;border-radius:12px 12px 0 0}
-  .footer-bar{grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
-  .footer-info{grid-column:1/-1;font-size:9.5px;text-align:center;max-width:none}
-  .footer-totals{text-align:left}
-  .ft-summary{max-width:none;white-space:normal}
-  .btn-konfirmo{padding:10px 14px;font-size:12px}
+  .footer-bar{padding-bottom:max(10px,env(safe-area-inset-bottom))}
   body{padding-bottom:170px}
   .float-pill{bottom:174px;right:12px;width:36px;height:36px}
 }
