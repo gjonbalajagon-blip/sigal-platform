@@ -214,7 +214,8 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .psr .dv.step{color:#1e40af;background:#dbeafe;padding:1px 7px;border-radius:5px;font-weight:700;font-size:9.5px}
 
 /* JETE matrix */
-.jete-matrix{width:100%;border-collapse:collapse;font-size:10px;margin-top:6px}
+.jete-matrix-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:6px}
+.jete-matrix{width:100%;border-collapse:collapse;font-size:10px;min-width:380px}
 .jete-matrix th{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;padding:5px 4px;font-weight:700;text-align:center;border:1px solid transparent}
 .jete-matrix th:first-child{text-align:left;padding-left:8px;border-radius:5px 0 0 0}
 .jete-matrix th:last-child{border-radius:0 5px 0 0}
@@ -282,7 +283,17 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 
 @media(max-width:900px){
   .oferta-layout{grid-template-columns:1fr;gap:10px;padding:10px}
-  .paketa-list{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+  /* Paketa-btn — horizontal një-rresht, kompakt për mobile */
+  .paketa-list{display:flex;flex-direction:row;flex-wrap:nowrap;gap:5px}
+  .paketa-btn{flex:1 1 0;min-width:0;padding:8px 5px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+  .paketa-btn .pkb-left{min-width:0;width:100%;text-align:center}
+  .paketa-btn .pkb-right{text-align:center;width:100%;align-items:center;gap:0}
+  .paketa-btn .pi-name{font-size:11.5px;margin-bottom:1px}
+  .paketa-btn .pi-shuma{display:none}
+  .paketa-btn .pp-row{font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .paketa-btn .pp-row + .pp-row{display:none} /* hide nën 18 për kompaktësi */
+  .paketa-btn.selected::after{top:3px;right:4px;width:13px;height:13px;font-size:9px}
+
   .col-right{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}
   .col-right .section-title{grid-column:1/-1;margin-bottom:0}
   .col-right .section-title.with-spacing{margin-top:5px}
@@ -298,7 +309,11 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .paketa-actions{margin-top:8px}
   .btn-z-note{margin-top:4px;font-size:10px}
   .koment-outer{padding:0 8px 8px}
-  .paketa-list{grid-template-columns:1fr}
+  /* Paketat kompakt edhe më shumë në mobile shumë të vogël */
+  .paketa-list{gap:4px}
+  .paketa-btn{padding:6px 3px}
+  .paketa-btn .pi-name{font-size:10.5px}
+  .paketa-btn .pp-row{font-size:9px}
   .col-right{grid-template-columns:1fr}
   #extras-list{grid-template-columns:1fr}
   .center-top{flex-direction:column;align-items:flex-start}
@@ -308,32 +323,38 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .mi-item.span-2{grid-row:auto;grid-column:auto}
   .paketa-actions{flex-direction:column}
   .btn-z,.btn-modifiko,.btn-hiq{width:100%;min-width:0}
+  /* Touch targets > 40px: opt-shih-btn më komod me gisht */
+  .opt-shih-btn{padding:10px 8px;font-size:11.5px}
+  .opt-rm-btn{width:40px;padding:10px}
   .ch-sub{display:none}
   .ch-badge{white-space:normal;max-width:160px;font-size:8.5px;padding:2px 6px}
+  /* Popup safe area + padding */
+  .popup-overlay{padding:14px;padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(14px,env(safe-area-inset-bottom))}
   .popup{padding:16px;border-radius:12px}
   .popup-grid-2{grid-template-columns:1fr}
   .jete-row-grid{grid-template-columns:1fr 1fr;gap:7px}
   .jete-row .row-rm{grid-column:2;justify-self:end;margin-top:3px;width:100%;max-width:80px}
-  .jete-matrix{font-size:9px}
+  .jete-matrix{font-size:9px;min-width:340px}
   .jete-matrix th,.jete-matrix td{padding:3px 2px}
-  .header{padding:10px 12px}
+  .header{padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top))}
   .header img{height:30px}
   .net-popup{max-width:100%;border-radius:12px 12px 0 0}
-  .footer-bar{grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px}
+  .footer-bar{grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
   .footer-info{grid-column:1/-1;font-size:9.5px;text-align:center;max-width:none}
   .footer-totals{text-align:left}
   .ft-summary{max-width:none;white-space:normal}
-  .btn-konfirmo{padding:10px 14px;font-size:12px}
+  .btn-konfirmo{padding:10px 14px;font-size:12px;min-height:40px}
   body{padding-bottom:170px}
-  .float-pill{bottom:174px;right:12px;width:34px;height:34px}
+  .float-pill{bottom:174px;right:12px;width:36px;height:36px}
 }
 
 @media(max-width:380px){
-  .footer-bar{grid-template-columns:1fr;gap:6px}
+  .footer-bar{grid-template-columns:1fr;gap:5px;padding:8px 10px}
+  .footer-info{display:none} /* hide info text për të kursyer hapësirë */
   .footer-totals{flex-direction:row;justify-content:space-between;align-items:baseline}
   .btn-konfirmo{width:100%}
-  body{padding-bottom:200px}
-  .float-pill{bottom:206px}
+  body{padding-bottom:130px}
+  .float-pill{bottom:136px;right:10px}
 }
 </style>
 </head>
@@ -444,6 +465,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 
     <div class="popup-section">
       <div class="popup-section-hdr">Çmimet (€/vit)</div>
+      <div class="jete-matrix-wrap">
       <table class="jete-matrix">
         <thead><tr><th>Mosha</th><th>Gjinia</th><th>€5,000</th><th>€10,000</th><th>€20,000</th><th>€50,000</th></tr></thead>
         <tbody>
@@ -461,6 +483,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
           <tr><td class="gf">F</td><td>€150</td><td>€220</td><td>€520</td><td>€1,200</td></tr>
         </tbody>
       </table>
+      </div>
     </div>
 
     <div class="jete-note">Periudha e pritjes: <b>180 ditë</b> për individ, <b>90 ditë</b> për grupe mbi 50 persona. Fëmijët <b>nën 21 vjeç</b> janë <b>falas</b>.</div>

@@ -36,7 +36,7 @@ Aktualisht nuk ka bug kritik. Modulet e mbetura: Detyrat, Produkti, Dokumentet (
 | **Faturimi** | ✅ Komplet (ri-migruar) | theme-v2 i kthyer (commit b70f65a) |
 | **Rinovimet** | ✅ Komplet (ri-migruar) | theme-v2 i kthyer (commit b70f65a) |
 | **Debitoret** | ✅ Stats restructure aplikuar | 4 stats + statuset row + aging filters |
-| **Raportet** | ⚠️ CSS migruar | Pret Chart.js për grafikët |
+| **Raportet** | ✅ | Chart.js i implementuar (donut, line, bars) |
 | **Stafi** | ✅ Komplet | KPI + drawer + organogram |
 | **Detyrat** | ❌ Nuk ka filluar | - |
 | **Produkti** | ❌ Nuk ka filluar | Pret Excel data |
@@ -60,7 +60,6 @@ _Asnjë bug kritik aktualisht._
 - **Aneks 2 embedded Word doc** - hiqet (DEC-009), por përdoruesi mund ta dojë prapa
 
 #### Raportet:
-- **Chart.js mungon** - aktualisht përdor div bars primitive
 - **Kontratat: routing + renderKonDeget**: Subtab "Sipas degeve" është në SUBTABS por mungon routing dhe funksioni `renderKonDeget()`
 - **Strip width inkonsistent:** Oferta/Kontratat/Faturimi më të gjerë se Rinovimet
 
@@ -186,10 +185,8 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 1. Action buttons standardize (Photo 2 spec)
 
 ### Prioritet 3 (Medium):
-1. Raportet - Chart.js implementation
-2. Kontratat: renderKonDeget routing + funksion
-3. Strip width unification (oferta/kontratat/faturimi)
-4. Mobile responsive verification
+1. Kontratat: renderKonDeget routing + funksion
+2. Strip width unification (oferta/kontratat/faturimi)
 
 ### Prioritet 4 (E shtyrë):
 1. Detyrat module
@@ -226,6 +223,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-05-04 | Update pas verifikimit Claude Code: hequr bug fixes të zgjidhura | Claude Code |
 | 2026-05-06 | Cleanup: hequr 7 .bak files + 5 CSS legacy + migrate script + untrack node_modules + .gitignore | Claude Code |
 | 2026-05-07 | Migrim backend Railway → Render Free + UptimeRobot ping (DEC-028, Faza 14.5) | Claude Code |
+| 2026-05-07 | Mobile fixes oferta-view: paketat 1-rresht kompakt, jetë matrix overflow-x, touch targets, safe area inset, float pill positioning. Chart.js statusi i korrigjuar (i implementuar). | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 
