@@ -605,6 +605,55 @@ Në oferta-view, çdo kategori e kartelës shfaq sqarim specifik: "**Spitalet/La
 
 ---
 
+## DEC-028: Migrim Backend Railway → Render Free Tier
+**Data:** 2026-05-07
+**Statusi:** ✅ Approved (Faza 14.5)
+
+### Konteksti
+Railway trial skadoi → backend i shkëputur. Funksionet që humbën:
+- Word generation (`/api/gjenero-kontrate`, `/api/gjenero-oferte`)
+- Email konfirmim (`/api/konfirmo-oferte` via Brevo)
+- Tracking i ofertave (`/api/oferta-track`, `/api/oferta-status`)
+
+Maj 2026 është lansim i hershëm — duhej zgjidhje **e shpejtë + falas** para se të investohej në plan paid.
+
+### Vendimi
+Migrim te **Render Free Tier** (Frankfurt region) + **UptimeRobot ping** (5 min interval) për anti-sleep.
+
+**Konfigurimi final:**
+- `render.yaml` (free, frankfurt, healthCheckPath: `/api/health`)
+- `engines: node >=20` te `package.json`
+- `/api/health` endpoint i ri për Render dhe UptimeRobot
+- CORS i kufizuar te `sigal-platform-shendet.vercel.app` + `*.vercel.app` + localhost (sigurizë e shtuar krahasuar me `cors()` open)
+- `express.static('.')` u hoq (Vercel mban frontend, jo backend)
+- `nodemailer` u hoq nga `package.json` (i pa-përdorur)
+- Brevo "Authorized IPs" u disable (Render IP mund të ndryshojë)
+
+### Alternativat
+- **Railway Hobby paid ($5/muaj):** më e qëndrueshme por kosto. Refuzuar tani — më vonë mundësi.
+- **Fly.io free:** ndërlikim më i madh, nuk ka health check pattern të thjeshtë.
+- **Vercel serverless functions:** kërkon refactoring të Express → handler pattern (kohë të madhe).
+- **Render Starter paid ($7/muaj):** s'ka cold start, por kosto. Mund të kalohet kur biznesi rritet.
+
+### Konsekuencat
+- ✅ **$0/muaj** kosto operative
+- ✅ Render auto-deploy nga `main` branch (njësoj si Railway)
+- ✅ UptimeRobot mban backend gjallë (ping çdo 5 min) → cold start vetëm pas restart-eve të rralla
+- ✅ Health check: monitor i automatik
+- ⚠️ **750 orë/muaj** Render free limit — wallet mjafton për 1 service 24/7
+- ⚠️ Cold start 30-60 sek herën e parë pas sleep (rrallë me UptimeRobot)
+- ⚠️ Tracking në kujtesë mbetet — humb nëse Render bën restart (jo problem urgjent për MVP)
+- ⚠️ Brevo IP authorization off → siguria varet nga API key (mbaj atë sigurt)
+
+### Lidhje
+- **Frontend:** Vercel (pa ndryshim) — `sigal-platform-shendet.vercel.app`
+- **Backend (i ri):** `https://sigal-platform.onrender.com`
+- **Health:** `https://sigal-platform.onrender.com/api/health`
+- **UptimeRobot:** monitor "SIGAL Backend Health" 5-min interval
+- **Trigger për ndërmarrje (Render Hobby/Starter):** kur cold start bëhet problem real ose 750h/muaj nuk mjafton
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase

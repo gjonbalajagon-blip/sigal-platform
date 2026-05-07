@@ -7,7 +7,7 @@ Platformë web për menaxhimin e kontratave të sigurimit shëndetësor për **S
 ## 🚀 Quick Info
 
 - **Frontend:** Vanilla JS/HTML/CSS → Vercel: [`sigal-platform-shendet.vercel.app`](https://sigal-platform-shendet.vercel.app)
-- **Backend:** Node.js/Express → Railway: `sigal-platform-production.up.railway.app`
+- **Backend:** Node.js/Express → Render: `sigal-platform.onrender.com` (free + UptimeRobot ping)
 - **GitHub:** `gjonbalajagon-blip/sigal-platform`
 - **Local:** `C:\Users\Admin\sigal-platform`
 - **Login (superadmin):** username `agon`, password `sigal2026`

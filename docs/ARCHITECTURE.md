@@ -21,7 +21,8 @@
 - **Document generation (shtesë):** officegen, fast-xml-parser, jszip
 - **Email:** Brevo API (HTTP, jo SMTP - sepse Railway bllokon SMTP)
 - **Email (DEPRECATED, ende në package.json):** nodemailer (Railway bllokon SMTP, mos përdor)
-- **Hosting:** Railway (auto-deploy nga `main` branch)
+- **Hosting:** **Render Free Tier** (Frankfurt, auto-deploy nga `main` branch) — migrim 2026-05-07, shih DEC-028
+- **Anti-sleep:** UptimeRobot ping te `/api/health` çdo 5 min
 
 ### Storage
 - **Aktualisht:** `localStorage` (browser)
@@ -99,6 +100,7 @@ sigal-platform/
 
 | Endpoint | Method | Përshkrim |
 |---|---|---|
+| `/api/health` | GET | Health check (Render + UptimeRobot) — kthe `{status:'ok',uptime,...}` |
 | `/api/gjenero-kontrate` | POST | Gjeneron Word kontratë (përdor `js/gjenero-kontrate.js`) |
 | `/api/gjenero-oferte` | POST | Gjeneron Word ofertë me limite custom |
 | `/api/konfirmo-oferte` | POST | Dërgon email konfirmimi (Brevo) |
@@ -107,17 +109,20 @@ sigal-platform/
 | `/api/oferta-derguar` | POST | Markon ofertën si "e dërguar" |
 | `/api/shkarko/:fileName` | GET | Download i skedarit të gjeneruar |
 
-### Railway Environment Variables
+### Backend URL
+- **Production:** `https://sigal-platform.onrender.com`
+- **Health check:** `https://sigal-platform.onrender.com/api/health`
+
+### Render Environment Variables
 
 ```
-PORT=3000
-BREVO_API_KEY=<api_key>
-SENDER_EMAIL=gjonbalajagon@gmail.com
-EMAIL_USER=gjonbalajagon@gmail.com
-EMAIL_PASS=<gmail_app_password>  # legacy, jo në përdorim
+PORT             # auto nga Render
+NODE_VERSION     # 20.0.0 (sipas render.yaml)
+BREVO_API_KEY    # vendoset manualisht (sync:false në yaml)
+SENDER_EMAIL     # gjonbalajagon@gmail.com
 ```
 
-> ⚠️ Railway trial mund të skadojë - shih STATUS.md për status aktual
+> ⚠️ Brevo "Authorized IPs" duhet të jetë i disable (ose Render IP të shtohet manualisht — IP mund të ndryshojë)
 
 ---
 
@@ -449,9 +454,11 @@ index.html (login form)
 
 | Shërbimi | Përdorim | API/Limit |
 |---|---|---|
-| **Brevo** | Email transactional | 300/ditë (free tier) |
-| **Vercel** | Frontend hosting | Auto-deploy |
-| **Railway** | Backend hosting | Trial expired - shih STATUS.md |
+| **Brevo** | Email transactional | 300/ditë (free tier); IP authorization OFF |
+| **Vercel** | Frontend hosting | Auto-deploy nga `main` |
+| **Render** | Backend hosting | Free tier (750h/muaj), Frankfurt; auto-deploy nga `main` |
+| **UptimeRobot** | Anti-sleep ping | Health check `/api/health` çdo 5 min (free tier) |
+| **Railway** | ❌ DEPRECATED (zëvendësuar nga Render — DEC-028) | - |
 | **Google Fonts** | Montserrat | CDN |
 | **Lucide Icons** | UI icons | CDN |
 | **Chart.js** | Charts | CDN |

@@ -26,6 +26,32 @@ Format:
 
 ---
 
+## 2026-05-07 - Faza 14.5: Migrim Backend Railway → Render
+
+**Tipi:** Migrim infrastrukturor
+**Statusi:** ✅ Përfunduar
+
+**Çka u bë:**
+- ✅ Krijuar `render.yaml` me konfigurim Frankfurt + Free plan + health check
+- ✅ Shtuar `/api/health` endpoint (për Render + UptimeRobot)
+- ✅ CORS i kufizuar te frontend Vercel + localhost (heqje `cors()` open)
+- ✅ Hequr `express.static('.')` (Vercel mban frontend)
+- ✅ Hequr `nodemailer` nga `package.json` (i pa-përdorur)
+- ✅ Shtuar `engines: node >=20` te `package.json`
+- ✅ JSON body limit 10mb (parandalim DoS)
+- ✅ Frontend URL update: 7 references në 3 file (`js/oferta.js`, `js/kontratat.js`, `pages/oferta-view.html`)
+- ✅ UptimeRobot setup për anti-sleep ping (5-min interval)
+- ✅ Brevo "Authorized IPs" disabled (Render IP ndryshon)
+
+**Pse:**
+Railway trial i skaduar → backend i shkëputur. Render Free + UptimeRobot = $0/muaj deri sa biznesi i SIGAL të rritet.
+
+**Url i ri:** `https://sigal-platform.onrender.com`
+
+**Lidhje:** DEC-028 në DECISIONS.md.
+
+**Çka mbetet për Faza 15:** modulet e mbetura + verifikim funksionaliteti me data reale.
+
 ## 2026-04-27 → 2026-05-04 - Faza 14: Theme-v2 Bug Fixes + Oferta-View Redesign
 
 ### Bug fixes të mëdha (commit b70f65a):
@@ -240,6 +266,7 @@ Format:
 | 2026-04-19 | **Theme-v2 migration** - glassmorphism + Montserrat |
 | 2026-04-27 | Theme-v2 bug reports + oferta-view redesign |
 | 2026-04-27 → 2026-05-04 | **Faza 14** - Theme-v2 bug fixes + Oferta-View 3-col redesign |
+| 2026-05-07 | **Faza 14.5** - Migrim backend Railway → Render Free + UptimeRobot (DEC-028) |
 
 ---
 
