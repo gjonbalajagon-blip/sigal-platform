@@ -32,14 +32,41 @@ const fs = require('fs');
 const { gjenerKontrate } = require('./js/gjenero-kontrate');
 
 const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(express.static('.'));
+
+// ===== CORS — i kufizuar te frontend Vercel + localhost =====
+const ALLOWED_ORIGINS = [
+    'https://sigal-platform-shendet.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500'
+];
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow no-origin (curl, UptimeRobot, server-to-server)
+        if (!origin) return callback(null, true);
+        if (ALLOWED_ORIGINS.includes(origin) || /\.vercel\.app$/.test(origin)) {
+            return callback(null, true);
+        }
+        callback(new Error('CORS: origin nuk lejohet (' + origin + ')'));
+    }
+}));
+
+app.use(express.json({ limit: '10mb' }));
 
 const outputDir = path.join(__dirname, 'output');
 if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir);
 }
+
+// ===== HEALTH CHECK (per Render + UptimeRobot) =====
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        service: 'sigal-platform-backend',
+        time: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
 
 // ============================================
 // TRACKING

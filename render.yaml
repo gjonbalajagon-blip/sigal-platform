@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: sigal-platform-backend
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.0.0
+      - key: BREVO_API_KEY
+        sync: false
+      - key: SENDER_EMAIL
+        value: gjonbalajagon@gmail.com
