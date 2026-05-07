@@ -935,7 +935,7 @@ async function dergoPako(){
     ofertat[ofertaId].statusi='e_konfirmuar';
     localStorage.setItem('ofertat',JSON.stringify(ofertat));
     trackKonfirmim(zf,extras.map(e=>e.tip),koment);
-    try{const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{method:'POST',signal:c.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({emriKlientit:oferta.emri,emailKlientit:oferta.email,pakaZgjedhur:zf,totalMujor:totalMonthly.toFixed(2),koment,emailAgjentit:oferta.krijuarNgaEmail||'gjonbalajagon@gmail.com'})});clearTimeout(t);}catch(e){}
+    try{const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);await fetch('https://sigal-platform.onrender.com/api/konfirmo-oferte',{method:'POST',signal:c.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({emriKlientit:oferta.emri,emailKlientit:oferta.email,pakaZgjedhur:zf,totalMujor:totalMonthly.toFixed(2),koment,emailAgjentit:oferta.krijuarNgaEmail||'gjonbalajagon@gmail.com'})});clearTimeout(t);}catch(e){}
     document.getElementById('oferta-layout').style.display='none';
     document.querySelector('.koment-outer').style.display='none';
     document.getElementById('footer-bar').style.display='none';
@@ -946,7 +946,7 @@ async function dergoPako(){
 }
 
 // ===== TRACKING =====
-const TAPI='https://sigal-platform-production.up.railway.app';
+const TAPI='https://sigal-platform.onrender.com';
 let tStart=Date.now();
 function trackHapje(){try{fetch(TAPI+'/api/oferta-track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId,event:'hapje',data:{userAgent:navigator.userAgent}})});}catch(e){}}
 function trackKoha(){const s=Math.round((Date.now()-tStart)/1000);try{navigator.sendBeacon?navigator.sendBeacon(TAPI+'/api/oferta-track',new Blob([JSON.stringify({ofertaId,event:'koha',data:{sekonda:s}})],{type:'application/json'})):fetch(TAPI+'/api/oferta-track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId,event:'koha',data:{sekonda:s}}),keepalive:true});}catch(e){}}

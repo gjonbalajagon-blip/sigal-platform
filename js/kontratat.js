@@ -287,8 +287,8 @@ function rinovoKontrate(index){
 
 async function gjeneroWord(index){
     const k=kontratat[index];
-    try{const response=await fetch('https://sigal-platform-production.up.railway.app/api/gjenero-kontrate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(k)});
-    const data=await response.json();if(data.success)window.open('https://sigal-platform-production.up.railway.app/api/shkarko/'+data.fileName,'_blank');else alert('Gabim: '+data.error);}catch(err){alert('Serveri nuk është aktiv!');}
+    try{const response=await fetch('https://sigal-platform.onrender.com/api/gjenero-kontrate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(k)});
+    const data=await response.json();if(data.success)window.open('https://sigal-platform.onrender.com/api/shkarko/'+data.fileName,'_blank');else alert('Gabim: '+data.error);}catch(err){alert('Serveri nuk është aktiv!');}
 }
 
 async function dergoEmail(index){
@@ -296,10 +296,10 @@ async function dergoEmail(index){
     if(!k.email){tregoNotification('Kjo kontratë nuk ka email','error');return;}
     if(!confirm('Dërgo kontratën me email te '+k.email+'?'))return;
     try{
-        const response=await fetch('https://sigal-platform-production.up.railway.app/api/gjenero-kontrate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(k)});
+        const response=await fetch('https://sigal-platform.onrender.com/api/gjenero-kontrate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(k)});
         const data=await response.json();
         if(data.success){
-            const emailRes=await fetch('https://sigal-platform-production.up.railway.app/api/konfirmo-oferte',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:k.email,emri:k.emri,subject:'Kontrata juaj - SIGAL Health',message:'I/e nderuar '+k.emri+',\n\nBashkëngjitur gjeni kontratën tuaj të sigurimit shëndetësor.\n\nMë respekt,\nSIGAL Insurance Group'})});
+            const emailRes=await fetch('https://sigal-platform.onrender.com/api/konfirmo-oferte',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:k.email,emri:k.emri,subject:'Kontrata juaj - SIGAL Health',message:'I/e nderuar '+k.emri+',\n\nBashkëngjitur gjeni kontratën tuaj të sigurimit shëndetësor.\n\nMë respekt,\nSIGAL Insurance Group'})});
             tregoNotification('Kontrata u dërgua me email te '+k.email,'success');
         }else{tregoNotification('Gabim në gjenerimin e Word: '+data.error,'error');}
     }catch(err){tregoNotification('Serveri nuk është aktiv','error');}

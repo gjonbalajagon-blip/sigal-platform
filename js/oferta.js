@@ -1,7 +1,7 @@
 let ofertat = JSON.parse(localStorage.getItem('ofertat')) || [];
 let editIndex = -1;
 
-const TAPI='https://sigal-platform-production.up.railway.app';
+const TAPI='https://sigal-platform.onrender.com';
 const STATUSET_TRACK={
     e_krijuar:   {label:'E krijuar',     cls:'e_krijuar'},
     e_derguar:   {label:'E dërguar',     cls:'e_derguar'},
