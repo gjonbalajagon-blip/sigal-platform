@@ -654,6 +654,61 @@ Migrim te **Render Free Tier** (Frankfurt region) + **UptimeRobot ping** (5 min 
 
 ---
 
+## DEC-029: Mobile UX Redesign Oferta-View (Pakot Grid + Badge Bottom Bar)
+**Data:** 2026-05-08
+**Statusi:** ✅ Approved (Faza 14.6)
+
+### Konteksti
+Pas Faza 14.5, përdoruesi testoi `oferta-view.html` në iPhone real dhe identifikoi 2 probleme UX:
+
+**Problemi 1 — Pakot horizontale të ngushta:**
+6 paketa (Bazë → Gold) shfaqeshin në 1 rresht horizontal me layout flex. Çdo kartë ~50px gjerësi → tekstet stivohen vertikalisht me 5 rreshta të vegjël (emri + mbi 18 + çmimi + nën 18 + çmimi). Vështirë për të prekur me gisht, vështirë për të lexuar.
+
+**Problemi 2 — Bottom bar pa feedback vizual:**
+Footer me "TOTAL MUJOR / Konfirmo Zgjedhjen" kishte layout të varfër në mobile — gjithçka qendërzuar, "Asnjë pako e zgjedhur" duket jashtë vendit, pa feedback për pakon e zgjedhur.
+
+### Vendimi
+Krijim i breakpoint-it të ri `@media(max-width:768px)` (mes 900px dhe 640px) që zëvendëson layout horizontal me **grid 2-kolonë** për pakot dhe **badge layout** për bottom bar.
+
+**Layout i ri:**
+
+1. **Pakot:** `display:grid; grid-template-columns:1fr 1fr; gap:10px`
+   - Çdo kartë ~150-180px (në vend të 50px)
+   - Padding 14px 12px (komod për prekje)
+   - 5 rreshta info të lexueshme: emri, Mbulim €X, mbi 18 €Y, nën 18 €Z
+
+2. **Bottom bar:**
+   - `.footer-info` (tekst informues) hidden në mobile (kursim hapësire)
+   - `.footer-totals` inline flex: total + summary me dot separator '•'
+   - `.ft-summary::before { content:'• ' }` → "€30/muaj • Standard Plus"
+   - `.btn-konfirmo` full-width
+
+### Alternativat e Refuzuara
+- ❌ **Mbaj 1-rresht horizontal me boxe më të gjera** — me 6 paketa në 360px ekran, fizikisht nuk del
+- ❌ **Carousel slidoj** — kërkon JS, kompleks UX
+- ❌ **Paketat collapsed me click për detail** — humbet krahasim i menjëhershëm
+
+### Konsekuencat
+- ✅ Karta paketash komode për prekje (~150px wide × ~120px tall)
+- ✅ Krahasim vizual i lehtë midis 6 paketave
+- ✅ Bottom bar i pastër, summary i dukshëm
+- ✅ Pa scroll horizontal i faqes
+- ⚠️ Tabletet 768-820px portrait përdorin 900px breakpoint (1-rresht 5-rreshta) — i pranuar
+- 🚫 Desktop (>768px) i pa-ndryshuar
+- 🚫 JS i pa-ndryshuar (vetëm CSS)
+
+### Implementim
+Vetëm CSS shtim në `pages/oferta-view.html`:
+- Bllok i ri `@media(max-width:768px)` me ~25 rregulla
+- Cleanup në `@media(max-width:640px)`: hequr 5 conflicting paketa-btn rules + 5 conflicting footer-bar rules
+
+### Anti-Patterns të shmangura
+- 🚫 NUK u shtua sticky bottom bar shtesë (përdoruesi tha "siq është")
+- 🚫 NUK u ndryshua background-i i bottom bar
+- 🚫 NUK u prekën stilet desktop
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase

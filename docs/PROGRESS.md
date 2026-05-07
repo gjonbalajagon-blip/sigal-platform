@@ -26,6 +26,32 @@ Format:
 
 ---
 
+## 2026-05-08 - Faza 14.6: Mobile UX Redesign Oferta-View
+
+**Tipi:** UI/UX fix
+**Statusi:** ✅ Përfunduar
+
+**Konteksti:**
+Përdoruesi testoi oferta-view në iPhone real dhe identifikoi 2 probleme:
+1. 6 pakot (Bazë → Gold) shfaqeshin horizontalisht në 1 rresht → karta ~50px të ngushta, vështirë për të prekur me gisht
+2. Bottom bar (Total + Konfirmo) layout i varfër, pa feedback vizual për pakon e zgjedhur
+
+**Çka u bë:**
+- ✅ Breakpoint i ri `@media (max-width:768px)` (mes 900px dhe 640px ekzistues)
+- ✅ Pakot grid 2-kolonë (në vend të 1-rresht horizontal)
+- ✅ Karta më e gjerë (~150-180px) me 5-rreshta info: emri, Mbulim €X, mbi 18 €Y, nën 18 €Z
+- ✅ Bottom bar i ri:
+    - footer-info hidden në mobile (kursim hapësire)
+    - footer-totals inline (total + summary me dot separator '•')
+    - btn-konfirmo full-width
+- ✅ Cleanup në 640px: hequr conflicting paketa-btn dhe footer rules
+- 🚫 NUK preku desktop (>768px mbetet i njëjtë)
+- 🚫 NUK preku JS (vetëm CSS)
+
+**Lidhje:** DEC-029 në DECISIONS.md
+
+**Çka mbetet:** Test me data reale në iPhone real (përdoruesi).
+
 ## 2026-05-07 - Faza 14.5: Migrim Backend Railway → Render
 
 **Tipi:** Migrim infrastrukturor
@@ -267,6 +293,7 @@ Railway trial i skaduar → backend i shkëputur. Render Free + UptimeRobot = $0
 | 2026-04-27 | Theme-v2 bug reports + oferta-view redesign |
 | 2026-04-27 → 2026-05-04 | **Faza 14** - Theme-v2 bug fixes + Oferta-View 3-col redesign |
 | 2026-05-07 | **Faza 14.5** - Migrim backend Railway → Render Free + UptimeRobot (DEC-028) |
+| 2026-05-08 | **Faza 14.6** - Mobile UX redesign oferta-view (pakot grid + badge bottom bar, DEC-029) |
 
 ---
 

@@ -3,13 +3,13 @@
 > **Gjendja AKTUALE** e platformës. Ky file ndryshon shpesh.
 > ⚠️ **UPDATE INKREMENTAL** - pas çdo task-u, jo në fund të sesionit.
 
-**Përditësuar i fundit:** 2026-05-07
+**Përditësuar i fundit:** 2026-05-08
 
 ---
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 14.5 (migrim Railway→Render) e përfunduar → drejt Faza 15
+**Faza aktuale:** Faza 14.6 (mobile UX oferta-view) e përfunduar → drejt Faza 15
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -224,6 +224,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-05-06 | Cleanup: hequr 7 .bak files + 5 CSS legacy + migrate script + untrack node_modules + .gitignore | Claude Code |
 | 2026-05-07 | Migrim backend Railway → Render Free + UptimeRobot ping (DEC-028, Faza 14.5) | Claude Code |
 | 2026-05-07 | Mobile fixes oferta-view: paketat 1-rresht kompakt, jetë matrix overflow-x, touch targets, safe area inset, float pill positioning. Chart.js statusi i korrigjuar (i implementuar). | Claude Code |
+| 2026-05-08 | Mobile UX redesign oferta-view (DEC-029, Faza 14.6): pakot grid 2-kol, bottom bar me badge layout (total + summary inline) | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 
