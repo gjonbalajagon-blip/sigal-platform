@@ -946,9 +946,19 @@ function mbyllRrjetin(){document.getElementById('net-overlay').classList.remove(
 // ===== SCROLL =====
 function scrollToConfirm(){document.getElementById('btn-konfirmo').scrollIntoView({behavior:'smooth',block:'center'});}
 
-// ===== NGARKO =====
-function ngarko(){
-    const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[],oferta=ofertat[ofertaId];
+// ===== NGARKO (backend first, localStorage fallback) =====
+async function ngarko(){
+    let oferta=null;
+    // 1) Provo backend (cross-device — punon në çdo pajisje)
+    try{
+        const r=await fetch('https://sigal-platform.onrender.com/api/oferta-data/'+encodeURIComponent(ofertaId));
+        if(r.ok){const d=await r.json();oferta=d.oferta;}
+    }catch(e){console.warn('Backend fetch failed:',e.message);}
+    // 2) Fallback te localStorage (PC i agjentit)
+    if(!oferta){
+        const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[];
+        oferta=ofertat[ofertaId];
+    }
     if(!oferta){
         document.getElementById('oferta-layout').innerHTML='<div style="text-align:center;padding:60px;grid-column:1/-1"><h2 style="color:#1e3a8a;font-size:18px">Oferta nuk u gjet.</h2><p style="color:#7c8aa8;margin-top:6px;font-size:13px">Kontaktoni agjentin tuaj.</p></div>';
         document.getElementById('footer-bar').style.display='none';
@@ -987,7 +997,11 @@ async function paraKonfirmimit(){
     dergoPako();
 }
 async function dergoPako(){
-    const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[],oferta=ofertat[ofertaId];
+    // Përdor ofertaData (nga backend ose localStorage) si bazë
+    const oferta=ofertaData;
+    const ofertat=JSON.parse(localStorage.getItem('ofertat'))||[];
+    const hasLocalCopy=!!ofertat[ofertaId];
+
     let pakaList=[],totalMonthly=0;
     selectedPakot.forEach((v,id)=>{const p=pakotGlobal.find(x=>x.id===id);if(!p)return;const mp=paketaMonthlyPrice(p,v.mbi18,v.nen18);totalMonthly+=mp;pakaList.push({id,emri:p.emri,mbi18:v.mbi18,nen18:v.nen18,primi_mujor:mp.toFixed(2)});});
     let extras=[];
@@ -997,15 +1011,19 @@ async function dergoPako(){
     const exNames=extras.map(x=>x.tip).join(', ');
     const zf=pakaEmrat+(exNames?' + '+exNames:'');
     const koment=document.getElementById('koment')?document.getElementById('koment').value:'';
-    const versione=ofertat[ofertaId].versione||[];
+    // Përditëso ofertën (backend + lokal kur ka)
+    const target=hasLocalCopy?ofertat[ofertaId]:oferta;
+    const versione=target.versione||[];
     versione.push({data:new Date().toISOString().split('T')[0],lloji:oferta.lloji,pakot:pakaList,extras,totalMujor:totalMonthly.toFixed(2),emri:oferta.emri,burim:'konfirmim_klient',pakaZgjedhur:zf,koment});
-    ofertat[ofertaId].versione=versione;
-    ofertat[ofertaId].pakaZgjedhur=zf;ofertat[ofertaId].komentKlient=koment;ofertat[ofertaId].konfirmuar=true;
-    ofertat[ofertaId].dataKonfirmimit=new Date().toISOString().split('T')[0];
-    ofertat[ofertaId].totalMujor=totalMonthly.toFixed(2);
-    ofertat[ofertaId].notification={type:'konfirmim',msg:'Klienti konfirmoi: '+zf+' (€'+totalMonthly.toFixed(2)+'/muaj)',data:new Date().toISOString().split('T')[0],lexuar:false};
-    ofertat[ofertaId].statusi='e_konfirmuar';
-    localStorage.setItem('ofertat',JSON.stringify(ofertat));
+    target.versione=versione;
+    target.pakaZgjedhur=zf;target.komentKlient=koment;target.konfirmuar=true;
+    target.dataKonfirmimit=new Date().toISOString().split('T')[0];
+    target.totalMujor=totalMonthly.toFixed(2);
+    target.notification={type:'konfirmim',msg:'Klienti konfirmoi: '+zf+' (€'+totalMonthly.toFixed(2)+'/muaj)',data:new Date().toISOString().split('T')[0],lexuar:false};
+    target.statusi='e_konfirmuar';
+    if(hasLocalCopy){localStorage.setItem('ofertat',JSON.stringify(ofertat));}
+    // Sync prapa te backend (që agjenti ta shohë në çdo pajisje)
+    try{fetch('https://sigal-platform.onrender.com/api/oferta-save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:String(ofertaId),oferta:target})});}catch(e){}
     trackKonfirmim(zf,extras.map(e=>e.tip),koment);
     try{const c=new AbortController(),t=setTimeout(()=>c.abort(),5000);await fetch('https://sigal-platform.onrender.com/api/konfirmo-oferte',{method:'POST',signal:c.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({emriKlientit:oferta.emri,emailKlientit:oferta.email,pakaZgjedhur:zf,totalMujor:totalMonthly.toFixed(2),koment,emailAgjentit:oferta.krijuarNgaEmail||'gjonbalajagon@gmail.com'})});clearTimeout(t);}catch(e){}
     document.getElementById('oferta-layout').style.display='none';

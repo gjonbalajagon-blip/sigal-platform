@@ -14,7 +14,19 @@ function trackBadge(statusi){
     const s=STATUSET_TRACK[statusi]||STATUSET_TRACK.e_krijuar;
     return '<span class="track-badge '+s.cls+'">'+s.label+'</span>';
 }
-function ruajNeStorage(){localStorage.setItem('ofertat',JSON.stringify(ofertat));}
+function ruajNeStorage(){localStorage.setItem('ofertat',JSON.stringify(ofertat));syncAllToBackend();}
+
+// Sync ofertat te Render (best-effort, async, klienti merr nga backend në oferta-view)
+function syncToBackend(index){
+    try{
+        fetch(TAPI+'/api/oferta-save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:String(index),oferta:ofertat[index]})});
+    }catch(e){}
+}
+function syncAllToBackend(){
+    try{
+        fetch(TAPI+'/api/oferta-sync-all',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertat})});
+    }catch(e){}
+}
 
 function shtoOferte(){
     editIndex=-1;
@@ -718,4 +730,6 @@ function renderTabela(){
 
 document.addEventListener('DOMContentLoaded',function(){
     renderTabela();
+    // Sinkronizim fillestar — push i gjithë ofertat te backend (kthim cross-device viewing)
+    if(ofertat.length>0) syncAllToBackend();
 });

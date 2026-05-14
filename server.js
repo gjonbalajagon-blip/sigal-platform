@@ -69,6 +69,46 @@ app.get('/api/health', (req, res) => {
 });
 
 // ============================================
+// OFERTA STORE — backend in-memory storage për cross-device viewing
+// Strukturë: { ofertaId: ofertaObject } — agjenti push-on, klienti merr
+// ============================================
+const ofertaStore = {};
+
+app.post('/api/oferta-save', (req, res) => {
+    try {
+        const { id, oferta } = req.body;
+        if (id === undefined || id === null || !oferta) {
+            return res.status(400).json({ error: 'Missing id or oferta' });
+        }
+        ofertaStore[String(id)] = oferta;
+        res.json({ ok: true, count: Object.keys(ofertaStore).length });
+    } catch (e) {
+        console.error('Oferta save error:', e);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.get('/api/oferta-data/:id', (req, res) => {
+    const oferta = ofertaStore[req.params.id];
+    if (!oferta) return res.status(404).json({ error: 'Not found' });
+    res.json({ oferta });
+});
+
+// Bulk sync — agjenti push-on të gjitha ofertat me një thirrje
+app.post('/api/oferta-sync-all', (req, res) => {
+    try {
+        const { ofertat } = req.body;
+        if (!Array.isArray(ofertat)) return res.status(400).json({ error: 'ofertat must be array' });
+        ofertat.forEach((o, i) => {
+            if (o) ofertaStore[String(i)] = o;
+        });
+        res.json({ ok: true, count: Object.keys(ofertaStore).length });
+    } catch (e) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ============================================
 // TRACKING
 // ============================================
 const ofertaTracking = {};
