@@ -191,6 +191,22 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .popup-row label{display:block;font-size:9.5px;font-weight:700;color:#475569;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px}
 .popup-row input,.popup-row select{width:100%;padding:8px 10px;border:1px solid #e5e9f0;border-radius:7px;font-size:12.5px;font-family:inherit;outline:none;transition:border-color 0.15s;background:white;color:#0f172a}
 .popup-row input:focus,.popup-row select:focus{border-color:#3b82f6}
+
+/* Number stepper (custom +/− buttons për input[type=number]) */
+.num-stepper{display:flex;align-items:stretch;width:100%;border:1px solid #e5e9f0;border-radius:7px;overflow:hidden;background:white;transition:border-color 0.15s}
+.num-stepper:focus-within{border-color:#3b82f6}
+.num-step-btn{background:#f8fafc;border:none;width:38px;cursor:pointer;font-size:18px;font-weight:700;color:#1e3a8a;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;font-family:inherit;line-height:1;transition:background 0.12s;-webkit-tap-highlight-color:transparent;user-select:none}
+.num-step-btn:hover{background:#e0e7ff}
+.num-step-btn:active{background:#c7d2fe}
+.num-step-btn:first-child{border-right:1px solid #e5e9f0}
+.num-step-btn:last-child{border-left:1px solid #e5e9f0}
+.num-stepper input[type=number]{flex:1;border:none !important;text-align:center;font-size:13px;font-weight:700;font-family:inherit;outline:none;width:100%;min-width:0;padding:8px 4px;background:transparent;color:#0f172a;-moz-appearance:textfield}
+.num-stepper input[type=number]::-webkit-inner-spin-button,
+.num-stepper input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+/* Smaller stepper for jete rows */
+.jete-row .num-stepper{border-radius:6px}
+.jete-row .num-step-btn{width:30px;font-size:15px}
+.jete-row .num-stepper input[type=number]{padding:6px 2px;font-size:11.5px}
 .popup-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .popup-total{background:#f0f6ff;border:1px solid #dbeafe;border-radius:9px;padding:9px 12px;margin:11px 0;display:flex;justify-content:space-between;align-items:center}
 .popup-total .lbl{font-size:10px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:0.3px}
@@ -229,7 +245,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .jete-note{background:#fef3c7;color:#92400e;font-size:10.5px;padding:8px 10px;border-radius:7px;margin-bottom:10px;line-height:1.45}
 .jete-rows{display:flex;flex-direction:column;gap:7px;margin-bottom:7px}
 .jete-row{background:#f8fafc;border:1px solid #e5e9f0;border-radius:9px;padding:9px}
-.jete-row-grid{display:grid;grid-template-columns:62px 1fr 60px 1fr 30px;gap:5px;align-items:end}
+.jete-row-grid{display:grid;grid-template-columns:80px 1fr 100px 1fr 36px;gap:5px;align-items:end}
 .jete-row label{font-size:8.5px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:2px}
 .jete-row input,.jete-row select{width:100%;padding:6px 7px;border:1px solid #e5e9f0;border-radius:6px;font-size:11.5px;font-family:inherit;outline:none;background:white;transition:border-color 0.15s}
 .jete-row input:focus,.jete-row select:focus{border-color:#3b82f6}
@@ -303,29 +319,29 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .app-card-mini{margin-bottom:0;grid-column:1/-1}
 }
 
-/* ===== MOBILE (≤768px) — Pakot grid 2-kol + Bottom bar me badge ===== */
+/* ===== MOBILE (≤768px) — Pakot grid 2-kol kompakt + Bottom bar me badge ===== */
 @media(max-width:768px){
-  /* PAKOT: grid 2-kolonë (zëvendëson 1-rresht horizontal nga 900px) */
-  .paketa-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .paketa-btn{flex:none;min-width:0;padding:14px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;overflow:visible}
-  .paketa-btn .pkb-left{width:100%;text-align:center;margin-bottom:2px}
-  .paketa-btn .pkb-right{width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
-  .paketa-btn .pi-name{font-size:13.5px;font-weight:700;line-height:1.1;margin-bottom:2px}
-  .paketa-btn .pi-shuma{display:block;font-size:10px;color:#94a3b8;font-weight:500;margin-bottom:4px}
-  .paketa-btn .pp-row{display:block;white-space:nowrap;overflow:visible;line-height:1.2;font-size:11px;text-align:center}
-  .paketa-btn .pp-lbl{display:inline;font-size:10px;color:#64748b;font-weight:500}
-  .paketa-btn .pp-val{display:inline;font-size:11px;font-weight:700}
-  .paketa-btn.selected::after{top:6px;right:8px;width:16px;height:16px;font-size:10px}
+  /* PAKOT: grid 2-kolonë (zëvendëson 1-rresht horizontal nga 900px), kompakte */
+  .paketa-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .paketa-btn{flex:none;min-width:0;padding:8px 6px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;overflow:visible}
+  .paketa-btn .pkb-left{width:100%;text-align:center;margin-bottom:1px}
+  .paketa-btn .pkb-right{width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0}
+  .paketa-btn .pi-name{font-size:11.5px;font-weight:700;line-height:1.1;margin-bottom:1px}
+  .paketa-btn .pi-shuma{display:block;font-size:8.5px;color:#94a3b8;font-weight:500;margin-bottom:2px;line-height:1.1}
+  .paketa-btn .pp-row{display:block;white-space:nowrap;overflow:visible;line-height:1.15;font-size:9.5px;text-align:center;margin-top:1px}
+  .paketa-btn .pp-lbl{display:inline;font-size:8.5px;color:#64748b;font-weight:500}
+  .paketa-btn .pp-val{display:inline;font-size:9.5px;font-weight:700;letter-spacing:-0.1px}
+  .paketa-btn.selected::after{top:3px;right:4px;width:13px;height:13px;font-size:9px}
 
-  /* BOTTOM BAR: badge layout — total + summary inline, button full-width */
-  .footer-bar{grid-template-columns:1fr;gap:8px;padding:10px 14px}
-  .footer-info{display:none}
+  /* BOTTOM BAR: footer-info i mbahet (siq desktop), total + summary inline, button full-width */
+  .footer-bar{grid-template-columns:1fr;gap:6px;padding:9px 12px}
+  .footer-info{font-size:9px;line-height:1.4;text-align:center;max-width:none}
   .footer-totals{flex-direction:row;align-items:center;gap:0;text-align:left;flex-wrap:nowrap}
   .ft-lbl{display:none}
-  .ft-val{font-size:17px;line-height:1.2;flex-shrink:0}
-  .ft-summary{font-size:11px;font-weight:600;max-width:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;margin:0 0 0 8px;color:#1e40af;flex:1;min-width:0}
+  .ft-val{font-size:16px;line-height:1.2;flex-shrink:0}
+  .ft-summary{font-size:10.5px;font-weight:600;max-width:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;margin:0 0 0 8px;color:#1e40af;flex:1;min-width:0}
   .ft-summary::before{content:'• ';color:#94a3b8;font-weight:700;margin-right:2px}
-  .btn-konfirmo{width:100%;padding:12px;font-size:13px}
+  .btn-konfirmo{width:100%;padding:11px;font-size:12.5px}
 }
 
 @media(max-width:640px){
@@ -364,11 +380,11 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 
 @media(max-width:380px){
   .footer-bar{grid-template-columns:1fr;gap:5px;padding:8px 10px}
-  .footer-info{display:none} /* hide info text për të kursyer hapësirë */
-  .footer-totals{flex-direction:row;justify-content:space-between;align-items:baseline}
-  .btn-konfirmo{width:100%}
-  body{padding-bottom:130px}
-  .float-pill{bottom:136px;right:10px}
+  .footer-info{font-size:8.5px;line-height:1.35}
+  .footer-totals{flex-direction:row;justify-content:flex-start;align-items:center}
+  .btn-konfirmo{width:100%;padding:10px;font-size:12px}
+  body{padding-bottom:140px}
+  .float-pill{bottom:146px;right:10px}
 }
 </style>
 </head>
@@ -439,11 +455,19 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
     <div class="popup-grid-2">
       <div class="popup-row">
         <label>Mbi 18 vjeç</label>
-        <input type="number" id="pp-mbi18" min="0" value="1" oninput="recalcPaketaPopup()">
+        <div class="num-stepper">
+          <button type="button" class="num-step-btn" onclick="stepNumEl(this,-1)">−</button>
+          <input type="number" id="pp-mbi18" min="0" value="1" oninput="recalcPaketaPopup()">
+          <button type="button" class="num-step-btn" onclick="stepNumEl(this,1)">+</button>
+        </div>
       </div>
       <div class="popup-row" id="pp-nen18-row">
         <label>Nën 18 vjeç</label>
-        <input type="number" id="pp-nen18" min="0" value="0" oninput="recalcPaketaPopup()">
+        <div class="num-stepper">
+          <button type="button" class="num-step-btn" onclick="stepNumEl(this,-1)">−</button>
+          <input type="number" id="pp-nen18" min="0" value="0" oninput="recalcPaketaPopup()">
+          <button type="button" class="num-step-btn" onclick="stepNumEl(this,1)">+</button>
+        </div>
       </div>
     </div>
     <div class="popup-total">
@@ -619,6 +643,17 @@ function calcJetePriceYearly(ageGroup,gender,shuma){
     return t[gender][shuma];
 }
 
+// Helper: shigjetat +/− për input[type=number] (mbështet stepper)
+function stepNumEl(btn,delta){
+    const stepper=btn.closest('.num-stepper');if(!stepper)return;
+    const inp=stepper.querySelector('input[type=number]');if(!inp)return;
+    const min=inp.min!==''?parseInt(inp.min):-Infinity;
+    const max=inp.max!==''?parseInt(inp.max):Infinity;
+    const cur=parseInt(inp.value)||0;
+    const newVal=Math.max(min,Math.min(max,cur+delta));
+    if(newVal!==cur){inp.value=newVal;inp.dispatchEvent(new Event('input',{bubbles:true}));}
+}
+
 function paketaMonthlyPrice(p,mbi18,nen18){
     const suffix=p.primi_suffix||'/muaj';
     const div=suffix==='/vit'?12:1;
@@ -703,7 +738,7 @@ function renderJeteRows(){
         groups.forEach(g=>{opts+='<option value="'+g+'"'+(r.ageGroup===g?' selected':'')+'>'+g.replace('-','–')+'</option>';});
         h+='<div><label>Grupmosha</label><select onchange="updateJeteRow('+i+',\'ageGroup\',this.value)">'+opts+'</select></div>';
         h+='<div><label>Gjinia</label><select onchange="updateJeteRow('+i+',\'gender\',this.value)"><option value="M"'+(r.gender==='M'?' selected':'')+'>Mashkull</option><option value="F"'+(r.gender==='F'?' selected':'')+'>Femër</option></select></div>';
-        h+='<div><label>Numri</label><input type="number" min="1" value="'+(r.count||1)+'" oninput="updateJeteRow('+i+',\'count\',this.value)"></div>';
+        h+='<div><label>Numri</label><div class="num-stepper"><button type="button" class="num-step-btn" onclick="stepNumEl(this,-1)">−</button><input type="number" min="1" value="'+(r.count||1)+'" oninput="updateJeteRow('+i+',\'count\',this.value)"><button type="button" class="num-step-btn" onclick="stepNumEl(this,1)">+</button></div></div>';
         h+='<div><label>Shuma</label><select onchange="updateJeteRow('+i+',\'shuma\',this.value)"><option value="5000"'+(r.shuma==5000?' selected':'')+'>€5,000</option><option value="10000"'+(r.shuma==10000?' selected':'')+'>€10,000</option><option value="20000"'+(r.shuma==20000?' selected':'')+'>€20,000</option><option value="50000"'+(r.shuma==50000?' selected':'')+'>€50,000</option></select></div>';
         h+='<button class="row-rm" onclick="rmJeteRow('+i+')" title="Hiq">×</button>';
         h+='</div>';
