@@ -52,6 +52,10 @@ _Asnjë bug kritik aktualisht._
 
 ### 🟠 Të rëndësishme
 
+### 🟠 Polish
+
+- **Jetë Plus matrix kompakte:** tabela aktualisht është shumë e ngjeshur në mobile. Të dhënat duhen të jenë **më të dallueshme** vizualisht (kontrast ngjyrash, theksim rreshtash, etj.) — polish për sesion tjetër.
+
 ### 🟡 Specifike për modul
 
 #### Word Kontrata:
