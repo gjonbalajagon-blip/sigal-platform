@@ -179,7 +179,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 /* POPUP */
 .popup-overlay{display:none;position:fixed;inset:0;background:rgba(15,26,48,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:14px}
 .popup-overlay.active{display:flex}
-.popup{background:white;border-radius:14px;padding:18px 20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,43,92,0.3);animation:popIn 0.2s ease-out}
+.popup{background:white;border-radius:14px;padding:18px 20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;overflow-x:hidden;box-shadow:0 20px 50px rgba(0,43,92,0.3);animation:popIn 0.2s ease-out}
 .popup.large{max-width:660px}
 @keyframes popIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
 .popup h3{font-size:15px;font-weight:700;color:#0f172a;margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -229,9 +229,12 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .psr .dv{font-weight:700;color:#047857;flex-shrink:0;font-size:10px}
 .psr .dv.step{color:#1e40af;background:#dbeafe;padding:1px 7px;border-radius:5px;font-weight:700;font-size:9.5px}
 
-/* JETE matrix */
-.jete-matrix-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:6px}
-.jete-matrix{width:100%;border-collapse:collapse;font-size:10px;min-width:380px}
+/* JETE matrix — me scroll cue (gradient fade djathtas që tregon scroll horizontal) */
+.jete-matrix-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:6px;position:relative;scrollbar-width:thin}
+.jete-matrix-wrap::-webkit-scrollbar{height:6px}
+.jete-matrix-wrap::-webkit-scrollbar-thumb{background:rgba(30,58,138,0.3);border-radius:3px}
+.jete-matrix{width:100%;border-collapse:collapse;font-size:10px;min-width:340px}
+.jete-matrix th,.jete-matrix td{white-space:nowrap}
 .jete-matrix th{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;padding:5px 4px;font-weight:700;text-align:center;border:1px solid transparent}
 .jete-matrix th:first-child{text-align:left;padding-left:8px;border-radius:5px 0 0 0}
 .jete-matrix th:last-child{border-radius:0 5px 0 0}
@@ -319,10 +322,10 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .app-card-mini{margin-bottom:0;grid-column:1/-1}
 }
 
-/* ===== MOBILE (≤768px) — Pakot grid 2-kol kompakt + Bottom bar me badge ===== */
+/* ===== MOBILE (≤768px) — Pakot grid 3-kol kompakt + Bottom bar me badge ===== */
 @media(max-width:768px){
-  /* PAKOT: grid 2-kolonë (zëvendëson 1-rresht horizontal nga 900px), kompakte */
-  .paketa-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  /* PAKOT: grid 3-kolona × 2 rreshta për 6 paketa (zëvendëson 1-rresht horizontal nga 900px) */
+  .paketa-list{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
   .paketa-btn{flex:none;min-width:0;padding:8px 6px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;overflow:visible}
   .paketa-btn .pkb-left{width:100%;text-align:center;margin-bottom:1px}
   .paketa-btn .pkb-right{width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0}
@@ -368,8 +371,8 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .popup-grid-2{grid-template-columns:1fr}
   .jete-row-grid{grid-template-columns:1fr 1fr;gap:7px}
   .jete-row .row-rm{grid-column:2;justify-self:end;margin-top:3px;width:100%;max-width:80px}
-  .jete-matrix{font-size:9px;min-width:340px}
-  .jete-matrix th,.jete-matrix td{padding:3px 2px}
+  .jete-matrix{font-size:8.5px;min-width:300px}
+  .jete-matrix th,.jete-matrix td{padding:2px 2px}
   .header{padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top))}
   .header img{height:30px}
   .net-popup{max-width:100%;border-radius:12px 12px 0 0}
