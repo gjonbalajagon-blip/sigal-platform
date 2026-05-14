@@ -233,7 +233,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
 .jete-matrix-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:6px;position:relative;scrollbar-width:thin}
 .jete-matrix-wrap::-webkit-scrollbar{height:6px}
 .jete-matrix-wrap::-webkit-scrollbar-thumb{background:rgba(30,58,138,0.3);border-radius:3px}
-.jete-matrix{width:100%;border-collapse:collapse;font-size:10px;min-width:340px}
+.jete-matrix{width:100%;border-collapse:collapse;font-size:10px;min-width:520px}
 .jete-matrix th,.jete-matrix td{white-space:nowrap}
 .jete-matrix th{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white;padding:5px 4px;font-weight:700;text-align:center;border:1px solid transparent}
 .jete-matrix th:first-child{text-align:left;padding-left:8px;border-radius:5px 0 0 0}
@@ -371,7 +371,7 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
   .popup-grid-2{grid-template-columns:1fr}
   .jete-row-grid{grid-template-columns:1fr 1fr;gap:7px}
   .jete-row .row-rm{grid-column:2;justify-self:end;margin-top:3px;width:100%;max-width:80px}
-  .jete-matrix{font-size:8.5px;min-width:300px}
+  .jete-matrix{font-size:8.5px;min-width:480px}
   .jete-matrix th,.jete-matrix td{padding:2px 2px}
   .header{padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top))}
   .header img{height:30px}
@@ -508,20 +508,20 @@ body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:lin
       <div class="popup-section-hdr">Çmimet (€/vit)</div>
       <div class="jete-matrix-wrap">
       <table class="jete-matrix">
-        <thead><tr><th>Mosha</th><th>Gjinia</th><th>€5,000</th><th>€10,000</th><th>€20,000</th><th>€50,000</th></tr></thead>
+        <thead><tr><th>Mosha</th><th>Gj.</th><th>€5,000</th><th>€10,000</th><th>€15,000</th><th>€20,000</th><th>€30,000</th><th>€40,000</th><th>€50,000</th></tr></thead>
         <tbody>
-          <tr><td rowspan="2">21–30</td><td class="gm">M</td><td>€30</td><td>€35</td><td>€50</td><td>€90</td></tr>
-          <tr><td class="gf">F</td><td>€30</td><td>€40</td><td>€60</td><td>€100</td></tr>
-          <tr><td rowspan="2">31–40</td><td class="gm">M</td><td>€35</td><td>€45</td><td>€80</td><td>€120</td></tr>
-          <tr><td class="gf">F</td><td>€45</td><td>€65</td><td>€90</td><td>€200</td></tr>
-          <tr><td rowspan="2">41–50</td><td class="gm">M</td><td>€50</td><td>€70</td><td>€90</td><td>€250</td></tr>
-          <tr><td class="gf">F</td><td>€65</td><td>€80</td><td>€120</td><td>€350</td></tr>
-          <tr><td rowspan="2">51–60</td><td class="gm">M</td><td>€100</td><td>€150</td><td>€300</td><td>€600</td></tr>
-          <tr><td class="gf">F</td><td>€100</td><td>€150</td><td>€300</td><td>€600</td></tr>
-          <tr><td rowspan="2">61–70</td><td class="gm">M</td><td>€200</td><td>€380</td><td>€750</td><td>€1,800</td></tr>
-          <tr><td class="gf">F</td><td>€120</td><td>€250</td><td>€420</td><td>€1,000</td></tr>
-          <tr><td rowspan="2">71–80</td><td class="gm">M</td><td>€250</td><td>€380</td><td>€980</td><td>€2,400</td></tr>
-          <tr><td class="gf">F</td><td>€150</td><td>€220</td><td>€520</td><td>€1,200</td></tr>
+          <tr><td rowspan="2">21–30</td><td class="gm">M</td><td>€30</td><td>€35</td><td>€40</td><td>€50</td><td>€70</td><td>€80</td><td>€90</td></tr>
+          <tr><td class="gf">F</td><td>€30</td><td>€40</td><td>€50</td><td>€60</td><td>€80</td><td>€90</td><td>€100</td></tr>
+          <tr><td rowspan="2">31–40</td><td class="gm">M</td><td>€35</td><td>€45</td><td>€60</td><td>€80</td><td>€100</td><td>€110</td><td>€120</td></tr>
+          <tr><td class="gf">F</td><td>€45</td><td>€65</td><td>€85</td><td>€90</td><td>€120</td><td>€150</td><td>€200</td></tr>
+          <tr><td rowspan="2">41–50</td><td class="gm">M</td><td>€50</td><td>€70</td><td>€80</td><td>€90</td><td>€150</td><td>€200</td><td>€250</td></tr>
+          <tr><td class="gf">F</td><td>€65</td><td>€80</td><td>€100</td><td>€120</td><td>€200</td><td>€300</td><td>€350</td></tr>
+          <tr><td rowspan="2">51–60</td><td class="gm">M</td><td>€100</td><td>€150</td><td>€200</td><td>€300</td><td>€400</td><td>€500</td><td>€600</td></tr>
+          <tr><td class="gf">F</td><td>€100</td><td>€150</td><td>€200</td><td>€300</td><td>€400</td><td>€500</td><td>€600</td></tr>
+          <tr><td rowspan="2">61–70</td><td class="gm">M</td><td>€200</td><td>€380</td><td>€550</td><td>€750</td><td>€1,100</td><td>€1,500</td><td>€1,800</td></tr>
+          <tr><td class="gf">F</td><td>€120</td><td>€250</td><td>€320</td><td>€420</td><td>€600</td><td>€820</td><td>€1,000</td></tr>
+          <tr><td rowspan="2">71–80</td><td class="gm">M</td><td>€250</td><td>€380</td><td>€750</td><td>€980</td><td>€1,500</td><td>€2,000</td><td>€2,400</td></tr>
+          <tr><td class="gf">F</td><td>€150</td><td>€220</td><td>€400</td><td>€520</td><td>€750</td><td>€1,000</td><td>€1,200</td></tr>
         </tbody>
       </table>
       </div>
@@ -633,12 +633,12 @@ const RRJETI={spitalet:[{e:'Spitali Amerikan',q:'Prishtinë'},{e:'Spitali "Lindj
 const ICN={h:'<svg viewBox="0 0 24 24"><path d="M3 21h18M9 8h6M12 8v6M9 21V8a3 3 0 0 1 3-3h0a3 3 0 0 1 3 3v13" stroke-linecap="round" stroke-linejoin="round"/></svg>',a:'<svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M12 11v6M9 14h6" stroke-linecap="round"/></svg>',t:'<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
 
 const JETE_PRICES={
-    '21-30':{M:{5000:30,10000:35,20000:50,50000:90},F:{5000:30,10000:40,20000:60,50000:100}},
-    '31-40':{M:{5000:35,10000:45,20000:80,50000:120},F:{5000:45,10000:65,20000:90,50000:200}},
-    '41-50':{M:{5000:50,10000:70,20000:90,50000:250},F:{5000:65,10000:80,20000:120,50000:350}},
-    '51-60':{M:{5000:100,10000:150,20000:300,50000:600},F:{5000:100,10000:150,20000:300,50000:600}},
-    '61-70':{M:{5000:200,10000:380,20000:750,50000:1800},F:{5000:120,10000:250,20000:420,50000:1000}},
-    '71-80':{M:{5000:250,10000:380,20000:980,50000:2400},F:{5000:150,10000:220,20000:520,50000:1200}}
+    '21-30':{M:{5000:30,10000:35,15000:40,20000:50,30000:70,40000:80,50000:90},F:{5000:30,10000:40,15000:50,20000:60,30000:80,40000:90,50000:100}},
+    '31-40':{M:{5000:35,10000:45,15000:60,20000:80,30000:100,40000:110,50000:120},F:{5000:45,10000:65,15000:85,20000:90,30000:120,40000:150,50000:200}},
+    '41-50':{M:{5000:50,10000:70,15000:80,20000:90,30000:150,40000:200,50000:250},F:{5000:65,10000:80,15000:100,20000:120,30000:200,40000:300,50000:350}},
+    '51-60':{M:{5000:100,10000:150,15000:200,20000:300,30000:400,40000:500,50000:600},F:{5000:100,10000:150,15000:200,20000:300,30000:400,40000:500,50000:600}},
+    '61-70':{M:{5000:200,10000:380,15000:550,20000:750,30000:1100,40000:1500,50000:1800},F:{5000:120,10000:250,15000:320,20000:420,30000:600,40000:820,50000:1000}},
+    '71-80':{M:{5000:250,10000:380,15000:750,20000:980,30000:1500,40000:2000,50000:2400},F:{5000:150,10000:220,15000:400,20000:520,30000:750,40000:1000,50000:1200}}
 };
 function calcJetePriceYearly(ageGroup,gender,shuma){
     if(!ageGroup) return 0;
@@ -742,7 +742,7 @@ function renderJeteRows(){
         h+='<div><label>Grupmosha</label><select onchange="updateJeteRow('+i+',\'ageGroup\',this.value)">'+opts+'</select></div>';
         h+='<div><label>Gjinia</label><select onchange="updateJeteRow('+i+',\'gender\',this.value)"><option value="M"'+(r.gender==='M'?' selected':'')+'>Mashkull</option><option value="F"'+(r.gender==='F'?' selected':'')+'>Femër</option></select></div>';
         h+='<div><label>Numri</label><div class="num-stepper"><button type="button" class="num-step-btn" onclick="stepNumEl(this,-1)">−</button><input type="number" min="1" value="'+(r.count||1)+'" oninput="updateJeteRow('+i+',\'count\',this.value)"><button type="button" class="num-step-btn" onclick="stepNumEl(this,1)">+</button></div></div>';
-        h+='<div><label>Shuma</label><select onchange="updateJeteRow('+i+',\'shuma\',this.value)"><option value="5000"'+(r.shuma==5000?' selected':'')+'>€5,000</option><option value="10000"'+(r.shuma==10000?' selected':'')+'>€10,000</option><option value="20000"'+(r.shuma==20000?' selected':'')+'>€20,000</option><option value="50000"'+(r.shuma==50000?' selected':'')+'>€50,000</option></select></div>';
+        h+='<div><label>Shuma</label><select onchange="updateJeteRow('+i+',\'shuma\',this.value)"><option value="5000"'+(r.shuma==5000?' selected':'')+'>€5,000</option><option value="10000"'+(r.shuma==10000?' selected':'')+'>€10,000</option><option value="15000"'+(r.shuma==15000?' selected':'')+'>€15,000</option><option value="20000"'+(r.shuma==20000?' selected':'')+'>€20,000</option><option value="30000"'+(r.shuma==30000?' selected':'')+'>€30,000</option><option value="40000"'+(r.shuma==40000?' selected':'')+'>€40,000</option><option value="50000"'+(r.shuma==50000?' selected':'')+'>€50,000</option></select></div>';
         h+='<button class="row-rm" onclick="rmJeteRow('+i+')" title="Hiq">×</button>';
         h+='</div>';
         if(yearly>0)h+='<div class="jete-row-price">'+c+'× €'+yearly+'/vit · €'+monthly.toFixed(2)+'/muaj</div>';
