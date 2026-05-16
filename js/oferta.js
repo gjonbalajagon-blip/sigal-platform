@@ -732,4 +732,13 @@ document.addEventListener('DOMContentLoaded',function(){
     renderTabela();
     // Sinkronizim fillestar — push i gjithë ofertat te backend (kthim cross-device viewing)
     if(ofertat.length>0) syncAllToBackend();
+
+    // ?hap=INDEX → hap direkt drawerin për ofertën e specifikuar (përdoret nga moduli Detyrat)
+    const hapParam=new URLSearchParams(window.location.search).get('hap');
+    if(hapParam!==null){
+        const idx=parseInt(hapParam,10);
+        if(!isNaN(idx)&&idx>=0&&idx<ofertat.length){
+            setTimeout(()=>{editoOferte(idx);window.history.replaceState({},'','oferta.html');},150);
+        }
+    }
 });

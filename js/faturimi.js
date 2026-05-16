@@ -289,4 +289,13 @@ document.addEventListener('DOMContentLoaded', function() {
         this.value = v;
     });
     renderTabela();
+
+    // ?hap=INDEX → hap direkt drawerin për klientin e specifikuar (përdoret nga moduli Detyrat)
+    const hapParam = new URLSearchParams(window.location.search).get('hap');
+    if (hapParam !== null) {
+        const idx = parseInt(hapParam, 10);
+        if (!isNaN(idx) && idx >= 0 && idx < klientet.length) {
+            setTimeout(() => { editoKlient(idx); window.history.replaceState({}, '', 'faturimi.html'); }, 200);
+        }
+    }
 });

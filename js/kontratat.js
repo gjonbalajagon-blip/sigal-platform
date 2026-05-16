@@ -431,6 +431,22 @@ document.addEventListener('DOMContentLoaded',function(){
 })();
 
 // ============================================================
+// ?hap=INDEX HANDLER (përdoret nga moduli Detyrat)
+// ============================================================
+document.addEventListener('DOMContentLoaded',function(){
+    const hapParam=new URLSearchParams(window.location.search).get('hap');
+    if(hapParam===null)return;
+    const idx=parseInt(hapParam,10);
+    if(isNaN(idx)||idx<0||typeof kontratat==='undefined'||idx>=kontratat.length)return;
+    setTimeout(function(){
+        if(typeof editoKontrate==='function'){
+            editoKontrate(idx);
+            window.history.replaceState({},'','kontratat.html');
+        }
+    },200);
+});
+
+// ============================================================
 // STATS KPI CLICKABLE FILTER
 // ============================================================
 document.addEventListener('DOMContentLoaded',function(){
