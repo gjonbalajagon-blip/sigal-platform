@@ -26,6 +26,38 @@ Format:
 
 ---
 
+## 2026-05-16 - Faza 2A: Modul Detyrat standalone
+
+**Tipi:** Modul i ri
+**Statusi:** ✅ Përfunduar (commit b3573f4)
+
+**Konteksti:**
+Përdoruesi kërkoi një sistem tasks/detyrat që të mos kërkojë krijim manual për çdo kontaktim — duhet të auto-gjenerohej nga gjendja e moduleve të tjera (kontrata që skadojnë, oferta që presin, faturime që mungojnë, debitorë të rinj me borxh të vjetër).
+
+**Çka u bë:**
+- ✅ `pages/detyrat.html` + `js/detyrat.js` (~340 rreshta) — modul i ri komplet
+- ✅ 5 triggers auto:
+  - **#1** Kontratë skadon ≤30 ditë → "Përgatit rinovimin" (kritike nëse ≤7d)
+  - **#2** Ofertë skadon ≤5 ditë → "Follow-up ofertë" (kritike)
+  - **#3** Ofertë konfirmuar pa realizuar → "Krijo kontratën"
+  - **#4** Faturim me status='asgje' dhe data ≥20 → "Dërgo kërkesë faturimi"
+  - **#5** Debitor 'i_ri' me borxh >365d → "URGJENT: kontaktoni"
+- ✅ Accordion sipas prioritetit: kritike → te_rendesishme → normale → e_perfunduar (e_anuluar fshehur)
+- ✅ **Option B permissions** (DEC-030): staff sheh vetëm detyrat e veta (krijuarNga ose pergjegjesi == username); management+ shohin gjithçka
+- ✅ Toast undo me timeout 5s (DEC-031) për perfundo/anulo
+- ✅ 3 filter chips: Të gjitha / Detyrat e mia / Pa përgjegjës
+- ✅ De-duplication via `makeRregullKey(burimi)` = `${moduli}|${referencaId}|${rregulla}`
+- ✅ Pastrim auto i detyrave të arkivuara >90 ditë (DEC-032)
+- ✅ `?hap=INDEX` URL handler te oferta/kontratat/faturimi (DEC-033) — auto-detyra hapin direkt rekordin specifik
+- ✅ `auth.js`: 'detyrat' në `faqjetLejohet` për staff/staff_hq
+- ✅ Sidebar update në 8 faqe (ishte `href="#"`)
+
+**Lidhje:** DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035 në DECISIONS.md
+
+**Çka mbetet:** Faza 2B (Supabase mini për trigger #6 "oferta parë 3-5 herë"), Faza 2C (Ballina = Dashboard + Detyrat split-view).
+
+---
+
 ## 2026-05-08 - Faza 14.6: Mobile UX Redesign Oferta-View
 
 **Tipi:** UI/UX fix

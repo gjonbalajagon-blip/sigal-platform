@@ -675,4 +675,74 @@ Sipas DEC-015 (Hybrid CSS), këto komponente janë vetëm në `<style>` blloku t
 
 ---
 
+## Pattern: Toast Undo (5-sec timeout)
+
+**Përdorim:** Veprime reversible ku confirmation dialog do të shtonte fërkim (perfundo detyrë, fshi, etj.)
+
+**CSS klasa:** `.det-toast` në theme-v2.css
+
+**Struktura:**
+```html
+<div class="det-toast show">
+    <span>Detyra u përfundua</span>
+    <button class="det-toast-undo">Anulo</button>
+</div>
+```
+
+**Sjellja:**
+1. Veprimi aplikohet menjëherë (optimistic)
+2. Toast shfaqet me transition `.show`
+3. Pas 5s: auto-fshihet
+4. Klik te "Anulo": rikthen state-in, fshin toast-in
+
+**JS reference:** `shfaqToast(mesazh, callbackUndo)` te `js/detyrat.js`
+
+**Lidhje:** DEC-031
+
+---
+
+## Pattern: Accordion sipas Prioritetit
+
+**Përdorim:** Grupim listash të gjata sipas kategorie (prioritet, status, etj.)
+
+**CSS klasa:** `.det-accordion` > `.det-group` > `.det-group-header` + `.det-group-body`
+
+**Karakteristika:**
+- Header me badge count + chevron rotate
+- Body kollapsohet me `display:none`
+- State i kollapsimit ruhet në memory (`groupState` object) gjatë sesionit
+- Grupet e zbrazura shfaqin `.det-group-empty` placeholder
+
+**Variante kartash:** `.det-card-kritike` (border të kuq), `-te_rendesishme` (portokalli), `-normale` (blu), `-progres` (gradient i verdhë), `-perfunduar` (i venitur me line-through)
+
+---
+
+## Pattern: Cross-Module URL Navigation (`?hap=INDEX`)
+
+**Përdorim:** Linke nga njëri modul te rekord specifik i një tjetri (p.sh. detyra → oferta specifike).
+
+**Struktura URL:** `oferta.html?hap=5`, `kontratat.html?hap=12`, `faturimi.html?hap=3`
+
+**Implementim te marrësi:**
+```javascript
+document.addEventListener('DOMContentLoaded', function() {
+    const hapParam = new URLSearchParams(window.location.search).get('hap');
+    if (hapParam === null) return;
+    const idx = parseInt(hapParam, 10);
+    if (isNaN(idx) || idx < 0 || idx >= arrayName.length) return;
+    setTimeout(() => {
+        editoXxx(idx);
+        window.history.replaceState({}, '', 'modulName.html');
+    }, 200);
+});
+```
+
+**Delay 150-200ms** — që render-i fillestar i tabelës të ketë mbaruar para hapjes së drawerit.
+
+**`replaceState`** — heq `?hap=` nga URL pas hapjes që refresh-i të mos ri-hapë drawerin.
+
+**Lidhje:** DEC-033
+
+---
+
 *Çdo komponent i ri ose pattern duhet shtuar këtu. Mos ndrysho ekzistuesit pa update tek të gjithë moduleve të prekur.*

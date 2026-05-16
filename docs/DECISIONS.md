@@ -709,6 +709,131 @@ Vetëm CSS shtim në `pages/oferta-view.html`:
 
 ---
 
+## DEC-030: Detyrat — Option B Permissions (staff sheh vetëm të vetat)
+**Data:** 2026-05-16
+**Statusi:** ✅ Approved (Faza 2A)
+
+### Konteksti
+Modul Detyrat duhet të respektonte hierarkinë e permissioneve ekzistuese (superadmin/management/dep_management = full; staff/staff_hq = limited). Pyetja: çfarë saktësisht do të shohë një staff?
+
+### Vendimi
+**Opsioni B:** Staff/staff_hq sheh vetëm detyrat ku `krijuarNga === username` OSE `pergjegjesi === username`. Management+ shohin gjithçka.
+
+Implementim te `filtroSipasPermissions(lista)` — funksionon si filter në krye të çdo render-i.
+
+### Alternativat e Refuzuara
+- ❌ **Opsioni A: Të gjitha të dukshme për të gjithë** — humb privacy; menaxheri sheh dhe komenton mbi detyrat e tjerëve
+- ❌ **Opsioni C: Vetëm `pergjegjesi`** — staff që krijon detyrë vetë do ta humbiste menjëherë
+
+### Konsekuencat
+- ✅ Staff fokusohet vetëm në punën e vet
+- ✅ Auto-triggers ende gjenerojnë për të gjithë — sepse `krijuarNga='system'` dhe `pergjegjesi=''` (në fillim Pa-përgjegjës)
+- ⚠️ Detyra "Pa përgjegjës" duket vetëm te management — chip "Pa përgjegjës" fshehur për staff via `aplikoPermissions()`
+
+---
+
+## DEC-031: Toast Undo Pattern (timeout 5 sekonda)
+**Data:** 2026-05-16
+**Statusi:** ✅ Approved (Faza 2A)
+
+### Konteksti
+Veprime si "Perfundo detyrë" ose "Anulo detyrë" janë reversible në UI por kostoja e gabimit është lartë (humbje konteksti aktivitetesh, ndryshim statusi). Pyetja: si t'i japim përdoruesit mundësi rikuperimi pa confirmation dialog që rrit fërkim?
+
+### Vendimi
+**Toast me undo timeout 5s.** Veprimi aplikohet menjëherë (optimistic), por toast `.det-toast` me button "Anulo" qëndron 5 sekonda. Klikim → `callbackUndo()` rikthen state-in. Pas 5s → fshihet automatikisht.
+
+### Alternativat e Refuzuara
+- ❌ **confirm() dialog** — fërkim i lartë për veprime të zakonshme
+- ❌ **Soft delete + Trash view** — overkill për mini-mod
+- ❌ **Undo unlimited (Ctrl+Z stack)** — overkill, kompleks
+
+### Konsekuencat
+- ✅ Fluks i shpejtë (mendje optimistike)
+- ✅ Mundësi shpëtimi për 5s pas gabimit
+- ⚠️ Veprimi commit-on menjëherë në localStorage — nëse user mbyll faqen brenda 5s, undo humbet (i pranuar)
+
+---
+
+## DEC-032: Pastrim Auto i Arkivit (>90 ditë)
+**Data:** 2026-05-16
+**Statusi:** ✅ Approved (Faza 2A)
+
+### Konteksti
+localStorage ka limit ~5MB. Detyrat me status `e_perfunduar` ose `e_anuluar` grumbullohen me kohën dhe e ngarkojnë storage-in pa vlerë.
+
+### Vendimi
+`pastroDetyratEArkiva()` ekzekutohet në `DOMContentLoaded` — fshin detyra ku `status IN ('e_perfunduar', 'e_anuluar')` AND `data_e_perfundimit (ose data_e_anulimit) > 90 ditë më parë`.
+
+### Konsekuencat
+- ✅ Storage i kontrolluar pa intervenim manual
+- ✅ Detyra të reja (≤90d) ende mund të rishihen për audit
+- ⚠️ Audit trail jashtë 90d humbet — i pranuar (kur Supabase migrohet, do të ruhet aty)
+
+---
+
+## DEC-033: `?hap=INDEX` URL Pattern për Cross-Module Navigation
+**Data:** 2026-05-16
+**Statusi:** ✅ Approved (Faza 2A)
+
+### Konteksti
+Auto-detyra te modul Detyrat kanë lidhje me records specifike (oferta #5, kontrata #12, etj.). Klikimi te detyra duhet të hapë drawerin përkatës në modulin specifik. `rinovimet.js` dhe `kontratat.js` tashmë kishin pattern `?nga_rinovimi=ID` — ne përgjithësojmë.
+
+### Vendimi
+URL pattern uniform `?hap=INDEX` shtuar te `oferta.js`, `kontratat.js`, `faturimi.js`. Handler në `DOMContentLoaded` lexon parametrin, valido (numër + brenda kufirit të array-it), thërret edit function përkatëse (`editoOferte` / `editoKontrate` / `editoKlient`) me delay 150-200ms (që tabela të jetë e renderuar), pastaj `history.replaceState` për të hequr param-in.
+
+### Alternativat e Refuzuara
+- ❌ **localStorage handoff** (si rinovimet) — kërkon cleanup, lë state të vjetër nëse user mbyll para hapjes
+- ❌ **postMessage / window.open** — i komplikuar për single-tab navigation
+- ❌ **Hash routing (#)** — historinë e kthen mbrapa në mënyrë të paqartë
+
+### Konsekuencat
+- ✅ Pattern i thjeshtë, i ripërdorshëm
+- ✅ Mund të ndahet linku (URL është shareable)
+- ⚠️ INDEX bazohet në pozicion në array — nëse user fshin records, indexet ndryshojnë. Për MVP i pranuar; në Supabase do të bëhet me ID të vërteta.
+
+---
+
+## DEC-034: De-duplication via `makeRregullKey`
+**Data:** 2026-05-16
+**Statusi:** ✅ Approved (Faza 2A)
+
+### Konteksti
+Auto-triggers gjenerojnë detyra çdo `DOMContentLoaded`. Pa de-duplication, çdo refresh i faqes do të krijonte detyra duplikate.
+
+### Vendimi
+Çdo detyrë auto ka `rregulla_key` = `${moduli}|${referencaId}|${rregulla}` (p.sh. `kontratat|12|skadon_30d`). Para krijimit, kontrollohet nëse ekziston detyrë me të njëjtin key dhe status != `e_anuluar`/`e_perfunduar`. Nëse po → skip.
+
+### Konsekuencat
+- ✅ Idempotent — refresh nuk shton duplikate
+- ✅ Pas anulimit, mund të ri-gjenerohet kur kushtet vazhdojnë
+- ⚠️ Kërkon disiplinë: kur shtojmë trigger të ri, key duhet të jetë unik
+
+---
+
+## DEC-035: Modul Detyrat Standalone para Ballina (Faza 2A → 2B → 2C)
+**Data:** 2026-05-16
+**Statusi:** ✅ Approved (Faza 2A)
+
+### Konteksti
+Ideja origjinale: Dashboard + Detyrat të bashkohen në "Ballina" me split-view. Por kjo kërkon redesign të madh dhe shumë moving parts (CSS + JS + permissions + Charts).
+
+### Vendimi
+**Ndarje në 3 faza:**
+- **Faza 2A** (kjo): Modul Detyrat standalone në `pages/detyrat.html` — punon i pavarur, testohet, kalibrohet
+- **Faza 2B**: Supabase mini (vetëm tabela `oferta_views`) për trigger #6 "oferta e parë 3-5 herë"
+- **Faza 2C**: Bashkim Dashboard + Detyrat në `ballina.html` me split-view
+
+### Alternativat e Refuzuara
+- ❌ **All-in-one (Ballina direkt)** — risk i lartë, vështirë për debug, vështirë për rollback
+- ❌ **Detyrat si widget në Dashboard ekzistues** — humb hapësirë; Dashboard nuk është projektuar për këtë
+
+### Konsekuencat
+- ✅ Testim incremental, rollback i lehtë
+- ✅ Çdo fazë ka deliverable të prekshëm
+- ⚠️ User do të ketë 2 faqe (Dashboard + Detyrat) deri në Faza 2C — i pranuar përkohësisht
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase

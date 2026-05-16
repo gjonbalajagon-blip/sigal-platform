@@ -3,24 +3,25 @@
 > **Gjendja AKTUALE** e platformës. Ky file ndryshon shpesh.
 > ⚠️ **UPDATE INKREMENTAL** - pas çdo task-u, jo në fund të sesionit.
 
-**Përditësuar i fundit:** 2026-05-08
+**Përditësuar i fundit:** 2026-05-16
 
 ---
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 14.6 (mobile UX oferta-view) e përfunduar → drejt Faza 15
+**Faza aktuale:** Faza 2A (Detyrat standalone) e përfunduar → drejt Faza 2B (Supabase mini për trigger #6)
 
 **Cka punon mirë:**
 - Login + Auth system
 - Kontratat (REFERENCE module)
 - Stafi (komplet)
+- Detyrat (5 triggers auto, accordion, Option B permissions)
 - Word generation (me limite custom)
 - Email (Brevo) — Brevo IP authorization u disable
 - Backend në Render Free Tier + UptimeRobot ping (anti-sleep)
 
 **Cka kërkon vëmendje urgjente:**
-Aktualisht nuk ka bug kritik. Modulet e mbetura: Detyrat, Produkti, Dokumentet (pres triggers).
+Aktualisht nuk ka bug kritik. Modulet e mbetura: Produkti, Dokumentet (pres triggers). Faza 2B: Supabase mini për trigger #6 "oferta e parë 3-5 herë".
 
 ---
 
@@ -38,7 +39,7 @@ Aktualisht nuk ka bug kritik. Modulet e mbetura: Detyrat, Produkti, Dokumentet (
 | **Debitoret** | ✅ Stats restructure aplikuar | 4 stats + statuset row + aging filters |
 | **Raportet** | ✅ | Chart.js i implementuar (donut, line, bars) |
 | **Stafi** | ✅ Komplet | KPI + drawer + organogram |
-| **Detyrat** | ❌ Nuk ka filluar | - |
+| **Detyrat** | ✅ Faza 2A | 5 triggers auto, accordion, Option B perms, toast undo 5s, ?hap=INDEX cross-module |
 | **Produkti** | ❌ Nuk ka filluar | Pret Excel data |
 | **Dokumentet** | ❌ Pret cloud storage | Placeholder |
 
@@ -179,11 +180,17 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 
 ---
 
-## 📅 Çka vjen pastaj (Next Steps - Faza 15)
+## 📅 Çka vjen pastaj (Next Steps)
 
-### Prioritet 1 (URGJENTE):
-1. Modulet e mbetura: Detyrat, Produkti, Dokumentet
-2. Verifikim funksionaliteti (testing pas çdo migrimi)
+### Faza 2B (Supabase mini):
+1. Backend tabel `oferta_views` (id, oferta_id, ts)
+2. Trigger #6 te detyrat: "Oferta X është parë 3-5 herë, telefono klientin"
+3. Endpoint te oferta-view për incrementim view count
+
+### Faza 2C (Ballina = Dashboard + Detyrat):
+1. Split-view layout
+2. Migrim dashboard te `ballina.html`
+3. Detyrat si panel i djathtë gjithmonë i dukshëm
 
 ### Prioritet 2 (E rëndësishme):
 1. Action buttons standardize (Photo 2 spec)
@@ -193,10 +200,9 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 2. Strip width unification (oferta/kontratat/faturimi)
 
 ### Prioritet 4 (E shtyrë):
-1. Detyrat module
-2. Produkti module
-3. Dokumentet (pas Supabase)
-4. Trend comparisons në raportet
+1. Produkti module
+2. Dokumentet (pas Supabase)
+3. Trend comparisons në raportet
 
 ---
 
@@ -229,6 +235,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-05-07 | Migrim backend Railway → Render Free + UptimeRobot ping (DEC-028, Faza 14.5) | Claude Code |
 | 2026-05-07 | Mobile fixes oferta-view: paketat 1-rresht kompakt, jetë matrix overflow-x, touch targets, safe area inset, float pill positioning. Chart.js statusi i korrigjuar (i implementuar). | Claude Code |
 | 2026-05-08 | Mobile UX redesign oferta-view (DEC-029, Faza 14.6): pakot grid 2-kol, bottom bar me badge layout (total + summary inline) | Claude Code |
+| 2026-05-16 | Faza 2A: Modul Detyrat standalone — 5 triggers auto, accordion sipas prioritetit, Option B permissions, toast undo 5s, ?hap=INDEX handler te oferta/kontratat/faturimi (DEC-030..035) | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 
