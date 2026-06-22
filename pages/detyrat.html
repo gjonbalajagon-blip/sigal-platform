@@ -39,6 +39,9 @@
         <div class="topbar">
             <h1>Detyrat</h1>
             <div class="topbar-right">
+                <button class="btn-cancel" id="btn-perzgjedh" onclick="toggleSelectionMode()" type="button">
+                    <i data-lucide="check-square"></i> Përzgjedh
+                </button>
                 <button class="btn-primary" id="btn-shto-detyre" onclick="hapDrawerKrijim()" style="display:none;">
                     <i data-lucide="plus"></i> Shto detyrë
                 </button>
@@ -46,6 +49,31 @@
         </div>
 
         <div class="content-area">
+            <!-- Selection toolbar (i fshehur default) -->
+            <div class="det-selection-toolbar" id="det-selection-toolbar" style="display:none;">
+                <div class="det-selection-info">
+                    <i data-lucide="check-square"></i>
+                    <span><span id="det-selection-count">0</span> të zgjedhura</span>
+                </div>
+                <div class="det-selection-actions">
+                    <button class="det-action-bulk det-action-primary" onclick="bulkMerrPersiper()" type="button">
+                        <i data-lucide="play"></i> Merr përsipër
+                    </button>
+                    <button class="det-action-bulk det-action-success" onclick="bulkPerfundo()" type="button">
+                        <i data-lucide="check"></i> Përfundo
+                    </button>
+                    <button class="det-action-bulk det-action-danger" id="btn-bulk-anulo" onclick="bulkAnulo()" type="button" style="display:none;">
+                        <i data-lucide="x"></i> Anulo
+                    </button>
+                    <button class="det-action-bulk det-action-primary" id="btn-bulk-ricakto" onclick="hapModalRicakto()" type="button" style="display:none;">
+                        <i data-lucide="user-cog"></i> Ricakto
+                    </button>
+                    <button class="det-action-bulk det-action-cancel" onclick="toggleSelectionMode()" type="button">
+                        Anulo përzgjedhjen
+                    </button>
+                </div>
+            </div>
+
             <!-- Filter chips -->
             <div class="det-filters" id="det-filters">
                 <button class="det-chip active" data-filter="all" onclick="setFilter('all')">
@@ -112,6 +140,73 @@
                 <button class="btn-cancel" onclick="mbyllDrawer()">Anulo</button>
                 <button class="btn-save btn-primary" onclick="ruajDetyre()">
                     <i data-lucide="check"></i> Ruaj
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ndrysho afatin (vetëm mgmt+) -->
+    <div class="det-mini-overlay" id="afati-modal-overlay" onclick="if(event.target===this)mbyllAfatiModal()">
+        <div class="det-mini-modal">
+            <div class="det-mini-modal-header">
+                <i data-lucide="calendar-clock"></i>
+                <span>Ndrysho afatin</span>
+                <button class="det-mini-close" onclick="mbyllAfatiModal()" type="button"><i data-lucide="x"></i></button>
+            </div>
+            <div class="det-mini-modal-body">
+                <div class="det-form-row">
+                    <label>Data e re e afatit</label>
+                    <input type="date" id="afati-modal-input">
+                </div>
+            </div>
+            <div class="det-mini-modal-footer">
+                <button class="btn-cancel" onclick="mbyllAfatiModal()" type="button">Anulo</button>
+                <button class="btn-save btn-primary" onclick="ruajAfatin()" type="button">
+                    <i data-lucide="check"></i> Ruaj
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Konfirmim (për bulk actions) -->
+    <div class="det-mini-overlay" id="confirm-modal-overlay" onclick="if(event.target===this)mbyllConfirmModal()">
+        <div class="det-mini-modal det-confirm-modal">
+            <div class="det-mini-modal-header">
+                <i data-lucide="alert-triangle" style="color:var(--s-warning)"></i>
+                <span>Konfirmim</span>
+            </div>
+            <div class="det-mini-modal-body">
+                <div id="confirm-modal-msg" style="font-size:13px;line-height:1.5;color:var(--s-text-sub);"></div>
+            </div>
+            <div class="det-mini-modal-footer">
+                <button class="btn-cancel" onclick="mbyllConfirmModal()" type="button">Anulo</button>
+                <button class="btn-save btn-primary" id="confirm-modal-ok" type="button">
+                    <i data-lucide="check"></i> Vazhdo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ricakto bulk (vetëm mgmt+) -->
+    <div class="det-mini-overlay" id="ricakto-modal-overlay" onclick="if(event.target===this)mbyllRicaktoModal()">
+        <div class="det-mini-modal">
+            <div class="det-mini-modal-header">
+                <i data-lucide="user-cog"></i>
+                <span>Ricakto detyrat</span>
+                <button class="det-mini-close" onclick="mbyllRicaktoModal()" type="button"><i data-lucide="x"></i></button>
+            </div>
+            <div class="det-mini-modal-body">
+                <div class="det-form-row">
+                    <label>Përgjegjësi i ri për <span id="ricakto-count">0</span> detyra</label>
+                    <select id="ricakto-pergjegjesi">
+                        <option value="">— Pa caktuar —</option>
+                    </select>
+                </div>
+            </div>
+            <div class="det-mini-modal-footer">
+                <button class="btn-cancel" onclick="mbyllRicaktoModal()" type="button">Anulo</button>
+                <button class="btn-save btn-primary" onclick="ruajRicakto()" type="button">
+                    <i data-lucide="check"></i> Ricakto
                 </button>
             </div>
         </div>

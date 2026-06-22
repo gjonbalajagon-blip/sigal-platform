@@ -48,6 +48,17 @@
   --s-red-bg:      #fef2f2;
   --s-blue-bg:     #eff6ff;
 
+  /* Semantic aliases (DEC-040) */
+  --s-danger:      #ef4444;
+  --s-danger-bg:   #fef2f2;
+  --s-danger-text: #991b1b;
+  --s-warning:     #f59e0b;
+  --s-warning-bg:  #fffbeb;
+  --s-warning-text:#b45309;
+  --s-success:     #10b981;
+  --s-success-bg:  #ecfdf5;
+  --s-success-text:#065f46;
+
   /* Radii */
   --r-sm:  8px;
   --r-md:  12px;
@@ -2674,11 +2685,11 @@ body {
   transition: all 0.15s;
 }
 .det-card:hover { box-shadow: 0 4px 14px rgba(15,23,42,0.06); transform: translateY(-1px); }
-.det-card-kritike { border-left-color: #ef4444; }
-.det-card-te_rendesishme { border-left-color: #f59e0b; }
-.det-card-normale { border-left-color: #3b82f6; }
-.det-card-progres { background: linear-gradient(135deg, #fffbeb, #fef3c7); }
-.det-card-perfunduar { opacity: 0.65; border-left-color: #10b981; }
+.det-card-kritike { border-left-color: var(--s-danger); }
+.det-card-te_rendesishme { border-left-color: var(--s-warning); }
+.det-card-normale { border-left-color: var(--s-brand); }
+.det-card-progres { background: linear-gradient(135deg, var(--s-warning-bg), #fef3c7); }
+.det-card-perfunduar { opacity: 0.65; border-left-color: var(--s-success); }
 .det-card-perfunduar .det-card-title { text-decoration: line-through; color: var(--s-text-muted); }
 
 .det-card-main { flex: 1; min-width: 0; }
@@ -2722,15 +2733,15 @@ body {
 .det-badge-status-e-re { background: #f1f5f9; color: #475569; }
 .det-badge-status-progres { background: #fef3c7; color: #92400e; }
 .det-badge-status-perfunduar { background: #d1fae5; color: #065f46; }
-.det-badge-afati-ok { background: #ecfdf5; color: #047857; }
-.det-badge-afati-vemendje { background: #fffbeb; color: #b45309; }
+.det-badge-afati-ok { background: var(--s-success-bg); color: #047857; }
+.det-badge-afati-vemendje { background: var(--s-warning-bg); color: var(--s-warning-text); }
 .det-badge-afati-urgjent {
-  background: #fef2f2; color: #b91c1c;
+  background: var(--s-danger-bg); color: #b91c1c;
   border: 1px solid rgba(239,68,68,0.25);
 }
 .det-badge-afati-kaluar {
-  background: #fef2f2; color: #b91c1c; font-weight: 800;
-  border: 1px solid #ef4444;
+  background: var(--s-danger-bg); color: #b91c1c; font-weight: 800;
+  border: 1px solid var(--s-danger);
 }
 
 /* Link to module */
@@ -2766,11 +2777,11 @@ body {
 }
 .det-action-primary:hover { box-shadow: 0 4px 12px rgba(59,130,246,0.35); }
 .det-action-success {
-  background: #10b981; color: white;
+  background: var(--s-success); color: white;
 }
-.det-action-success:hover { background: #059669; }
+.det-action-success:hover { background: var(--s-green); }
 .det-action-danger {
-  background: white; color: #dc2626;
+  background: white; color: var(--s-red);
   border-color: #fecaca;
 }
 .det-action-danger:hover { background: #fee2e2; }
@@ -2826,7 +2837,7 @@ body {
   min-width: 280px; max-width: 90vw;
 }
 .det-toast.show { opacity: 1; transform: translateY(0); }
-.det-toast-icon { display: inline-flex; color: #10b981; }
+.det-toast-icon { display: inline-flex; color: var(--s-success); }
 .det-toast-icon i { width: 18px; height: 18px; }
 .det-toast-msg { flex: 1; }
 .det-toast-undo {
@@ -2847,5 +2858,270 @@ body {
   .det-form-row-2 { grid-template-columns: 1fr; }
   #det-toast-container { left: 10px; right: 10px; transform: none; }
   .det-toast { min-width: 0; }
+  .det-row-main { gap: 8px; padding: 8px 10px; }
+  .det-row-title { font-size: 12.5px; }
+  .det-row-pergj { display: none; }
+  .det-selection-toolbar { flex-direction: column; align-items: stretch; }
+  .det-selection-actions { flex-wrap: wrap; }
+  .det-action-bulk { flex: 1; min-width: 110px; }
+  .det-mini-modal { max-width: 92vw; }
 }
+
+/* ============================================================
+   DENSE ROW LAYOUT (Faza 2A.2 — DEC-038)
+   Zëvendëson .det-card për listim kompakt
+   ============================================================ */
+.det-row-wrapper {
+  background: white;
+  border: 1px solid #e5e9f0;
+  border-left: 3px solid #94a3b8;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.15s;
+}
+.det-row-wrapper:hover { box-shadow: 0 2px 10px rgba(15,23,42,0.06); }
+.det-row-wrapper.det-row-kritike { border-left-color: var(--s-danger); }
+.det-row-wrapper.det-row-te_rendesishme { border-left-color: var(--s-warning); }
+.det-row-wrapper.det-row-normale { border-left-color: var(--s-brand); }
+.det-row-wrapper.det-row-perfunduar { opacity: 0.65; border-left-color: var(--s-success); }
+.det-row-wrapper.det-row-perfunduar .det-row-title { text-decoration: line-through; color: var(--s-text-muted); }
+.det-row-wrapper.det-row-progres { background: linear-gradient(135deg, var(--s-warning-bg), #fef3c7); }
+.det-row-wrapper.det-row-imja { box-shadow: inset 3px 0 0 var(--s-brand-light); }
+.det-row-wrapper.det-row-selected { background: var(--s-blue-bg); }
+
+.det-row-main {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  cursor: pointer;
+  min-height: 40px;
+}
+.det-row-checkbox {
+  flex-shrink: 0;
+  display: none;
+}
+.det-row-wrapper.det-selection-active .det-row-checkbox { display: inline-flex; }
+.det-row-checkbox input[type="checkbox"] {
+  width: 16px; height: 16px;
+  cursor: pointer; accent-color: var(--s-brand);
+}
+.det-row-icon {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  color: var(--s-text-muted);
+  background: #f1f5f9;
+}
+.det-row-icon i { width: 13px; height: 13px; }
+.det-row-icon.det-row-icon-auto {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: var(--s-brand-dark);
+}
+.det-row-title {
+  flex: 1; min-width: 0;
+  font-size: 13px; font-weight: 600;
+  color: var(--s-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.det-row-pergj {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--s-text-muted);
+  display: inline-flex; align-items: center; gap: 4px;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.det-row-pergj i { width: 11px; height: 11px; flex-shrink: 0; }
+.det-row-pergj-faint { font-style: italic; color: var(--s-text-faint); }
+.det-row-afati {
+  flex-shrink: 0;
+}
+.det-row-chevron {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  color: var(--s-text-faint);
+  transition: transform 0.15s;
+}
+.det-row-chevron i { width: 14px; height: 14px; }
+.det-row-wrapper.expanded .det-row-chevron { transform: rotate(180deg); }
+
+.det-row-expanded {
+  border-top: 1px solid #e5e9f0;
+  padding: 12px 14px;
+  background: rgba(248,250,252,0.6);
+}
+.det-row-expanded-content {
+  font-size: 12px; line-height: 1.55;
+  color: var(--s-text-sub);
+}
+.det-row-expanded-content .det-row-exp-desc { margin-bottom: 10px; }
+.det-row-expanded-content .det-row-exp-meta {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 10px;
+}
+.det-row-expanded-content .det-row-exp-burimi {
+  margin-bottom: 10px;
+}
+.det-row-expanded-content .det-row-exp-actions {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-top: 10px;
+}
+
+/* ============================================================
+   NËN-GRUPIM SIPAS MODULIT (>10 detyra në grup)
+   ============================================================ */
+.det-nen-grup {
+  border: 1px solid var(--s-border-light);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.5);
+}
+.det-nen-grup-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  background: rgba(241,245,249,0.6);
+  font-size: 11.5px; font-weight: 700;
+  color: var(--s-text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  transition: background 0.15s;
+}
+.det-nen-grup-header:hover { background: rgba(241,245,249,0.95); }
+.det-nen-grup-header i.det-nen-grup-chevron {
+  width: 12px; height: 12px;
+  transition: transform 0.15s;
+}
+.det-nen-grup.open .det-nen-grup-header i.det-nen-grup-chevron { transform: rotate(90deg); }
+.det-nen-grup-title { flex: 1; }
+.det-nen-grup-count {
+  background: white;
+  color: var(--s-text-muted);
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid var(--s-border-light);
+}
+.det-nen-grup-checkbox { flex-shrink: 0; display: none; }
+.det-group.det-selection-active .det-nen-grup-checkbox { display: inline-flex; }
+.det-nen-grup-checkbox input { width: 14px; height: 14px; accent-color: var(--s-brand); }
+.det-nen-grup-body {
+  padding: 8px 10px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+
+/* ============================================================
+   SELECTION TOOLBAR (bulk actions)
+   ============================================================ */
+.det-selection-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));
+  border-radius: 10px;
+  color: white;
+  box-shadow: 0 6px 18px rgba(30,58,138,0.25);
+}
+.det-selection-info {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 700;
+}
+.det-selection-info i { width: 18px; height: 18px; }
+.det-selection-actions {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap;
+}
+.det-action-bulk {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.det-action-bulk i { width: 13px; height: 13px; }
+.det-action-bulk.det-action-primary {
+  background: white; color: var(--s-brand-dark);
+}
+.det-action-bulk.det-action-primary:hover { background: rgba(255,255,255,0.92); }
+.det-action-bulk.det-action-success {
+  background: var(--s-success); color: white;
+}
+.det-action-bulk.det-action-success:hover { background: var(--s-green); }
+.det-action-bulk.det-action-danger {
+  background: var(--s-danger); color: white;
+}
+.det-action-bulk.det-action-danger:hover { background: var(--s-red); }
+.det-action-bulk.det-action-cancel {
+  background: transparent; color: white;
+  border-color: rgba(255,255,255,0.45);
+}
+.det-action-bulk.det-action-cancel:hover { background: rgba(255,255,255,0.12); }
+
+.det-group-checkbox {
+  flex-shrink: 0;
+  margin-right: 6px;
+  display: none;
+}
+.det-group.det-selection-active > .det-group-header .det-group-checkbox { display: inline-flex; }
+.det-group-checkbox input { width: 16px; height: 16px; accent-color: var(--s-brand); cursor: pointer; }
+
+/* ============================================================
+   MINI MODALS (afati, confirm, ricakto)
+   ============================================================ */
+.det-mini-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,0.55);
+  z-index: 10000;
+  align-items: center; justify-content: center;
+  padding: 16px;
+}
+.det-mini-overlay.active { display: flex; }
+.det-mini-modal {
+  background: white;
+  border-radius: 14px;
+  width: 100%; max-width: 420px;
+  box-shadow: 0 20px 50px rgba(15,23,42,0.4);
+  overflow: hidden;
+  animation: detMiniIn 0.18s ease-out;
+}
+@keyframes detMiniIn {
+  from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.det-mini-modal-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--s-border-light);
+  font-size: 14px; font-weight: 700;
+  color: var(--s-text);
+}
+.det-mini-modal-header i { width: 18px; height: 18px; color: var(--s-brand-dark); }
+.det-mini-close {
+  margin-left: auto;
+  background: transparent; border: none;
+  cursor: pointer;
+  color: var(--s-text-muted);
+  padding: 4px;
+  border-radius: 6px;
+}
+.det-mini-close:hover { background: #f1f5f9; }
+.det-mini-close i { width: 16px; height: 16px; }
+.det-mini-modal-body { padding: 18px; }
+.det-mini-modal-footer {
+  display: flex; gap: 8px; justify-content: flex-end;
+  padding: 12px 18px;
+  border-top: 1px solid var(--s-border-light);
+  background: rgba(248,250,252,0.5);
 }
