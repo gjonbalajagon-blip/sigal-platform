@@ -834,6 +834,79 @@ Ideja origjinale: Dashboard + Detyrat të bashkohen në "Ballina" me split-view.
 
 ---
 
+## DEC-036: Stable-ID Migration për oferta/kontratat/faturimi (BUG i njohur)
+**Data:** 2026-05-16
+**Statusi:** ⏳ Proposed (DUHET RREGULLU para Faza 2B)
+
+### Konteksti
+Audit pas Faza 2A zbuloi inkonsistencë në `referencaId` te detyrat auto:
+
+| Trigger | Moduli | referencaId | Stabil? |
+|---|---|---|---|
+| #1 Kontratë skadon | kontratat | array index | ❌ Jo |
+| #2 Ofertë skadon | oferta | array index | ❌ Jo |
+| #3 Ofertë konfirmuar | oferta | array index | ❌ Jo |
+| #4 Faturim pa kërkesë | faturimi | array index | ❌ Jo |
+| #5 Debitor 365d | debitoret | `d.id` (stable) | ✅ Po |
+
+Rinovimet/debitoret kishin `id` stabil para Faza 2A. Oferta/kontratat/faturimi përdorin pozicion në array si "identitet" — që do të thotë:
+
+**Bug-u real:** Nëse `ofertat[3]` fshihet, detyra me `referencaId: 5` tani hap rekordin që ishte në pozicion 6. User-i sheh "Krijo kontratë për Klient A" → drawer hap Klient B.
+
+Aktualisht latente sepse fshirjet janë të rralla, por **load-bearing pas adoption**.
+
+### Vendimi
+Para Faza 2B (Supabase mini), bëj migrim 3-hapësh:
+
+1. **Shto `id: generateId()`** te `shtoOferte()`, `shtoKontrate()`, `shtoKlient()` (oferta.js, kontratat.js, faturimi.js)
+2. **Backfill për rekordet ekzistuese**: skript një-herëshëm që loop-on array-in dhe vendos `id` nëse mungon
+3. **Ndërro `?hap=INDEX` → `?hap=ID`**:
+   - Handler-at te tre modulet bëhen `.find(x => x.id === param)` në vend të `array[parseInt(param)]`
+   - `detyrat.js:351 hapModulNgaDetyra` mbetet i njëjti (passon `referencaId` siç është)
+   - Triggers te `detyrat.js` ndërrojnë `referencaId: idx` → `referencaId: k.id`
+
+### Alternativat e Refuzuara
+- ❌ **Lë siç është** — bug i sigurt kur fshirjet bëhen të zakonshme
+- ❌ **Përdor `kontrataNr` ose `nrPersonal` si ID** — jo unike, mund të ndryshohen
+- ❌ **Mbaj edhe index edhe ID** — kompleks, dy burime të vërtetës
+
+### Konsekuencat
+- ✅ Detyrat auto nuk gabojnë target-in pas fshirjeve
+- ✅ Konsistencë me rinovimet/debitoret
+- ⚠️ Migrimi duhet bërë para se database të rritet — sa më shpejt aq më mirë
+- ⚠️ User-përdoruesit mund të kenë URL-të e ruajtura me `?hap=INDEX` që do të prishen — i pranuar (përdorimi është minimal)
+
+### Trigger për implementim
+Para Faza 2B fillon, ose nëse user-i raporton sjellje të çuditshme nga detyrat → hap rekordi i gabuar.
+
+---
+
+## DEC-037: localStorage Keys për Detyrat Module
+**Data:** 2026-05-16
+**Statusi:** ✅ Approved (Faza 2A — dokumentim)
+
+### Konteksti
+Modul Detyrat ka 4 çelësa në localStorage. Audit zbuloi mospërputhje me specifikimin origjinal (`detyrat_accordion_state` u zëvendësua me `detyrat_group_state` gjatë implementimit).
+
+### Vendimi
+Standardizim përfundimtar (kodi është burim i vërtetës):
+
+| Key | Lloji | Përmbajtja | Persistencë |
+|---|---|---|---|
+| `detyrat` | array JSON | Të gjitha detyrat (auto + manuale) | Permanente |
+| `detyrat_filter_state` | string | `'all'` / `'te-miat'` / `'pa-pergjegjes'` | Permanente |
+| `detyrat_group_state` | object JSON | `{kritike: bool, te_rendesishme: bool, normale: bool, e_perfunduar: bool}` | Permanente |
+| `detyrat_last_run` | ISO string | Timestamp i auto-trigger run-it të fundit (info-only) | Permanente |
+
+Të gjitha kujtohen pas mbylljes së browser-it (jo sessionStorage).
+
+### Konsekuencat
+- ✅ State i ruajtur cross-session (filter, accordion collapse, etj.)
+- ✅ Dokumentim i qartë i naming-ut
+- ⚠️ 4 çelësa shtesë — pjesë e parashikuar e rritjes së localStorage (pastro auto >90d ndihmon)
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase

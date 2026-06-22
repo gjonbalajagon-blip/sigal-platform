@@ -53,6 +53,12 @@ _Asnjë bug kritik aktualisht._
 
 ### 🟠 Të rëndësishme
 
+- **Stable-ID migration për oferta/kontratat/faturimi** (DEC-036):
+  - Detyrat auto përdorin array index si `referencaId` për këto 3 module
+  - Nëse një rekord fshihet midis, detyra hap rekordin e gabuar (latente, jo teorike)
+  - **Action:** Para Faza 2B — shto `id` field te shtoOferte/shtoKontrate/shtoKlient + backfill + ndërro `?hap=INDEX` → `?hap=ID`
+  - **Workaround aktual:** Mos fshi rekorde nga këto module deri sa të jetë rregulluar
+
 ### 🟠 Polish
 
 - **Jetë Plus matrix kompakte:** tabela aktualisht është shumë e ngjeshur në mobile. Të dhënat duhen të jenë **më të dallueshme** vizualisht (kontrast ngjyrash, theksim rreshtash, etj.) — polish për sesion tjetër.
@@ -183,9 +189,10 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 ## 📅 Çka vjen pastaj (Next Steps)
 
 ### Faza 2B (Supabase mini):
-1. Backend tabel `oferta_views` (id, oferta_id, ts)
-2. Trigger #6 te detyrat: "Oferta X është parë 3-5 herë, telefono klientin"
-3. Endpoint te oferta-view për incrementim view count
+1. **PARA SE TË FILLOJË**: rregullim DEC-036 (stable-ID për oferta/kontratat/faturimi)
+2. Backend tabel `oferta_views` (id, oferta_id, ts)
+3. Trigger #6 te detyrat: "Oferta X është parë 3-5 herë, telefono klientin"
+4. Endpoint te oferta-view për incrementim view count
 
 ### Faza 2C (Ballina = Dashboard + Detyrat):
 1. Split-view layout
@@ -236,6 +243,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-05-07 | Mobile fixes oferta-view: paketat 1-rresht kompakt, jetë matrix overflow-x, touch targets, safe area inset, float pill positioning. Chart.js statusi i korrigjuar (i implementuar). | Claude Code |
 | 2026-05-08 | Mobile UX redesign oferta-view (DEC-029, Faza 14.6): pakot grid 2-kol, bottom bar me badge layout (total + summary inline) | Claude Code |
 | 2026-05-16 | Faza 2A: Modul Detyrat standalone — 5 triggers auto, accordion sipas prioritetit, Option B permissions, toast undo 5s, ?hap=INDEX handler te oferta/kontratat/faturimi (DEC-030..035) | Claude Code |
+| 2026-05-16 | Audit pas Faza 2A: zbuluar bug stable-ID (DEC-036), dokumentuar localStorage keys (DEC-037). Faza 2B bllokuar deri sa rregullohet DEC-036. | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 

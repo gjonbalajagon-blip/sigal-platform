@@ -743,6 +743,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 **Lidhje:** DEC-033
 
+⚠️ **WARNING (DEC-036):** Aktualisht te oferta/kontratat/faturimi `INDEX` është pozicion në array, jo ID stabil. Nëse rekordi fshihet midis, target-i prishen. Migrim te `?hap=ID` është i planifikuar para Faza 2B. **Mos krijo handler të ri me array index për module të reja** — përdor `id` field gjithmonë (siç është te rinovimet/debitoret).
+
 ---
 
 *Çdo komponent i ri ose pattern duhet shtuar këtu. Mos ndrysho ekzistuesit pa update tek të gjithë moduleve të prekur.*
