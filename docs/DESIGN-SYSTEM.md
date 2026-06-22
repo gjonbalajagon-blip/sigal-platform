@@ -747,4 +747,117 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ---
 
+## Pattern: Dense Row Layout
+
+**Përdorim:** Lista e gjatë (>50 items) ku kartelat e gjera bëjnë navigim të vështirë.
+
+**CSS klasa:** `.det-row-wrapper` te theme-v2.css (mund të ripërgjithësohet me prefiks tjetër për module të reja).
+
+**Struktura:**
+```html
+<div class="det-row-wrapper det-row-{priority}">
+  <div class="det-row-main" onclick="toggleExpand(id, event)">
+    [checkbox] [icon auto/manual] [title ellipsis] [pergj] [badge afati] [chevron]
+  </div>
+  {if expanded:
+    <div class="det-row-expanded">...detaje + butona aksioni...</div>
+  }
+</div>
+```
+
+**Karakteristika:**
+- Rresht ~40px lartësi
+- Title truncate me `white-space:nowrap; overflow:hidden; text-overflow:ellipsis`
+- Border-left 3px sipas prioritetit/state-it
+- Klik kudo në `.det-row-main` → toggle expand (përveç checkbox-it që ka `event.stopPropagation()`)
+- Expand state është **in-memory only** (jo persistent, ndryshe nga group state)
+
+**Lidhje:** DEC-038
+
+---
+
+## Pattern: Selection Mode + Bulk Actions
+
+**Përdorim:** Lista ku përdoruesi duhet të ekzekutojë veprime mbi shumë items njëkohësisht.
+
+**State:** Module-level `let _selectionMode = false; let _selectedIds = new Set();` (jo `window.*`).
+
+**UI:**
+- Button "Përzgjedh" në toolbar → `toggleSelectionMode()` bën state ON dhe shfaq selection toolbar
+- Selection toolbar (`.det-selection-toolbar`): "N të zgjedhura" + butonat bulk + "Anulo përzgjedhjen"
+- Group header checkbox: select-all në grup (përdor `data-group-select="groupId"` për bind të sigurt të JSON-it në DOM)
+- Sub-group header checkbox: select-all në nën-grup
+
+**Bulk action handlers:**
+- Filtrojnë items të pavlefshme (psh skipto në progres për "Merr përsipër")
+- Përdorin `showConfirmDialog(msg, callback)` jo `confirm()` native
+- Toast info (jo undo) pas mbarimit
+- Mbyllin selection mode automatikisht
+
+**Lidhje:** DEC-038
+
+---
+
+## Pattern: Mini Modal (overlay i vogël për veprime atomike)
+
+**Përdorim:** Veprime me 1-2 input (modifikim afati, konfirmim, pickeri për ricaktim) që nuk meritojnë drawer të plotë.
+
+**CSS klasa:** `.det-mini-overlay` + `.det-mini-modal`
+
+**Struktura:**
+```html
+<div class="det-mini-overlay" id="X-modal-overlay">
+  <div class="det-mini-modal">
+    <div class="det-mini-modal-header">
+      <i data-lucide="..."></i><span>Titulli</span><button class="det-mini-close">x</button>
+    </div>
+    <div class="det-mini-modal-body">...form fields...</div>
+    <div class="det-mini-modal-footer">
+      <button class="btn-cancel">Anulo</button>
+      <button class="btn-save btn-primary">Ruaj</button>
+    </div>
+  </div>
+</div>
+```
+
+**Toggling:** `.active` class kontrollon `display: flex`. JS: `overlay.classList.add('active')` / `remove('active')`.
+
+**ESC handler:** module-level keydown listener cikël nëpër overlays aktive dhe mbyll të parin.
+
+---
+
+## Semantic Color Variables (DEC-040)
+
+**Variabla të reja te `:root`:**
+- `--s-danger` (#ef4444), `--s-danger-bg`, `--s-danger-text` (#991b1b)
+- `--s-warning` (#f59e0b), `--s-warning-bg`, `--s-warning-text` (#b45309)
+- `--s-success` (#10b981), `--s-success-bg`, `--s-success-text` (#065f46)
+
+**Konvencion:**
+- `--s-brand-*` (blu) → KPI, identitet brend, butona primarë
+- `--s-red-dot/--s-orange-dot/--s-green-dot` → status badges/dots LEGACY (mos heq, përdoren nga oferta/kontratat/faturimi)
+- `--s-danger/warning/success` → **module të reja**, semantic states, error/feedback UI
+
+**Rregull për module të reja:** Përdor variabla semantic (`--s-danger` jo `#ef4444`). Mos shto hex hardcoded për ngjyrë semantic — shto variabël të re te `:root` dhe përdor nëpër klasa.
+
+---
+
+## Pattern: Helper-a të vegjël për ownership/state
+
+**Përdorim:** Logjikë e përsëritur "kjo entitet i takon user-it aktual" duhet të jetë në një helper, jo në 5 vende.
+
+**Shembull (DEC-039):**
+```js
+function eshteImja(d) {
+  const u = getUserAktual();
+  if (!u || !d) return false;
+  return (d.pergjegjesi || '').toLowerCase() === (u.username || '').toLowerCase();
+}
+function eshtePaPergjegjes(d) { return !d || !d.pergjegjesi; }
+```
+
+**Ndani qartë access-control (`filtroSipasPermissions`) nga ownership-UI (`eshteImja`)**. Access-control mund të jetë "krijuesi OR përgjegjësi"; ownership-UI semantikisht është "ato që duhet të i përfundoj" → vetëm përgjegjësi.
+
+---
+
 *Çdo komponent i ri ose pattern duhet shtuar këtu. Mos ndrysho ekzistuesit pa update tek të gjithë moduleve të prekur.*

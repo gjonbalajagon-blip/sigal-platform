@@ -57,6 +57,7 @@ sigal-platform/
 │   ├── dashboard.js            ← Dashboard widgets + charts
 │   ├── raportet.js             ← Raportet (1989 lines)
 │   ├── stafi.js                ← Stafi + organogram
+│   ├── detyrat.js              ← Detyrat (5 auto-triggers, dense rows, bulk actions)
 │   └── gjenero-kontrate.js     ← Word contract generation (përdoret nga server.js)
 ├── pages/
 │   ├── kontratat.html          ← REFERENCE
@@ -67,7 +68,8 @@ sigal-platform/
 │   ├── debitoret.html
 │   ├── dashboard.html
 │   ├── raportet.html
-│   └── stafi.html
+│   ├── stafi.html
+│   └── detyrat.html             ← Detyrat module (Faza 2A.2)
 ├── templates/                  ← Word templates (.docx)
 │   ├── kontrata-individ.docx
 │   ├── kontrata-familje.docx

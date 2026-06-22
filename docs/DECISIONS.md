@@ -886,7 +886,7 @@ Para Faza 2B fillon, ose nëse user-i raporton sjellje të çuditshme nga detyra
 **Statusi:** ✅ Approved (Faza 2A — dokumentim)
 
 ### Konteksti
-Modul Detyrat ka 4 çelësa në localStorage. Audit zbuloi mospërputhje me specifikimin origjinal (`detyrat_accordion_state` u zëvendësua me `detyrat_group_state` gjatë implementimit).
+Modul Detyrat ka çelësa në localStorage. Audit zbuloi mospërputhje me specifikimin origjinal (`detyrat_accordion_state` u zëvendësua me `detyrat_group_state` gjatë implementimit).
 
 ### Vendimi
 Standardizim përfundimtar (kodi është burim i vërtetës):
@@ -895,15 +895,134 @@ Standardizim përfundimtar (kodi është burim i vërtetës):
 |---|---|---|---|
 | `detyrat` | array JSON | Të gjitha detyrat (auto + manuale) | Permanente |
 | `detyrat_filter_state` | string | `'all'` / `'te-miat'` / `'pa-pergjegjes'` | Permanente |
-| `detyrat_group_state` | object JSON | `{kritike: bool, te_rendesishme: bool, normale: bool, e_perfunduar: bool}` | Permanente |
+| `detyrat_group_state` | object JSON | `{kritike: bool, te_rendesishme: bool, normale: bool, e_perfunduar: bool, ...nën-grupe me çelës "kritike__kontratat"...}` | Permanente |
 | `detyrat_last_run` | ISO string | Timestamp i auto-trigger run-it të fundit (info-only) | Permanente |
 
-Të gjitha kujtohen pas mbylljes së browser-it (jo sessionStorage).
+**Update Faza 2A.2:** `detyrat_group_state` është zgjeruar për të mbajtur edhe state të nën-grupeve me çelësa të përbërë (psh `kritike__kontratat`). Nuk u krijua çelës i ri.
 
 ### Konsekuencat
-- ✅ State i ruajtur cross-session (filter, accordion collapse, etj.)
+- ✅ State i ruajtur cross-session (filter, accordion collapse, sub-group collapse)
 - ✅ Dokumentim i qartë i naming-ut
-- ⚠️ 4 çelësa shtesë — pjesë e parashikuar e rritjes së localStorage (pastro auto >90d ndihmon)
+- ✅ Çelësi `detyrat_group_state` është dimensional — mund të mbajë state të çdo niveli grupimi pa shtim key-sh të rinj
+- ⚠️ 4 çelësa total — pjesë e parashikuar e rritjes së localStorage (pastro auto >90d ndihmon)
+
+---
+
+## DEC-038: Dense Row Layout në Detyrat (zëvendëson .det-card)
+**Data:** 2026-06-23
+**Statusi:** ✅ Approved (Faza 2A.2)
+
+### Konteksti
+Pas Faza 2A, user-i testoi me 300+ detyra reale dhe gjeti se kartelat e gjera (~110px lartësi, 3 badge meta + 3 butona aksioni në vijën e fundit) bëjnë listën të padurueshme — scroll i pafund, vështirë të orientohesh.
+
+### Vendimi
+Zëvendësim i `.det-card` me `.det-row-wrapper` (rresht i dendur ~40px):
+- Layout 1-rresht: `[checkbox] [icon auto/hand] [titulli ellipsis] [pergj] [badge afati] [chevron]`
+- Title truncated me `white-space:nowrap; overflow:hidden; text-overflow:ellipsis`
+- Klik mbi rresht → toggle expand (in-memory only, **jo persistent** ndryshe nga group state)
+- Expanded view shfaq: meta badges, përshkrim, burimi, 3 aktivitete të fundit, butona aksioni
+
+`.det-card` MBETET në theme-v2.css (jo i fshirë) sepse mund të ripërdoret diku tjetër — vetëm s'përdoret nga `js/detyrat.js`.
+
+### Alternativat e Refuzuara
+- ❌ **Mbaj kartela, vetëm ngji më shumë në lartësi** — humbet info, ende e gjerë
+- ❌ **Virtual scroll** — overkill për <500 items
+- ❌ **Tabela e sheshtë** — humbet ngjyrosja prioritet via border-left
+
+### Konsekuencat
+- ✅ Reduktim hapësire: ~110px → ~40px për rresht (~63%)
+- ✅ Më shumë detyra të dukshme pa scroll
+- ✅ Detaje të plota disponibile përmes expand (1-klik)
+- ⚠️ Klasat e vjetra `.det-card-*` mbeten "dead CSS" derisa të kërkohen për tjetër modul
+
+---
+
+## DEC-039: Helper `eshteImja(detyra)` për "Detyrat e mia"
+**Data:** 2026-06-23
+**Statusi:** ✅ Approved (Faza 2A.2)
+
+### Konteksti
+Filter "Detyrat e mia" dhe theksim vizual (inset shadow) i rresht-it kërkojnë logjikë të përsëritur. Ngatërresë me `filtroSipasPermissions()` (që përfshin `krijuarNga` për access control).
+
+### Vendimi
+Krijim i 2 helper-ave të dedikuar:
+
+```js
+function eshteImja(d) {
+    const u = getUserAktual();
+    if (!u || !d) return false;
+    return (d.pergjegjesi || '').toLowerCase() === (u.username || '').toLowerCase();
+}
+function eshtePaPergjegjes(d) {
+    return !d || !d.pergjegjesi;
+}
+```
+
+**Pse vetëm `pergjegjesi`** (jo edhe `krijuarNga`): "Detyrat e mia" semantikisht do të thotë "ato që duhet t'i përfundoj", jo "ato që unë krijova".
+
+`filtroSipasPermissions()` ruan logjikën e access control (krijuarNga OR pergjegjesi) — të ndarë qartë.
+
+### Konsekuencat
+- ✅ Logjikë e centralizuar, e ripërdorshme në 5+ vende
+- ✅ Ndarje e qartë midis "access" (filtroSipasPermissions) dhe "ownership UI" (eshteImja)
+
+---
+
+## DEC-040: Semantic Color Variables në theme-v2.css
+**Data:** 2026-06-23
+**Statusi:** ✅ Approved (Faza 2A.2)
+
+### Konteksti
+Klasat `.det-card-*` dhe `.det-badge-afati-*` përdornin hardcoded hex (#ef4444, #f59e0b, #10b981) që dublojnë `--s-red-dot`, `--s-orange-dot`, `--s-green-dot` ekzistuese. Audit-i kërkonte semantic naming për module të reja (psh `.det-row-kritike` është më ekspresiv me `var(--s-danger)` se `var(--s-red-dot)`).
+
+### Vendimi
+Shtim te `:root` (theme-v2.css linja ~52):
+
+```css
+--s-danger:      #ef4444;
+--s-danger-bg:   #fef2f2;
+--s-danger-text: #991b1b;
+--s-warning:     #f59e0b;
+--s-warning-bg:  #fffbeb;
+--s-warning-text:#b45309;
+--s-success:     #10b981;
+--s-success-bg:  #ecfdf5;
+--s-success-text:#065f46;
+```
+
+**KUSHT KRITIK i respektuar:** Variabla ekzistuese (`--s-red-dot`, etj.) MUND BUMËE preken. Vlerat e ngjyrave nuk ndryshuan; vetëm aliases të rinj semantic u shtuan. Klasat ekzistuese që përdornin hardcoded → refactored të përdorin variabla të rinj.
+
+### Konsekuencat
+- ✅ Naming më ekspresiv për semantic states (danger > red)
+- ✅ Lehtëson tema të ardhshme (psh dark mode mund të ndryshojë vetëm variabla, jo hex në kod)
+- ✅ Zero rritje në bundle size
+- ⚠️ Dy konvencione tani bashkë-ekzistojnë (`--s-red-dot` brand-old, `--s-danger` semantic-new). Per konvencion: brand-old për KPI/strip-statuset, semantic-new për module/error states.
+
+---
+
+## DEC-041: Staff Lejohet të Krijojë Detyra Manuale (prioriteti=normale)
+**Data:** 2026-06-23
+**Statusi:** ✅ Approved (Faza 2A.2)
+
+### Konteksti
+Faza 2A kishte: staff/staff_hq NUK mund të krijonin detyra manuale fare (hard-block te `hapDrawerKrijim`). User-i kërkoi që stafi të mundet të krijojë detyra për veten ose ekipin, por pa pasur fuqi të caktojnë prioritet "Kritike" për punët e tyre rutinore.
+
+### Vendimi
+Heqje e block-ut, por bllokim i select-it të prioritetit:
+
+- Stafi mund të hapë drawerin
+- `<select id="d-prioriteti">` → `disabled=true`, `value='normale'` për staff
+- Edhe nëse staff manipulon DOM → `ruajDetyre()` server-side forcë `prioriteti='normale'` për staff
+- Pergjegjesi: mund të caktojnë çdo staf (jo lock i mëtejshëm — vendim i marrë gjatë rrugës per default-i lejues)
+
+### Alternativat e Refuzuara
+- ❌ **Mbaj block të plotë** — staff s'mund të dokumentojnë punën që duhet të bëjnë
+- ❌ **Vetëm priot. normale e disponueshme në UI** (kufizimi në frontend i mjaftueshëm) — manipulim DOM trivial; kërkoi edhe server-side enforce
+
+### Konsekuencat
+- ✅ Staff mund të planifikojë vetë punën
+- ✅ Management+ mban kontroll mbi detyrat kritike/te_rendesishme
+- ⚠️ Konfigurim "kush e cakton kujt" mbetet i lirë — bug latent nëse staff cakton detyrë te superior. Per default i pranuar; mund të rishikohet.
 
 ---
 

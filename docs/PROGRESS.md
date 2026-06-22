@@ -26,6 +26,50 @@ Format:
 
 ---
 
+## 2026-06-23 - Faza 2A.2: Redesign UI Detyrat (dense + nën-grupim + bulk)
+
+**Tipi:** Redesign UI + funksionalitet i ri
+**Statusi:** ✅ Përfunduar (commit fd56bac)
+
+**Konteksti:**
+Pas Faza 2A, user-i testoi me 300+ detyra reale dhe nuk ishte i kënaqur me strukturën dhe pamjen — kartelat e gjera bënin listën të padurueshme, mungonin selection/bulk actions, staff nuk mund të krijonte detyra, mungonte modifikimi i afatit.
+
+**Çka u bë:**
+- ✅ **Dense rows** ~40px (nga ~110px) — reduktim ~63%
+- ✅ Expand/collapse in-memory për detaje (jo persistent)
+- ✅ **Nën-grupim sipas modulit** kur grupi ka >10 detyra (6 module + manual)
+- ✅ **Selection mode + bulk actions**: Merr përsipër / Përfundo / Anulo / Ricakto
+- ✅ Modal i ri i konfirmimit (zëvendëson confirm() native)
+- ✅ **Staff lejohet të krijojë detyra** (prioriteti locked='normale')
+- ✅ **Modifikim afati** për management+ (mini modal me date input)
+- ✅ Renditje e re: ne_progres lart, pastaj data_afati ASC
+- ✅ Helper-a të rinj: `eshteImja(d)`, `eshtePaPergjegjes(d)`, `rendisDetyrat(l)`, `grupoSipasModulit(l)`, `showConfirmDialog(msg, cb)`
+- ✅ CSS variables semantic `--s-danger/--s-warning/--s-success` te `:root`
+- ✅ Refactor hardcoded colors → variabla (klasat `.det-card-*`, `.det-badge-afati-*`)
+- ✅ Inset shadow blu për "Detyrat e mia" (theksim vizual i ownership-it)
+- ✅ Bug fix: stray brace në fund të @media block te theme-v2.css
+
+**Çka NUK u prek (logjikë load-bearing):**
+- 🚫 Auto-gjenerim (5 triggers) — DEC-032
+- 🚫 De-duplikim via makeRregullKey — DEC-034
+- 🚫 Toast undo timeout 5s — DEC-031
+- 🚫 Pastrim auto >90d
+- 🚫 Stable-ID migration — i shtyrë për Faza 2A.3 (DEC-036)
+
+**Vendime gjatë rrugës (jo në specifikim):**
+- 🟢 Stafi mund të caktojë pergjegjësi te kushdo (jo lock i mëtejshëm) — default lejues
+- 🟢 Klasa `.det-card-*` mbajtën në CSS (dead code, jo i fshirë) — për ripërdorim eventual
+- 🟢 toggleGroup-u u korrigjua (Faza 2A kishte bug latent: undefined → !undefined = true, bën që klikim i parë mbi grup default-open të mos e mbyllë; fix: kontrollo `!== false`)
+
+**Lidhje:** DEC-038, DEC-039, DEC-040, DEC-041, DEC-037 (update) në DECISIONS.md
+
+**Çka mbetet:**
+- Faza 2A.3: Stable-ID migration (DEC-036) — bllokon Faza 2B
+- Faza 2B: Supabase mini për trigger #6
+- Faza 2C: Bashkim Dashboard + Detyrat në Ballina
+
+---
+
 ## 2026-05-16 - Faza 2A: Modul Detyrat standalone
 
 **Tipi:** Modul i ri

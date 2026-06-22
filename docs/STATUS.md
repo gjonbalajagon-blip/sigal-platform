@@ -3,13 +3,13 @@
 > **Gjendja AKTUALE** e platformës. Ky file ndryshon shpesh.
 > ⚠️ **UPDATE INKREMENTAL** - pas çdo task-u, jo në fund të sesionit.
 
-**Përditësuar i fundit:** 2026-05-16
+**Përditësuar i fundit:** 2026-06-23
 
 ---
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 2A (Detyrat standalone) e përfunduar → drejt Faza 2B (Supabase mini për trigger #6)
+**Faza aktuale:** Faza 2A.2 (Detyrat redesign UI) e përfunduar → Faza 2A.3 (stable-ID migration) → Faza 2B (Supabase mini)
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -39,7 +39,7 @@ Aktualisht nuk ka bug kritik. Modulet e mbetura: Produkti, Dokumentet (pres trig
 | **Debitoret** | ✅ Stats restructure aplikuar | 4 stats + statuset row + aging filters |
 | **Raportet** | ✅ | Chart.js i implementuar (donut, line, bars) |
 | **Stafi** | ✅ Komplet | KPI + drawer + organogram |
-| **Detyrat** | ✅ Faza 2A | 5 triggers auto, accordion, Option B perms, toast undo 5s, ?hap=INDEX cross-module |
+| **Detyrat** | ✅ Faza 2A.2 | 5 triggers auto, dense rows ~40px, expand/collapse, nën-grupim sipas modulit (>10), selection+bulk actions, staff lejohet të krijojë, modifikim afati (mgmt+), toast undo 5s |
 | **Produkti** | ❌ Nuk ka filluar | Pret Excel data |
 | **Dokumentet** | ❌ Pret cloud storage | Placeholder |
 
@@ -244,6 +244,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-05-08 | Mobile UX redesign oferta-view (DEC-029, Faza 14.6): pakot grid 2-kol, bottom bar me badge layout (total + summary inline) | Claude Code |
 | 2026-05-16 | Faza 2A: Modul Detyrat standalone — 5 triggers auto, accordion sipas prioritetit, Option B permissions, toast undo 5s, ?hap=INDEX handler te oferta/kontratat/faturimi (DEC-030..035) | Claude Code |
 | 2026-05-16 | Audit pas Faza 2A: zbuluar bug stable-ID (DEC-036), dokumentuar localStorage keys (DEC-037). Faza 2B bllokuar deri sa rregullohet DEC-036. | Claude Code |
+| 2026-06-23 | Faza 2A.2: Redesign UI Detyrat — dense rows ~40px (nga ~110px), nën-grupim sipas modulit, selection+bulk actions, staff lejohet të krijojë me prioriteti locked, modifikim afati, variabla semantic CSS (DEC-038..041, update DEC-037) | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 
