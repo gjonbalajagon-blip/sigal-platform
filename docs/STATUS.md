@@ -9,7 +9,7 @@
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 2A.3 (stable-ID migration) e përfunduar → Faza 2B (Supabase mini për trigger #6 oferta-views)
+**Faza aktuale:** Faza 2B (Supabase mini + trigger #6) e përfunduar → Faza 2C (Ballina = Dashboard + Detyrat split-view)
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -21,7 +21,7 @@
 - Backend në Render Free Tier + UptimeRobot ping (anti-sleep)
 
 **Cka kërkon vëmendje urgjente:**
-Aktualisht nuk ka bug kritik. Modulet e mbetura: Produkti, Dokumentet (pres triggers). Faza 2B: Supabase mini për trigger #6 "oferta e parë 3-5 herë".
+Aktualisht nuk ka bug kritik. Modulet e mbetura: Produkti, Dokumentet (pres triggers). Faza 2B u përfundua (Supabase mini + 6 triggers operacionalë).
 
 ---
 
@@ -39,7 +39,7 @@ Aktualisht nuk ka bug kritik. Modulet e mbetura: Produkti, Dokumentet (pres trig
 | **Debitoret** | ✅ Stats restructure aplikuar | 4 stats + statuset row + aging filters |
 | **Raportet** | ✅ | Chart.js i implementuar (donut, line, bars) |
 | **Stafi** | ✅ Komplet | KPI + drawer + organogram |
-| **Detyrat** | ✅ Faza 2A.2 | 5 triggers auto, dense rows ~40px, expand/collapse, nën-grupim sipas modulit (>10), selection+bulk actions, staff lejohet të krijojë, modifikim afati (mgmt+), toast undo 5s |
+| **Detyrat** | ✅ Faza 2B | **6 triggers** (5 lokale + 1 Supabase: oferta parë 3-5 herë), dense rows ~40px, expand/collapse, nën-grupim sipas modulit (>10), selection+bulk actions, staff lejohet të krijojë, modifikim afati (mgmt+), toast undo 5s |
 | **Produkti** | ❌ Nuk ka filluar | Pret Excel data |
 | **Dokumentet** | ❌ Pret cloud storage | Placeholder |
 
@@ -184,11 +184,6 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 
 ## 📅 Çka vjen pastaj (Next Steps)
 
-### Faza 2B (Supabase mini) — rrugë e lirë (DEC-036 i rregulluar):
-1. Backend tabel `oferta_views` (id, oferta_id, ts)
-2. Trigger #6 te detyrat: "Oferta X është parë 3-5 herë, telefono klientin"
-3. Endpoint te oferta-view për incrementim view count
-
 ### Faza 2C (Ballina = Dashboard + Detyrat):
 1. Split-view layout
 2. Migrim dashboard te `ballina.html`
@@ -242,6 +237,8 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-06-23 | Faza 2A.2: Redesign UI Detyrat — dense rows ~40px (nga ~110px), nën-grupim sipas modulit, selection+bulk actions, staff lejohet të krijojë me prioriteti locked, modifikim afati, variabla semantic CSS (DEC-038..041, update DEC-037) | Claude Code |
 | 2026-06-23 | Heqje emoji-sh nga Detyrat → ikona lucide profesionale; shtim --s-slate vars + .det-action-neutral klasë; rregull globale "nuk përdorim më emoji" | Claude Code |
 | 2026-06-23 | Faza 2A.3: Stable-ID migration (DEC-036 IMPLEMENTUAR) — generateRecordId + backfillAllIds te main.js, id prefix oft_/kon_/fat_, handler ?hap= me id+fallback numeric, triggers detyrat me rekord.id, migroDetyratReferences për detyrat ekzistues | Claude Code |
+| 2026-06-23 | Heqje 37 emoji-sh nga 9 modulet jashtë detyrat (oferta, kontratat, rinovimet, debitoret, dashboard, main, oferta-tracking) → ikona lucide profesionale | Claude Code |
+| 2026-06-23 | Faza 2B: Supabase mini + trigger #6 (oferta parë 3-5 herë) — klient supabase fallback-safe, dual-write tracking, /api/oferta-tracking-bulk, skanoOfertaParEHere35 async te detyrat.js, stable id në URL oferta (DEC-042, DEC-043) | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 

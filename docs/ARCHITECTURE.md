@@ -25,8 +25,10 @@
 - **Anti-sleep:** UptimeRobot ping te `/api/health` çdo 5 min
 
 ### Storage
-- **Aktualisht:** `localStorage` (browser)
-- **Planifikuar:** Supabase (i shtyrë qëllimisht - shih DECISIONS.md)
+- **Frontend primary:** `localStorage` (browser) — kontratat, ofertat, klientet faturimi, rinovimet, debitorët, detyrat, stafi
+- **Backend memory:** `ofertaStore{}`, `ofertaTracking{}` — humbet me Render restart
+- **Supabase mini (Faza 2B, DEC-042):** Vetëm tabela `oferta_tracking` për persistencë view-counter (trigger #6). Dual-write me in-memory fallback. **NUK** është migrim i plotë; ofertat/kontratat data mbeten te localStorage (DEC-001).
+- **Planifikuar i plotë:** Migrim te Supabase për gjithë data (DEC-PROPOSED-001) kur volumi justifikon
 
 ---
 
@@ -57,8 +59,10 @@ sigal-platform/
 │   ├── dashboard.js            ← Dashboard widgets + charts
 │   ├── raportet.js             ← Raportet (1989 lines)
 │   ├── stafi.js                ← Stafi + organogram
-│   ├── detyrat.js              ← Detyrat (5 auto-triggers, dense rows, bulk actions)
+│   ├── detyrat.js              ← Detyrat (6 auto-triggers, dense rows, bulk actions)
 │   └── gjenero-kontrate.js     ← Word contract generation (përdoret nga server.js)
+├── js-server/                 ← Module server-only (jo për frontend)
+│   └── supabaseClient.js       ← Klient Supabase fallback-safe (Faza 2B)
 ├── pages/
 │   ├── kontratat.html          ← REFERENCE
 │   ├── oferta.html
@@ -106,9 +110,14 @@ sigal-platform/
 | `/api/gjenero-kontrate` | POST | Gjeneron Word kontratë (përdor `js/gjenero-kontrate.js`) |
 | `/api/gjenero-oferte` | POST | Gjeneron Word ofertë me limite custom |
 | `/api/konfirmo-oferte` | POST | Dërgon email konfirmimi (Brevo) |
-| `/api/oferta-track` | POST | Tracking events (hapje, koha, konfirmim) |
+| `/api/oferta-track` | POST | Tracking events (hapje, koha, konfirmim) — **dual-write** te Supabase për event=hapje (Faza 2B) |
 | `/api/oferta-status/:id` | GET | Lexon statusin e ofertës |
 | `/api/oferta-derguar` | POST | Markon ofertën si "e dërguar" |
+| `/api/oferta-tracking/:id` | GET | (Faza 2B) Kthen `{here_pare, data_pare_pare, data_pare_fundit}` (Supabase primary, memory fallback) |
+| `/api/oferta-tracking-bulk` | POST | (Faza 2B) Body `{ids:[...]}` (max 100) — bulk read për trigger #6 |
+| `/api/oferta-save` | POST | Ruan oferta në backend memory (cross-device viewing) |
+| `/api/oferta-sync-all` | POST | Bulk push i të gjitha ofertave nga agjenti |
+| `/api/oferta-data/:id` | GET | Kthen ofertën specifike (përdoret nga oferta-view.html) |
 | `/api/shkarko/:fileName` | GET | Download i skedarit të gjeneruar |
 
 ### Backend URL
@@ -118,13 +127,113 @@ sigal-platform/
 ### Render Environment Variables
 
 ```
-PORT             # auto nga Render
-NODE_VERSION     # 20.0.0 (sipas render.yaml)
-BREVO_API_KEY    # vendoset manualisht (sync:false në yaml)
-SENDER_EMAIL     # gjonbalajagon@gmail.com
+PORT                  # auto nga Render
+NODE_VERSION          # 20.0.0 (sipas render.yaml)
+BREVO_API_KEY         # vendoset manualisht (sync:false në yaml)
+SENDER_EMAIL          # gjonbalajagon@gmail.com
+SUPABASE_URL          # (Faza 2B) p.sh. https://xxx.supabase.co
+SUPABASE_SECRET_KEY   # (Faza 2B) service_role key — vetëm backend
 ```
 
 > ⚠️ Brevo "Authorized IPs" duhet të jetë i disable (ose Render IP të shtohet manualisht — IP mund të ndryshojë)
+> ⚠️ Supabase **service_role** key (jo anon!) — RLS bllokon klientin direkt, vetëm backend kalon
+
+---
+
+## 🗄️ Supabase Integration (Faza 2B / DEC-042)
+
+**Scope:** Mini — vetëm tracking views, jo migrim i plotë i të dhënave.
+
+### Tabela: `oferta_tracking`
+
+```sql
+CREATE TABLE oferta_tracking (
+  id BIGSERIAL PRIMARY KEY,
+  oferta_id TEXT NOT NULL UNIQUE,    -- stable id (oft_xxx)
+  here_pare INTEGER NOT NULL DEFAULT 0,
+  data_pare_pare TIMESTAMPTZ,
+  data_pare_fundit TIMESTAMPTZ,
+  ip_agjent TEXT,
+  user_agent_pare TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+**RLS:** Enabled, policy `USING (false)` — vetëm `SUPABASE_SECRET_KEY` kalon.
+
+### Data Flow — Trigger #6
+
+```
+                       ┌─────────────────────┐
+                       │  Klienti hap link   │
+                       │  oferta-view.html   │
+                       │  ?id=oft_xxx        │
+                       └──────────┬──────────┘
+                                  │ trackHapje()
+                                  ▼
+                   ┌──────────────────────────────┐
+                   │  POST /api/oferta-track      │
+                   │  { ofertaId, event:'hapje' } │
+                   └──────────────┬───────────────┘
+                                  │
+                       ┌──────────┴──────────┐
+                       │                     │
+                       ▼                     ▼
+              ┌────────────────┐    ┌─────────────────┐
+              │ ofertaTracking │    │  Supabase       │
+              │  (in-memory)   │    │  upsert/update  │
+              │  PRIMARY       │    │  PERSISTENT     │
+              └────────────────┘    └─────────────────┘
+                                              │
+                                              │ async
+                                              ▼
+                                     ┌──────────────────┐
+                                     │ oferta_tracking  │
+                                     │ here_pare++      │
+                                     └──────────────────┘
+
+                       ┌─────────────────────┐
+                       │  detyrat.html hapet │
+                       └──────────┬──────────┘
+                                  │ skanoOfertaParEHere35()
+                                  ▼
+                  ┌──────────────────────────────────┐
+                  │ POST /api/oferta-tracking-bulk   │
+                  │ { ids: [oft_a, oft_b, ...] }     │
+                  └──────────────┬───────────────────┘
+                                 │
+                       ┌─────────┴──────────┐
+                       │                    │
+                       ▼                    ▼
+              ┌──────────────────┐  ┌────────────────┐
+              │  Supabase SELECT │  │ Memory fallback│
+              │  WHERE id IN(...)│  │ për ids që     │
+              │  PRIMARY         │  │ mungojnë       │
+              └────────┬─────────┘  └────────────────┘
+                       │
+                       ▼
+              ┌──────────────────────────────┐
+              │ Për secilën me here_pare 3-5:│
+              │ krijo detyrë kritike auto    │
+              │ (de-dup me makeRregullKey)   │
+              └──────────────────────────────┘
+```
+
+### Fallback behavior
+
+| Skenari | Sjellja |
+|---|---|
+| Supabase OK | Primary = Supabase; memory si cache + speed boost |
+| Supabase down | Backend log warning; memory bëhet sole; **trigger #6 prap punon** për oferta që janë në memory |
+| Env vars mungojnë (dev) | `supabaseClient.js` eksporton `null`; backend startup OK; trigger #6 lexon vetëm memory |
+| Render restart | Memory humbet; Supabase ruan; pas restart, oferta të vjetra mund të humbasin disa view-ime memory-only që s'u sinkronizuan |
+
+### Konvencione
+
+- **Çelësi** te `oferta_tracking.oferta_id` është **stable id** (`oft_xxx`), JO array index
+- Oferta links e gjeneruara nga `kopjoLink`/`dergoEmail` përdorin stable id (Faza 2B në `js/oferta.js`)
+- Oferta legacy me URL `?id=N` (numeric) prap funksionojnë te tracking (Supabase mban çfarëdo string), por NUK triggerojnë #6 sepse detyrat.js filtron vetëm me stable id
 
 ---
 

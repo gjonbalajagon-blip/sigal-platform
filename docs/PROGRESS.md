@@ -26,6 +26,53 @@ Format:
 
 ---
 
+## 2026-06-23 - Faza 2B: Supabase mini + Trigger #6 (oferta parë 3-5 herë)
+
+**Tipi:** Integrim infrastrukturor + funksionalitet i ri
+**Statusi:** ✅ Përfunduar (commit b5861f7)
+
+**Konteksti:**
+Faza 2A.3 e zhbllokoi këtë (stable-ID). User-i krijoi llogari Supabase manualisht + tabelë `oferta_tracking` + env vars te Render. Trigger #6 ishte funksionaliteti i fundit i premtuar për detyrat (5 lokale + 1 i ri).
+
+**Çka u bë:**
+- ✅ `@supabase/supabase-js@^2.39` shtuar te package.json
+- ✅ `js-server/supabaseClient.js` — klient fallback-safe (null nëse env vars mungojnë)
+- ✅ `server.js`: import Supabase + dual-write te `/api/oferta-track event=hapje`
+- ✅ 2 endpoint-e të reja: `GET /api/oferta-tracking/:id`, `POST /api/oferta-tracking-bulk` (limit 100)
+- ✅ `js/oferta.js`: kopjoLink/dergoEmail/syncToBackend përdorin stable `o.id` jo array index
+- ✅ `js/detyrat.js`: `skanoOfertaParEHere35()` async, integruar pas 5 trigger-ave ekzistues
+  - Filtër kandidatë: ka id, jo konfirmuar/realizuar/anuluar/skaduar
+  - Cache sessionStorage 30 sek
+  - Detyrë: prioriteti kritike, afati = nesër, de-dup me `auto_oferta_pare_35`
+- ✅ `server.js /api/oferta-sync-all`: çelës stable id
+
+**Çka NUK u prek:**
+- 🚫 5 triggers ekzistues (logjikë e paprekur)
+- 🚫 De-duplikim, toast undo, pastrim 90d
+- 🚫 UI Detyrat (vetëm shtim logjike, jo komponentë vizualë)
+- 🚫 Module të tjera jashtë oferta + detyrat
+
+**Vendime gjatë rrugës:**
+- 🟢 Range 3-5 hapje (jo >=3) — për të shmangur detyra dublikate për oferta të shumë-shikuara
+- 🟢 Afati nesër (jo sot) — agjenti ka kohë të planifikojë telefonatën, jo flash deadline
+- 🟢 Cache invalidim kur kandidatët ndryshojnë (jo TTL i thjeshtë) — refresh i menjëhershëm pas shto/edit ofertë
+
+**Probleme që u hasën:**
+- Stable id në URL kërkonte rrjedhje konsistente: oferta link → backend tracking → bulk fetch. U konvertuan të 3 vendet te oferta.js (kopjoLink, dergoEmail, syncToBackend).
+
+**Verifikim manual i nevojshëm nga user-i:**
+1. Render do auto-deploy pas push — verifiko se `[Supabase] Client inicializuar OK` shfaqet në Render logs
+2. Hap link të një ofertë test (kopjoLink) → URL duhet të ketë `?id=oft_xxx`
+3. Hap atë URL 3 herë (incognito apo herë të ndryshme) → te Supabase Table Editor → `oferta_tracking` rresht me here_pare=3
+4. Hap detyrat.html → "Oferta parë 3 herë — {emri}" e re duhet të shfaqet
+
+**Çka mbetet për Faza 2C:**
+- Ballina (Dashboard + Detyrat split-view)
+
+**Lidhje:** DEC-042 (Supabase mini), DEC-043 (Trigger #6), mbështetet në DEC-036 + DEC-034
+
+---
+
 ## 2026-06-23 - Faza 2A.3: Stable-ID Migration (DEC-036 implementuar)
 
 **Tipi:** Bug fix arkitekturor + migrim të dhënash

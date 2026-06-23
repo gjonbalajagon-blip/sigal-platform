@@ -1036,6 +1036,108 @@ Heqje e block-ut, por bllokim i select-it të prioritetit:
 
 ---
 
+## DEC-042: Supabase Mini — vetëm tracking, jo migrim i plotë
+**Data:** 2026-06-23
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2B, commit b5861f7)
+
+### Konteksti
+Trigger #6 (oferta parë 3-5 herë) kërkon counter persistent të view-imeve. Backend ekzistues kishte vetëm in-memory `ofertaTracking{}` — humbej në çdo Render restart. Migrim i plotë te Supabase (DEC-PROPOSED-001) ishte overkill; vetëm tracking ka nevojë për persistencë reale.
+
+### Vendimi
+Setup minimal i Supabase me **vetëm 1 tabelë** dhe arkitekturë **dual-write**:
+
+**Schema (krijuar manualisht në Supabase):**
+```sql
+CREATE TABLE oferta_tracking (
+  id BIGSERIAL PRIMARY KEY,
+  oferta_id TEXT NOT NULL UNIQUE,    -- stable id si oft_xxx
+  here_pare INTEGER NOT NULL DEFAULT 0,
+  data_pare_pare TIMESTAMPTZ,
+  data_pare_fundit TIMESTAMPTZ,
+  ip_agjent TEXT,
+  user_agent_pare TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+RLS enabled me policy `USING(false)` — vetëm SUPABASE_SECRET_KEY kalon.
+
+**Backend (`js-server/supabaseClient.js` + `server.js`):**
+- Klient fallback-safe: nëse `SUPABASE_URL`/`SUPABASE_SECRET_KEY` mungojnë → null + warning, backend vazhdon me in-memory pa crash
+- `/api/oferta-track event=hapje`: dual-write (memory primary për response speed, Supabase persist async best-effort)
+- Endpoint-et e reja: `GET /api/oferta-tracking/:id`, `POST /api/oferta-tracking-bulk`
+
+### Alternativat e Refuzuara
+- ❌ **Migrim i plotë i të dhënave te Supabase** (DEC-PROPOSED-001) — overkill për MVP, mban kompleks scope-in
+- ❌ **Vetëm Supabase, pa in-memory** — humbet response speed, vulnerable ndaj Supabase outage
+- ❌ **Vetëm in-memory** (status quo) — humb counter në çdo Render restart, bug i njohur
+
+### Konsekuencat
+- ✅ Tracking persistent (mbijeton restart Render)
+- ✅ Dual-write garanton që asnjë response s'pret Supabase (latencë e ulët)
+- ✅ Fallback-safe — outage Supabase nuk crashon backend
+- ⚠️ Konsistencë eventuale (jo immediate) midis memory dhe Supabase për disa sekonda
+- ⚠️ Skema vetëm për tracking; oferta/kontratat data ende localStorage (DEC-001 vazhdon)
+
+### Env vars (vendosur te Render)
+- `SUPABASE_URL` (psh `https://xxxxxxxxxxxxx.supabase.co`)
+- `SUPABASE_SECRET_KEY` (service_role key — vetëm backend)
+
+**MOS vendos** anon key — RLS bllokon klientin direkt; vetëm backend duhet të lexojë/shkruajë.
+
+---
+
+## DEC-043: Trigger #6 — Oferta Parë 3-5 Herë → Detyrë Kritike
+**Data:** 2026-06-23
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2B, commit b5861f7)
+
+### Konteksti
+Pas Faza 2A.2, kishim 5 triggers auto te detyrat. Mungonte signal i fortë interesi: kur klienti e hap ofertën disa herë por nuk konfirmon, kjo është "warm lead" që agjenti duhet ta kontaktojë IMENDËT.
+
+Range 3-5 hapje është "sweet spot":
+- <3 hapje → klienti është thjesht duke parë, ende jo i interesuar
+- 3-5 hapje → seriozisht duke shqyrtuar, kontaktim me një telefonatë mund të mbyllë shitjen
+- >5 hapje → ka kaluar pikën e shqyrtimit, ndoshta diçka tjetër (ndarje me familjar, etj.) — më pak veprues
+
+### Vendimi
+Trigger asinkron i ri te `gjeneroDetyratAuto()`, që:
+
+1. Filtron ofertat **kandidate**: ka `id`, jo konfirmuar, jo realizuar, jo anuluar, jo i skaduar
+2. POST `/api/oferta-tracking-bulk` me ID-të (max 100 për thirrje)
+3. Për secilën me `here_pare ∈ [3, 5]`: krijon detyrë
+4. **Prioriteti: kritike** (sinjal interesi i fortë)
+5. **Afati: nesër** (kontaktim urgjent)
+6. **De-dup**: `makeRregullKey({moduli:'oferta', referencaId:o.id, rregulla:'auto_oferta_pare_35'})`
+
+**Cache strategjia:**
+- sessionStorage `oferta_tracking_cache` me TTL 30 sekonda
+- Cache invalidohet nëse lista e kandidatëve ndryshon (psh oferta e re shtuar)
+- Mbron nga fetch i dyfishtë nëse user refresh-on shumë herë
+
+**Error handling:**
+- Nëse `/api/oferta-tracking-bulk` fail (network, Supabase down) → `console.warn` dhe SKIP trigger #6
+- Nuk crashon gjenerimin auto të 5 trigger-ave të tjerë
+
+### Alternativat e Refuzuara
+- ❌ **Range >5** — humb urgjencën; lead-i është "i ftohur"
+- ❌ **Range >=3 pa upper bound** — krijon detyra dublikate për oferta parë 10+ herë (psh klienti e dërgon kolegët ta shohin)
+- ❌ **Sync fetch (blocking)** — vonon hapjen e detyrat.html me 100-500ms
+- ❌ **Cache pa TTL** — vonon refresh të dhënave kur user pret aktualizimin
+
+### Konsekuencat
+- ✅ Agjentët kapin "warm leads" pa kërkuar manual
+- ✅ Pa rrezik shtimi i 5-6 detyrash dublikate për një ofertë (range bound)
+- ✅ Fallback i sigurt: pa Supabase → skip silent, jo crash
+- ⚠️ Kërkon që oferta link të përdorë stable id (oft_xxx) — implementuar në commit të njëjtë (kopjoLink/dergoEmail në oferta.js)
+- ⚠️ Oferta legacy me URL të bazuara në index (email të vjetra) nuk do të triggerohen — i pranuar (rare case)
+
+### Lidhje
+- Mbështetet te DEC-036 (stable-ID) për konsistencën e burimi.referencaId
+- Mbështetet te DEC-042 (Supabase mini) për burim të dhënash
+- Mbështetet te DEC-034 (de-duplikim) për mos-përsëritjen
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase
