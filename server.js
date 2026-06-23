@@ -30,6 +30,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const { gjenerKontrate } = require('./js/gjenero-kontrate');
+const supabase = require('./js-server/supabaseClient'); // null nëse env vars mungojnë
 
 const app = express();
 
@@ -95,12 +96,15 @@ app.get('/api/oferta-data/:id', (req, res) => {
 });
 
 // Bulk sync — agjenti push-on të gjitha ofertat me një thirrje
+// Faza 2B: çelës është stable id (o.id); fallback te index për oferta pa id (legacy)
 app.post('/api/oferta-sync-all', (req, res) => {
     try {
         const { ofertat } = req.body;
         if (!Array.isArray(ofertat)) return res.status(400).json({ error: 'ofertat must be array' });
         ofertat.forEach((o, i) => {
-            if (o) ofertaStore[String(i)] = o;
+            if (!o) return;
+            const key = o.id || String(i);
+            ofertaStore[key] = o;
         });
         res.json({ ok: true, count: Object.keys(ofertaStore).length });
     } catch (e) {
@@ -110,21 +114,69 @@ app.post('/api/oferta-sync-all', (req, res) => {
 
 // ============================================
 // TRACKING
+// In-memory primary cache + Supabase persistence (Faza 2B / DEC-042)
+// Supabase tabela: oferta_tracking { oferta_id (PK), here_pare, data_pare_pare, data_pare_fundit, ... }
 // ============================================
 const ofertaTracking = {};
 
-app.post('/api/oferta-track', (req, res) => {
+async function ruajHapjeNeSupabase(ofertaId, userAgent, ip) {
+    if (!supabase) return false;
+    try {
+        // Lexo ekzistuesin
+        const { data: ekz, error: selErr } = await supabase
+            .from('oferta_tracking')
+            .select('here_pare, data_pare_pare')
+            .eq('oferta_id', ofertaId)
+            .maybeSingle();
+        if (selErr) { console.warn('[Supabase] select error:', selErr.message); return false; }
+        const now = new Date().toISOString();
+        if (ekz) {
+            const { error: updErr } = await supabase
+                .from('oferta_tracking')
+                .update({
+                    here_pare: (ekz.here_pare || 0) + 1,
+                    data_pare_fundit: now,
+                    updated_at: now
+                })
+                .eq('oferta_id', ofertaId);
+            if (updErr) { console.warn('[Supabase] update error:', updErr.message); return false; }
+        } else {
+            const { error: insErr } = await supabase
+                .from('oferta_tracking')
+                .insert({
+                    oferta_id: ofertaId,
+                    here_pare: 1,
+                    data_pare_pare: now,
+                    data_pare_fundit: now,
+                    ip_agjent: ip || null,
+                    user_agent_pare: userAgent || null
+                });
+            if (insErr) { console.warn('[Supabase] insert error:', insErr.message); return false; }
+        }
+        return true;
+    } catch (e) {
+        console.warn('[Supabase] ruajHapje exception:', e.message);
+        return false;
+    }
+}
+
+app.post('/api/oferta-track', async (req, res) => {
     try {
         const { ofertaId, event, data } = req.body;
         if (!ofertaId || !event) return res.status(400).json({ error: 'Missing ofertaId or event' });
-        if (!ofertaTracking[ofertaId]) {
-            ofertaTracking[ofertaId] = { statusi: 'e_krijuar', hapjet: [], konfirmimi: null, kohaTotale: 0 };
+        if (String(ofertaId).length > 100) return res.status(400).json({ error: 'ofertaId too long' });
+        const ofertaIdStr = String(ofertaId);
+        if (!ofertaTracking[ofertaIdStr]) {
+            ofertaTracking[ofertaIdStr] = { statusi: 'e_krijuar', hapjet: [], konfirmimi: null, kohaTotale: 0 };
         }
-        const t = ofertaTracking[ofertaId];
+        const t = ofertaTracking[ofertaIdStr];
         const now = new Date().toISOString();
         if (event === 'hapje') {
             if (t.statusi === 'e_krijuar' || t.statusi === 'e_derguar') t.statusi = 'e_pare';
             t.hapjet.push({ data: now, userAgent: data?.userAgent || '' });
+            // Dual-write: Supabase për persistencë (best-effort, mos blloko response)
+            const ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || '').split(',')[0].trim();
+            ruajHapjeNeSupabase(ofertaIdStr, data?.userAgent || '', ip).catch(()=>{});
         } else if (event === 'koha') {
             t.kohaTotale += (data?.sekonda || 0);
         } else if (event === 'konfirmim') {
@@ -134,6 +186,76 @@ app.post('/api/oferta-track', (req, res) => {
         res.json({ ok: true, statusi: t.statusi });
     } catch (e) {
         console.error('Track error:', e);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// READ single: Faza 2B / DEC-043
+app.get('/api/oferta-tracking/:oferta_id', async (req, res) => {
+    const ofertaId = String(req.params.oferta_id);
+    if (!ofertaId || ofertaId.length > 100) return res.status(400).json({ error: 'Invalid id' });
+    // Supabase primary
+    if (supabase) {
+        try {
+            const { data, error } = await supabase
+                .from('oferta_tracking')
+                .select('oferta_id, here_pare, data_pare_pare, data_pare_fundit')
+                .eq('oferta_id', ofertaId)
+                .maybeSingle();
+            if (!error && data) return res.json(data);
+        } catch (e) { /* fallback */ }
+    }
+    // Fallback in-memory
+    const t = ofertaTracking[ofertaId];
+    if (!t) return res.json({ oferta_id: ofertaId, here_pare: 0, data_pare_pare: null, data_pare_fundit: null });
+    res.json({
+        oferta_id: ofertaId,
+        here_pare: t.hapjet.length,
+        data_pare_pare: t.hapjet[0]?.data || null,
+        data_pare_fundit: t.hapjet[t.hapjet.length - 1]?.data || null
+    });
+});
+
+// READ bulk: për trigger #6 (Faza 2B)
+app.post('/api/oferta-tracking-bulk', async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids must be array' });
+        if (ids.length === 0) return res.json({ tracking: {} });
+        if (ids.length > 100) return res.status(400).json({ error: 'Max 100 ids per request' });
+        const cleanIds = ids.filter(x => typeof x === 'string' && x.length > 0 && x.length <= 100);
+        const out = {};
+        // Supabase primary
+        if (supabase && cleanIds.length > 0) {
+            try {
+                const { data, error } = await supabase
+                    .from('oferta_tracking')
+                    .select('oferta_id, here_pare, data_pare_pare, data_pare_fundit')
+                    .in('oferta_id', cleanIds);
+                if (!error && Array.isArray(data)) {
+                    data.forEach(row => { out[row.oferta_id] = row; });
+                }
+            } catch (e) {
+                console.warn('[Supabase] bulk select exception:', e.message);
+            }
+        }
+        // Plotëso ato që mungojnë me in-memory
+        cleanIds.forEach(id => {
+            if (!out[id]) {
+                const t = ofertaTracking[id];
+                if (t && t.hapjet.length > 0) {
+                    out[id] = {
+                        oferta_id: id,
+                        here_pare: t.hapjet.length,
+                        data_pare_pare: t.hapjet[0].data,
+                        data_pare_fundit: t.hapjet[t.hapjet.length - 1].data
+                    };
+                }
+            }
+        });
+        res.json({ tracking: out, source: supabase ? 'supabase+memory' : 'memory' });
+    } catch (e) {
+        console.error('Bulk tracking error:', e);
         res.status(500).json({ error: 'Server error' });
     }
 });

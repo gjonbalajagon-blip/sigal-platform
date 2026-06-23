@@ -8,6 +8,9 @@
 // Stable-ID backfill (DEC-036 / Faza 2A.3)
 if (typeof backfillAllIds === 'function') backfillAllIds();
 let detyrat = JSON.parse(localStorage.getItem('detyrat')) || [];
+
+// Faza 2B: backend API për trigger #6
+const DET_API_BASE = 'https://sigal-platform.onrender.com';
 let currentFilter = localStorage.getItem('detyrat_filter_state') || 'all';
 let groupState = (() => {
     try { return JSON.parse(localStorage.getItem('detyrat_group_state')) || {}; }
@@ -272,6 +275,103 @@ function gjeneroDetyratAuto() {
     if (krijuara > 0) {
         ruajDetyrat();
         localStorage.setItem('detyrat_last_run', new Date().toISOString());
+    }
+
+    // TRIGGER 6 (async, Faza 2B): Oferta parë 3-5 herë
+    skanoOfertaParEHere35().catch(e => console.warn('[T6] skip:', e.message));
+
+    return krijuara;
+}
+
+// =====================================================
+// TRIGGER #6 (Faza 2B / DEC-043): Oferta parë 3-5 herë → detyrë kritike
+// Burimi: Supabase oferta_tracking përmes /api/oferta-tracking-bulk
+// Cache: sessionStorage 30 sek (mos thirr përsëri menjëherë)
+// =====================================================
+async function skanoOfertaParEHere35() {
+    const ofertatLs = JSON.parse(localStorage.getItem('ofertat') || '[]');
+    // Filter: ka stable id, jo konfirmuar, jo realizuar, jo anuluar/skaduar
+    const tani = new Date();
+    const kandidate = ofertatLs.filter(o => {
+        if (!o || !o.id) return false;
+        if (o.konfirmuar || o.realizuar) return false;
+        if (o.statusi === 'e_anuluar') return false;
+        // Skip nëse skaduar (>30d nga krijimi pa konfirmim)
+        if (o.dataSkadon) {
+            const ds = parseDataAny(o.dataSkadon);
+            if (ds && ds < tani) return false;
+        }
+        return true;
+    });
+    if (kandidate.length === 0) return 0;
+
+    // Cache check (30s)
+    const cacheKey = 'oferta_tracking_cache';
+    let cache = null;
+    try { cache = JSON.parse(sessionStorage.getItem(cacheKey) || 'null'); } catch (e) {}
+    const tashTs = Date.now();
+    let tracking = null;
+    if (cache && cache.ts && (tashTs - cache.ts) < 30000 && cache.ids && cache.data) {
+        // Vetëm nëse cache mbulon TË GJITHA kandidatët aktualë
+        const idsKandidat = kandidate.map(o => o.id).sort().join(',');
+        const idsCache = (cache.ids || []).sort().join(',');
+        if (idsKandidat === idsCache) tracking = cache.data;
+    }
+
+    if (!tracking) {
+        // Fetch nga backend
+        const ids = kandidate.map(o => o.id).slice(0, 100);
+        try {
+            const r = await fetch(DET_API_BASE + '/api/oferta-tracking-bulk', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids })
+            });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const json = await r.json();
+            tracking = json.tracking || {};
+            try { sessionStorage.setItem(cacheKey, JSON.stringify({ ts: tashTs, ids, data: tracking })); } catch (e) {}
+        } catch (e) {
+            console.warn('[T6] bulk fetch failed:', e.message);
+            return 0;
+        }
+    }
+
+    // De-dup: mblidh çelësat e detyrave T6 ekzistues
+    const ekzT6 = new Set(
+        detyrat
+            .filter(d => d.lloji === 'auto' && d.statusi !== 'e_perfunduar' && d.statusi !== 'e_anuluar' && d.burimi && d.burimi.rregulla === 'auto_oferta_pare_35')
+            .map(d => makeRregullKey(d.burimi))
+    );
+
+    let krijuara = 0;
+    const sotIso = new Date().toISOString().split('T')[0];
+    const afatiNeser = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+    kandidate.forEach(o => {
+        const t = tracking[o.id];
+        if (!t || !t.here_pare) return;
+        const n = Number(t.here_pare);
+        if (n < 3 || n > 5) return;
+        const key = makeRregullKey({ moduli: 'oferta', referencaId: o.id, rregulla: 'auto_oferta_pare_35' });
+        if (ekzT6.has(key)) return;
+        detyrat.push(krijoDetyreObjektAuto({
+            titulli: `Oferta parë ${n} herë — ${o.emri || 'klient'}`,
+            pershkrimi: `Klienti e ka hapur ofertën ${n} herë por s'ka konfirmuar — sinjal interesi i fortë. Kontaktoje sa më parë.`,
+            prioriteti: 'kritike',
+            burimi: { moduli: 'oferta', referencaId: o.id, rregulla: 'auto_oferta_pare_35', metadata: { here_pare: n, emri: o.emri } },
+            data_afati: afatiNeser,
+            pergjegjesi: o.krijuarNga || null
+        }));
+        krijuara++;
+    });
+
+    if (krijuara > 0) {
+        ruajDetyrat();
+        // Re-render aksesibël për UI të hapur
+        if (typeof renderAccordion === 'function') {
+            try { renderAccordion(); } catch (e) {}
+        }
     }
     return krijuara;
 }

@@ -19,9 +19,11 @@ function trackBadge(statusi){
 function ruajNeStorage(){localStorage.setItem('ofertat',JSON.stringify(ofertat));syncAllToBackend();}
 
 // Sync ofertat te Render (best-effort, async, klienti merr nga backend në oferta-view)
+// Faza 2B: përdor stable id (oft_xxx) si çelës — kompatibël me Supabase tracking
 function syncToBackend(index){
     try{
-        fetch(TAPI+'/api/oferta-save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:String(index),oferta:ofertat[index]})});
+        const o=ofertat[index];if(!o||!o.id)return;
+        fetch(TAPI+'/api/oferta-save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:o.id,oferta:o})});
     }catch(e){}
 }
 function syncAllToBackend(){
@@ -508,12 +510,13 @@ function llogaritDitet(dataSkadon){
 }
 function dergoEmail(index){
     const o=ofertat[index];if(!o.email){alert('Klienti nuk ka email te regjistruar!');return;}
-    const link='https://sigal-platform-shendet.vercel.app/pages/oferta-view.html?id='+index;
+    if(!o.id){alert('Oferta nuk ka ID të qëndrueshme. Rifresko faqen.');return;}
+    const link='https://sigal-platform-shendet.vercel.app/pages/oferta-view.html?id='+encodeURIComponent(o.id);
     const subject=encodeURIComponent('Ofertë nga SIGAL Insurance Group - '+o.emri);
     const body=encodeURIComponent('I nderuar '+o.emri+',\n\nJu dërgojmë ofertën tonë për sigurim shëndetësor.\n\nJu lutem klikoni linkun më poshtë për të parë paketën dhe për të konfirmuar zgjedhjen tuaj:\n\n'+link+'\n\nValiditeti: 30 ditë nga '+o.dataKrijimit+'\n\nMe respekt,\nSIGAL Insurance Group');
     window.open('mailto:'+o.email+'?subject='+subject+'&body='+body);
     ofertat[index].statusi=ofertat[index].statusi==='e_krijuar'?'e_derguar':ofertat[index].statusi;ruajNeStorage();
-    try{fetch(TAPI+'/api/oferta-derguar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId:String(index)})});}catch(e){}
+    try{fetch(TAPI+'/api/oferta-derguar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId:o.id})});}catch(e){}
 }
 function krijoKontrate(index){
     if(!confirm('A jeni i sigurt qe doni te krijoni kontrate?\nOferta eshte pranuar?'))return;
@@ -539,11 +542,12 @@ async function gjeneroWord(index){
     }catch(err){alert('Serveri nuk eshte aktiv!');}
 }
 function kopjoLink(index){
-    const link='https://sigal-platform-shendet.vercel.app/pages/oferta-view.html?id='+index;
+    const o=ofertat[index];if(!o||!o.id){alert('Oferta nuk ka ID të qëndrueshme. Rifresko faqen.');return;}
+    const link='https://sigal-platform-shendet.vercel.app/pages/oferta-view.html?id='+encodeURIComponent(o.id);
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(link).then(()=>tregoToast('Linku u kopjua!')).catch(()=>kopjoFallback(link));
     else kopjoFallback(link);
     ofertat[index].statusi=ofertat[index].statusi==='e_krijuar'?'e_derguar':ofertat[index].statusi;ruajNeStorage();
-    try{fetch(TAPI+'/api/oferta-derguar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId:String(index)})});}catch(e){}
+    try{fetch(TAPI+'/api/oferta-derguar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ofertaId:o.id})});}catch(e){}
 }
 function kopjoFallback(text){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');tregoToast('Linku u kopjua!');}catch(e){alert('Kopjimi dështoi.');}document.body.removeChild(ta);}
 function tregoToast(msg){
