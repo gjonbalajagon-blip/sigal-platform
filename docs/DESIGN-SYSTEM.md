@@ -5,6 +5,102 @@
 
 ---
 
+## 🚨 RREGULLA STRIKTE — LEXO PARA SE TË SHKRUASH KOD
+
+> **Problemi historik:** Në Faza 2A, 2A.2, mobile redesign, dhe migrime të tjera, komponentë të rinj kanë dalë me stil të ndryshëm nga ato ekzistuese. Kjo është një bug rekurent që kushton kohë rishikimi/rishkrimi. Këto rregulla janë **DETYRUESE**.
+
+### Rregulla 1 — Mos përdor hex hardcoded për ngjyra brand/semantic
+
+Tabela e zëvendësimit. **Çdo herë që shkruan kod të ri**, përdor variablën jo hex-in:
+
+| ❌ Mos shkruaj | ✅ Përdor |
+|---|---|
+| `#1e3a8a` | `var(--s-brand-dark)` |
+| `#3b82f6` | `var(--s-brand)` |
+| `#60a5fa` | `var(--s-brand-light)` |
+| `#ef4444` | `var(--s-danger)` ose `var(--s-red-dot)` (legacy) |
+| `#dc2626` | `var(--s-red)` |
+| `#f59e0b` | `var(--s-warning)` ose `var(--s-orange-dot)` (legacy) |
+| `#d97706` | `var(--s-orange)` |
+| `#10b981` | `var(--s-success)` ose `var(--s-green-dot)` (legacy) |
+| `#059669` | `var(--s-green)` |
+| `#fef2f2` | `var(--s-danger-bg)` ose `var(--s-red-bg)` (legacy) |
+| `#fffbeb` | `var(--s-warning-bg)` ose `var(--s-orange-bg)` (legacy) |
+| `#ecfdf5` | `var(--s-success-bg)` ose `var(--s-green-bg)` (legacy) |
+| `#0f172a` | `var(--s-text)` |
+| `#4b5563` | `var(--s-text-sub)` |
+| `#7c8aa8` | `var(--s-text-muted)` |
+| `#9ca3af` / `#9ca8c0` | `var(--s-text-faint)` |
+| `#e5e9f0` | `var(--s-border)` |
+| `#f1f5f9` | `var(--s-border-light)` |
+
+**Përjashtime të lejuara (hex hardcoded OK):**
+- Chart.js dataset colors (te `raportet.js`) — Chart.js nuk lexon CSS vars
+- SVG `stroke=` direkt brenda raw HTML te bell icon te `main.js` (legacy, do refactor)
+- Inline styles në `pages/oferta-view.html` (faqe publike e izoluar)
+
+### Rregulla 2 — Përdor klasa butoni ekzistuese, mos krijo të reja
+
+Klasat e disponueshme në `theme-v2.css`:
+
+| Klasa | Përdorim | Lokacion CSS |
+|---|---|---|
+| `.btn-primary` | Veprimi kryesor (Shto, Ruaj, Konfirmo) | linja ~368 |
+| `.btn-secondary` | Veprime sekondare (Anulo në toolbar) | linja ~384 |
+| `.btn-danger` | Veprime destruktive (Fshi, Anulo definitivisht) | linja ~395 |
+| `.btn-success` | Veprime përfundimtare (Konfirmo, Përfundo) | linja ~408 |
+| `.btn-cancel` | Anulo në drawer/modal (sfond i lehtë) | linja ~2070 |
+| `.btn-save` | Ruaj në drawer/modal (alias për primary) | linja ~2086 |
+
+**Mos krijo klasa butoni specifike per modul** — të katra semantic states janë mbuluar. Klasa `.det-action-*` ekzistuese te detyrat janë inline-style butona të vegjël (jo replacement për `.btn-*`).
+
+### Rregulla 3 — Topbar layout konsistent
+
+Struktura standarde e topbar (përdor `pages/kontratat.html` si referencë):
+
+```html
+<div class="topbar">
+    <h1>Titulli</h1>
+    <div class="topbar-right">
+        <!-- 1 button qendër: -->
+        <button class="btn-primary">...</button>
+
+        <!-- Ose 2+ butona qendër (wrap te .topbar-actions): -->
+        <div class="topbar-actions">
+            <button class="btn-primary">...</button>
+            <button class="btn-primary">...</button>
+        </div>
+
+        <!-- Bell + user injektohen automatikisht nga main.js djathtas -->
+    </div>
+</div>
+```
+
+Grid: `1fr auto 1fr` me `h1` start, action(s) center, utils end. **Mos shto inline styles** për pozicionim — CSS-i ekzistues e mbulon.
+
+### Rregulla 4 — Para se të krijosh komponentë vizualë të rinj
+
+**Çek-listë e detyrueshme:**
+
+1. ✅ A ekziston pattern i ngjashëm te theme-v2.css? `grep -n "^\.[komponentI]" css/theme-v2.css`
+2. ✅ A përdor module të tjera diçka të ngjashme? Lexo `pages/kontratat.html` (reference)
+3. ✅ A ka konvencion naming? (prefiks `det-` për detyrat, `kon-` për kontratat, etj.)
+4. ✅ A respekton spacing/radius standardin? `--r-sm: 8px; --r-md: 12px; --r-lg: 16px`
+5. ✅ A përdor variabla CSS jo hex hardcoded? (Rregulla 1)
+
+**Nëse je në dyshim — pyet user-in, mos vendos vetë.** Stil i kombinuar nga module të ndryshme është më keq se konsistent edhe nëse jo perfekt.
+
+### Rregulla 5 — Mos shkruaj CSS jashtë theme-v2.css
+
+Të gjitha rregullat CSS modulare shkojnë te `css/theme-v2.css`. Nuk lejohen:
+- `<style>` blocks inline në HTML (përveç oferta-view.html legacy)
+- File CSS shtesë për module të rinj
+- Stile inline `style="..."` për layout (vetëm për toggle dinamik psh `display:none` nga JS)
+
+**Përjashtim:** stile inline për state që ndryshon dinamikisht (`display:none` toggle, `width:` për charts) janë OK.
+
+---
+
 ## 🎨 Brand Identity
 
 ### Ngjyrat Kryesore (Brand Gradient)

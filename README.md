@@ -4,6 +4,25 @@ Platformë web për menaxhimin e kontratave të sigurimit shëndetësor për **S
 
 ---
 
+## ⚠️ Rregulla për Çdo Zhvillim të Ri
+
+**PARA se të shkruash çfarëdo kodi, sidomos UI:**
+
+1. **Lexo `docs/DESIGN-SYSTEM.md`** — sidomos sekcionin "🚨 RREGULLA STRIKTE" në krye
+2. **Skano `css/theme-v2.css`** për klasat ekzistuese (search me `^\.[prefix]`)
+3. **Shiko komponentët ekzistues** te modulet referente (oferta, kontratat, faturimi)
+4. **Nëse krijon komponentë vizualë të ri**, përshkruaj **çfarë** po bën dhe **pse**, **PARA** se ta shkruash
+5. **Nëse ke dyshim** për stil, ngjyrë, hapësirë — **PYET, mos vendos vetë**
+
+**Anti-patterns të zakonshëm që kanë prishur konsistencën më parë:**
+- ❌ Hex hardcoded (`#3b82f6`) në vend të variablave (`var(--s-brand)`)
+- ❌ Klasa të reja butoni në vend që të përdoren `.btn-primary` / `.btn-cancel` ekzistuese
+- ❌ Inline styles për layout (përdor klasa nga theme-v2.css)
+- ❌ CSS jashtë `theme-v2.css` për module të reja
+- ❌ Pozicionim manual të butonave në topbar (struktura standarde është grid e definuar tashmë)
+
+---
+
 ## 🚀 Quick Info
 
 - **Frontend:** Vanilla JS/HTML/CSS → Vercel: [`sigal-platform-shendet.vercel.app`](https://sigal-platform-shendet.vercel.app)
