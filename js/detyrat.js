@@ -711,7 +711,7 @@ function renderDenseRow(d) {
             afatiBadge = `<span class="det-badge det-badge-afati det-badge-afati-${cls}">${escapeHtml(txt)}</span>`;
         }
     } else if (isPerfunduar) {
-        afatiBadge = `<span class="det-badge det-badge-status-perfunduar">✓ Mbaroi</span>`;
+        afatiBadge = `<span class="det-badge det-badge-status-perfunduar"><i data-lucide="check"></i> Mbaroi</span>`;
     }
 
     // Ikona auto/manual
@@ -808,7 +808,7 @@ function renderExpandedDetails(d) {
             <i data-lucide="check"></i> Përfundo
         </button>`;
         if (isManagement()) {
-            actions += `<button class="det-action det-action-primary" onclick="hapAfatiModal('${d.id}', event)" type="button" style="background:linear-gradient(135deg,#475569,#64748b)">
+            actions += `<button class="det-action det-action-neutral" onclick="hapAfatiModal('${d.id}', event)" type="button">
                 <i data-lucide="calendar-clock"></i> Ndrysho afatin
             </button>`;
             actions += `<button class="det-action det-action-danger" onclick="anuloDetyre('${d.id}', event)" type="button">
@@ -855,15 +855,15 @@ function renderAccordion() {
 
     const groups = ngrupo(visible);
     const groupDefs = [
-        { id: 'kritike', titulli: '🔴 Kritike', items: groups.kritike, defaultOpen: true },
-        { id: 'te_rendesishme', titulli: '🟠 Të rëndësishme', items: groups.te_rendesishme, defaultOpen: true },
-        { id: 'normale', titulli: '🟡 Normale', items: groups.normale, defaultOpen: true },
-        { id: 'e_perfunduar', titulli: '✅ Të përfunduara', items: groups.e_perfunduar, defaultOpen: false }
+        { id: 'kritike', titulli: 'Kritike', iconLucide: 'alert-octagon', items: groups.kritike, defaultOpen: true },
+        { id: 'te_rendesishme', titulli: 'Të rëndësishme', iconLucide: 'alert-triangle', items: groups.te_rendesishme, defaultOpen: true },
+        { id: 'normale', titulli: 'Normale', iconLucide: 'circle-dot', items: groups.normale, defaultOpen: true },
+        { id: 'e_perfunduar', titulli: 'Të përfunduara', iconLucide: 'check-circle-2', items: groups.e_perfunduar, defaultOpen: false }
     ];
 
     let totalAll = visible.filter(d => d.statusi !== 'e_anuluar').length;
     if (totalAll === 0) {
-        cont.innerHTML = '<div class="det-empty"><i data-lucide="check-circle-2" style="width:36px;height:36px;color:#10b981"></i><div>Asnjë detyrë aktualisht ✓</div></div>';
+        cont.innerHTML = '<div class="det-empty"><i data-lucide="check-circle-2" style="width:36px;height:36px;color:var(--s-success)"></i><div>Asnjë detyrë aktualisht</div></div>';
         if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
@@ -913,7 +913,8 @@ function renderAccordion() {
                 ${groupCbSafe}
                 <div class="det-group-title">
                     <i data-lucide="${isOpen ? 'chevron-down' : 'chevron-right'}"></i>
-                    <span>${g.titulli}</span>
+                    <i data-lucide="${g.iconLucide}" class="det-group-icon-${g.id}"></i>
+                    <span>${escapeHtml(g.titulli)}</span>
                 </div>
                 <span class="det-group-count">${g.items.length}</span>
             </div>

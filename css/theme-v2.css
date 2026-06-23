@@ -59,6 +59,11 @@
   --s-success-bg:  #ecfdf5;
   --s-success-text:#065f46;
 
+  /* Neutral slate (DEC-040 extended) */
+  --s-slate-dark:  #475569;
+  --s-slate:       #64748b;
+  --s-slate-light: #94a3b8;
+
   /* Radii */
   --r-sm:  8px;
   --r-md:  12px;
@@ -2812,6 +2817,17 @@ body {
   border-color: #fecaca;
 }
 .det-action-danger:hover { background: #fee2e2; }
+.det-action-neutral {
+  background: linear-gradient(135deg, var(--s-slate-dark), var(--s-slate));
+  color: white;
+}
+.det-action-neutral:hover { box-shadow: 0 4px 12px rgba(71,85,105,0.35); }
+
+/* Ngjyrat e ikonave për grupet e prioritetit (group header icons) */
+.det-group-icon-kritike { color: var(--s-danger); }
+.det-group-icon-te_rendesishme { color: var(--s-warning); }
+.det-group-icon-normale { color: var(--s-brand); }
+.det-group-icon-e_perfunduar { color: var(--s-success); }
 
 /* Empty state */
 .det-empty {

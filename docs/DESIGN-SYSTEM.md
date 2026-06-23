@@ -33,6 +33,9 @@ Tabela e zëvendësimit. **Çdo herë që shkruan kod të ri**, përdor variabl�
 | `#9ca3af` / `#9ca8c0` | `var(--s-text-faint)` |
 | `#e5e9f0` | `var(--s-border)` |
 | `#f1f5f9` | `var(--s-border-light)` |
+| `#475569` | `var(--s-slate-dark)` |
+| `#64748b` | `var(--s-slate)` |
+| `#94a3b8` | `var(--s-slate-light)` |
 
 **Përjashtime të lejuara (hex hardcoded OK):**
 - Chart.js dataset colors (te `raportet.js`) — Chart.js nuk lexon CSS vars
