@@ -24,7 +24,7 @@ function initGreeting() {
     const tani = new Date();
     const muaji = MUAJT_AL[tani.getMonth()];
     const viti = tani.getFullYear();
-    document.getElementById('dashGreeting').innerHTML = `Përshëndetje, ${escapeHtml(name)} 👋`;
+    document.getElementById('dashGreeting').innerHTML = `Përshëndetje, ${escapeHtml(name)}`;
     document.getElementById('dashSubtitle').textContent = `${muaji} ${viti}`;
     document.getElementById('periodMuajBtn').textContent = `${muaji} ${viti}`;
     document.getElementById('periodVitBtn').textContent = `Viti ${viti}`;

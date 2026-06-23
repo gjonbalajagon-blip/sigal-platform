@@ -15,10 +15,10 @@ const DEME_COLS=['deme_nr_paguar','deme_vlera_paguar','deme_nr_pezull','deme_vle
 
 function merrSugjerime(r){
     const s=[],cr=r.cr_percent||0,p=r.primi_vjetor||0;
-    if(cr>100)s.push({tipi:'danger',teksti:'CR mbi 100% — shpenzimet dhe dëmet tejkalojnë primin',ikona:'🔴'});
-    else if(cr>80)s.push({tipi:'warning',teksti:'CR '+cr.toFixed(0)+'% — afër kufirit të profitabilitetit',ikona:'⚠️'});
-    else if(cr<30&&cr>0&&p>5000)s.push({tipi:'success',teksti:'CR '+cr.toFixed(0)+'% — kontratë me profitabilitet të lartë',ikona:'✅'});
-    if(p>50000)s.push({tipi:'info',teksti:'Primi '+formatMoney(p)+' — kontratë me peshë të lartë në portofol',ikona:'⭐'});
+    if(cr>100)s.push({tipi:'danger',teksti:'CR mbi 100% — shpenzimet dhe dëmet tejkalojnë primin',ikona:'alert-octagon'});
+    else if(cr>80)s.push({tipi:'warning',teksti:'CR '+cr.toFixed(0)+'% — afër kufirit të profitabilitetit',ikona:'alert-triangle'});
+    else if(cr<30&&cr>0&&p>5000)s.push({tipi:'success',teksti:'CR '+cr.toFixed(0)+'% — kontratë me profitabilitet të lartë',ikona:'check-circle-2'});
+    if(p>50000)s.push({tipi:'info',teksti:'Primi '+formatMoney(p)+' — kontratë me peshë të lartë në portofol',ikona:'star'});
     return s;
 }
 
@@ -148,7 +148,7 @@ function sortoListen(l){return[...l].sort((a,b)=>{if(currentSort==='primi')retur
 // TABLE
 function renderTabela(){
     const tbody=document.getElementById('rinTableBody');
-    if(!currentMuaj||rinovimet.length===0){tbody.innerHTML='<tr><td colspan="8"><div class="rin-empty"><div class="rin-empty-icon">📋</div><div class="rin-empty-title">Asnjë rinovim ende</div><div class="rin-empty-sub">Kliko "Importo" për të filluar</div></div></td></tr>';return;}
+    if(!currentMuaj||rinovimet.length===0){tbody.innerHTML='<tr><td colspan="8"><div class="rin-empty"><div class="rin-empty-icon"><i data-lucide="clipboard-list"></i></div><div class="rin-empty-title">Asnjë rinovim ende</div><div class="rin-empty-sub">Kliko "Importo" për të filluar</div></div></td></tr>';if(typeof lucide!=='undefined')lucide.createIcons();return;}
     if(filteredList.length===0){tbody.innerHTML='<tr><td colspan="8"><div class="rin-no-results">Asnjë rezultat me këto filtra</div></td></tr>';return;}
     const sorted=sortoListen(filteredList);let html='';
     sorted.forEach(r=>{
@@ -157,7 +157,7 @@ function renderTabela(){
         const crC=cr>90?'rin-lr-bad':cr>50?'rin-lr-warn':cr>0?'rin-lr-good':'rin-deme-none';
         const rowBg=cr>90?'background:rgba(254,202,202,.18);':'';
         html+=`<tr onclick="hapDrawer('${r.id}')" style="cursor:pointer;${rowBg}">
-            <td><div class="klient-name">${esc(r.kontraktuesi)}${cr>90?' <span style="font-size:9px;color:#ef4444;font-weight:700">⚠</span>':''}</div><div class="klient-sub">${esc(r.dega)} · ${esc(r.agjenti)}</div></td>
+            <td><div class="klient-name">${esc(r.kontraktuesi)}${cr>90?' <i data-lucide="alert-triangle" style="width:11px;height:11px;color:var(--s-danger);vertical-align:-1px"></i>':''}</div><div class="klient-sub">${esc(r.dega)} · ${esc(r.agjenti)}</div></td>
             <td style="font-size:11px;color:#64748b">${esc(r.nr_kontrates)}</td>
             <td class="rin-primi" style="text-align:right">${formatMoney(p)}</td>
             <td style="text-align:right" class="${d>0?'rin-deme-val':'rin-deme-none'}">${d>0?formatMoney(d):'—'}</td>
@@ -176,7 +176,7 @@ function hapDrawer(id){
     // Excel note
     const noteEl=document.getElementById('drExcelNote');
     const exK=(r.komente||[]).find(k=>k.tipi==='import');
-    noteEl.innerHTML=exK?`<div style="padding:8px 20px;background:#fffbeb;border-bottom:1px solid #fde68a;font-size:11px;color:#92400e;display:flex;align-items:center;gap:5px"><span>📝</span><strong>Shënim:</strong> ${esc(exK.teksti)}</div>`:'';
+    noteEl.innerHTML=exK?`<div style="padding:8px 20px;background:var(--s-warning-bg);border-bottom:1px solid #fde68a;font-size:11px;color:#92400e;display:flex;align-items:center;gap:5px"><i data-lucide="pencil" style="width:12px;height:12px;flex-shrink:0"></i><strong>Shënim:</strong> ${esc(exK.teksti)}</div>`:'';
     renderStatusPills(r.statusi);renderHumbjeSection(r);
 
     // Info + Finance merged in one gri block
@@ -231,7 +231,7 @@ function hapDrawer(id){
     // Sugjerime
     const sug=merrSugjerime(r),sugEl=document.getElementById('drSugjerime');
     if(sug.length>0){const bgM={danger:'#fef2f2',warning:'#fffbeb',success:'#f0fdf4',info:'#eff6ff'},bM={danger:'#fecaca',warning:'#fed7aa',success:'#bbf7d0',info:'#bfdbfe'},cM={danger:'#991b1b',warning:'#92400e',success:'#166534',info:'#1e40af'};
-        sugEl.innerHTML=sug.map(s=>`<div style="padding:8px 12px;background:${bgM[s.tipi]};border:1px solid ${bM[s.tipi]};border-radius:8px;font-size:11px;color:${cM[s.tipi]};margin-bottom:4px;display:flex;align-items:center;gap:6px"><span>${s.ikona}</span>${esc(s.teksti)}</div>`).join('');sugEl.style.display='';
+        sugEl.innerHTML=sug.map(s=>`<div style="padding:8px 12px;background:${bgM[s.tipi]};border:1px solid ${bM[s.tipi]};border-radius:8px;font-size:11px;color:${cM[s.tipi]};margin-bottom:4px;display:flex;align-items:center;gap:6px"><i data-lucide="${s.ikona}" style="width:13px;height:13px;flex-shrink:0"></i>${esc(s.teksti)}</div>`).join('');sugEl.style.display='';if(typeof lucide!=='undefined')lucide.createIcons();
     }else{sugEl.innerHTML='';sugEl.style.display='none';}
     // Propozimi
     renderPropozimPrimi(r);
@@ -247,18 +247,19 @@ function renderKontrateBtn(r){
     const el=document.getElementById('drKontrateBtn');
     if(r.kontrata_derguar){
         el.innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:8px 0">
-            <span style="color:#22c55e;font-size:14px">✓</span>
+            <i data-lucide="check" style="color:var(--s-success);width:14px;height:14px"></i>
             <span style="font-size:12px;color:#166534;font-weight:500">Kontrata e dërguar ${r.kontrata_derguar_data?formatKomentDate(r.kontrata_derguar_data):''}</span>
         </div>`;
     } else if(r.statusi==='rinovuar'){
-        el.innerHTML=`<button onclick="krijoKontrate()" style="width:100%;padding:10px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
-            📄 Krijo Kontratën në Sistem
+        el.innerHTML=`<button onclick="krijoKontrate()" style="width:100%;padding:10px;background:linear-gradient(135deg,var(--s-brand-dark),var(--s-brand));color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
+            <i data-lucide="file-text" style="width:14px;height:14px"></i> Krijo Kontratën në Sistem
         </button>`;
     } else {
-        el.innerHTML=`<button onclick="hapKontrateWizard()" style="width:100%;padding:10px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
-            📄 Përgatit & Dërgo Kontratën
+        el.innerHTML=`<button onclick="hapKontrateWizard()" style="width:100%;padding:10px;background:linear-gradient(135deg,var(--s-brand-dark),var(--s-brand));color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
+            <i data-lucide="file-text" style="width:14px;height:14px"></i> Përgatit & Dërgo Kontratën
         </button>`;
     }
+    if(typeof lucide!=='undefined')lucide.createIcons();
 }
 
 function hapKontrateWizard(){
@@ -300,7 +301,7 @@ function renderPropozimPrimi(r){
     const p=r.primi_vjetor||0,cr=r.cr_percent||0,k=r.kosto_totale||0;
     if(p<=0||cr<=0){el.innerHTML='';el.style.display='none';return;}
     el.style.display='';
-    if(cr<=90){el.innerHTML='<div style="padding:8px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;font-size:12px;color:#166534;display:flex;align-items:center;gap:6px"><span>✅</span> Nuk nevojitet rritje — CR brenda normës</div>';}
+    if(cr<=90){el.innerHTML='<div style="padding:8px 12px;background:var(--s-success-bg);border:1px solid #bbf7d0;border-radius:6px;font-size:12px;color:#166534;display:flex;align-items:center;gap:6px"><i data-lucide="check-circle-2" style="width:14px;height:14px;color:var(--s-success);flex-shrink:0"></i> Nuk nevojitet rritje — CR brenda normës</div>';if(typeof lucide!=='undefined')lucide.createIcons();}
     else{const prop=Math.ceil(k/0.9),rPct=((prop-p)/p*100),rCol=rPct>30?'#991b1b':rPct>15?'#92400e':'#1e40af',rBg=rPct>30?'#fef2f2':rPct>15?'#fffbeb':'#eff6ff',rBd=rPct>30?'#fecaca':rPct>15?'#fde68a':'#bfdbfe';
         el.innerHTML=`<div style="padding:10px 12px;background:${rBg};border:1px solid ${rBd};border-radius:6px;color:${rCol}"><div style="font-size:18px;font-weight:700">+${rPct.toFixed(1)}% rritje e propozuar</div><div style="font-size:11px;opacity:.8">Bazuar në CR ${cr.toFixed(0)}%</div></div>`;}
 }
@@ -446,19 +447,19 @@ function parseExcelRows(rows){
 }
 function renderImportStep2(){
     if(!importParsedData)return;const d=importParsedData;
-    let h=`<div class="rin-file-info"><span style="font-size:20px">📄</span><div style="flex:1"><div class="rin-file-name">${esc(d.fileName)}</div><div class="rin-file-meta">${d.rawCount} rreshta · ${d.fileSize} · ${formatMuajLabel(d.muaj)}</div></div></div>
-        <div style="margin-bottom:16px"><div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px">Rezultati i analizës</div>
-        <div class="rin-validation-item"><span class="rin-v-ok">✓</span> ${d.records.length} kontrata unike (nga ${d.rawCount} rreshta)</div>
-        ${d.groupedCount>0?`<div class="rin-validation-item"><span class="rin-v-ok">✓</span> ${d.groupedCount} rreshta u grupuan</div>`:''}
-        <div class="rin-validation-item"><span class="rin-v-ok">✓</span> ${d.withDeme} kontrata me dëme</div>
-        ${d.withoutDeme>0?`<div class="rin-validation-item"><span class="rin-v-warn">⚠</span> ${d.withoutDeme} kontrata pa dëme</div>`:''}
-        <div class="rin-validation-item"><span class="rin-v-ok">✓</span> ${d.agents.length} agjentë · ${d.branches.length} degë</div></div>`;
+    let h=`<div class="rin-file-info"><i data-lucide="file-text" style="width:20px;height:20px"></i><div style="flex:1"><div class="rin-file-name">${esc(d.fileName)}</div><div class="rin-file-meta">${d.rawCount} rreshta · ${d.fileSize} · ${formatMuajLabel(d.muaj)}</div></div></div>
+        <div style="margin-bottom:16px"><div style="font-size:12px;font-weight:600;color:var(--s-slate);margin-bottom:8px">Rezultati i analizës</div>
+        <div class="rin-validation-item"><span class="rin-v-ok"><i data-lucide="check" style="width:12px;height:12px"></i></span> ${d.records.length} kontrata unike (nga ${d.rawCount} rreshta)</div>
+        ${d.groupedCount>0?`<div class="rin-validation-item"><span class="rin-v-ok"><i data-lucide="check" style="width:12px;height:12px"></i></span> ${d.groupedCount} rreshta u grupuan</div>`:''}
+        <div class="rin-validation-item"><span class="rin-v-ok"><i data-lucide="check" style="width:12px;height:12px"></i></span> ${d.withDeme} kontrata me dëme</div>
+        ${d.withoutDeme>0?`<div class="rin-validation-item"><span class="rin-v-warn"><i data-lucide="alert-triangle" style="width:12px;height:12px"></i></span> ${d.withoutDeme} kontrata pa dëme</div>`:''}
+        <div class="rin-validation-item"><span class="rin-v-ok"><i data-lucide="check" style="width:12px;height:12px"></i></span> ${d.agents.length} agjentë · ${d.branches.length} degë</div></div>`;
     if(d.updateCount>0||d.newCount>0)h+=`<div class="rin-match-info">${d.updateCount>0?`<strong>${d.updateCount} ekzistuese</strong> do të përditësohen.<br>`:''}<strong>${d.newCount} të reja</strong> do të shtohen.</div>`;
     const prev=d.records.slice(0,4);h+=`<div class="rin-preview-label">Shembull</div><div class="rin-preview-wrap"><table class="rin-preview-table"><thead><tr><th style="width:30%">Kontraktuesi</th><th style="width:22%">Nr kontratës</th><th style="text-align:right;width:16%">Primi</th><th style="text-align:right;width:16%">Dëme</th><th style="text-align:right;width:16%">LR%</th></tr></thead><tbody>`;
     prev.forEach(r=>{h+=`<tr><td>${esc(r.kontraktuesi||'—')}</td><td>${esc(r.nr_kontrates||'—')}</td><td style="text-align:right">${formatMoney(r.primi_vjetor||0)}</td><td style="text-align:right;${r.deme_total_vlera>0?'color:#ef4444':'color:#cbd5e1'}">${r.deme_total_vlera>0?formatMoney(r.deme_total_vlera):'—'}</td><td style="text-align:right">${r.lr_percent>0?r.lr_percent.toFixed(1)+'%':'—'}</td></tr>`;});
     h+='</tbody></table></div>';document.getElementById('importStep2').innerHTML=h;
 }
-function renderImportStep3(){if(!importParsedData)return;const d=importParsedData;document.getElementById('importStep3').innerHTML=`<div style="text-align:center;padding:20px 0"><div style="font-size:32px;margin-bottom:12px">✅</div><div style="font-size:16px;font-weight:600;color:#1a2332;margin-bottom:4px">Gati për import — ${formatMuajLabel(d.muaj)}</div><div style="font-size:13px;color:#64748b">${d.records.length} kontrata${d.updateCount>0?' · '+d.updateCount+' përditësohen':''}</div></div>`;}
+function renderImportStep3(){if(!importParsedData)return;const d=importParsedData;document.getElementById('importStep3').innerHTML=`<div style="text-align:center;padding:20px 0"><div style="margin-bottom:12px"><i data-lucide="check-circle-2" style="width:32px;height:32px;color:var(--s-success)"></i></div><div style="font-size:16px;font-weight:600;color:var(--s-text);margin-bottom:4px">Gati për import — ${formatMuajLabel(d.muaj)}</div><div style="font-size:13px;color:var(--s-slate)">${d.records.length} kontrata${d.updateCount>0?' · '+d.updateCount+' përditësohen':''}</div></div>`;if(typeof lucide!=='undefined')lucide.createIcons();}
 function ekzekutoImport(){
     if(!importParsedData)return;const d=importParsedData,u=merrUser(),now=new Date().toISOString(),impId='imp_'+Date.now().toString(36),muaj=d.muaj;
     d.records.forEach(rec=>{

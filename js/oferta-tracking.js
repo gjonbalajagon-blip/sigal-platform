@@ -37,7 +37,7 @@ function statusProgressBar(data) {
         h += '</div>';
     }
     if (data.konfirmimi) {
-        h += '<div style="font-size:10px;color:#059669;margin-top:4px;font-weight:600">✓ Konfirmuar: ' + new Date(data.konfirmimi.data).toLocaleString('sq-AL') + '</div>';
+        h += '<div style="font-size:10px;color:var(--s-green);margin-top:4px;font-weight:600;display:inline-flex;align-items:center;gap:4px"><i data-lucide="check" style="width:11px;height:11px"></i> Konfirmuar: ' + new Date(data.konfirmimi.data).toLocaleString('sq-AL') + '</div>';
         h += '<div style="font-size:10px;color:#4a5568;margin-top:2px">Paketa: <strong>' + (data.konfirmimi.pakot || '—') + '</strong>';
         if (data.konfirmimi.koment) h += '<br>Koment: "' + data.konfirmimi.koment + '"';
         h += '</div>';

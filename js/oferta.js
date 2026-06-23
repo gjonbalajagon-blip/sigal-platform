@@ -8,7 +8,7 @@ const STATUSET_TRACK={
     e_krijuar:   {label:'E krijuar',     cls:'e_krijuar'},
     e_derguar:   {label:'E dërguar',     cls:'e_derguar'},
     e_pare:      {label:'E parë',        cls:'e_pare'},
-    e_konfirmuar:{label:'Konfirmuar ✓',  cls:'e_konfirmuar'},
+    e_konfirmuar:{label:'Konfirmuar',     cls:'e_konfirmuar'},
     kontrate:    {label:'Kontratë',      cls:'kontrate'}
 };
 function getTrackStatus(o){if(o.realizuar)return'kontrate';if(o.konfirmuar)return'e_konfirmuar';if(o.statusi)return o.statusi;return'e_krijuar';}
@@ -98,7 +98,7 @@ function renderSpreadsheet(){
     if(!spLocked){
         h+='<label class="sp-select-all"><input type="checkbox" id="sp-sel-all" onchange="spToggleAll(this.checked)"> Selekto të gjitha</label>';
     }
-    h+='</div><span class="sp-hint">'+(spLocked?'🔒 Kyçur':'Kliko çelulën për edit')+'</span></div>';
+    h+='</div><span class="sp-hint">'+(spLocked?'<i data-lucide="lock" style="width:12px;height:12px;vertical-align:-2px"></i> Kyçur':'Kliko çelulën për edit')+'</span></div>';
 
     h+='<div class="sp-table-wrap"><table class="sp-table"><thead><tr>';
     h+='<td></td>';
@@ -107,7 +107,7 @@ function renderSpreadsheet(){
         h+='<td><div class="sp-pako-hdr'+(sel?' selected':'')+'"'+(spLocked?'':' onclick="spTogglePako(\''+p.id+'\')"')+'>';
         h+='<div class="sp-ph-name">';
         if(!spLocked) h+='<input type="checkbox" '+(sel?'checked':'')+' onclick="event.stopPropagation();spTogglePako(\''+p.id+'\')">';
-        else if(sel) h+='<span style="color:#22c55e;font-weight:700;margin-right:4px;">✓</span>';
+        else if(sel) h+='<i data-lucide="check" style="color:var(--s-success);width:13px;height:13px;margin-right:4px;vertical-align:-2px"></i>';
         h+=' '+p.emri+'</div>';
         h+='<div class="sp-ph-shuma">€ '+p.shuma+'</div>';
         h+='</div></td>';
@@ -330,7 +330,7 @@ function renderVersions(versione,oferta){
                 '<button style="font-size:10px;padding:4px 11px;border:1px solid var(--s-border);border-radius:6px;background:white;cursor:pointer;color:var(--s-brand-dark);font-weight:600;" onclick="event.stopPropagation();riktheVersion('+origIdx+')">Rikthe</button>'+
             '</div>'+
             '<div style="display:none;padding:10px 12px;border-top:1px solid var(--s-border-light);background:white;">'+
-                (v.koment?'<div style="font-size:10px;color:var(--s-text-muted);margin-bottom:6px;font-style:italic;">💬 '+v.koment+'</div>':'')+
+                (v.koment?'<div style="font-size:10px;color:var(--s-text-muted);margin-bottom:6px;font-style:italic;display:flex;align-items:center;gap:4px"><i data-lucide="message-circle" style="width:11px;height:11px"></i> '+v.koment+'</div>':'')+
                 (detaje||'<div style="font-size:11px;color:var(--s-text-faint);">Pa detaje</div>')+
             '</div>'+
         '</div>';
@@ -459,11 +459,11 @@ function editoOferte(index){
     if(o.konfirmuar){
         const bannerHTML='<div id="konfirmim-banner">'
             +'<div style="display:flex;align-items:center;gap:10px;">'
-            +'<span style="font-size:18px;">✅</span>'
+            +'<i data-lucide="check-circle-2" style="width:18px;height:18px;color:var(--s-success);flex-shrink:0"></i>'
             +'<div><div style="font-size:12px;font-weight:700;color:#166534;">Klienti konfirmoi'+(o.pakaZgjedhur?' — '+o.pakaZgjedhur:'')+'</div>'
-            +'<div style="font-size:10px;color:#15803d;">'+(o.dataKonfirmimit||'')+(o.komentKlient?' · 💬 '+o.komentKlient:'')+'</div></div>'
+            +'<div style="font-size:10px;color:#15803d;display:inline-flex;align-items:center;gap:4px">'+(o.dataKonfirmimit||'')+(o.komentKlient?' · <i data-lucide="message-circle" style="width:10px;height:10px"></i> '+o.komentKlient:'')+'</div></div>'
             +'</div>'
-            +'<button onclick="spZhblloko()" style="font-size:10.5px;padding:6px 14px;border:1px solid rgba(16,185,129,0.4);border-radius:8px;background:white;cursor:pointer;color:#166534;font-weight:700;white-space:nowrap;">🔓 Zhblloko</button>'
+            +'<button onclick="spZhblloko()" style="font-size:10.5px;padding:6px 14px;border:1px solid rgba(16,185,129,0.4);border-radius:8px;background:white;cursor:pointer;color:#166534;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;gap:5px"><i data-lucide="unlock" style="width:12px;height:12px"></i> Zhblloko</button>'
             +'</div>';
         const modalTitle=document.getElementById('modal-title');
         if(modalTitle&&modalTitle.parentElement){

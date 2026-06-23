@@ -487,7 +487,7 @@ function renderTabela() {
     const tbody = document.getElementById('debTableBody');
 
     if (!currentMuaj || debitoret.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9"><div class="deb-empty"><div class="deb-empty-icon">📋</div><div class="deb-empty-title">Asnje debitor ende</div><div class="deb-empty-sub">Kliko "Importo" per te ngarkuar raportin e debitoreve</div></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9"><div class="deb-empty"><div class="deb-empty-icon"><i data-lucide="clipboard-list"></i></div><div class="deb-empty-title">Asnje debitor ende</div><div class="deb-empty-sub">Kliko "Importo" per te ngarkuar raportin e debitoreve</div></div></td></tr>`;
         return;
     }
 
@@ -515,7 +515,7 @@ function renderTabela() {
         html += `
         <tr onclick="hapDrawer('${r.id}')" data-risk="${risk > 0 ? 1 : 0}" style="cursor:pointer">
             <td>
-                <div class="klient-name">${esc(r.klienti)} ${risk > 0 ? '<span style="font-size:10px;color:#ef4444;font-weight:700">⚠</span>' : ''}</div>
+                <div class="klient-name">${esc(r.klienti)} ${risk > 0 ? '<i data-lucide="alert-triangle" style="width:11px;height:11px;color:var(--s-danger);vertical-align:-1px"></i>' : ''}</div>
                 <div class="klient-sub">${esc(r.dega)} · ${esc(r.agjenti)}</div>
             </td>
             <td class="deb-borxh" style="text-align:right">${formatMoney(total)}</td>
@@ -908,7 +908,7 @@ function showImportPreview() {
 
     document.getElementById('importStep2').innerHTML = `
         <div class="deb-file-info">
-            <div>📄</div>
+            <div><i data-lucide="file-text"></i></div>
             <div>
                 <div style="font-size:13px;font-weight:500;color:#1a2332">${esc(importParsedData.fileName)}</div>
                 <div style="font-size:11px;color:#94a3b8">${formatMuajLabel(importParsedData.muaji)}</div>

@@ -35,8 +35,9 @@ function tregoNotification(msg,tipi){
     let n=document.getElementById('k-notification');
     if(!n){n=document.createElement('div');n.id='k-notification';n.style.cssText='position:fixed;top:20px;right:20px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);transition:opacity .3s;font-family:inherit;max-width:400px;';document.body.appendChild(n);}
     const colors={error:'background:#fef2f2;color:#991b1b;border:1px solid #fecaca',success:'background:#f0fdf4;color:#166534;border:1px solid #bbf7d0',info:'background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe'};
-    const icons={error:'⚠️',success:'✅',info:'ℹ️'};
+    const icons={error:'<i data-lucide="alert-triangle" style="width:16px;height:16px"></i>',success:'<i data-lucide="check-circle-2" style="width:16px;height:16px"></i>',info:'<i data-lucide="info" style="width:16px;height:16px"></i>'};
     n.style.cssText+=colors[tipi||'error'];n.innerHTML=icons[tipi||'error']+' '+msg;n.style.opacity='1';
+    if(typeof lucide!=='undefined')lucide.createIcons();
     clearTimeout(n._timer);n._timer=setTimeout(()=>{n.style.opacity='0';setTimeout(()=>{if(n.parentNode)n.parentNode.removeChild(n);},300);},4000);
 }
 
@@ -66,8 +67,8 @@ function renderSpreadsheet(){
     let h='<div class="sp-container">';
     h+='<div class="sp-toolbar"><div class="sp-toolbar-left">';
     if(!spLocked)h+='<label class="sp-select-all"><input type="checkbox" id="sp-sel-all" onchange="spToggleAll(this.checked)"> Selekto të gjitha</label>';
-    else h+='<button onclick="zhbllokoSpreadsheet()" style="font-size:11px;padding:4px 10px;border:1px solid #e5e9f0;border-radius:6px;background:#fff;color:#1e3a8a;cursor:pointer;font-weight:600;font-family:inherit">🔓 Zhblloko</button>';
-    h+='</div><span class="sp-hint">'+(spLocked?'🔒 Kyçur':'Kliko çelulën për edit')+'</span></div>';
+    else h+='<button onclick="zhbllokoSpreadsheet()" style="font-size:11px;padding:4px 10px;border:1px solid var(--s-border);border-radius:6px;background:#fff;color:var(--s-brand-dark);cursor:pointer;font-weight:600;font-family:inherit;display:inline-flex;align-items:center;gap:5px"><i data-lucide="unlock" style="width:12px;height:12px"></i> Zhblloko</button>';
+    h+='</div><span class="sp-hint">'+(spLocked?'<i data-lucide="lock" style="width:12px;height:12px;vertical-align:-2px"></i> Kyçur':'Kliko çelulën për edit')+'</span></div>';
 
     h+='<div class="sp-table-wrap"><table class="sp-table"><thead><tr><td></td>';
     pakotList.forEach(p=>{
@@ -75,7 +76,7 @@ function renderSpreadsheet(){
         h+='<td><div class="sp-pako-hdr'+(sel?' selected':'')+'"'+(spLocked?'':' onclick="spTogglePako(\''+p.id+'\')"')+'>';
         h+='<div class="sp-ph-name">';
         if(!spLocked)h+='<input type="checkbox" '+(sel?'checked':'')+' onclick="event.stopPropagation();spTogglePako(\''+p.id+'\')">';
-        else if(sel)h+='<span style="color:#22c55e;font-weight:700;margin-right:4px;">✓</span>';
+        else if(sel)h+='<i data-lucide="check" style="color:var(--s-success);width:13px;height:13px;margin-right:4px;vertical-align:-2px"></i>';
         h+=' '+p.emri+'</div><div class="sp-ph-shuma">€ '+p.shuma+'</div></div></td>';
     });
     h+='</tr></thead><tbody>';
