@@ -1,3 +1,8 @@
+// Stable-ID backfill (DEC-036 / Faza 2A.3) — duhet të vijë para let kontratat
+if (typeof backfillRecordIds === 'function') {
+    backfillRecordIds('kontratat', 'kon');
+    backfillRecordIds('faturimi_klientet', 'fat');
+}
 let kontratat = JSON.parse(localStorage.getItem('kontratat')) || [];
 function reloadData(){kontratat=JSON.parse(localStorage.getItem('kontratat'))||[];}
 let editIndex=-1;
@@ -224,11 +229,16 @@ function ruajKontrate(){
         dataKrijimit:new Date().toISOString().split('T')[0]
     };
 
-    if(editIndex>=0){kontratat[editIndex]=kontrata;}
+    if(editIndex>=0){
+        kontrata.id=kontratat[editIndex].id; // preserve stable id (DEC-036)
+        kontratat[editIndex]=kontrata;
+    }
     else{
+        kontrata.id=(typeof generateRecordId==='function')?generateRecordId('kon'):'kon_'+Date.now();
         kontratat.push(kontrata);
         const faturimi=JSON.parse(localStorage.getItem('faturimi_klientet'))||[];
-        faturimi.push({emri:kontrata.emri,kontrataNr:kontrata.lloji==='biznes'?kontrata.nrBiznesit:kontrata.nrPersonal,nrPersonal:kontrata.nrPersonal,nrBiznesit:kontrata.nrBiznesit,lloji:kontrata.lloji,dataFillimit:kontrata.fillimi,dataMbarimit:kontrata.mbarimi,email:kontrata.email,faturimiLloji:kontrata.faturimiLloji||'mujor',dergesa:'email',afati:30,statuset:{}});
+        const fatId=(typeof generateRecordId==='function')?generateRecordId('fat'):'fat_'+Date.now();
+        faturimi.push({id:fatId,kontrataId:kontrata.id,emri:kontrata.emri,kontrataNr:kontrata.lloji==='biznes'?kontrata.nrBiznesit:kontrata.nrPersonal,nrPersonal:kontrata.nrPersonal,nrBiznesit:kontrata.nrBiznesit,lloji:kontrata.lloji,dataFillimit:kontrata.fillimi,dataMbarimit:kontrata.mbarimi,email:kontrata.email,faturimiLloji:kontrata.faturimiLloji||'mujor',dergesa:'email',afati:30,statuset:{}});
         localStorage.setItem('faturimi_klientet',JSON.stringify(faturimi));
     }
     ruajNeStorage();mbyllDrawer();renderTabela();
@@ -277,7 +287,7 @@ function rinovoKontrate(index){
     const k=kontratat[index];kontratat[index].arkivuar=true;
     const fillimRi=k.mbarimi?new Date(parseDate(k.mbarimi).getTime()+86400000).toISOString().split('T')[0]:new Date().toISOString().split('T')[0];
     const mbarimRi=new Date(new Date(fillimRi).setFullYear(new Date(fillimRi).getFullYear()+1)-86400000).toISOString().split('T')[0];
-    const kontratRe={...k,fillimi:fillimRi,mbarimi:mbarimRi,dataKontrates:fillimRi,dataKrijimit:new Date().toISOString().split('T')[0],arkivuar:false};
+    const kontratRe={...k,id:(typeof generateRecordId==='function')?generateRecordId('kon'):'kon_'+Date.now(),fillimi:fillimRi,mbarimi:mbarimRi,dataKontrates:fillimRi,dataKrijimit:new Date().toISOString().split('T')[0],arkivuar:false};
     kontratat.push(kontratRe);ruajNeStorage();
     const faturimi=JSON.parse(localStorage.getItem('faturimi_klientet'))||[];
     const idxF=faturimi.findIndex(f=>f.emri===k.emri&&(f.nrPersonal===k.nrPersonal||f.nrBiznesit===k.nrBiznesit));
@@ -436,8 +446,14 @@ document.addEventListener('DOMContentLoaded',function(){
 document.addEventListener('DOMContentLoaded',function(){
     const hapParam=new URLSearchParams(window.location.search).get('hap');
     if(hapParam===null)return;
-    const idx=parseInt(hapParam,10);
-    if(isNaN(idx)||idx<0||typeof kontratat==='undefined'||idx>=kontratat.length)return;
+    let idx=-1;
+    if(/^kon_/.test(hapParam)){
+        idx=kontratat.findIndex(k=>k.id===hapParam);
+    }else{
+        const n=parseInt(hapParam,10);
+        if(!isNaN(n)&&n>=0&&n<kontratat.length) idx=n;
+    }
+    if(idx<0)return;
     setTimeout(function(){
         if(typeof editoKontrate==='function'){
             editoKontrate(idx);

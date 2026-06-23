@@ -1,3 +1,5 @@
+// Stable-ID backfill (DEC-036 / Faza 2A.3) — duhet të vijë para let klientet
+if (typeof backfillRecordIds === 'function') backfillRecordIds('faturimi_klientet', 'fat');
 let klientet = JSON.parse(localStorage.getItem('faturimi_klientet')) || [];
 let editIndex = -1;
 let tabAktual = 'mujor';
@@ -75,8 +77,15 @@ function ruajKlient() {
         faturimiLloji: document.getElementById('m-faturimi-lloji').value,
         statuset: {}
     };
-    if (editIndex >= 0) { klienti.statuset = klientet[editIndex].statuset || {}; klientet[editIndex] = klienti; }
-    else { klientet.push(klienti); }
+    if (editIndex >= 0) {
+        klienti.id = klientet[editIndex].id; // preserve stable id (DEC-036)
+        klienti.statuset = klientet[editIndex].statuset || {};
+        klientet[editIndex] = klienti;
+    }
+    else {
+        klienti.id = (typeof generateRecordId === 'function') ? generateRecordId('fat') : 'fat_'+Date.now();
+        klientet.push(klienti);
+    }
     ruajNeStorage(); mbyllModal(); renderTabela();
 }
 function fshijKlient(index) { if (confirm('A jeni i sigurt?')) { klientet.splice(index,1); ruajNeStorage(); renderTabela(); } }
@@ -290,11 +299,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     renderTabela();
 
-    // ?hap=INDEX → hap direkt drawerin për klientin e specifikuar (përdoret nga moduli Detyrat)
+    // ?hap=ID → hap drawerin për klientin specifik (Faza 2A.3: stable ID; fallback për index legacy)
     const hapParam = new URLSearchParams(window.location.search).get('hap');
     if (hapParam !== null) {
-        const idx = parseInt(hapParam, 10);
-        if (!isNaN(idx) && idx >= 0 && idx < klientet.length) {
+        let idx = -1;
+        if (/^fat_/.test(hapParam)) {
+            idx = klientet.findIndex(k => k.id === hapParam);
+        } else {
+            const n = parseInt(hapParam, 10);
+            if (!isNaN(n) && n >= 0 && n < klientet.length) idx = n;
+        }
+        if (idx >= 0) {
             setTimeout(() => { editoKlient(idx); window.history.replaceState({}, '', 'faturimi.html'); }, 200);
         }
     }

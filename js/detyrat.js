@@ -5,6 +5,8 @@
 //            faturim-pa-kerkese, debitor-borxh-365
 // =====================================================
 
+// Stable-ID backfill (DEC-036 / Faza 2A.3)
+if (typeof backfillAllIds === 'function') backfillAllIds();
 let detyrat = JSON.parse(localStorage.getItem('detyrat')) || [];
 let currentFilter = localStorage.getItem('detyrat_filter_state') || 'all';
 let groupState = (() => {
@@ -104,6 +106,40 @@ function filtroSipasPermissions(lista) {
 }
 
 // =====================================================
+// MIGRATION (DEC-036 / Faza 2A.3)
+// Detyrat e vjetra me referencaId numerik për kontratat/oferta/faturimi
+// → kthim te stable id i rekordit (që tani backfill e ka populluar).
+// I sigurt për t'u ekzekutuar disa herë (idempotent).
+// =====================================================
+function migroDetyratReferences() {
+    const kontratat = JSON.parse(localStorage.getItem('kontratat') || '[]');
+    const ofertat = JSON.parse(localStorage.getItem('ofertat') || '[]');
+    const faturimi = JSON.parse(localStorage.getItem('faturimi_klientet') || '[]');
+    let changed = false;
+    detyrat.forEach(d => {
+        if (d.lloji !== 'auto' || !d.burimi) return;
+        const m = d.burimi.moduli;
+        if (m !== 'kontratat' && m !== 'oferta' && m !== 'faturimi') return;
+        const ref = d.burimi.referencaId;
+        // Skip nëse është tashmë stable id (string me prefix)
+        if (typeof ref === 'string' && /^(kon|oft|fat)_/.test(ref)) return;
+        // Konverto numerikisht
+        const idx = (typeof ref === 'number') ? ref : parseInt(ref, 10);
+        if (isNaN(idx) || idx < 0) return;
+        let arr;
+        if (m === 'kontratat') arr = kontratat;
+        else if (m === 'oferta') arr = ofertat;
+        else if (m === 'faturimi') arr = faturimi;
+        const rec = arr[idx];
+        if (rec && rec.id) {
+            d.burimi.referencaId = rec.id;
+            changed = true;
+        }
+    });
+    if (changed) ruajDetyrat();
+}
+
+// =====================================================
 // PASTRO — fshi detyra e_anuluar / e_perfunduar > 90 ditë
 // =====================================================
 function pastroDetyratEArkiva() {
@@ -136,18 +172,18 @@ function gjeneroDetyratAuto() {
 
     // TRIGGER 1: Kontratë skadon ≤30 ditë
     const kontratat = JSON.parse(localStorage.getItem('kontratat') || '[]');
-    kontratat.forEach((k, idx) => {
-        if (k.arkivuar || !k.mbarimi) return;
+    kontratat.forEach((k) => {
+        if (!k.id || k.arkivuar || !k.mbarimi) return;
         const d = parseDataAny(k.mbarimi); if (!d) return;
         const dite = Math.ceil((d - tani) / 86400000);
         if (dite < 0 || dite > 30) return;
-        const key = makeRregullKey({ moduli: 'kontratat', referencaId: idx, rregulla: 'auto_kontrate_skadim_30d' });
+        const key = makeRregullKey({ moduli: 'kontratat', referencaId: k.id, rregulla: 'auto_kontrate_skadim_30d' });
         if (ekzistues.has(key)) return;
         detyrat.push(krijoDetyreObjektAuto({
             titulli: `Përgatit rinovimin për ${k.emri || 'klient'}`,
             pershkrimi: `Kontrata skadon për ${dite} ditë (${formatDataShqip(k.mbarimi)}).`,
             prioriteti: dite <= 7 ? 'kritike' : 'te_rendesishme',
-            burimi: { moduli: 'kontratat', referencaId: idx, rregulla: 'auto_kontrate_skadim_30d', metadata: { mbarimi: k.mbarimi, emri: k.emri } },
+            burimi: { moduli: 'kontratat', referencaId: k.id, rregulla: 'auto_kontrate_skadim_30d', metadata: { mbarimi: k.mbarimi, emri: k.emri } },
             data_afati: k.mbarimi,
             pergjegjesi: k.krijuarNga || null
         }));
@@ -156,18 +192,18 @@ function gjeneroDetyratAuto() {
 
     // TRIGGER 2: Ofertë skadon ≤5 ditë
     const ofertat = JSON.parse(localStorage.getItem('ofertat') || '[]');
-    ofertat.forEach((o, idx) => {
-        if (o.konfirmuar || o.realizuar || !o.dataSkadon) return;
+    ofertat.forEach((o) => {
+        if (!o.id || o.konfirmuar || o.realizuar || !o.dataSkadon) return;
         const d = parseDataAny(o.dataSkadon); if (!d) return;
         const dite = Math.ceil((d - tani) / 86400000);
         if (dite < 0 || dite > 5) return;
-        const key = makeRregullKey({ moduli: 'oferta', referencaId: idx, rregulla: 'auto_oferta_skadim_5d' });
+        const key = makeRregullKey({ moduli: 'oferta', referencaId: o.id, rregulla: 'auto_oferta_skadim_5d' });
         if (ekzistues.has(key)) return;
         detyrat.push(krijoDetyreObjektAuto({
             titulli: `Follow-up ofertë për ${o.emri || 'klient'}`,
             pershkrimi: `Oferta skadon për ${dite} ditë. Kontaktoni klientin.`,
             prioriteti: 'kritike',
-            burimi: { moduli: 'oferta', referencaId: idx, rregulla: 'auto_oferta_skadim_5d', metadata: { dataSkadon: o.dataSkadon, emri: o.emri } },
+            burimi: { moduli: 'oferta', referencaId: o.id, rregulla: 'auto_oferta_skadim_5d', metadata: { dataSkadon: o.dataSkadon, emri: o.emri } },
             data_afati: o.dataSkadon,
             pergjegjesi: o.krijuarNga || null
         }));
@@ -175,15 +211,15 @@ function gjeneroDetyratAuto() {
     });
 
     // TRIGGER 3: Ofertë konfirmuar pa kontratë
-    ofertat.forEach((o, idx) => {
-        if (!o.konfirmuar || o.realizuar) return;
-        const key = makeRregullKey({ moduli: 'oferta', referencaId: idx, rregulla: 'auto_oferta_konfirmuar_pa_kontrate' });
+    ofertat.forEach((o) => {
+        if (!o.id || !o.konfirmuar || o.realizuar) return;
+        const key = makeRregullKey({ moduli: 'oferta', referencaId: o.id, rregulla: 'auto_oferta_konfirmuar_pa_kontrate' });
         if (ekzistues.has(key)) return;
         detyrat.push(krijoDetyreObjektAuto({
             titulli: `Krijo kontratën për ${o.emri || 'klient'}`,
             pershkrimi: `Klienti konfirmoi: ${o.pakaZgjedhur || '—'}. Krijo kontratën.`,
             prioriteti: 'te_rendesishme',
-            burimi: { moduli: 'oferta', referencaId: idx, rregulla: 'auto_oferta_konfirmuar_pa_kontrate', metadata: { pakaZgjedhur: o.pakaZgjedhur, emri: o.emri } },
+            burimi: { moduli: 'oferta', referencaId: o.id, rregulla: 'auto_oferta_konfirmuar_pa_kontrate', metadata: { pakaZgjedhur: o.pakaZgjedhur, emri: o.emri } },
             pergjegjesi: o.krijuarNga || null
         }));
         krijuara++;
@@ -194,20 +230,21 @@ function gjeneroDetyratAuto() {
     if (sotiMuajit >= 20) {
         const muajiAktual = tani.getMonth() + 1;
         const faturimi = JSON.parse(localStorage.getItem('faturimi_klientet') || '[]');
-        faturimi.forEach((f, idx) => {
+        faturimi.forEach((f) => {
+            if (!f.id) return;
             const st = (f.statuset || {})[muajiAktual] || 'asgje';
             if (st !== 'asgje') return;
             if (f.dataMbarimit) {
                 const dMb = parseDataAny(f.dataMbarimit);
                 if (dMb && dMb < tani) return;
             }
-            const key = makeRregullKey({ moduli: 'faturimi', referencaId: idx, rregulla: 'auto_faturim_pa_kerkese_20d' });
+            const key = makeRregullKey({ moduli: 'faturimi', referencaId: f.id, rregulla: 'auto_faturim_pa_kerkese_20d' });
             if (ekzistues.has(key)) return;
             detyrat.push(krijoDetyreObjektAuto({
                 titulli: `Dërgo kërkesë faturimi për ${f.emri || 'klient'}`,
                 pershkrimi: `Klienti pa kërkesë në muajin ${muajiAktual}. Dita aktuale ${sotiMuajit}.`,
                 prioriteti: 'kritike',
-                burimi: { moduli: 'faturimi', referencaId: idx, rregulla: 'auto_faturim_pa_kerkese_20d', metadata: { muaji: muajiAktual, emri: f.emri } },
+                burimi: { moduli: 'faturimi', referencaId: f.id, rregulla: 'auto_faturim_pa_kerkese_20d', metadata: { muaji: muajiAktual, emri: f.emri } },
                 pergjegjesi: f.krijuarNga || null
             }));
             krijuara++;
@@ -970,6 +1007,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!user) return;
     aplikoPermissions();
     pastroDetyratEArkiva();
+    migroDetyratReferences();
     gjeneroDetyratAuto();
     document.querySelectorAll('.det-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === currentFilter));
     renderAccordion();

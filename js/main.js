@@ -24,6 +24,36 @@ function toggleSidebar() {
 }
 
 // ============================================================
+// STABLE-ID UTILITIES (DEC-036 / Faza 2A.3)
+// Përdoret nga oferta/kontratat/faturimi/detyrat për të garantuar
+// që çdo rekord ka `id` të qëndrueshëm dhe jo varësi nga pozicioni
+// në array. Idempotent — i sigurt për t'u ekzekutuar në çdo load.
+// ============================================================
+function generateRecordId(prefix) {
+    return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+}
+function backfillRecordIds(storageKey, prefix) {
+    try {
+        const arr = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        if (!Array.isArray(arr)) return [];
+        let changed = false;
+        arr.forEach(rec => {
+            if (rec && typeof rec === 'object' && !rec.id) {
+                rec.id = generateRecordId(prefix);
+                changed = true;
+            }
+        });
+        if (changed) localStorage.setItem(storageKey, JSON.stringify(arr));
+        return arr;
+    } catch (e) { return []; }
+}
+function backfillAllIds() {
+    backfillRecordIds('ofertat', 'oft');
+    backfillRecordIds('kontratat', 'kon');
+    backfillRecordIds('faturimi_klientet', 'fat');
+}
+
+// ============================================================
 // NJOFTIMET — Bell icon + dropdown
 // ============================================================
 (function() {

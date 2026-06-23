@@ -1,3 +1,5 @@
+// Stable-ID backfill (DEC-036 / Faza 2A.3) — duhet të vijë para let ofertat
+if (typeof backfillRecordIds === 'function') backfillRecordIds('ofertat', 'oft');
 let ofertat = JSON.parse(localStorage.getItem('ofertat')) || [];
 let editIndex = -1;
 
@@ -405,6 +407,7 @@ function ruajOferte(){
     };
 
     if(editIndex>=0){
+        oferta.id=ofertat[editIndex].id; // preserve stable id (DEC-036)
         oferta.realizuar=ofertat[editIndex].realizuar;
         oferta.konfirmuar=ofertat[editIndex].konfirmuar;
         oferta.pakaZgjedhur=ofertat[editIndex].pakaZgjedhur;
@@ -418,6 +421,7 @@ function ruajOferte(){
         oferta.dataKrijimit=ofertat[editIndex].dataKrijimit;
         ofertat[editIndex]=oferta;
     }else{
+        oferta.id=(typeof generateRecordId==='function')?generateRecordId('oft'):'oft_'+Date.now();
         oferta.realizuar=false;oferta.statusi='e_krijuar';
         oferta.versione=[{
             data:oferta.dataKrijimit,
@@ -733,11 +737,17 @@ document.addEventListener('DOMContentLoaded',function(){
     // Sinkronizim fillestar — push i gjithë ofertat te backend (kthim cross-device viewing)
     if(ofertat.length>0) syncAllToBackend();
 
-    // ?hap=INDEX → hap direkt drawerin për ofertën e specifikuar (përdoret nga moduli Detyrat)
+    // ?hap=ID → hap drawerin për ofertën specifike (Faza 2A.3: stable ID; fallback për index legacy)
     const hapParam=new URLSearchParams(window.location.search).get('hap');
     if(hapParam!==null){
-        const idx=parseInt(hapParam,10);
-        if(!isNaN(idx)&&idx>=0&&idx<ofertat.length){
+        let idx=-1;
+        if(/^oft_/.test(hapParam)){
+            idx=ofertat.findIndex(o=>o.id===hapParam);
+        }else{
+            const n=parseInt(hapParam,10);
+            if(!isNaN(n)&&n>=0&&n<ofertat.length) idx=n;
+        }
+        if(idx>=0){
             setTimeout(()=>{editoOferte(idx);window.history.replaceState({},'','oferta.html');},150);
         }
     }
