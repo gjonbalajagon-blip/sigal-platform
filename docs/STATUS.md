@@ -9,7 +9,7 @@
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 2A.2 (Detyrat redesign UI) e përfunduar → Faza 2A.3 (stable-ID migration) → Faza 2B (Supabase mini)
+**Faza aktuale:** Faza 2A.3 (stable-ID migration) e përfunduar → Faza 2B (Supabase mini për trigger #6 oferta-views)
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -53,11 +53,7 @@ _Asnjë bug kritik aktualisht._
 
 ### 🟠 Të rëndësishme
 
-- **Stable-ID migration për oferta/kontratat/faturimi** (DEC-036):
-  - Detyrat auto përdorin array index si `referencaId` për këto 3 module
-  - Nëse një rekord fshihet midis, detyra hap rekordin e gabuar (latente, jo teorike)
-  - **Action:** Para Faza 2B — shto `id` field te shtoOferte/shtoKontrate/shtoKlient + backfill + ndërro `?hap=INDEX` → `?hap=ID`
-  - **Workaround aktual:** Mos fshi rekorde nga këto module deri sa të jetë rregulluar
+_Asnjë bug i rëndësishëm aktualisht. Stable-ID bug (DEC-036) u rregullua në Faza 2A.3 (commit 15ebd60)._
 
 ### 🟠 Polish
 
@@ -188,11 +184,10 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 
 ## 📅 Çka vjen pastaj (Next Steps)
 
-### Faza 2B (Supabase mini):
-1. **PARA SE TË FILLOJË**: rregullim DEC-036 (stable-ID për oferta/kontratat/faturimi)
-2. Backend tabel `oferta_views` (id, oferta_id, ts)
-3. Trigger #6 te detyrat: "Oferta X është parë 3-5 herë, telefono klientin"
-4. Endpoint te oferta-view për incrementim view count
+### Faza 2B (Supabase mini) — rrugë e lirë (DEC-036 i rregulluar):
+1. Backend tabel `oferta_views` (id, oferta_id, ts)
+2. Trigger #6 te detyrat: "Oferta X është parë 3-5 herë, telefono klientin"
+3. Endpoint te oferta-view për incrementim view count
 
 ### Faza 2C (Ballina = Dashboard + Detyrat):
 1. Split-view layout
@@ -245,6 +240,8 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-05-16 | Faza 2A: Modul Detyrat standalone — 5 triggers auto, accordion sipas prioritetit, Option B permissions, toast undo 5s, ?hap=INDEX handler te oferta/kontratat/faturimi (DEC-030..035) | Claude Code |
 | 2026-05-16 | Audit pas Faza 2A: zbuluar bug stable-ID (DEC-036), dokumentuar localStorage keys (DEC-037). Faza 2B bllokuar deri sa rregullohet DEC-036. | Claude Code |
 | 2026-06-23 | Faza 2A.2: Redesign UI Detyrat — dense rows ~40px (nga ~110px), nën-grupim sipas modulit, selection+bulk actions, staff lejohet të krijojë me prioriteti locked, modifikim afati, variabla semantic CSS (DEC-038..041, update DEC-037) | Claude Code |
+| 2026-06-23 | Heqje emoji-sh nga Detyrat → ikona lucide profesionale; shtim --s-slate vars + .det-action-neutral klasë; rregull globale "nuk përdorim më emoji" | Claude Code |
+| 2026-06-23 | Faza 2A.3: Stable-ID migration (DEC-036 IMPLEMENTUAR) — generateRecordId + backfillAllIds te main.js, id prefix oft_/kon_/fat_, handler ?hap= me id+fallback numeric, triggers detyrat me rekord.id, migroDetyratReferences për detyrat ekzistues | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 

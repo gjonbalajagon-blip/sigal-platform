@@ -835,8 +835,8 @@ Ideja origjinale: Dashboard + Detyrat të bashkohen në "Ballina" me split-view.
 ---
 
 ## DEC-036: Stable-ID Migration për oferta/kontratat/faturimi (BUG i njohur)
-**Data:** 2026-05-16
-**Statusi:** ⏳ Proposed (DUHET RREGULLU para Faza 2B)
+**Data:** 2026-05-16 (propozim) / 2026-06-23 (implementim)
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2A.3, commit 15ebd60)
 
 ### Konteksti
 Audit pas Faza 2A zbuloi inkonsistencë në `referencaId` te detyrat auto:
@@ -878,6 +878,16 @@ Para Faza 2B (Supabase mini), bëj migrim 3-hapësh:
 
 ### Trigger për implementim
 Para Faza 2B fillon, ose nëse user-i raporton sjellje të çuditshme nga detyrat → hap rekordi i gabuar.
+
+### Implementim final (Faza 2A.3, 2026-06-23)
+- **Utility në `js/main.js`**: `generateRecordId(prefix)`, `backfillRecordIds(key, prefix)`, `backfillAllIds()`
+- **Prefiks ID**: `oft_` (oferta), `kon_` (kontratat), `fat_` (faturimi)
+- **Backfill idempotent** thirret në krye të çdo moduli para `let xxx = JSON.parse(...)` — siguron që rekordet ekzistues marrin id automatikisht në load
+- **Rekorde të rinj** marrin id në `ruajOferte/Kontrate/Klient` + në `rinovoKontrate` + në auto-faturim record të krijuar nga kontratat
+- **Edit ruan id ekzistues** — `kontrata.id = kontratat[editIndex].id`
+- **Handler `?hap=`** te 3 modulet: lookup me regex prefix, fallback me numeric për URL legacy
+- **Triggers detyrat** përdorin `rekord.id` jo `idx` (4 nga 5 trigger-at; trigger 5 për debitoret ishte stable nga fillimi)
+- **`migroDetyratReferences()`** te detyrat.js bootstrap: zëvendëson referencaId numerik (legacy) → stable id (lookup arr[idx].id pas backfill)
 
 ---
 

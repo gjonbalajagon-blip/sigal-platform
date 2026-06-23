@@ -26,6 +26,43 @@ Format:
 
 ---
 
+## 2026-06-23 - Faza 2A.3: Stable-ID Migration (DEC-036 implementuar)
+
+**Tipi:** Bug fix arkitekturor + migrim të dhënash
+**Statusi:** ✅ Përfunduar (commit 15ebd60)
+
+**Konteksti:**
+Audit pas Faza 2A zbuloi bug-un latent: detyrat auto për oferta/kontratat/faturimi përdornin array index si `referencaId`. Nëse user-i fshinte një rekord midis, detyra do të hapte rekordin e gabuar. Rinovimet/Debitorët kishin tashmë id stable; këto 3 modulet jo. Bllokonte Faza 2B.
+
+**Çka u bë:**
+- ✅ Utility globalisht në `js/main.js`: `generateRecordId(prefix)`, `backfillRecordIds(key, prefix)`, `backfillAllIds()`
+- ✅ Backfill idempotent thirret në krye të secilit modul para `let xxx = JSON.parse(...)` — rekordet ekzistues marrin id në load
+- ✅ Prefiks ID-sh: `oft_` (oferta), `kon_` (kontratat), `fat_` (faturimi)
+- ✅ `ruajOferte/Kontrate/Klient`: rekord i ri merr id, edit ruan id ekzistues
+- ✅ `rinovoKontrate`: kontrata e rinovuar merr id të ri (jo trashëgon)
+- ✅ Auto-faturim record nga kontratat: merr id të ri + ka `kontrataId` lidhje
+- ✅ Handler `?hap=` te 3 modulet: lookup me regex prefix, **fallback me numeric** për URL legacy (transitional)
+- ✅ Triggers detyrat (4 nga 5) përdorin `rekord.id` jo `idx`; trigger 5 për debitoret ishte stable nga fillimi
+- ✅ `migroDetyratReferences()` te bootstrap i detyrat.js — konverton referencaId numerik te id-të e backfill-uar (idempotent)
+- ✅ Skip auto-trigger nëse rekordi mungon `id` (mbrojtje fallback)
+
+**Çka NUK u prek (logjikë load-bearing):**
+- 🚫 Auto-gjenerim 5 triggers logjika kryesore (vetëm referencaId ndryshoi)
+- 🚫 De-duplikim via makeRregullKey (vazhdon punën me id-të e reja)
+- 🚫 Toast undo, pastrim auto >90d
+- 🚫 Modulet rinovimet/debitoret që kishin id stable
+
+**Vendime gjatë rrugës:**
+- 🟢 Fallback me numeric te handler `?hap=` për URL legacy (mund të hiqet pas 1 release)
+- 🟢 Skip te triggers nëse `!rekord.id` (mbrojtje për korrupsion data të papritur)
+- 🟢 Konvertim rinovoKontrate: kontrata e rinovuar merr id të RI (jo riciklim) sepse logjikisht është rekord i ndryshëm
+
+**Lidhje:** DEC-036 (statusi → ✅ Approved + IMPLEMENTUAR)
+
+**Çka mbetet:** Faza 2B (Supabase mini për trigger #6 "oferta parë 3-5 herë") — rrugë e lirë.
+
+---
+
 ## 2026-06-23 - Faza 2A.2: Redesign UI Detyrat (dense + nën-grupim + bulk)
 
 **Tipi:** Redesign UI + funksionalitet i ri
