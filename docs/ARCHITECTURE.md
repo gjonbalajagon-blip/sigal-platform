@@ -60,6 +60,7 @@ sigal-platform/
 │   ├── raportet.js             ← Raportet (1989 lines)
 │   ├── stafi.js                ← Stafi + organogram
 │   ├── detyrat.js              ← Detyrat (6 auto-triggers, dense rows, bulk actions)
+│   ├── ballina.js              ← Ballina split-view orkestrim + 6 module-cards + modal (Faza 2C)
 │   └── gjenero-kontrate.js     ← Word contract generation (përdoret nga server.js)
 ├── js-server/                 ← Module server-only (jo për frontend)
 │   └── supabaseClient.js       ← Klient Supabase fallback-safe (Faza 2B)
@@ -73,7 +74,9 @@ sigal-platform/
 │   ├── dashboard.html
 │   ├── raportet.html
 │   ├── stafi.html
-│   └── detyrat.html             ← Detyrat module (Faza 2A.2)
+│   ├── detyrat.html             ← Detyrat module (Faza 2A.2) — ende disponueshme
+│   ├── ballina.html             ← Faqja kryesore (Faza 2C, Dashboard + Detyrat split-view)
+│   └── dashboard.html           ← Redirect stub te ballina.html (Faza 2C, mbetet 1-2 javë)
 ├── templates/                  ← Word templates (.docx)
 │   ├── kontrata-individ.docx
 │   ├── kontrata-familje.docx

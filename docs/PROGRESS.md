@@ -26,6 +26,67 @@ Format:
 
 ---
 
+## 2026-06-24 - Faza 2C: Ballina (Dashboard + Detyrat split-view)
+
+**Tipi:** Faqe e re + redesign + migrim navigimi
+**Statusi:** ✅ Përfunduar (commit ad5f383)
+
+**Konteksti:**
+Faza përfundimtare e roadmap-it të Detyrave. Bashkimi i Dashboard dhe Detyrat në një faqe me split-view + redesign i Detyrave në 6 module-cards. Roadmap origjinal (Faza 2A → 2A.2 → 2A.3 → 2B → 2C) i përfunduar.
+
+**Çka u bë:**
+- ✅ `pages/ballina.html` (new, ~280 rreshta) me layout split + 3 pozicione
+- ✅ `js/ballina.js` (new, ~330 rreshta) orkestrim
+- ✅ CSS te theme-v2.css (+290 rreshta) për split-view, module-cards, modal, mobile tabs
+- ✅ 6 module-cards: oferta/kontratat/faturimi/rinovimet/debitoret/manual
+- ✅ Modal "Shih të gjitha" me drawer pattern unifikuar
+- ✅ Toggle Modul/Prioritet me localStorage persistencë
+- ✅ Mobile tabs (≤768px): Detyrat | Dashboard
+- ✅ KPI të reja: Borxh Total + Rinovime në Pritje
+- ✅ Chart i ri: Aging i debitorëve (donut 4 banda)
+- ✅ KPI cards të klikueshme → hap modul-modal përkatës
+- ✅ `dashboard.html` → redirect stub (HTTP meta + JS replace)
+- ✅ Sidebar i 8 moduleve: Dashboard → Ballina nav-item
+- ✅ Login redirect te `index.html` dhe `js/main.js`: ballina.html
+- ✅ `auth.js`: 'ballina' shtuar te faqjetLejohet
+
+**Çka NUK u prek:**
+- 🚫 Logjika auto-gjenerim, de-duplikim, toast undo (detyrat.js)
+- 🚫 Supabase tracking (Faza 2B)
+- 🚫 Modulet e tjera (oferta, kontratat, faturimi, etj.) — vetëm sidebar link
+- 🚫 dashboard.html nuk u fshi (redirect stub për 1-2 javë verifikim)
+
+**Vendime gjatë rrugës:**
+- 🟢 3 shigjeta në divider (jo 2): full-detyrat / split / full-dashboard
+- 🟢 Modul view default (jo Prioritet) — kontekst kryesor i agjentit është moduli
+- 🟢 Modal pattern = drawer-overlay (jo modal i veçantë) për konsistencë
+- 🟢 KPI klik → modul-modal (jo filter në list) për UX të menjëhershme
+- 🟢 Helper-at e detyrat.js (renderDenseRow, ngrupo, rendisDetyrat, etc.) ripërdoren në ballina.js — DRY total
+
+**Probleme që u hasën:**
+- Chart.js kërkonte `resize` event manualisht pas ndryshimit të pozicionit (zgjidhje: `setTimeout(360ms)` për të lejuar tranzicionin CSS të mbarojë)
+- Period filter (Muaji/Viti) ekzistonte si UI por nuk filtronte realisht; e dokumentova si pjesërisht implementuar (DEC-047)
+- Role filtering aplikuar te detyrat por jo te KPI dashboard (DEC-047) — fix incremental kur del nevoja
+
+**Verifikim manual i nevojshëm:**
+1. Hap https://sigal-platform-shendet.vercel.app — duhet redirect te ballina.html (jo dashboard)
+2. Klik secila shigjetë → layout i ndryshon, pozicioni ruhet pas refresh
+3. Mobile (DevTools 390px) → 2 tabs, divider hiqet
+4. Klik kartë "KONTRATA" → modal hapet me detyrat e modulit
+5. Toggle Modul/Prioritet → cards / accordion vijnë alternative
+6. KPI Borxh Total → klik → hap modul-modal Debitorët
+
+**Lidhje:** DEC-044 (Ballina faqe), DEC-045 (6 cards view), DEC-046 (modal pattern), DEC-047 (period+role filter), DEC-048 (KPI të reja)
+
+**Çka mbetet:**
+- **Polish**: ~150 hardcoded colors të mbetura në modulet legacy
+- **Refactor**: heqje e `confirm()` native nga oferta/kontratat/faturimi (11 vende)
+- **Optional**: implementim i plotë i period filter (Muaji/Viti filter realisht KPI)
+- **Optional**: fshirja e dashboard.html pas verifikimit në prod (rrjedhje >1 javë)
+- **Faza 3 (e ardhshme)**: Module të reja Produkti + Dokumentet (kur backend storage gati)
+
+---
+
 ## 2026-06-23 - Faza 2B: Supabase mini + Trigger #6 (oferta parë 3-5 herë)
 
 **Tipi:** Integrim infrastrukturor + funksionalitet i ri

@@ -9,7 +9,7 @@
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 2B (Supabase mini + trigger #6) e përfunduar → Faza 2C (Ballina = Dashboard + Detyrat split-view)
+**Faza aktuale:** Faza 2C (Ballina split-view) e përfunduar → Roadmap-i i Detyrave i mbyllur. Mbeten polishe + module Produkti/Dokumentet.
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -30,7 +30,8 @@ Aktualisht nuk ka bug kritik. Modulet e mbetura: Produkti, Dokumentet (pres trig
 | Moduli | Status | Detaje |
 |---|---|---|
 | **Login** | ✅ Funksional | superadmin: `agon` / `sigal2026` |
-| **Dashboard** | ✅ | KPI flat icons, 2 donut + 12-month line chart |
+| **Ballina** | ✅ Faza 2C | Split-view Dashboard | Detyrat (3 pozicione), 6 KPI + 3 donut + line chart + 2 panele, KPI klikohen → modul-modal |
+| **Dashboard** | 🔄 Redirect | dashboard.html → ballina.html (stub për 1-2 javë verifikim) |
 | **Oferta** | ✅ | Drawer unified, KPI filter, llojet chips në LEFT |
 | **Oferta-View** | ✅ 3-col layout implementuar | Faza 14 - glassmorphism, popup-based extras, kalkulator multi-row |
 | **Kontratat** | ✅ **REFERENCE** | Modeli për të gjitha modulet |
@@ -184,10 +185,16 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 
 ## 📅 Çka vjen pastaj (Next Steps)
 
-### Faza 2C (Ballina = Dashboard + Detyrat):
-1. Split-view layout
-2. Migrim dashboard te `ballina.html`
-3. Detyrat si panel i djathtë gjithmonë i dukshëm
+### Polish (incremental, kur ka kohë):
+1. Refactor ~150 ngjyrash hardcoded të mbetura te modulet legacy (rinovimet, debitoret kryesisht)
+2. Heqje `confirm()` native te oferta/kontratat/faturimi (11 vende) → mini-modal pattern
+3. Implementim i plotë period filter (Muaji/Viti filter realisht KPI te Ballina)
+4. Role filter te KPI dashboard (jo vetëm detyrat)
+5. Fshirja e dashboard.html pas verifikimit >1 javë në prod
+
+### Faza 3 (e ardhshme, kur backend storage e gatshme):
+1. Produkti module (Excel import)
+2. Dokumentet module (Supabase Storage / Cloudinary)
 
 ### Prioritet 2 (E rëndësishme):
 1. Action buttons standardize (Photo 2 spec)
@@ -239,6 +246,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-06-23 | Faza 2A.3: Stable-ID migration (DEC-036 IMPLEMENTUAR) — generateRecordId + backfillAllIds te main.js, id prefix oft_/kon_/fat_, handler ?hap= me id+fallback numeric, triggers detyrat me rekord.id, migroDetyratReferences për detyrat ekzistues | Claude Code |
 | 2026-06-23 | Heqje 37 emoji-sh nga 9 modulet jashtë detyrat (oferta, kontratat, rinovimet, debitoret, dashboard, main, oferta-tracking) → ikona lucide profesionale | Claude Code |
 | 2026-06-23 | Faza 2B: Supabase mini + trigger #6 (oferta parë 3-5 herë) — klient supabase fallback-safe, dual-write tracking, /api/oferta-tracking-bulk, skanoOfertaParEHere35 async te detyrat.js, stable id në URL oferta (DEC-042, DEC-043) | Claude Code |
+| 2026-06-24 | Faza 2C: Ballina split-view (Dashboard + Detyrat) — pages/ballina.html + js/ballina.js, 6 module-cards për Detyrat, modal "Shih të gjitha" pattern unifikuar, mobile tabs, KPI të reja (Borxh + Rinovime) + Aging chart, dashboard.html → redirect (DEC-044..048) | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 

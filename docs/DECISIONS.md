@@ -1138,6 +1138,149 @@ Trigger asinkron i ri te `gjeneroDetyratAuto()`, që:
 
 ---
 
+## DEC-044: Ballina — Faqe e Bashkuar Dashboard + Detyrat
+**Data:** 2026-06-24
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2C, commit ad5f383)
+
+### Konteksti
+Pas Faza 2A/2B, user-i kishte 2 faqe që përdoreshin së bashku: Dashboard (overview) dhe Detyrat (todo). Navigim mes tyre kushtonte kohë; agjentët raportonin që kërkonin "kthim te dashboard pas detyre". Cross-referencë (klik KPI → filtruar detyra) nuk ekzistonte.
+
+### Vendimi
+Krijim i faqes së re `pages/ballina.html` me **split-view** të konfigurueshëm:
+- 3 pozicione: `full-dashboard` / `split` (default) / `full-detyrat`
+- Divider me 3 shigjeta (◀ ▢ ▶) që ndryshojnë pozicionin
+- localStorage `ballina_pozicioni` ruan pozicionin cross-session
+- Mobile (≤768px): tabs Detyrat | Dashboard, divider hiqet
+- Sidebar: Dashboard nav-item → Ballina (icon home)
+
+`dashboard.html` mbetet si **redirect stub** për 1-2 javë test compatibility (jo i fshirë).
+
+### Alternativat e Refuzuara
+- ❌ **Fshi dashboard.html plotësisht** — rrezikon humbjen e bookmarks/lidhjeve
+- ❌ **Mbaj Dashboard dhe Detyrat të ndarë me cross-link** — humbet konteksti vizual njëkohshëm
+- ❌ **Tab-based UI** (jo split) — humbet sinkronizimi vizual (KPI ndryshim duhet kthim te tab)
+
+### Konsekuencat
+- ✅ Agjent sheh kontekstin (KPI) dhe puna (detyra) njëkohësisht
+- ✅ Klik KPI → modul-modal me detyrat e modulit përkatës (cross-ref)
+- ✅ Mobile UX e qartë (tabs)
+- ⚠️ `dashboard.html` redirect stub mbetet derisa të verifikohet kalimi (post-deploy, ~1-2 javë)
+- ⚠️ Chart.js duhet `resize` event pas pozicionim change (implementuar me `setTimeout(360ms)`)
+
+---
+
+## DEC-045: Detyrat me 6 Module-Cards View (default) + Toggle Prioritet
+**Data:** 2026-06-24
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2C, commit ad5f383)
+
+### Konteksti
+Te Ballina, paneli Detyrat ka hapësirë të kufizuar (50% në split). Lista e plotë me dense-rows do të mbushte hapësirën por humbet overview vizuale për çdo modul. User-i kërkoi **6 module-cards** (oferta/kontratat/faturimi/rinovimet/debitoret/manual) që tregojnë:
+- Count total
+- Stats kritike/të rëndësishme/normale
+- Top 3 detyra preview
+- Buton "Shih të X" → hap modal me listë të plotë
+
+Por DENSE-list view (siç është te `pages/detyrat.html`) duhet të mbetet disponueshëm për përdoruesit që preferojnë listim klasik.
+
+### Vendimi
+**Default view: Modul (6 cards).** Toggle button në toolbar:
+- `Modul` → grid 6 kartesh (2x3 në split, 3x2 në full-detyrat)
+- `Prioritet` → accordion klasik (renderAccordion ekzistuese)
+
+localStorage `detyrat_view_mode` ruan zgjedhjen e user-it.
+
+Modulet me 0 detyra: kartë me opacity 0.55 dhe placeholder "Asnjë detyrë aktive".
+Modulet me >=1 detyrë kritike: outline `var(--s-danger)`.
+
+### Alternativat e Refuzuara
+- ❌ **Vetëm dense-list view** — humbet overview vizuale modular
+- ❌ **Vetëm module-cards view** — humbet sortim global sipas prioritetit
+- ❌ **Default Prioritet** — humb fokusin te modulet (kontekst kryesor i agjentit)
+
+### Konsekuencat
+- ✅ Overview i menjëhershëm: cili modul ka punë më shumë / më kritike
+- ✅ Detajet e plota disponueshme me 1 klik (modal)
+- ✅ User-i mund të kalojë te dense-list nëse preferon
+- ⚠️ Modulet me kategori të reja (psh detyra për oferta-tracking) mund të kërkojnë kartë të re — extensible nga `MODULE_CARDS` array
+
+---
+
+## DEC-046: Modal "Shih të gjitha" me Pattern të Unifikuar (drawer-overlay)
+**Data:** 2026-06-24
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2C, commit ad5f383)
+
+### Konteksti
+Klik te kartë moduli → hap detyrat e filtruara. Pyetja: si t'i shfaqim? Modal? Drawer? Faqe e re?
+
+### Vendimi
+**Modal me të njëjtin pattern visual si drawer i krijimit të detyrës** (klasa `drawer-overlay` + `drawer-panel`). Konsistencë me UI ekzistues (Faza 2A.2):
+- Overlay full-screen me rgba(15,23,42,0.55)
+- Container max-width 920px, max-height 92vh
+- Header me ikonë moduli + titull + count badge + buton mbyll
+- Body: accordion (Kritike/Të rëndësishme/Normale/Të përfunduara) me **renderDenseRow ekzistues** (jo HTML i ri)
+- Mbyllje: klik jashtë / ESC / buton mbyll
+
+### Konsekuencat
+- ✅ Konsistencë vizuale ndërmjet drawer dhe modal (njëjti pattern CSS)
+- ✅ Ripërdorim total i `renderDenseRow` (DRY) — pa duplikim logjike rendering
+- ✅ Bulk actions, expand, action buttons funksionojnë identik brenda modal-it
+- ⚠️ Klasa `.ballina-modal-panel` shton max-width override mbi `.drawer-panel` standard — dokumentuar
+
+---
+
+## DEC-047: Period Filter + Role Filtering te Ballina (Implementim Real)
+**Data:** 2026-06-24
+**Statusi:** ⏳ Pjesërisht IMPLEMENTUAR (Faza 2C)
+
+### Konteksti
+Dashboard kishte period chips (Muaji/Viti) që nuk filtronin asgjë (dead code). User-i kërkoi implementim real. Po ashtu role filtering (staff sheh të vetat, mgmt sheh të gjitha).
+
+### Vendimi
+- **Period filter te dashboard.js**: variabla `__dashPeriod` ekzistonte. `renderAll()` përdoret nga ndryshim. **Mbeten të testohet vizualisht** se filtri prek vërtetë të dhënat — implementimi i plotë i logjikës month-vs-year do bëhet incremental.
+- **Role filtering te Ballina**: helper `filtroSipasRolit()` ekziston te `auth.js`. Te detyrat.js përdoret `filtroSipasPermissions()` (Option B, DEC-030). Te ballina.js: `ballinaDetyratVisible()` thërret `filtroSipasPermissions` për module-cards. **Pjesërisht**: KPI dashboard nuk filtrohen nga role aktualisht.
+
+### Konsekuencat
+- ✅ Detyrat (module cards + modal) filtrohen sipas rolit korrekt
+- ⚠️ KPI dashboard ende tregojnë data globale — fix incremental kur kërkohet nga user-i
+- ⚠️ Period filter punon vetëm sa kujt ka logjikë te dashboard.js — testim manual i nevojshëm
+
+### Trigger për implementim të plotë
+Kur user-i raporton se "shoh kontrata të kolegut në KPI" → atëherë wrap KPI render me role filter në dashboard.js.
+
+---
+
+## DEC-048: KPI të Reja te Ballina (Borxh Total + Rinovime në Pritje + Aging Donut)
+**Data:** 2026-06-24
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2C, commit ad5f383)
+
+### Konteksti
+Dashboard origjinal kishte 4 KPI (Kontrata Aktive / Skadojnë / Ofertat / Fatura). Mungonte signal direkt për:
+- **Borxh total**: shuma e debitorëve aktivë (paratë e ngrirura)
+- **Rinovime në pritje**: kontrata që duhen rinovuar tani
+
+Plus dashboard duhet të kishte grafik për **aging debitorësh** (sa borxh në secilën bandë moshe).
+
+### Vendimi
+Shtim 2 KPI cards te Ballina (jo Dashboard, sepse Dashboard u zëvendësua):
+- `kpi-borxh` — sum nga `debitoret_data_v1.borxh_total`, sub: "{N} debitorë", icon: alert-circle, kpi-icon-red
+- `kpi-rinovime` — count nga `rinovimet_data` me statusi pa_filluar/kontaktuar, sub: "{N} urgjent ≤15d", icon: refresh-cw, kpi-icon-orange
+
+Plus 1 chart i ri:
+- `chart-debitor-aging` — donut me 4 banda: 0-30 / 31-60 / 61-90 / >90 ditë
+- Data: agregim nga `debitoret_data_v1` (fields: `borxh_0_30`, `borxh_31_60`, `borxh_61_90`, `borxh_mbi_365`)
+
+Total KPI tani: 6 (3-kolone në split, 6-kolone në full-dashboard).
+Total donut chart: 3 (Llojit / Faturimit / Aging).
+
+### Konsekuencat
+- ✅ Signal i drejtpërdrejtë i parave të ngrirura (Borxh total)
+- ✅ Lista e rinovimeve të afërta visible në KPI
+- ✅ Aging analizë vizuale
+- ⚠️ Schema `debitoret_data_v1.borxh_*` fields kërkohen — backfill nuk është automatik (mvc nga import excel)
+- ⚠️ Donut Aging mund të tregojë gjithçka në `>90` nëse aging fields nuk janë populluar — fallback OK
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase

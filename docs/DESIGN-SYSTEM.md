@@ -959,4 +959,109 @@ function eshtePaPergjegjes(d) { return !d || !d.pergjegjesi; }
 
 ---
 
+## Pattern: Split-view me Pozicione të Konfigurueshme (Faza 2C / DEC-044)
+
+**Përdorim:** Faqe që ka 2 shtylla logjike njëkohësisht (kontekst + veprim) dhe duhet user-i të kontrollojë sa hapësirë i jep secilës.
+
+**Klasa kryesore:** `.ballina-layout` me atribut `data-pozicioni`.
+
+**Struktura:**
+```html
+<div class="ballina-layout" data-pozicioni="split">
+  <aside class="ballina-panel">...</aside>
+  <div class="ballina-divider">
+    <button class="ballina-arrow ballina-arrow-left" onclick="setPozicioni('full-detyrat')"><i data-lucide="chevron-left"></i></button>
+    <button class="ballina-arrow ballina-arrow-center" onclick="setPozicioni('split')"><i data-lucide="square-split-horizontal"></i></button>
+    <button class="ballina-arrow ballina-arrow-right" onclick="setPozicioni('full-dashboard')"><i data-lucide="chevron-right"></i></button>
+  </div>
+  <aside class="ballina-panel">...</aside>
+</div>
+```
+
+**3 pozicione (via CSS grid-template-columns):**
+- `full-dashboard`: `1fr 32px 0fr` (panel i parë maksimum)
+- `split`: `1fr 32px 1fr` (50/50, default)
+- `full-detyrat`: `0fr 32px 1fr` (panel i dytë maksimum)
+
+**Persistencë:** localStorage `ballina_pozicioni`. Transition: `grid-template-columns 0.35s ease`.
+
+**Pas ndryshimit pozicionit:** Trigger `window.dispatchEvent(new Event('resize'))` pas transition (~360ms) që Chart.js të ri-llogaritë.
+
+**Mobile (≤768px):** divider hiqet, panelat bëhen tabs (`ballina-tabs`).
+
+---
+
+## Pattern: Module Cards me Preview + "Shih të gjitha" Modal
+
+**Përdorim:** Lista e madhe duhet të grupohet vizualisht në kategori (module/burime) por user-i duhet të mundet të hapë listë të plotë me 1 klik.
+
+**Struktura kartë:**
+```html
+<div class="det-card-modul" onclick="hapModulModal('id')">
+  <div class="det-card-modul-header">
+    <i data-lucide="iconLucide"></i>
+    <span class="det-card-modul-name">EMRI</span>
+    <span class="det-card-modul-count">42</span>
+  </div>
+  <div class="det-card-modul-stats">
+    <span class="det-stat-kritike">• 8</span>
+    <span class="det-stat-rendesishme">▲ 12</span>
+    <span class="det-stat-normale">─ 22</span>
+  </div>
+  <div class="det-card-modul-preview">
+    <!-- Top 3 items me afati badge -->
+  </div>
+  <button class="det-card-modul-shih">
+    Shih të 42 <i data-lucide="arrow-right"></i>
+  </button>
+</div>
+```
+
+**Variante state:**
+- `.det-card-modul-empty`: opacity 0.55 + tekst placeholder
+- `.det-card-modul-danger`: border-color `var(--s-danger)` (kur ka >=1 kritike)
+
+**Modal "Shih të gjitha":** Përdor `.drawer-overlay` + `.drawer-panel` me klasë shtesë `.ballina-modal-panel` (max-width 920px). Body përdor renderDenseRow ekzistues (DRY) — pa duplikim.
+
+**Lidhje:** DEC-045, DEC-046
+
+---
+
+## Pattern: View Toggle (button group)
+
+**Përdorim:** User-i duhet të kalojë mes 2-3 prezantimeve të ndryshme të të njëjtave të dhëna.
+
+**Struktura:**
+```html
+<div class="det-view-toggle">
+  <button class="det-toggle-btn det-toggle-active" data-view="modul">
+    <i data-lucide="layout-grid"></i> Modul
+  </button>
+  <button class="det-toggle-btn" data-view="prioritet">
+    <i data-lucide="list-ordered"></i> Prioritet
+  </button>
+</div>
+```
+
+**CSS:**
+- Wrapper: `background: var(--s-bg-flat); border: 1px solid var(--s-border); border-radius: var(--r-sm); padding: 2px`
+- Aktive: `background: white; color: var(--s-brand-dark); box-shadow: 0 1px 3px rgba(15,23,42,0.08)`
+- Persistencë: localStorage me key specifik (psh `detyrat_view_mode`)
+
+---
+
+## Pattern: Mobile Tabs (≤768px)
+
+**Përdorim:** Faqja desktop ka split-view; në mobile s'ka hapësirë, kalo te tabs.
+
+**Klasa:** `.ballina-tabs` (hidden default, shfaqet vetëm te `@media (max-width: 768px)`).
+
+**Logjika:**
+- `data-mobile-tab` atribut te container parent
+- CSS `:not([data-mobile-tab="X"])` fsheh panelet jo-aktive
+- Persistencë: localStorage `ballina_tab_mobile`
+- Default tab: më i rëndësishmi për përdoruesin mobil (psh "Detyrat" jo "Dashboard")
+
+---
+
 *Çdo komponent i ri ose pattern duhet shtuar këtu. Mos ndrysho ekzistuesit pa update tek të gjithë moduleve të prekur.*
