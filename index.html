@@ -28,7 +28,7 @@
     <script>
         // Nese eshte veq i loguar, dergo ne dashboard
         if (localStorage.getItem('user_aktual')) {
-            window.location.href = 'pages/dashboard.html';
+            window.location.href = 'pages/ballina.html';
         }
 
         function handleLogin() {
@@ -40,7 +40,7 @@
             }
             const result = login(username, password);
             if (result.success) {
-                window.location.href = 'pages/dashboard.html';
+                window.location.href = 'pages/ballina.html';
             } else {
                 document.getElementById('error-msg').textContent = 'Username ose fjalëkalim i gabuar!';
             }

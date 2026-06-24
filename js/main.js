@@ -10,7 +10,7 @@ function handleLogin() {
 
     // Temporary test login (do ta zëvendësojmë me Supabase)
     if (email === 'admin@sigal.com' && password === 'admin123') {
-        window.location.href = 'pages/dashboard.html';
+        window.location.href = 'pages/ballina.html';
     } else {
         errorMsg.textContent = 'Incorrect email or password.';
     }

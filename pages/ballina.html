@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigal Health | Ballina</title>
+    <link rel="stylesheet" href="../css/theme-v2.css">
+    <script src="../js/auth.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img src="../Sigal-KS-Logo.webp" alt="Sigal Logo">
+            <div class="logo-text">
+                <span class="logo-text-main">SIGAL</span>
+                <span class="logo-text-sub">Insurance Group</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="ballina.html" class="nav-item active" data-label="Ballina"><span class="nav-icon"><i data-lucide="home"></i></span><span class="nav-label">Ballina</span></a>
+            <a href="oferta.html" class="nav-item" data-label="Oferta"><span class="nav-icon"><i data-lucide="clipboard-list"></i></span><span class="nav-label">Oferta</span></a>
+            <a href="kontratat.html" class="nav-item" data-label="Kontratat"><span class="nav-icon"><i data-lucide="file-text"></i></span><span class="nav-label">Kontratat</span></a>
+            <a href="faturimi.html" class="nav-item" data-label="Faturimi"><span class="nav-icon"><i data-lucide="receipt"></i></span><span class="nav-label">Faturimi</span></a>
+            <a href="rinovimet.html" class="nav-item" data-label="Rinovimet"><span class="nav-icon"><i data-lucide="refresh-cw"></i></span><span class="nav-label">Rinovimet</span></a>
+            <a href="debitoret.html" class="nav-item" data-label="Debitorët"><span class="nav-icon"><i data-lucide="wallet"></i></span><span class="nav-label">Debitorët</span></a>
+            <a href="raportet.html" class="nav-item" data-label="Raportet"><span class="nav-icon"><i data-lucide="bar-chart-3"></i></span><span class="nav-label">Raportet</span></a>
+            <a href="#" class="nav-item" data-label="Dokumentet"><span class="nav-icon"><i data-lucide="folder-open"></i></span><span class="nav-label">Dokumentet</span></a>
+            <a href="stafi.html" class="nav-item" data-label="Stafi"><span class="nav-icon"><i data-lucide="users"></i></span><span class="nav-label">Stafi</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="../index.html" class="nav-item logout" onclick="logout()"><span class="nav-icon"><i data-lucide="log-out"></i></span><span class="nav-label">Dilni</span></a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="topbar">
+            <h1>Ballina</h1>
+            <div class="topbar-right"></div>
+        </div>
+
+        <!-- Mobile tabs (≤768px) -->
+        <div class="ballina-tabs" id="ballina-tabs">
+            <button class="ballina-tab ballina-tab-active" data-tab="detyrat" onclick="setMobileTab('detyrat')">
+                <i data-lucide="check-circle"></i> Detyrat <span class="ballina-tab-badge" id="ballina-tab-badge-detyrat">0</span>
+            </button>
+            <button class="ballina-tab" data-tab="dashboard" onclick="setMobileTab('dashboard')">
+                <i data-lucide="layout-dashboard"></i> Dashboard
+            </button>
+        </div>
+
+        <div class="ballina-layout" id="ballina-layout" data-pozicioni="split">
+
+            <!-- ===== PANEL DASHBOARD ===== -->
+            <aside class="ballina-panel" id="panel-dashboard">
+                <div class="dash-period-row">
+                    <div class="dashboard-greeting">
+                        <h2 id="dashGreeting">Përshëndetje</h2>
+                        <p id="dashSubtitle">—</p>
+                    </div>
+                    <div class="dash-period-chips">
+                        <button class="dash-period-chip active" data-period="muaj" onclick="ndryshoPeriod('muaj')" id="periodMuajBtn">Muaji</button>
+                        <button class="dash-period-chip" data-period="vit" onclick="ndryshoPeriod('vit')" id="periodVitBtn">Viti</button>
+                    </div>
+                </div>
+
+                <!-- 6 KPI Cards -->
+                <div class="stats-strip ballina-kpi-grid">
+                    <div class="kpi-card" onclick="filtroDetyratPerModul('kontratat')">
+                        <div class="kpi-icon kpi-icon-blue"><i data-lucide="file-check"></i></div>
+                        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                        <div class="kpi-body">
+                            <div class="sm-lbl">Kontratat Aktive</div>
+                            <div class="sm-num" id="kpi-aktive">0</div>
+                            <div class="kpi-sub" id="kpi-aktive-sub">—</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card" onclick="filtroDetyratPerModul('kontratat')">
+                        <div class="kpi-icon kpi-icon-orange"><i data-lucide="clock"></i></div>
+                        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                        <div class="kpi-body">
+                            <div class="sm-lbl">Skadojnë ≤ 35 ditë</div>
+                            <div class="sm-num" id="kpi-skadon">0</div>
+                            <div class="kpi-sub">Kërkojnë vëmendje</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card" onclick="filtroDetyratPerModul('oferta')">
+                        <div class="kpi-icon kpi-icon-blue"><i data-lucide="clipboard-list"></i></div>
+                        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                        <div class="kpi-body">
+                            <div class="sm-lbl">Ofertat Aktive</div>
+                            <div class="sm-num" id="kpi-ofertat">0</div>
+                            <div class="kpi-sub" id="kpi-ofertat-sub">—</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card" onclick="filtroDetyratPerModul('faturimi')">
+                        <div class="kpi-icon kpi-icon-green"><i data-lucide="receipt"></i></div>
+                        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                        <div class="kpi-body">
+                            <div class="sm-lbl">Fatura të Lëshuara</div>
+                            <div class="sm-num" id="kpi-leshuar">0</div>
+                            <div class="kpi-sub" id="kpi-leshuar-sub">muaji aktual</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card" onclick="filtroDetyratPerModul('debitoret')">
+                        <div class="kpi-icon kpi-icon-red"><i data-lucide="alert-circle"></i></div>
+                        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                        <div class="kpi-body">
+                            <div class="sm-lbl">Borxh Total</div>
+                            <div class="sm-num" id="kpi-borxh">€0</div>
+                            <div class="kpi-sub" id="kpi-borxh-sub">— debitorë</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card" onclick="filtroDetyratPerModul('rinovimet')">
+                        <div class="kpi-icon kpi-icon-orange"><i data-lucide="refresh-cw"></i></div>
+                        <div class="kpi-arrow"><i data-lucide="arrow-up-right"></i></div>
+                        <div class="kpi-body">
+                            <div class="sm-lbl">Rinovime në Pritje</div>
+                            <div class="sm-num" id="kpi-rinovime">0</div>
+                            <div class="kpi-sub" id="kpi-rinovime-sub">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donut row (3 charts) -->
+                <div class="dash-charts-row-3">
+                    <div class="dash-chart-card">
+                        <h3 class="dash-chart-title">Kontratat Sipas Llojit</h3>
+                        <div class="dash-chart-subtitle" id="donutLlojiSub">Shpërndarja aktuale</div>
+                        <div class="dash-donut-wrap">
+                            <div class="dash-donut-canvas"><canvas id="chart-lloji"></canvas></div>
+                            <div class="dash-donut-legend" id="legendLloji"></div>
+                        </div>
+                    </div>
+                    <div class="dash-chart-card">
+                        <h3 class="dash-chart-title">Statusi i Faturimit</h3>
+                        <div class="dash-chart-subtitle" id="donutFatSub">Muaji aktual</div>
+                        <div class="dash-donut-wrap">
+                            <div class="dash-donut-canvas"><canvas id="chart-faturimi"></canvas></div>
+                            <div class="dash-donut-legend" id="legendFaturimi"></div>
+                        </div>
+                    </div>
+                    <div class="dash-chart-card">
+                        <h3 class="dash-chart-title">Aging i Debitorëve</h3>
+                        <div class="dash-chart-subtitle">Mosha e borxheve</div>
+                        <div class="dash-donut-wrap">
+                            <div class="dash-donut-canvas"><canvas id="chart-debitor-aging"></canvas></div>
+                            <div class="dash-donut-legend" id="legendAging"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Line chart -->
+                <div class="dash-chart-card" style="margin-bottom:14px;">
+                    <div class="dash-chart-header">
+                        <div>
+                            <h3 class="dash-chart-title">Trendi i Kontratave · 12 Muaj</h3>
+                            <div class="dash-chart-subtitle" style="margin-bottom:0">Kontratat e reja vs kontratat e rinovuara</div>
+                        </div>
+                        <div class="dash-line-legend">
+                            <span class="dash-line-legend-item"><span class="swatch" style="background:var(--s-brand)"></span> Të reja</span>
+                            <span class="dash-line-legend-item"><span class="swatch" style="background:var(--s-success)"></span> Rinovuar</span>
+                        </div>
+                    </div>
+                    <div class="dash-line-wrap"><canvas id="chart-trend"></canvas></div>
+                </div>
+
+                <!-- Panels -->
+                <div class="dash-panels-row">
+                    <div class="dash-panel">
+                        <div class="dash-panel-header">
+                            <div class="dash-panel-title"><i data-lucide="alert-triangle" style="width:14px;height:14px;color:var(--s-orange)"></i> Skadojnë Së Shpejti</div>
+                            <span class="dash-panel-badge" id="badgeSkadon">0</span>
+                        </div>
+                        <div id="lista-skadon"><div class="dash-panel-empty">Duke ngarkuar...</div></div>
+                    </div>
+                    <div class="dash-panel">
+                        <div class="dash-panel-header">
+                            <div class="dash-panel-title"><i data-lucide="activity" style="width:14px;height:14px;color:var(--s-brand)"></i> Veprimet e Fundit</div>
+                        </div>
+                        <div id="lista-veprime"><div class="dash-panel-empty">Asnjë veprim së fundi</div></div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- ===== DIVIDER ===== -->
+            <div class="ballina-divider" id="ballina-divider">
+                <button class="ballina-arrow ballina-arrow-left" id="arrow-left" onclick="setPozicioni('full-detyrat')" title="Maksimizo Detyrat" type="button">
+                    <i data-lucide="chevron-left"></i>
+                </button>
+                <button class="ballina-arrow ballina-arrow-center" onclick="setPozicioni('split')" title="Split 50/50" type="button">
+                    <i data-lucide="square-split-horizontal"></i>
+                </button>
+                <button class="ballina-arrow ballina-arrow-right" id="arrow-right" onclick="setPozicioni('full-dashboard')" title="Maksimizo Dashboard" type="button">
+                    <i data-lucide="chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- ===== PANEL DETYRAT ===== -->
+            <aside class="ballina-panel" id="panel-detyrat">
+                <div class="det-filter-row">
+                    <div class="det-filters" id="det-filters">
+                        <button class="det-chip active" data-filter="all" onclick="setFilter('all')">
+                            Të gjitha <span class="det-chip-count" id="c-all">0</span>
+                        </button>
+                        <button class="det-chip" data-filter="te-miat" onclick="setFilter('te-miat')">
+                            Detyrat e mia <span class="det-chip-count" id="c-mine">0</span>
+                        </button>
+                        <button class="det-chip" data-filter="pa-pergjegjes" onclick="setFilter('pa-pergjegjes')" id="chip-unassigned">
+                            Pa përgjegjës <span class="det-chip-count" id="c-unassigned">0</span>
+                        </button>
+                    </div>
+                    <div class="det-view-toggle">
+                        <button class="det-toggle-btn det-toggle-active" id="toggle-modul" onclick="ballinaSetView('modul')" type="button">
+                            <i data-lucide="layout-grid"></i> Modul
+                        </button>
+                        <button class="det-toggle-btn" id="toggle-prioritet" onclick="ballinaSetView('prioritet')" type="button">
+                            <i data-lucide="list-ordered"></i> Prioritet
+                        </button>
+                    </div>
+                </div>
+
+                <!-- View 1: 6 Module Cards (default) -->
+                <div class="detyrat-cards-grid" id="detyrat-cards-grid">
+                    <div class="det-empty">Duke ngarkuar detyrat...</div>
+                </div>
+
+                <!-- View 2: Accordion sipas prioritetit (hidden default) -->
+                <div class="det-accordion" id="det-accordion" style="display:none;">
+                    <div class="det-empty">Duke ngarkuar...</div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- ===== MODAL "Shih të gjitha" ===== -->
+    <div class="drawer-overlay" id="modul-modal-overlay" onclick="if(event.target===this)mbyllModulModal()">
+        <div class="drawer-panel ballina-modal-panel">
+            <div class="drawer-header">
+                <div>
+                    <div class="drawer-title-gradient">
+                        <i data-lucide="layers" style="width:18px;height:18px;vertical-align:-3px"></i>
+                        <span id="modul-modal-titulli">Detyrat</span>
+                        <span class="ballina-modal-count" id="modul-modal-count">0</span>
+                    </div>
+                    <div class="drawer-subtitle" id="modul-modal-subtitle">Lista e plotë</div>
+                </div>
+                <button class="drawer-close" onclick="mbyllModulModal()" type="button">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="drawer-panel-body" id="modul-modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Toast container (i përdorur nga detyrat.js) -->
+    <div id="det-toast-container"></div>
+
+    <!-- Modal-et e detyrat.js (afati, confirm, ricakto, drawer krijimi) — të kopjuara nga detyrat.html për kompatibilitet -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="if(event.target===this)mbyllDrawer()">
+        <div class="drawer-panel" style="max-width:560px;">
+            <div class="drawer-header">
+                <div>
+                    <div class="drawer-title-gradient" id="drawer-title">Detyrë e re</div>
+                    <div class="drawer-subtitle">Plotëso detajet për detyrën manuale</div>
+                </div>
+                <button class="drawer-close" onclick="mbyllDrawer()" type="button"><i data-lucide="x"></i></button>
+            </div>
+            <div class="drawer-panel-body">
+                <div class="det-form-row"><label>Titulli <span style="color:var(--s-danger)">*</span></label><input type="text" id="d-titulli" placeholder="Shkurt çfarë duhet bërë"></div>
+                <div class="det-form-row"><label>Përshkrimi</label><textarea id="d-pershkrimi" rows="3" placeholder="Detaje shtesë (opsionale)"></textarea></div>
+                <div class="det-form-row-2">
+                    <div class="det-form-row"><label>Prioriteti</label><select id="d-prioriteti"><option value="kritike">Kritike</option><option value="te_rendesishme">Të rëndësishme</option><option value="normale" selected>Normale</option></select></div>
+                    <div class="det-form-row"><label>Data e afatit</label><input type="date" id="d-afati"></div>
+                </div>
+                <div class="det-form-row"><label>Përgjegjësi</label><select id="d-pergjegjesi"><option value="">— Pa caktuar —</option></select></div>
+            </div>
+            <div class="drawer-footer">
+                <button class="btn-cancel" onclick="mbyllDrawer()">Anulo</button>
+                <button class="btn-save btn-primary" onclick="ruajDetyre()"><i data-lucide="check"></i> Ruaj</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="det-mini-overlay" id="afati-modal-overlay" onclick="if(event.target===this)mbyllAfatiModal()">
+        <div class="det-mini-modal">
+            <div class="det-mini-modal-header"><i data-lucide="calendar-clock"></i><span>Ndrysho afatin</span><button class="det-mini-close" onclick="mbyllAfatiModal()" type="button"><i data-lucide="x"></i></button></div>
+            <div class="det-mini-modal-body"><div class="det-form-row"><label>Data e re e afatit</label><input type="date" id="afati-modal-input"></div></div>
+            <div class="det-mini-modal-footer"><button class="btn-cancel" onclick="mbyllAfatiModal()" type="button">Anulo</button><button class="btn-save btn-primary" onclick="ruajAfatin()" type="button"><i data-lucide="check"></i> Ruaj</button></div>
+        </div>
+    </div>
+
+    <div class="det-mini-overlay" id="confirm-modal-overlay" onclick="if(event.target===this)mbyllConfirmModal()">
+        <div class="det-mini-modal det-confirm-modal">
+            <div class="det-mini-modal-header"><i data-lucide="alert-triangle" style="color:var(--s-warning)"></i><span>Konfirmim</span></div>
+            <div class="det-mini-modal-body"><div id="confirm-modal-msg" style="font-size:13px;line-height:1.5;color:var(--s-text-sub);"></div></div>
+            <div class="det-mini-modal-footer"><button class="btn-cancel" onclick="mbyllConfirmModal()" type="button">Anulo</button><button class="btn-save btn-primary" id="confirm-modal-ok" type="button"><i data-lucide="check"></i> Vazhdo</button></div>
+        </div>
+    </div>
+
+    <div class="det-mini-overlay" id="ricakto-modal-overlay" onclick="if(event.target===this)mbyllRicaktoModal()">
+        <div class="det-mini-modal">
+            <div class="det-mini-modal-header"><i data-lucide="user-cog"></i><span>Ricakto detyrat</span><button class="det-mini-close" onclick="mbyllRicaktoModal()" type="button"><i data-lucide="x"></i></button></div>
+            <div class="det-mini-modal-body"><div class="det-form-row"><label>Përgjegjësi i ri për <span id="ricakto-count">0</span> detyra</label><select id="ricakto-pergjegjesi"><option value="">— Pa caktuar —</option></select></div></div>
+            <div class="det-mini-modal-footer"><button class="btn-cancel" onclick="mbyllRicaktoModal()" type="button">Anulo</button><button class="btn-save btn-primary" onclick="ruajRicakto()" type="button"><i data-lucide="check"></i> Ricakto</button></div>
+        </div>
+    </div>
+
+    <!-- Hidden helpers për detyrat.js (kërkohen DOM ids) -->
+    <button id="btn-shto-detyre" style="display:none" onclick="hapDrawerKrijim()"></button>
+    <button id="btn-perzgjedh" style="display:none"></button>
+    <div id="det-selection-toolbar" style="display:none">
+        <span id="det-selection-count">0</span>
+        <button id="btn-bulk-anulo" style="display:none"></button>
+        <button id="btn-bulk-ricakto" style="display:none"></button>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/detyrat.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/ballina.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

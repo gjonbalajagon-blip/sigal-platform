@@ -32,7 +32,7 @@ function kaQasje(faqja) {
     if (!user) return false;
     if (['superadmin', 'management', 'dep_management'].includes(user.role)) return true;
     // staff dhe staff_hq — vetem faqjet bazike
-    const faqjetLejohet = ['dashboard', 'oferta', 'kontratat', 'faturimi', 'detyrat'];
+    const faqjetLejohet = ['ballina', 'dashboard', 'oferta', 'kontratat', 'faturimi', 'detyrat'];
     return faqjetLejohet.includes(faqja);
 }
 

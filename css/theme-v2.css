@@ -2220,6 +2220,10 @@ body {
   background: linear-gradient(135deg, #1e3a8a, #3b82f6);
   color: #fff;
 }
+.kpi-card .kpi-icon-red {
+  background: linear-gradient(135deg, var(--s-red), var(--s-danger));
+  color: #fff;
+}
 
 .dash-period-row {
   display: flex;
@@ -3167,4 +3171,290 @@ body {
   padding: 12px 18px;
   border-top: 1px solid var(--s-border-light);
   background: rgba(248,250,252,0.5);
+}
+
+/* ============================================================
+   BALLINA — Split-view Dashboard | Detyrat (Faza 2C / DEC-044)
+   ============================================================ */
+.ballina-layout {
+  display: grid;
+  grid-template-columns: 1fr 32px 1fr;
+  transition: grid-template-columns 0.35s ease;
+  min-height: calc(100vh - 64px);
+}
+.ballina-layout[data-pozicioni="full-dashboard"] { grid-template-columns: 1fr 32px 0fr; }
+.ballina-layout[data-pozicioni="split"] { grid-template-columns: 1fr 32px 1fr; }
+.ballina-layout[data-pozicioni="full-detyrat"] { grid-template-columns: 0fr 32px 1fr; }
+.ballina-panel {
+  overflow-y: auto;
+  padding: 4px 18px 24px;
+  min-width: 0;
+}
+.ballina-layout[data-pozicioni="full-dashboard"] #panel-detyrat,
+.ballina-layout[data-pozicioni="full-detyrat"] #panel-dashboard {
+  visibility: hidden;
+  padding: 0;
+}
+
+.ballina-divider {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px;
+  background: transparent;
+  position: sticky; top: 80px; z-index: 5;
+  height: fit-content;
+}
+.ballina-arrow {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--s-glass);
+  border: 1px solid var(--s-border);
+  color: var(--s-text-muted);
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  padding: 0;
+}
+.ballina-arrow:hover {
+  background: var(--s-brand);
+  border-color: var(--s-brand);
+  color: white;
+  transform: scale(1.08);
+}
+.ballina-arrow i { width: 14px; height: 14px; }
+.ballina-arrow-center i { width: 13px; height: 13px; }
+.ballina-layout[data-pozicioni="full-dashboard"] #arrow-right { visibility: hidden; }
+.ballina-layout[data-pozicioni="full-detyrat"] #arrow-left { visibility: hidden; }
+
+/* KPI grid në panel: 3-kolone në split, 6-kolone në full */
+.ballina-kpi-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.ballina-layout[data-pozicioni="full-dashboard"] .ballina-kpi-grid {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+/* 3 donut row */
+.dash-charts-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ballina-layout[data-pozicioni="split"] .dash-charts-row-3 {
+  grid-template-columns: 1fr;
+}
+
+/* Filter row te paneli Detyrat */
+.det-filter-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.det-view-toggle {
+  display: inline-flex; gap: 0;
+  background: var(--s-bg-flat);
+  border: 1px solid var(--s-border);
+  border-radius: var(--r-sm);
+  padding: 2px;
+}
+.det-toggle-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 12px;
+  border: none; background: transparent;
+  color: var(--s-text-muted);
+  font-size: 11.5px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.det-toggle-btn i { width: 13px; height: 13px; }
+.det-toggle-btn:hover { color: var(--s-text); }
+.det-toggle-btn.det-toggle-active {
+  background: white;
+  color: var(--s-brand-dark);
+  box-shadow: 0 1px 3px rgba(15,23,42,0.08);
+}
+
+/* 6 Module Cards grid */
+.detyrat-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.ballina-layout[data-pozicioni="full-detyrat"] .detyrat-cards-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.det-card-modul {
+  background: white;
+  border: 1px solid var(--s-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.det-card-modul:hover {
+  border-color: var(--s-brand);
+  box-shadow: 0 4px 12px rgba(59,130,246,0.12);
+  transform: translateY(-1px);
+}
+.det-card-modul.det-card-modul-danger { border-color: var(--s-danger); }
+.det-card-modul.det-card-modul-empty { opacity: 0.55; }
+.det-card-modul-empty .det-card-modul-preview-empty { color: var(--s-text-faint); font-size: 11px; font-style: italic; padding: 8px 0; text-align: center; }
+
+.det-card-modul-header {
+  display: flex; align-items: center; gap: 8px;
+}
+.det-card-modul-header i {
+  width: 18px; height: 18px;
+  color: var(--s-brand-dark);
+}
+.det-card-modul-name {
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--s-text);
+  flex: 1;
+}
+.det-card-modul-count {
+  background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));
+  color: white;
+  font-size: 11px; font-weight: 800;
+  padding: 2px 9px;
+  border-radius: 999px;
+  min-width: 22px; text-align: center;
+}
+
+.det-card-modul-stats {
+  display: flex; gap: 10px;
+  font-size: 10.5px; font-weight: 700;
+  align-items: center;
+}
+.det-stat-kritike { color: var(--s-danger); }
+.det-stat-rendesishme { color: var(--s-warning); }
+.det-stat-normale { color: var(--s-brand); }
+
+.det-card-modul-preview {
+  display: flex; flex-direction: column; gap: 4px;
+  border-top: 1px dashed var(--s-border-light);
+  padding-top: 8px;
+}
+.det-preview-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11.5px;
+  padding: 3px 0;
+}
+.det-preview-title {
+  flex: 1; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--s-text-sub);
+}
+.det-preview-afati {
+  font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 999px;
+}
+.det-afati-danger { background: var(--s-danger-bg); color: var(--s-danger-text); }
+.det-afati-warning { background: var(--s-warning-bg); color: var(--s-warning-text); }
+.det-afati-success { background: var(--s-success-bg); color: var(--s-success-text); }
+.det-afati-muted { background: var(--s-bg-flat); color: var(--s-text-muted); }
+
+.det-card-modul-shih {
+  background: transparent; border: none;
+  color: var(--s-brand-dark);
+  font-family: inherit; font-size: 11.5px; font-weight: 700;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 0 0;
+  align-self: flex-start;
+  border-top: 1px solid var(--s-border-light);
+  padding-top: 8px;
+  margin-top: auto;
+  width: 100%;
+  justify-content: center;
+}
+.det-card-modul-shih:hover { color: var(--s-brand); }
+.det-card-modul-shih i { width: 13px; height: 13px; }
+
+/* Modal "Shih të gjitha" — pattern unifikuar me drawer-in */
+.ballina-modal-panel {
+  max-width: 920px !important;
+  width: 92vw;
+  max-height: 92vh;
+  display: flex; flex-direction: column;
+}
+.ballina-modal-panel .drawer-panel-body {
+  flex: 1; overflow-y: auto;
+  padding: 16px 20px;
+}
+.ballina-modal-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.25);
+  color: white;
+  font-size: 12px; font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+  min-width: 24px;
+}
+
+/* Mobile tabs (≤768px) */
+.ballina-tabs {
+  display: none;
+  padding: 0 18px 8px;
+  gap: 8px;
+}
+.ballina-tab {
+  flex: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--s-bg-flat);
+  border: 1px solid var(--s-border);
+  border-radius: var(--r-sm);
+  color: var(--s-text-muted);
+  font-family: inherit; font-size: 12.5px; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ballina-tab i { width: 15px; height: 15px; }
+.ballina-tab.ballina-tab-active {
+  background: linear-gradient(135deg, var(--s-brand-dark), var(--s-brand));
+  color: white;
+  border-color: transparent;
+}
+.ballina-tab-badge {
+  background: rgba(255,255,255,0.25);
+  color: inherit;
+  font-size: 10px; font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 999px;
+  min-width: 20px; text-align: center;
+}
+.ballina-tab:not(.ballina-tab-active) .ballina-tab-badge {
+  background: var(--s-bg);
+  color: var(--s-text-sub);
+}
+
+@media (max-width: 768px) {
+  .ballina-tabs { display: flex; }
+  .ballina-divider { display: none; }
+  .ballina-layout {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "dashboard" "detyrat";
+  }
+  .ballina-layout #panel-dashboard { grid-area: dashboard; display: none; }
+  .ballina-layout #panel-detyrat { grid-area: detyrat; display: block; }
+  .ballina-layout[data-mobile-tab="dashboard"] #panel-dashboard { display: block; }
+  .ballina-layout[data-mobile-tab="dashboard"] #panel-detyrat { display: none; }
+  .ballina-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .dash-charts-row-3 { grid-template-columns: 1fr; }
+  .detyrat-cards-grid { grid-template-columns: 1fr; }
+  .det-filter-row { flex-direction: column; align-items: stretch; }
+  .det-view-toggle { align-self: flex-end; }
 }
