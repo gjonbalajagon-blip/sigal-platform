@@ -44,10 +44,15 @@ function formatDataShqip(iso) {
 function parseDataAny(s) {
     if (!s) return null;
     if (s instanceof Date) return s;
+    // ISO YYYY-MM-DD
     const m = String(s).match(/(\d{4})-(\d{2})-(\d{2})/);
     if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+    // DD.MM.YYYY (me pika)
     const m2 = String(s).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
     if (m2) return new Date(+m2[3], +m2[2]-1, +m2[1]);
+    // DD/MM/YYYY (me slash) — Faza 2D fix: format kryesor te kontratat & faturimi
+    const m3 = String(s).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (m3) return new Date(+m3[3], +m3[2]-1, +m3[1]);
     const d = new Date(s);
     return isNaN(d.getTime()) ? null : d;
 }
@@ -173,7 +178,7 @@ function gjeneroDetyratAuto() {
     let krijuara = 0;
     const tani = new Date();
 
-    // TRIGGER 1: Kontratë skadon ≤30 ditë
+    // TRIGGER 1: Kontratë skadon ≤30 ditë (DEC-052/053: afat sipas range)
     const kontratat = JSON.parse(localStorage.getItem('kontratat') || '[]');
     kontratat.forEach((k) => {
         if (!k.id || k.arkivuar || !k.mbarimi) return;
@@ -182,12 +187,20 @@ function gjeneroDetyratAuto() {
         if (dite < 0 || dite > 30) return;
         const key = makeRregullKey({ moduli: 'kontratat', referencaId: k.id, rregulla: 'auto_kontrate_skadim_30d' });
         if (ekzistues.has(key)) return;
+        // Afati: nëse ≤7 ditë → data e skadimit (kritike); nëse 8-30 ditë → 5 ditë para skadimit
+        let afati;
+        if (dite <= 7) {
+            afati = d.toISOString().split('T')[0];
+        } else {
+            const af = new Date(d.getTime() - 5 * 86400000);
+            afati = af.toISOString().split('T')[0];
+        }
         detyrat.push(krijoDetyreObjektAuto({
             titulli: `Përgatit rinovimin për ${k.emri || 'klient'}`,
             pershkrimi: `Kontrata skadon për ${dite} ditë (${formatDataShqip(k.mbarimi)}).`,
             prioriteti: dite <= 7 ? 'kritike' : 'te_rendesishme',
             burimi: { moduli: 'kontratat', referencaId: k.id, rregulla: 'auto_kontrate_skadim_30d', metadata: { mbarimi: k.mbarimi, emri: k.emri } },
-            data_afati: k.mbarimi,
+            data_afati: afati,
             pergjegjesi: k.krijuarNga || null
         }));
         krijuara++;
@@ -213,16 +226,18 @@ function gjeneroDetyratAuto() {
         krijuara++;
     });
 
-    // TRIGGER 3: Ofertë konfirmuar pa kontratë
+    // TRIGGER 3: Ofertë konfirmuar pa kontratë (DEC-052: afat sot + 3 ditë)
     ofertat.forEach((o) => {
         if (!o.id || !o.konfirmuar || o.realizuar) return;
         const key = makeRregullKey({ moduli: 'oferta', referencaId: o.id, rregulla: 'auto_oferta_konfirmuar_pa_kontrate' });
         if (ekzistues.has(key)) return;
+        const af3 = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
         detyrat.push(krijoDetyreObjektAuto({
             titulli: `Krijo kontratën për ${o.emri || 'klient'}`,
             pershkrimi: `Klienti konfirmoi: ${o.pakaZgjedhur || '—'}. Krijo kontratën.`,
             prioriteti: 'te_rendesishme',
             burimi: { moduli: 'oferta', referencaId: o.id, rregulla: 'auto_oferta_konfirmuar_pa_kontrate', metadata: { pakaZgjedhur: o.pakaZgjedhur, emri: o.emri } },
+            data_afati: af3,
             pergjegjesi: o.krijuarNga || null
         }));
         krijuara++;
@@ -243,18 +258,21 @@ function gjeneroDetyratAuto() {
             }
             const key = makeRregullKey({ moduli: 'faturimi', referencaId: f.id, rregulla: 'auto_faturim_pa_kerkese_20d' });
             if (ekzistues.has(key)) return;
+            // Afati: data 25 e muajit aktual
+            const af25 = new Date(tani.getFullYear(), tani.getMonth(), 25).toISOString().split('T')[0];
             detyrat.push(krijoDetyreObjektAuto({
                 titulli: `Dërgo kërkesë faturimi për ${f.emri || 'klient'}`,
                 pershkrimi: `Klienti pa kërkesë në muajin ${muajiAktual}. Dita aktuale ${sotiMuajit}.`,
                 prioriteti: 'kritike',
                 burimi: { moduli: 'faturimi', referencaId: f.id, rregulla: 'auto_faturim_pa_kerkese_20d', metadata: { muaji: muajiAktual, emri: f.emri } },
+                data_afati: af25,
                 pergjegjesi: f.krijuarNga || null
             }));
             krijuara++;
         });
     }
 
-    // TRIGGER 5: Debitor i_ri me borxh >365d
+    // TRIGGER 5: Debitor i_ri me borxh >365d (DEC-052: afat sot + 5 ditë)
     const debitoret = JSON.parse(localStorage.getItem('debitoret_data_v1') || '[]');
     debitoret.forEach(d => {
         if (d.statusi !== 'i_ri') return;
@@ -262,12 +280,39 @@ function gjeneroDetyratAuto() {
         if (borxh <= 0) return;
         const key = makeRregullKey({ moduli: 'debitoret', referencaId: d.id, rregulla: 'auto_debitor_365_pa_kontakt' });
         if (ekzistues.has(key)) return;
+        const af5 = new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0];
         detyrat.push(krijoDetyreObjektAuto({
             titulli: `URGJENT: kontaktoni ${d.klienti || 'debitor'}`,
             pershkrimi: `Debitor i ri me €${borxh.toFixed(2)} borxh mbi 365 ditë.`,
             prioriteti: 'kritike',
             burimi: { moduli: 'debitoret', referencaId: d.id, rregulla: 'auto_debitor_365_pa_kontakt', metadata: { borxh, klienti: d.klienti } },
+            data_afati: af5,
             pergjegjesi: d.agjenti || null
+        }));
+        krijuara++;
+    });
+
+    // TRIGGER 7 (Faza 2D): Rinovim pa filluar dhe data_mbarimit ≤15 ditë
+    const rinovimet = JSON.parse(localStorage.getItem('rinovimet_data') || '[]');
+    rinovimet.forEach(r => {
+        if (!r.id) return;
+        const st = r.statusi || 'pa_filluar';
+        if (st !== 'pa_filluar') return;
+        if (!r.data_mbarimit) return;
+        const dm = parseDataAny(r.data_mbarimit); if (!dm) return;
+        const dite = Math.ceil((dm - tani) / 86400000);
+        if (dite < 0 || dite > 15) return;
+        const key = makeRregullKey({ moduli: 'rinovimet', referencaId: r.id, rregulla: 'auto_rinovim_pa_filluar_15d' });
+        if (ekzistues.has(key)) return;
+        // Afati: data_mbarimit - 3 ditë
+        const af = new Date(dm.getTime() - 3 * 86400000).toISOString().split('T')[0];
+        detyrat.push(krijoDetyreObjektAuto({
+            titulli: `Rinovo kontratën — ${r.kontraktuesi || 'klient'}`,
+            pershkrimi: `Rinovim pa filluar, skadon për ${dite} ditë (${formatDataShqip(r.data_mbarimit)}). Kontaktoni klientin.`,
+            prioriteti: 'kritike',
+            burimi: { moduli: 'rinovimet', referencaId: r.id, rregulla: 'auto_rinovim_pa_filluar_15d', metadata: { data_mbarimit: r.data_mbarimit, kontraktuesi: r.kontraktuesi } },
+            data_afati: af,
+            pergjegjesi: r.agjenti || null
         }));
         krijuara++;
     });
@@ -909,6 +954,9 @@ function renderExpandedDetails(d) {
     };
     const st = stMap[d.statusi] || stMap.e_re;
     const statusBadge = `<span class="det-badge det-badge-status det-badge-status-${st.cls}">${escapeHtml(st.lbl)}</span>`;
+    const autoCompletionBadge = (d.perfunduar_nga === 'system_auto')
+        ? `<span class="det-badge det-badge-auto-completion" title="U mbyll automatikisht nga sistemi"><i data-lucide="zap"></i> Plotësuar automatikisht</span>`
+        : '';
     const dataAfatiTxt = d.data_afati ? `Afati: ${formatDataShqip(d.data_afati)}` : 'Pa afat';
     const dataKrijTxt = d.data_krijimit ? `Krijuar: ${formatDataShqip(d.data_krijimit)}` : '';
 
@@ -955,7 +1003,7 @@ function renderExpandedDetails(d) {
     }
 
     return `<div class="det-row-expanded-content">
-        <div class="det-row-exp-meta">${llojiBadge}${statusBadge}<span class="det-badge det-badge-status-e-re">${escapeHtml(dataAfatiTxt)}</span>${dataKrijTxt ? `<span class="det-badge det-badge-status-e-re">${escapeHtml(dataKrijTxt)}</span>` : ''}</div>
+        <div class="det-row-exp-meta">${llojiBadge}${statusBadge}${autoCompletionBadge}<span class="det-badge det-badge-status-e-re">${escapeHtml(dataAfatiTxt)}</span>${dataKrijTxt ? `<span class="det-badge det-badge-status-e-re">${escapeHtml(dataKrijTxt)}</span>` : ''}</div>
         ${d.pershkrimi ? `<div class="det-row-exp-desc">${escapeHtml(d.pershkrimi)}</div>` : ''}
         ${burimi}
         ${aktTxt}
@@ -1100,6 +1148,154 @@ function renderAll() {
 }
 
 // =====================================================
+// BACKFILL AFATESH (Faza 2D / DEC-053)
+// Rikalkulim i data_afati për detyrat auto ekzistuese sipas rregullave 6.1
+// Idempotent — kontrolluar me flag localStorage 'backfill_afatet_v1'
+// =====================================================
+function backfillAfatet() {
+    if (localStorage.getItem('backfill_afatet_v1') === 'true') {
+        return { perditesuar: 0, kapercyer: 0, skip: true };
+    }
+    const kontratat = JSON.parse(localStorage.getItem('kontratat') || '[]');
+    const rinovimet = JSON.parse(localStorage.getItem('rinovimet_data') || '[]');
+    const tani = new Date();
+    let perditesuar = 0, kapercyer = 0;
+
+    detyrat.forEach(d => {
+        if (d.lloji !== 'auto' || !d.burimi) { kapercyer++; return; }
+        const reg = d.burimi.rregulla;
+        let afatiRi = null;
+
+        if (reg === 'auto_kontrate_skadim_30d') {
+            const mbarimi = d.burimi.metadata?.mbarimi;
+            if (!mbarimi) { kapercyer++; return; }
+            const dm = parseDataAny(mbarimi); if (!dm) { kapercyer++; return; }
+            const dite = Math.ceil((dm - tani) / 86400000);
+            if (dite <= 7) afatiRi = dm.toISOString().split('T')[0];
+            else afatiRi = new Date(dm.getTime() - 5 * 86400000).toISOString().split('T')[0];
+        } else if (reg === 'auto_rinovim_pa_filluar_15d') {
+            const dmStr = d.burimi.metadata?.data_mbarimit;
+            if (!dmStr) { kapercyer++; return; }
+            const dm = parseDataAny(dmStr); if (!dm) { kapercyer++; return; }
+            afatiRi = new Date(dm.getTime() - 3 * 86400000).toISOString().split('T')[0];
+        } else if (reg === 'auto_debitor_365_pa_kontakt') {
+            afatiRi = new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0];
+        } else if (reg === 'auto_oferta_konfirmuar_pa_kontrate') {
+            afatiRi = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
+        } else if (reg === 'auto_oferta_pare_35') {
+            afatiRi = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+        } else if (reg === 'auto_faturim_pa_kerkese_20d') {
+            afatiRi = new Date(tani.getFullYear(), tani.getMonth(), 25).toISOString().split('T')[0];
+        } else if (reg === 'auto_oferta_skadim_5d') {
+            // Mbetet siç është (data e skadimit) — jo recalculim
+            kapercyer++; return;
+        } else {
+            kapercyer++; return;
+        }
+
+        if (afatiRi && d.data_afati !== afatiRi) {
+            d.data_afati = afatiRi;
+            perditesuar++;
+        } else {
+            kapercyer++;
+        }
+    });
+
+    if (perditesuar > 0) ruajDetyrat();
+    localStorage.setItem('backfill_afatet_v1', 'true');
+    console.info(`[backfillAfatet] Përditësuar: ${perditesuar}, Kapërcyer: ${kapercyer}`);
+    return { perditesuar, kapercyer, skip: false };
+}
+
+// =====================================================
+// AUTO-COMPLETION (Faza 2D / DEC-052)
+// Mbyll detyrat auto kur veprimi i lidhur ndodh në modulin tjetër
+// =====================================================
+function kontrolloAutoCompletion() {
+    const u = getUserAktual();
+    if (!u) return 0;
+    const aktivet = detyrat.filter(d => d.lloji === 'auto' && (d.statusi === 'e_re' || d.statusi === 'ne_progres'));
+    if (aktivet.length === 0) return 0;
+
+    const ofertat = JSON.parse(localStorage.getItem('ofertat') || '[]');
+    const kontratat = JSON.parse(localStorage.getItem('kontratat') || '[]');
+    const rinovimet = JSON.parse(localStorage.getItem('rinovimet_data') || '[]');
+    const faturimi = JSON.parse(localStorage.getItem('faturimi_klientet') || '[]');
+    const tani = new Date();
+    const muajiAktual = tani.getMonth() + 1;
+    let mbyllura = 0;
+
+    aktivet.forEach(d => {
+        const reg = d.burimi?.rregulla;
+        const refId = d.burimi?.referencaId;
+        if (!reg || !refId) return;
+
+        let mbyll = false, pershkrim = '';
+
+        if (reg === 'auto_oferta_konfirmuar_pa_kontrate') {
+            // Mbyll nëse oferta është realizuar
+            const o = ofertat.find(x => x.id === refId);
+            if (o && o.realizuar) {
+                mbyll = true;
+                pershkrim = `Oferta u realizua (kontrata u krijua)`;
+            }
+        } else if (reg === 'auto_kontrate_skadim_30d') {
+            // Mbyll nëse ekziston kontratë e re që referohet te kjo (rinovim)
+            const ekzRinov = kontratat.find(x => x.nga_rinovimi === refId || x.kontrataMeparshme === refId);
+            if (ekzRinov) {
+                mbyll = true;
+                pershkrim = `Kontrata u rinovua (kontratë e re: ${ekzRinov.id || '—'})`;
+            } else {
+                // Ose nëse kontrata u arkivua (rinovuar manualisht)
+                const k = kontratat.find(x => x.id === refId);
+                if (k && k.arkivuar) {
+                    mbyll = true;
+                    pershkrim = `Kontrata u arkivua (rinovuar)`;
+                }
+            }
+        } else if (reg === 'auto_rinovim_pa_filluar_15d') {
+            const r = rinovimet.find(x => x.id === refId);
+            if (r && r.statusi && r.statusi !== 'pa_filluar') {
+                mbyll = true;
+                pershkrim = `Rinovimi u kontaktua (status: ${r.statusi})`;
+            }
+        } else if (reg === 'auto_faturim_pa_kerkese_20d') {
+            const f = faturimi.find(x => x.id === refId);
+            if (f) {
+                const st = (f.statuset || {})[muajiAktual] || 'asgje';
+                if (st !== 'asgje') {
+                    mbyll = true;
+                    pershkrim = `Kërkesa e faturimit u dërgua (status: ${st})`;
+                }
+            }
+        }
+
+        if (mbyll) {
+            d.statusi = 'e_perfunduar';
+            d.data_perfundimit = new Date().toISOString().split('T')[0];
+            d.perfunduar_nga = 'system_auto';
+            d.aktivitete = d.aktivitete || [];
+            d.aktivitete.push({
+                data: new Date().toISOString(),
+                autori: 'system',
+                tipi: 'auto_completion',
+                teksti: pershkrim
+            });
+            mbyllura++;
+        }
+    });
+
+    if (mbyllura > 0) {
+        ruajDetyrat();
+        // Toast info (jo undo)
+        if (typeof shfaqToast === 'function') {
+            shfaqToast(`${mbyllura} detyra u plotësuan automatikisht`, null);
+        }
+    }
+    return mbyllura;
+}
+
+// =====================================================
 // BOOTSTRAP
 // =====================================================
 document.addEventListener('DOMContentLoaded', function () {
@@ -1108,7 +1304,9 @@ document.addEventListener('DOMContentLoaded', function () {
     aplikoPermissions();
     pastroDetyratEArkiva();
     migroDetyratReferences();
+    backfillAfatet();
     gjeneroDetyratAuto();
+    kontrolloAutoCompletion();
     document.querySelectorAll('.det-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === currentFilter));
     renderAccordion();
 });

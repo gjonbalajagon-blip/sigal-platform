@@ -54,6 +54,10 @@
 
             <!-- ===== PANEL DASHBOARD ===== -->
             <aside class="ballina-panel" id="panel-dashboard">
+                <div class="ballina-panel-header">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </div>
                 <div class="dash-period-row">
                     <div class="dashboard-greeting">
                         <h2 id="dashGreeting">Përshëndetje</h2>
@@ -199,6 +203,20 @@
 
             <!-- ===== PANEL DETYRAT ===== -->
             <aside class="ballina-panel" id="panel-detyrat">
+                <div class="ballina-panel-header">
+                    <div class="ballina-panel-header-left">
+                        <i data-lucide="check-circle"></i>
+                        <span>Detyrat</span>
+                    </div>
+                    <div class="ballina-panel-header-actions">
+                        <button class="btn-primary btn-primary-sm" id="btn-perzgjedh" onclick="toggleSelectionMode()" type="button">
+                            <i data-lucide="check-square"></i> Përzgjedh
+                        </button>
+                        <button class="btn-primary btn-primary-sm" id="btn-shto-detyre" onclick="hapDrawerKrijim()" type="button">
+                            <i data-lucide="plus"></i> Shto detyrë
+                        </button>
+                    </div>
+                </div>
                 <div class="det-filter-row">
                     <div class="det-filters" id="det-filters">
                         <button class="det-chip active" data-filter="all" onclick="setFilter('all')">
@@ -307,9 +325,7 @@
         </div>
     </div>
 
-    <!-- Hidden helpers për detyrat.js (kërkohen DOM ids) -->
-    <button id="btn-shto-detyre" style="display:none" onclick="hapDrawerKrijim()"></button>
-    <button id="btn-perzgjedh" style="display:none"></button>
+    <!-- Hidden helpers për detyrat.js (kërkohen DOM ids — vetëm për bulk actions) -->
     <div id="det-selection-toolbar" style="display:none">
         <span id="det-selection-count">0</span>
         <button id="btn-bulk-anulo" style="display:none"></button>

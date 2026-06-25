@@ -137,7 +137,7 @@ function renderModuleCards() {
 
         const filterChip = (currentFilter === 'all') ? '' : ` (${currentFilter === 'te-miat' ? 'mia' : 'pa përgj.'})`;
 
-        html += `<div class="det-card-modul${dangerCls}${emptyCls}" onclick="hapModulModal('${mc.id}')">
+        html += `<div class="det-card-modul${dangerCls}${emptyCls}" data-moduli="${mc.id}">
             <div class="det-card-modul-header">
                 <i data-lucide="${mc.icon}"></i>
                 <span class="det-card-modul-name">${mc.label}</span>
@@ -149,7 +149,7 @@ function renderModuleCards() {
                 <span class="det-stat-normale">─ ${normale}</span>
             </div>
             <div class="det-card-modul-preview">${previewHtml}</div>
-            <button class="det-card-modul-shih" onclick="event.stopPropagation();hapModulModal('${mc.id}')" type="button">
+            <button class="det-card-modul-shih" type="button" tabindex="-1">
                 Shih të ${total}${filterChip} <i data-lucide="arrow-right"></i>
             </button>
         </div>`;
@@ -335,6 +335,30 @@ function ballinaOnDetyratChange() {
 })();
 
 // =====================================================
+// EVENT DELEGATION (Faza 2D P4): siguri për klikim te module-cards
+// =====================================================
+function ballinaBindDelegatedHandlers() {
+    const grid = document.getElementById('detyrat-cards-grid');
+    if (!grid) return;
+    grid.addEventListener('click', function(e) {
+        const card = e.target.closest('.det-card-modul');
+        if (!card) return;
+        const moduli = card.getAttribute('data-moduli');
+        if (moduli) hapModulModal(moduli);
+    });
+}
+
+// Garanto që funksionet janë në window scope (siguri ndaj script-loading edge cases)
+if (typeof window !== 'undefined') {
+    window.hapModulModal = hapModulModal;
+    window.mbyllModulModal = mbyllModulModal;
+    window.setPozicioni = setPozicioni;
+    window.setMobileTab = setMobileTab;
+    window.ballinaSetView = ballinaSetView;
+    window.filtroDetyratPerModul = filtroDetyratPerModul;
+}
+
+// =====================================================
 // BOOTSTRAP
 // =====================================================
 document.addEventListener('DOMContentLoaded', function() {
@@ -354,6 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         try { ballinaKpiShtese(); } catch(e) { console.warn('KPI shtesë:', e.message); }
         renderModuleCards();
+        ballinaBindDelegatedHandlers();
     }, 100);
 
     // Mobile tab badge: count i detyrave aktive
