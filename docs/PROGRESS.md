@@ -26,6 +26,65 @@ Format:
 
 ---
 
+## 2026-06-26 - Faza 2D: Bug fixes Ballina (10 probleme + auto-completion + backfill)
+
+**Tipi:** Bug fixes + funksionalitet shtesë
+**Statusi:** ✅ Përfunduar (commit b71af94)
+
+**Konteksti:**
+Pas verifikimit vizual të Faza 2C, user-i raportoi 10 probleme — me 1 kritik: detyrat auto për kontratat dhe rinovimet nuk po krijoheshin (0 për 33 kontrata në sistem).
+
+**Root cause (P5 kritik):**
+`parseDataAny()` te detyrat.js parsonte vetëm YYYY-MM-DD dhe DD.MM.YYYY. Kontratat dhe faturimi përdorin DD/MM/YYYY (me slash) — silent skip. Të 33 kontratat injoroheshin pa errori. Fix: shtuar regex i tretë për DD/MM/YYYY.
+
+**Trigger i ri shtesë:**
+- TRIGGER 7: `auto_rinovim_pa_filluar_15d` — rinovime me statusi='pa_filluar' dhe data_mbarimit ≤15d, prioriteti kritike, afati = data_mbarimit-3d
+
+**Çka u bë (10 probleme):**
+- ✅ P1 (DEC-049): Headers `ballina-panel-header` me ikon+emër për të dy panelet + sfond ndryshe (var(--s-bg-flat) vs var(--s-bg))
+- ✅ P2: Border .det-card-modul 1px (ishte), toggle pill-style segmented (bg var(--s-brand), color var(--s-bg-flat), 11px), KPI outline:none
+- ✅ P3 (DEC-050): Modal 100vh full-screen, header sticky, body overflow
+- ✅ P4: Event delegation për module-cards (data-moduli attribute) + window scope guarantee për hapModulModal
+- ✅ P5 (kritik): parseDataAny DD/MM/YYYY fix → 33 kontrata triggerojnë
+- ✅ P6 (DEC-053): Afati diferencuar sipas rregullës (7 triggers totalë) + backfillAfatet() idempotent
+- ✅ P7 (DEC-051): KPI klik → hapModulModal (jo filter)
+- ✅ P8: Bell+user djathtas (verifikuar topbar grid + main.js inject)
+- ✅ P9 (DEC-052): kontrolloAutoCompletion() me 4 sinjale + badge "Plotësuar automatikisht" + toast info pa undo
+- ✅ P10: Butona "Shto detyrë" + "Përzgjedh" te panel-detyrat header (btn-primary-sm)
+
+**Numra pas fix-it:**
+- Kontratat: 33 rekorde → ~tani 33 detyra potenciale (varësisht sa nga to skadojnë ≤30 ditë)
+- Rinovimet: 0 → varësisht sa kanë statusi='pa_filluar' dhe data_mbarimit ≤15d
+
+**Çka NUK u prek:**
+- 🚫 Logjika kryesore e trigger-ave (vetëm fields data_afati + parse fix)
+- 🚫 De-duplikim makeRregullKey
+- 🚫 Toast undo
+- 🚫 Supabase tracking (Faza 2B)
+- 🚫 Modulet e tjera përveç ku ishte e nevojshme
+
+**Vendime gjatë rrugës:**
+- 🟢 Konsoliduar trigger-i 7d+30d në një rregull me afat të diferencuar (jo dy rregulla të ndara) — dedup-i funksionon natyrshëm
+- 🟢 Auto-completion pa undo (vendimi 9.3=B i përdoruesit)
+- 🟢 Sinjali për kontrata-rinovim: dual check (nga_rinovimi field ose arkivuar=true)
+
+**Verifikim manual i nevojshëm:**
+1. Hap ballina.html → kontratat me skadim ≤30 ditë duhet të krijojnë detyra
+2. Hap module-card "Kontrata" → modal hapet me listë
+3. Klik KPI "Borxh total" → hap modul-modal Debitorët
+4. Headers e paneleve duken të dallueshëm
+5. Modal merr 100vh
+6. Backfill afatet ekzekutohet 1 herë (flag në localStorage)
+
+**Lidhje:** DEC-049 (panel headers), DEC-050 (modal 100vh), DEC-051 (KPI modal), DEC-052 (auto-completion), DEC-053 (backfill afatesh)
+
+**Çka mbetet:**
+- Verifikim vizual i fix-eve nga user-i në production
+- ~150 ngjyra hardcoded legacy (incremental)
+- 11 vende `confirm()` native (incremental)
+
+---
+
 ## 2026-06-24 - Faza 2C: Ballina (Dashboard + Detyrat split-view)
 
 **Tipi:** Faqe e re + redesign + migrim navigimi

@@ -1064,4 +1064,100 @@ function eshtePaPergjegjes(d) { return !d || !d.pergjegjesi; }
 
 ---
 
+## Pattern: Panel Header (Faza 2D / DEC-049)
+
+**Përdorim:** Faqe me 2+ panelet (split-view) ku user-i duhet të orientohet vizualisht se ku ndodhet.
+
+**Struktura:**
+```html
+<aside class="ballina-panel" id="panel-X">
+  <div class="ballina-panel-header">
+    <div class="ballina-panel-header-left">
+      <i data-lucide="layout-dashboard"></i>
+      <span>Dashboard</span>
+    </div>
+    <div class="ballina-panel-header-actions">
+      <!-- butona opsionalë -->
+    </div>
+  </div>
+  ...
+</aside>
+```
+
+**Karakteristika:**
+- Font-size 14px, font-weight 500 (jo bold — jo dominues)
+- Border-bottom 1px solid var(--s-border)
+- **JO sticky** (vendim DEC-049) — header scroll-on me përmbajtjen
+- Margin: -4px -18px për edge-to-edge brenda panel-padding-ut
+- Ngjyrat e sfondit të paneleve ndryshojnë subtilisht për ndarje vizuale:
+  - Panel kryesor (kontekst): `var(--s-bg-flat)`
+  - Panel sekondar (veprim): `var(--s-bg)`
+
+---
+
+## Pattern: Segmented Control / View Toggle (Faza 2D P2.2)
+
+**Përdorim:** User-i duhet të kalojë mes 2-3 prezantimeve të të njëjtave të dhëna.
+
+**Struktura:**
+```html
+<div class="det-view-toggle">
+  <button class="det-toggle-btn det-toggle-active">
+    <i data-lucide="layout-grid"></i> Modul
+  </button>
+  <button class="det-toggle-btn">
+    <i data-lucide="list-ordered"></i> Prioritet
+  </button>
+</div>
+```
+
+**Stili pill-style (Faza 2D update):**
+- Container: `background: var(--s-bg-flat); border: 1px solid var(--s-border); border-radius: 6px; padding: 2px`
+- Butoni jo-aktiv: `background: transparent; color: var(--s-text-sub); font-size: 11px; padding: 4px 10px`
+- Butoni aktiv: `background: var(--s-brand); color: var(--s-bg-flat)`
+- Border-radius butonit: 4px (më i vogël se container)
+- Persistencë: localStorage me key specifik (psh `detyrat_view_mode`)
+
+---
+
+## Pattern: Badge "Plotësuar Automatikisht" (Faza 2D / DEC-052)
+
+**Përdorim:** Distinkim vizual për detyrat që janë mbyllur nga sistemi (jo nga user-i).
+
+**Klasa:** `.det-badge-auto-completion`
+
+**Struktura:**
+```html
+<span class="det-badge det-badge-auto-completion" title="U mbyll automatikisht">
+  <i data-lucide="zap"></i> Plotësuar automatikisht
+</span>
+```
+
+**Stili:**
+- Background: `var(--s-bg-flat)` (neutral, jo erotik)
+- Color: `var(--s-text-sub)`
+- Font-size: 9px (më i vogël se badges të tjera — jo dominues)
+- Border: 1px **dashed** var(--s-border) (sinjal "automatik")
+- Ikonë: `zap` (rrufe — sinjal sistem)
+
+**Vendi:** Te `renderExpandedDetails()` — vetëm kur user-i e zgjeron rresht-in.
+
+---
+
+## Date Parsing — Suport për Format të Shumëfishtë
+
+**Funksioni:** `parseDataAny(s)` te `js/detyrat.js`.
+
+**Formats e mbështetur:**
+1. `YYYY-MM-DD` (ISO) — psh `<input type="date">` value
+2. `DD.MM.YYYY` (me pika) — disa modulet legacy
+3. `DD/MM/YYYY` (me slash) — kontratat, faturimi (Faza 2D fix!)
+4. Fallback `new Date(s)` — gjithçka tjetër (përjashto sa-parseRange invalid)
+
+**Konvencion për module të reja:** Përdor formatin ISO `YYYY-MM-DD` për input-et e reja (`<input type="date">`). Format DD/MM/YYYY mbahet vetëm për module legacy ku formati është i kthyer ndaj user-it.
+
+**WARNING:** `new Date("15/06/2026")` te Chromium → "Invalid Date" (S'mbështet DD/MM/YYYY natyrshëm!). Prandaj kemi regex shtesë.
+
+---
+
 *Çdo komponent i ri ose pattern duhet shtuar këtu. Mos ndrysho ekzistuesit pa update tek të gjithë moduleve të prekur.*

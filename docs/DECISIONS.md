@@ -1281,6 +1281,152 @@ Total donut chart: 3 (Llojit / Faturimit / Aging).
 
 ---
 
+## DEC-049: Headers për Panelet Ballina (sfond + emër moduli)
+**Data:** 2026-06-26
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D, commit b71af94)
+
+### Konteksti
+Pas Faza 2C, user-i raportoi që në split-view, dy panelet (Dashboard + Detyrat) ishin vizualisht të ngjashëm — vështirë të orientohej se ku ishte. Mungonte header me titull për secilin panel.
+
+### Vendimi
+Shtim i `.ballina-panel-header` te krye e secilit panel:
+- Header me ikonë lucide (layout-dashboard / check-circle) + emër
+- Font-size 14px, font-weight 500
+- Padding 12px 16px, border-bottom 1px solid var(--s-border)
+- **JO sticky** — për t'i lejuar user-it të bëjë scroll te i gjithë paneli
+
+Sfond i ndryshëm për dallim subtil:
+- Panel Dashboard: `var(--s-bg-flat)` (pak më i butë/gri)
+- Panel Detyrat: `var(--s-bg)` (i bardhë default)
+
+### Konsekuencat
+- ✅ Orientim i menjëhershëm vizual ("ku jam në UI")
+- ✅ Header ka edhe vend për butona (DEC-052: Shto detyrë + Përzgjedh)
+- ⚠️ Margin: -4px -18px për të shkuar edge-to-edge brenda padding-ut të panelit
+
+---
+
+## DEC-050: Modal Full-Screen (100vh) për Ballina
+**Data:** 2026-06-26
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D, commit b71af94)
+
+### Konteksti
+Modal "Shih të gjitha" për module-cards kishte max-height 92vh me padding nga edges. Në mobile dhe edhe desktop split-view, kjo lejonte sfondin (panelat) të dukej nga anët, duke shkaktuar konfuzion mes kontekst-it të ri (modal) dhe kontekst-it ekzistues (panel).
+
+### Vendimi
+Modal tani full-screen 100vh:
+- `height: 100vh; max-height: 100vh; border-radius: 0`
+- Header sticky top:0 (mbetet i dukshëm kur user-i scroll-on)
+- Body flex:1 overflow-y:auto
+- Width: max-width 920px mbetet (jo full-width për readability)
+
+### Konsekuencat
+- ✅ Modal "fillon-mbaron" — konteksti aktual është modal, jo paneli
+- ✅ Header gjithmonë i dukshëm gjatë scroll-it
+- ⚠️ Animation drawerSlide ende vlen (slide nga djathtas)
+
+---
+
+## DEC-051: KPI Klik Hap Modal-in (jo Filter)
+**Data:** 2026-06-26
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D, commit b71af94)
+
+### Konteksti
+Te Faza 2C, KPI cards klikoheshin → filter detyrat në panel. Por kjo prishte view-in aktual (force `modul` view, filtrim modul) dhe user-i humbiste fokusin. User-i preferon që KPI të hapë të NJËJTIN modal si module-cards.
+
+### Vendimi
+KPI cards onclick → `hapModulModal('moduli')` (njësoj si klik te module-card).
+
+Mapping KPI → moduli:
+- `kpi-aktive` → 'kontratat'
+- `kpi-skadon` → 'kontratat'
+- `kpi-ofertat` → 'oferta'
+- `kpi-leshuar` → 'faturimi'
+- `kpi-borxh` → 'debitoret'
+- `kpi-rinovime` → 'rinovimet'
+
+Plus heqje e outline-it shtesë nga KPI cards (`outline: none; box-shadow: none`) — vendim shtesë i përdoruesit për pamje neutrale.
+
+### Konsekuencat
+- ✅ Konsistencë: KPI dhe module-card sjellin të njëjtin UX
+- ✅ Pa "side-effect" panel-i (nuk forcohet modul view)
+- ⚠️ User-i që dëshironte filter në panel duhet të përdorë view toggle manualisht
+
+---
+
+## DEC-052: Auto-Completion i Detyrave + Backfill Afatesh
+**Data:** 2026-06-26
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D, commit b71af94)
+
+### Konteksti
+Detyrat auto krijoheshin por nuk mbylleshin automatikisht kur veprimi i lidhur ndodhte. Shembull: detyra "Krijo kontratë për X" ngelte aktive edhe pasi user-i krijoi kontratën — duhej manualisht ta shënonte si të përfunduar. Frustrim i dokumentuar.
+
+### Vendimi
+Funksion i ri `kontrolloAutoCompletion()` te detyrat.js bootstrap (pas auto-gjenerimit). 4 sinjale që mbyllin automatikisht detyrat aktive:
+
+| Detyra (rregulla) | Sinjali që e mbyll |
+|---|---|
+| `auto_oferta_konfirmuar_pa_kontrate` | `ofertat[].realizuar = true` |
+| `auto_kontrate_skadim_30d` | Kontratë e re me `nga_rinovimi=ID` ose `kontrata.arkivuar=true` |
+| `auto_rinovim_pa_filluar_15d` | `rinovimet_data[].statusi != 'pa_filluar'` |
+| `auto_faturim_pa_kerkese_20d` | `faturimi_klientet[].statuset[muajiAktual] != 'asgje'` |
+
+Kur sinjali aktivizohet:
+- `statusi = 'e_perfunduar'`
+- `data_perfundimit = sot`
+- `perfunduar_nga = 'system_auto'`
+- Shto aktivitet me `tipi: 'auto_completion'` dhe përshkrim
+- Toast info "N detyra u plotësuan automatikisht" (pa undo)
+- Badge i ri "Plotësuar automatikisht" te expanded view
+
+**Vetëm `lloji='auto'`** — detyrat manuale nuk preken.
+
+### Alternativat e Refuzuara
+- ❌ **Sinjale me undo** — nëse auto-completion gabon, user-i e rikthen. Por (a) gabimet janë rare nëse sinjali është i saktë, (b) shton kompleksitet UI
+- ❌ **Mbaj detyrat aktive deri sa user-i të mbyllë manualisht** — humb gjithë vlerën e automatizimit
+- ❌ **Konfirmim modal "Konfirmoni mbylljen automatike?"** — fërkim i lartë, anulon vlerën
+
+### Konsekuencat
+- ✅ Detyrat nuk grumbullohen pas veprimit
+- ✅ Audit trail i ruajtur (aktivitete[] me tipi:'auto_completion')
+- ⚠️ Nëse user-i e quan veprimin "gabim" pas auto-completion, duhet ta rikthejë manualisht (statusi=e_re)
+- ⚠️ Sinjali për `auto_kontrate_skadim_30d` kërkon që kontrata e re të ketë `nga_rinovimi` — kjo field nuk është implementuar ende universalisht; fallback te `arkivuar=true`
+
+---
+
+## DEC-053: Backfill Afatesh me Opsion A (Rikalkulim sipas Trigger-it)
+**Data:** 2026-06-26
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D, commit b71af94)
+
+### Konteksti
+Faza 2A/2B krijoi detyra auto pa afat të dedikuar (ose me afat = data e skadimit gjithmonë). Pas Faza 2D ku afati duhet të diferencohet sipas rregullës (psh trigger 30d → afat = mbarimi-5d), detyrat ekzistuese duhen përditësuar.
+
+### Vendimi
+Funksion `backfillAfatet()` që loop-on detyrat ekzistuese auto dhe rikalkulon `data_afati` sipas rregullit aktual të çdo trigger-i. Idempotent me flag `backfill_afatet_v1` te localStorage.
+
+| Trigger | Rikalkulimi |
+|---|---|
+| `auto_kontrate_skadim_30d` | ≤7d → mbarimi; 8-30d → mbarimi-5d |
+| `auto_rinovim_pa_filluar_15d` | data_mbarimit - 3d |
+| `auto_debitor_365_pa_kontakt` | sot + 5d |
+| `auto_oferta_konfirmuar_pa_kontrate` | sot + 3d |
+| `auto_oferta_pare_35` | sot + 1d (mbetet) |
+| `auto_faturim_pa_kerkese_20d` | data 25 e muajit aktual |
+| `auto_oferta_skadim_5d` | SKIP (afati = dataSkadon e ofertes, nuk recalkulohet) |
+
+### Alternativat e Refuzuara
+- ❌ **Opsion B: Lër detyrat e vjetra siç janë, vetëm të rejat me afat të ri** — krijon inkonsistencë te listim/sortim sipas afatit
+- ❌ **Opsion C: Re-create të gjitha detyrat auto (fshi + gjenero rishtazi)** — humb aktivitete, status, përgjegjësi caktuar manualisht
+
+### Konsekuencat
+- ✅ Detyrat e vjetra dhe të reja kanë afate konsistente
+- ✅ Idempotent — nuk re-ekzekutohet (flag check)
+- ✅ Logo statistika në console: "Përditësuar: N, Kapërcyer: M"
+- ⚠️ Nëse user-i ka edituar afatin manualisht para backfill-it, përditësimi e mbishkruan
+- ⚠️ Flag `backfill_afatet_v1` është një herësh; nëse rregullat ndryshojnë në të ardhmen, përdor `v2`
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase

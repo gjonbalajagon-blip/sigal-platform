@@ -9,7 +9,7 @@
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 2C (Ballina split-view) e përfunduar → Roadmap-i i Detyrave i mbyllur. Mbeten polishe + module Produkti/Dokumentet.
+**Faza aktuale:** Faza 2D (10 bug fixes Ballina) e përfunduar — 7 triggers funksionalë, auto-completion aktiv → Polishe + module Produkti/Dokumentet.
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -40,7 +40,7 @@ Aktualisht nuk ka bug kritik. Modulet e mbetura: Produkti, Dokumentet (pres trig
 | **Debitoret** | ✅ Stats restructure aplikuar | 4 stats + statuset row + aging filters |
 | **Raportet** | ✅ | Chart.js i implementuar (donut, line, bars) |
 | **Stafi** | ✅ Komplet | KPI + drawer + organogram |
-| **Detyrat** | ✅ Faza 2B | **6 triggers** (5 lokale + 1 Supabase: oferta parë 3-5 herë), dense rows ~40px, expand/collapse, nën-grupim sipas modulit (>10), selection+bulk actions, staff lejohet të krijojë, modifikim afati (mgmt+), toast undo 5s |
+| **Detyrat** | ✅ Faza 2D | **7 triggers** (6 lokale + 1 Supabase: oferta parë 3-5 herë), dense rows ~40px, expand/collapse, nën-grupim sipas modulit (>10), selection+bulk actions, staff lejohet të krijojë, modifikim afati (mgmt+), toast undo 5s, **auto-completion** me 4 sinjale + backfill afatesh |
 | **Produkti** | ❌ Nuk ka filluar | Pret Excel data |
 | **Dokumentet** | ❌ Pret cloud storage | Placeholder |
 
@@ -247,6 +247,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-06-23 | Heqje 37 emoji-sh nga 9 modulet jashtë detyrat (oferta, kontratat, rinovimet, debitoret, dashboard, main, oferta-tracking) → ikona lucide profesionale | Claude Code |
 | 2026-06-23 | Faza 2B: Supabase mini + trigger #6 (oferta parë 3-5 herë) — klient supabase fallback-safe, dual-write tracking, /api/oferta-tracking-bulk, skanoOfertaParEHere35 async te detyrat.js, stable id në URL oferta (DEC-042, DEC-043) | Claude Code |
 | 2026-06-24 | Faza 2C: Ballina split-view (Dashboard + Detyrat) — pages/ballina.html + js/ballina.js, 6 module-cards për Detyrat, modal "Shih të gjitha" pattern unifikuar, mobile tabs, KPI të reja (Borxh + Rinovime) + Aging chart, dashboard.html → redirect (DEC-044..048) | Claude Code |
+| 2026-06-26 | Faza 2D: 10 bug fixes Ballina + auto-completion + backfill afatesh. ROOT CAUSE P5 (kritik): parseDataAny() s'mbante DD/MM/YYYY → 33 kontrata silent skip. Trigger i ri rinovim_pa_filluar_15d. Auto-completion me 4 sinjale (DEC-049..053) | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 
