@@ -1583,6 +1583,89 @@ Greeting i ri minimal te topbar (jashtë panelesh):
 
 ---
 
+## DEC-060: Greeting në Topbar Qendër (jo brenda Panel)
+**Data:** 2026-06-29
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v3, commit 353f4ae)
+
+### Konteksti
+DEC-059 (Faza 2D v2) vendosi greeting të vogël te topbar, visible vetëm në full-detyrat (kur dashboard panel hidden). Por user-i vuri re që greeting i madh te panel-dashboard ishte i shkëputur vizualisht nga topbar — vizualisht "humbur" në fund-majtas. Greeting duhet të jetë i menjëhershëm dhe i lidhur me identitetin e user-it në çdo pozicion.
+
+### Vendimi
+**Greeting tani GJITHMONË visible te topbar qendër**, jashtë paneleve:
+- 2 rreshta: "Mirëmëngjes/Mirëdita/Mirëmbrëma, {emri}" + "Muaji Viti"
+- Dinamik sipas orës (<12 = Mirëmëngjes, <18 = Mirëdita, ≥18 = Mirëmbrëma)
+- Heqje nga panel-dashboard (h2 + subtitle e madhe nuk ka më vend)
+- Hidden helpers për dashGreeting/dashSubtitle (kompatibël me dashboard.js)
+- Pozicionim: topbar grid `auto 1fr auto` — h1 majtas, greeting qendër, bell+user djathtas
+
+### Konsekuencat
+- ✅ Greeting i menjëhershëm në çdo pozicion (3 layouts + mobile)
+- ✅ Lidhje vizuale e qartë me topbar (identitet i user-it)
+- ✅ Dinamik sipas orës — UX më personal
+- ⚠️ Greeting i madh me h2 te panel-dashboard u zhduk — për arsye konsistence (jo dy greeting në të njëjtin moment)
+
+### Lidhje
+Zëvendëson logjikën conditional të DEC-059 (visible vetëm në full-detyrat). DEC-059 mbetet i regjistruar si pjesë e evolucionit por DEC-060 është final.
+
+---
+
+## DEC-061: Panel Headers Lartësi Identike (44px) + Ikona Majtas
+**Data:** 2026-06-29
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v3, commit 353f4ae)
+
+### Konteksti
+Pas Faza 2D v2 task 7 (Detyrat panel-header 2-rresht), Dashboard header dhe Detyrat header (row1) nuk kishin lartësi identike. Kjo krijonte asimetri vizuale midis dy paneleve — content i Dashboard fillonte në një Y të ndryshëm nga content i Detyrat.
+
+### Vendimi
+**Të dy headers (row1) kanë `min-height: 44px`** dhe strukturë identike:
+- `panel-header-left`: ikon + titull (majtas)
+- `panel-header-actions`: butona ose chips (djathtas)
+- Ikona: class `.panel-icon` me `color: var(--s-brand)`
+- Titulli: class `.panel-title` me `font-weight: 600`
+
+Ikona të standardizuara:
+- Dashboard: `layout-dashboard`
+- Detyrat: `check-square` (jo `check-circle` siç ishte)
+
+### Konsekuencat
+- ✅ Content i të dy paneleve fillon në të njëjtën Y → simetri vizuale
+- ✅ Klasa e re `.panel-icon` + `.panel-title` ripërdorshme për module të reja
+- ⚠️ Detyrat panel-header tani ka 2 rreshta (row1 me min-height 44px + row2 me filter/toggle)
+
+---
+
+## DEC-062: Detyrat Panel Border Vijëzim me Dashboard (Container)
+**Data:** 2026-06-29
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v3, commit 353f4ae)
+
+### Konteksti
+Të dy panelet shfaqen "lirisht" — pa border që i bashkon vizualisht. Kjo bën që ato të duken si dy faqe të veçanta, jo si dy seksione të një faqe të vetme.
+
+### Vendimi
+Wrap të dyja panelet (plus divider) brenda `.ballina-layout` me border container:
+```css
+.ballina-layout {
+  border: 1px solid var(--s-border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0 16px 16px;
+}
+```
+
+Plus heqje e padit-it të brendshëm — panelet shtrihen edge-to-edge brenda container-it.
+
+### Alternativat e Refuzuara
+- ❌ **Heqje totale e divider-it** (zëvendësuar me border-right te dashboard panel) — humbet funksionaliteti i 3 shigjetave për pozicione
+- ❌ **Gap mes paneleve** (jo border) — humbet vijëzimi vizual
+
+### Konsekuencat
+- ✅ Dy panelet duken si një entitet i bashkuar
+- ✅ Border-radius i jep formën card-like të platformës
+- ✅ Divider-i me shigjeta mbetet i papreur (3 pozicione)
+- ⚠️ Overflow:hidden mbi border-radius mund të kufizojë popup-et që dalin jashtë layout — i pranueshëm
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase
