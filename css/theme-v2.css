@@ -3408,7 +3408,8 @@ body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
   padding: 0 !important;
   background: var(--s-bg-0);
 }
-.panel-dashboard { background: var(--s-bg-1); }
+/* Faza 2D v7 / DEC-066: background IDENTIK mes paneleve për të hequr vijën e bardhë */
+.panel-dashboard,
 .panel-detyrat { background: var(--s-bg-0); }
 .panel-content {
   flex: 1;
