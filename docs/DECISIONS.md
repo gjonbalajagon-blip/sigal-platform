@@ -1722,6 +1722,40 @@ Extension i DEC-061 (lartësi 44px) dhe DEC-062 (border container). Tani lartës
 
 ---
 
+## DEC-065: Subheader Background i Bardhë (Konsistencë me Dashboard Panel)
+**Data:** 2026-06-29
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v6, commit 3ff804c)
+
+### Konteksti
+Pas DEC-063 (v4), `.panel-subheader` (tabs + toggle te Detyrat) kishte background `var(--s-bg-1)` (gri shumë i butë). Kjo krijonte 2 nivele gri pas header-it: gri i errët (bg-2 te header) + gri i lehtë (bg-1 te subheader) + i bardhë (bg-0 te content). Tre shtresa duke u përsosur poshtë.
+
+Dashboard panel në kontrast ka: gri i header → direkt i bardhë content. Pra dy panelet kishin strukturë vizuale të ndryshme.
+
+### Vendimi
+**Subheader bëhet i bardhë (`var(--s-bg-0)`)** për konsistencë me Dashboard:
+
+| Element | v4 | v6 |
+|---|---|---|
+| `.panel-header` bg | `var(--s-bg-2)` (gri) | `var(--s-bg-2)` (gri) — i njëjti |
+| `.panel-subheader` bg | `var(--s-bg-1)` (gri i butë) | `var(--s-bg-0)` (i bardhë) |
+| `.panel-subheader` border-bottom | `var(--s-border)` (i fortë) | `var(--s-border-light)` (i lehtë) |
+| `.panel-content` bg | `var(--s-bg-0)` (i bardhë) | `var(--s-bg-0)` (i bardhë) |
+
+Rezultati: Detyrat tani ka 2 shtresa vizuale (gri header → i bardhë content+subheader), identike strukturisht me Dashboard.
+
+Padding i subheader: `8px 12px` → `8px 16px` (konsistent me padding-in 16px te content).
+
+### Konsekuencat
+- ✅ Konsistencë strukturore midis Dashboard dhe Detyrat panel
+- ✅ Tabs + toggle vizualisht "lidhen" me module cards poshtë (e njëjta zonë e bardhë)
+- ✅ Header dallohet qartë (single grey line ndarëse)
+- ⚠️ Border-light midis subheader dhe cards mund të jetë pothuajse i padallueshëm — i pranueshëm (tabs+toggle dhe cards janë logically pjesë e "Detyrat workspace")
+
+### Lidhje
+Rafinim i DEC-063 (Faza 2D v4). Mban arkitekturën panel-header/panel-subheader/panel-content, vetëm ndryshon background+border të mesit.
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase

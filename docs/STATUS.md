@@ -9,7 +9,7 @@
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 2D v4 (panel alignment fix — content brenda .panel-content + headers 44px FIKS) e përfunduar → Faza 2E (polish ose modulet e reja).
+**Faza aktuale:** Faza 2D v6 (subheader bg i bardhë — konsistencë strukturore Dashboard ↔ Detyrat) e përfunduar → Faza 2E.
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -252,6 +252,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-06-28 | Faza 2D v2 tasks 1-6: debug logs gjeneroDetyratAuto, modal refresh hook, bulk select surgical (mbron Chart.js), hover checkbox, toolbar conditional, selectAllVisible, bell+user djathtas via :has(), greeting global topbar, 3-level bg system --s-bg-0/1/2 (DEC-057..059) | Claude Code |
 | 2026-06-29 | Faza 2D v3: greeting qendër topbar dinamik (Mirëmëngjes/Mirëdita/Mirëmbrëma sipas orës), panel headers majtas-aligned me lartësi identike 44px (ikon+titull klasa), border container .ballina-layout vijëzim 12px, tabs filter aktiv me bg var(--s-brand)+white (DEC-060..062) | Claude Code |
 | 2026-06-29 | Faza 2D v4: panel alignment fix — content brenda .panel-content (overflow scroll + padding 16px), headers height 44px FIKS (jo min-height), .panel-subheader për row2 detyrat, border-right te dashboard panel për ndarje vertikale, JS IDs të paprekur (DEC-063) | Claude Code |
+| 2026-06-29 | Faza 2D v6: subheader background var(--s-bg-1) → var(--s-bg-0) (i bardhë), border-bottom i lehtë. Konsistencë strukturore: dy panelet tani kanë 2 shtresa identike (gri header → i bardhë subheader+content) (DEC-065) | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 
