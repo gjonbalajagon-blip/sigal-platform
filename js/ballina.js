@@ -30,24 +30,29 @@ function setPozicioni(poz) {
     setTimeout(() => window.dispatchEvent(new Event('resize')), 360);
 }
 
-// Greeting global te topbar (Faza 2D v2 Task 5)
+// Greeting global te topbar (Faza 2D v3 / DEC-060)
+// Tani: dinamik sipas orës (Mirëmëngjes/Mirëdita/Mirëmbrëma) + gjithmonë visible
 const MUAJT_BALLINA = ['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','Gusht','Shtator','Tetor','Nëntor','Dhjetor'];
-function ballinaGetGreeting() {
-    let name = 'Admin';
+function ballinaGreetingPrefix() {
+    const h = new Date().getHours();
+    if (h < 12) return 'Mirëmëngjes';
+    if (h < 18) return 'Mirëdita';
+    return 'Mirëmbrëma';
+}
+function ballinaGetUserName() {
     try {
         const u = JSON.parse(localStorage.getItem('user_aktual') || localStorage.getItem('currentUser') || '{}');
-        name = u.emri || u.emriPlote || u.username || 'Admin';
-    } catch (e) {}
-    const tani = new Date();
-    return `Përshëndetje, ${name} — ${MUAJT_BALLINA[tani.getMonth()]} ${tani.getFullYear()}`;
+        return u.emri || u.emriPlote || u.username || 'Admin';
+    } catch (e) { return 'Admin'; }
 }
 function updateTopbarGreeting() {
-    const el = document.getElementById('topbarGreeting');
-    if (!el) return;
-    el.textContent = ballinaGetGreeting();
-    // Visible vetëm kur dashboard panel është i fshehur (full-detyrat) ose mobile detyrat-tab
-    const visible = (_ballinaPoz === 'full-detyrat');
-    el.style.display = visible ? 'inline-block' : 'none';
+    const elText = document.getElementById('greetingText');
+    const elPeriod = document.getElementById('greetingPeriod');
+    if (elText) elText.textContent = `${ballinaGreetingPrefix()}, ${ballinaGetUserName()}`;
+    if (elPeriod) {
+        const tani = new Date();
+        elPeriod.textContent = `${MUAJT_BALLINA[tani.getMonth()]} ${tani.getFullYear()}`;
+    }
 }
 
 // =====================================================

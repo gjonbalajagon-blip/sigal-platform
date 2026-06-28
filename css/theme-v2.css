@@ -3196,51 +3196,119 @@ body {
    BALLINA — Split-view Dashboard | Detyrat (Faza 2C / DEC-044)
    ============================================================ */
 
-/* Greeting i vogël te topbar — visible vetëm në full-detyrat (Faza 2D v2 Task 5) */
+/* Greeting te topbar — qendër, gjithmonë visible (Faza 2D v3 Task 1 / DEC-060) */
 .topbar-greeting {
-  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  justify-self: center;
+  grid-column: 2;
+}
+.topbar-greeting .greeting-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--s-text);
+  line-height: 1.1;
+}
+.topbar-greeting .greeting-period {
+  font-size: 12px;
   color: var(--s-text-muted);
-  justify-self: start;
-  padding-left: 4px;
+  line-height: 1.1;
 }
 
-/* Topbar te Ballina: bell+user djathtas (Faza 2D v2 Task 4)
-   topbar-right tani container flex me margin-left:auto, jo display:contents.
-   Selector specifik për ballina.html (jo prek modulet e tjera) */
-body:has(.ballina-layout) .topbar { grid-template-columns: 1fr 1fr; }
+/* Topbar te Ballina: 3-col grid me greeting qendër (Faza 2D v3) */
+body:has(.ballina-layout) .topbar {
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+body:has(.ballina-layout) .topbar h1 { justify-self: start; grid-column: 1; }
 body:has(.ballina-layout) .topbar-right {
   display: flex !important;
   align-items: center;
   gap: 12px;
-  margin-left: auto;
   justify-self: end;
-  grid-column: 2;
+  grid-column: 3;
 }
 body:has(.ballina-layout) .topbar-right > .topbar-utils,
 body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
 
-/* Panel header (Faza 2D / DEC-049) */
-.ballina-panel-header {
+/* Panel header (Faza 2D / DEC-049 + Faza 2D v3 / DEC-061 lartësi 44px) */
+.ballina-panel-header,
+.detyrat-header-row1 {
   display: flex; align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 10px 16px;
+  min-height: 44px;
   border-bottom: 1px solid var(--s-border);
-  font-size: 14px; font-weight: 500;
-  color: var(--s-text);
-  margin: -4px -18px 12px;
-  background: inherit;
+  background: var(--s-bg-2);
+  margin: -4px -18px 0;
 }
-.ballina-panel-header > i,
+.detyrat-panel-header { padding: 0; background: transparent; margin: -4px -18px 12px; }
+.detyrat-header-row1 { margin: 0; }
+.detyrat-header-row2 {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  gap: 10px; flex-wrap: wrap;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--s-border-light);
+  background: var(--s-bg-1);
+}
+
 .ballina-panel-header-left { display: inline-flex; align-items: center; gap: 8px; }
-.ballina-panel-header-left i { width: 16px; height: 16px; color: var(--s-brand-dark); }
-.ballina-panel-header > i { width: 16px; height: 16px; color: var(--s-brand-dark); }
-.ballina-panel-header-actions { display: inline-flex; gap: 8px; }
+.panel-icon { width: 16px; height: 16px; color: var(--s-brand) !important; }
+.panel-title { font-size: 13px; font-weight: 600; color: var(--s-text); }
+.ballina-panel-header-actions { display: inline-flex; gap: 8px; align-items: center; }
+
+/* Buton i vogël (Faza 2D v3 Task 3) */
+.btn-sm,
 .btn-primary-sm {
-  padding: 6px 12px !important;
+  padding: 5px 10px !important;
   font-size: 11px !important;
+  border-radius: var(--r-sm) !important;
 }
-.btn-primary-sm i { width: 13px !important; height: 13px !important; }
+.btn-sm i, .btn-primary-sm i { width: 12px !important; height: 12px !important; }
+.btn-secondary.btn-sm {
+  padding: 5px 10px;
+  font-size: 11px;
+}
+
+/* Tabs filter aktiv/joaktiv (Faza 2D v3 Task 4) */
+.det-chip {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--s-text-muted);
+  background: transparent;
+  border: 1px solid var(--s-border-light);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.det-chip:hover:not(.active) {
+  background: var(--s-bg-2);
+  color: var(--s-text);
+}
+.det-chip.active {
+  background: var(--s-brand);
+  color: white;
+  font-weight: 600;
+  border-color: var(--s-brand);
+}
+.det-chip-count {
+  background: var(--s-border-light);
+  color: var(--s-text-muted);
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.det-chip.active .det-chip-count {
+  background: rgba(255,255,255,0.25);
+  color: white;
+}
 
 /* Sfond ndryshe për panelet (DEC-049 + Faza 2D v2 Task 6 - 3 nivele) */
 #panel-dashboard { background: var(--s-bg-1); }
@@ -3312,6 +3380,11 @@ body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
   grid-template-columns: 1fr 32px 1fr;
   transition: grid-template-columns 0.35s ease;
   min-height: calc(100vh - 64px);
+  /* Faza 2D v3 / DEC-062: border vijëzim — container i bashkuar */
+  border: 1px solid var(--s-border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0 16px 16px;
 }
 .ballina-layout[data-pozicioni="full-dashboard"] { grid-template-columns: 1fr 32px 0fr; }
 .ballina-layout[data-pozicioni="split"] { grid-template-columns: 1fr 32px 1fr; }
