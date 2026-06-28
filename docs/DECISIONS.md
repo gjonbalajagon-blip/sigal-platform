@@ -1756,6 +1756,43 @@ Rafinim i DEC-063 (Faza 2D v4). Mban arkitekturën panel-header/panel-subheader/
 
 ---
 
+## DEC-066: Background Identik Mes Paneleve (Pa Vijë të Bardhë)
+**Data:** 2026-06-29
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v7, commit eefe410)
+
+### Konteksti
+Pas DEC-049 (v2) dhe DEC-063 (v4), panelet kishin bg të NDRYSHME (Dashboard `var(--s-bg-1)` gri, Detyrat `var(--s-bg-0)` i bardhë) për ndarje vizuale. Por kjo krijoi efekt anësor: divider area (32px) midis tyre është transparente → tregon container bg-0 (i bardhë) → user e shihte si "vijë të bardhë" midis Dashboard gri dhe Detyrat i bardhë.
+
+User-i raportoi që preferon dy panele me bg IDENTIK, të ndarë vetëm nga shigjetat e split-view.
+
+### Vendimi
+**Të dy panelet me `var(--s-bg-0)` (i bardhë):**
+```css
+.panel-dashboard,
+.panel-detyrat { background: var(--s-bg-0); }
+```
+
+Divider (32px) mbetet transparent → tregon container `var(--s-bg-0)` → blends në mes të dy paneleve të bardhë. Pa "strip" më të dukshme.
+
+Border-right i `.panel-dashboard` (1px solid var(--s-border)) mbetet — krijon ndarje minimale 1px pranë divider area. Shigjetat e split-view (◀ □ ▶) janë qendër-vertikal te divider.
+
+### Alternativat e Refuzuara
+- ❌ **Mbaj 2 bg të ndryshme me border ndarës më të fortë** — user-i preferoi konsistencë vs distinkim
+- ❌ **Hiq border-right te dashboard** — humb sinjali se ku mbaron paneli (nëse divider zhduket në mobile)
+- ❌ **Bg gri për të dy** — humbet zona "workspace" e bardhë (DEC-063 nivelet)
+
+### Konsekuencat
+- ✅ Pa "vijë të bardhë" midis paneleve
+- ✅ Konsistencë vizuale: 1 kontekst i bashkuar (split workspace) me 2 zona pune
+- ✅ Shigjetat split-view i vetmi element ndarës i dukshëm
+- ⚠️ Distinkimi vizual Dashboard vs Detyrat varet nga ICON + TITULL te header (jo nga bg) — i pranueshëm
+- ⚠️ DEC-049 (panel bg ndryshe) është efektivisht **annulluar nga DEC-066** — historiku ruhet, por sjellja aktuale ka bg identik
+
+### Lidhje
+Annulim parcial i DEC-049 (panel bg ndryshe). Konfirmon DEC-063 (panel-content bg-0). DEC-065 (subheader bg-0) mbetet i prekur — strukturë konsistente.
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase
