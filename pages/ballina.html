@@ -57,13 +57,13 @@
         <div class="ballina-layout" id="ballina-layout" data-pozicioni="split">
 
             <!-- ===== PANEL DASHBOARD ===== -->
-            <aside class="ballina-panel" id="panel-dashboard">
-                <div class="ballina-panel-header dashboard-header">
-                    <div class="ballina-panel-header-left">
+            <aside class="ballina-panel panel-dashboard" id="panel-dashboard">
+                <div class="ballina-panel-header panel-header dashboard-header">
+                    <div class="ballina-panel-header-left panel-header-left">
                         <i data-lucide="layout-dashboard" class="panel-icon"></i>
                         <span class="panel-title">Dashboard</span>
                     </div>
-                    <div class="ballina-panel-header-actions">
+                    <div class="ballina-panel-header-actions panel-header-right">
                         <button class="dash-period-chip active" data-period="muaj" onclick="ndryshoPeriod('muaj')" id="periodMuajBtn">Muaji</button>
                         <button class="dash-period-chip" data-period="vit" onclick="ndryshoPeriod('vit')" id="periodVitBtn">Viti</button>
                     </div>
@@ -73,6 +73,7 @@
                     <span id="dashGreeting"></span>
                     <span id="dashSubtitle"></span>
                 </div>
+                <div class="panel-content">
 
                 <!-- 6 KPI Cards -->
                 <div class="stats-strip ballina-kpi-grid">
@@ -191,6 +192,7 @@
                         <div id="lista-veprime"><div class="dash-panel-empty">Asnjë veprim së fundi</div></div>
                     </div>
                 </div>
+                </div><!-- /.panel-content -->
             </aside>
 
             <!-- ===== DIVIDER ===== -->
@@ -207,82 +209,82 @@
             </div>
 
             <!-- ===== PANEL DETYRAT ===== -->
-            <aside class="ballina-panel" id="panel-detyrat">
-                <div class="detyrat-panel-header">
-                    <div class="detyrat-header-row1">
-                        <div class="ballina-panel-header-left">
-                            <i data-lucide="check-square" class="panel-icon"></i>
-                            <span class="panel-title">Detyrat</span>
-                        </div>
-                        <div class="ballina-panel-header-actions">
-                            <button class="btn-secondary btn-sm" id="btn-perzgjedh" onclick="toggleSelectionMode()" type="button">
-                                <i data-lucide="check-square"></i> Përzgjedh
-                            </button>
-                            <button class="btn-primary btn-sm" id="btn-shto-detyre" onclick="hapDrawerKrijim()" type="button">
-                                <i data-lucide="plus"></i> Shto detyrë
-                            </button>
-                        </div>
+            <aside class="ballina-panel panel-detyrat" id="panel-detyrat">
+                <div class="panel-header detyrat-header-row1">
+                    <div class="ballina-panel-header-left panel-header-left">
+                        <i data-lucide="check-square" class="panel-icon"></i>
+                        <span class="panel-title">Detyrat</span>
                     </div>
-                    <div class="detyrat-header-row2">
-                        <div class="det-filters" id="det-filters">
-                            <button class="det-chip active" data-filter="all" onclick="setFilter('all')">
-                                Të gjitha <span class="det-chip-count" id="c-all">0</span>
-                            </button>
-                            <button class="det-chip" data-filter="te-miat" onclick="setFilter('te-miat')">
-                                Detyrat e mia <span class="det-chip-count" id="c-mine">0</span>
-                            </button>
-                            <button class="det-chip" data-filter="pa-pergjegjes" onclick="setFilter('pa-pergjegjes')" id="chip-unassigned">
-                                Pa përgjegjës <span class="det-chip-count" id="c-unassigned">0</span>
-                            </button>
-                        </div>
-                        <div class="det-view-toggle">
-                            <button class="det-toggle-btn det-toggle-active" id="toggle-modul" onclick="ballinaSetView('modul')" type="button">
-                                <i data-lucide="layout-grid"></i> Modul
-                            </button>
-                            <button class="det-toggle-btn" id="toggle-prioritet" onclick="ballinaSetView('prioritet')" type="button">
-                                <i data-lucide="list-ordered"></i> Prioritet
-                            </button>
-                        </div>
+                    <div class="ballina-panel-header-actions panel-header-right">
+                        <button class="btn-secondary btn-sm" id="btn-perzgjedh" onclick="toggleSelectionMode()" type="button">
+                            <i data-lucide="check-square"></i> Përzgjedh
+                        </button>
+                        <button class="btn-primary btn-sm" id="btn-shto-detyre" onclick="hapDrawerKrijim()" type="button">
+                            <i data-lucide="plus"></i> Shto detyrë
+                        </button>
                     </div>
                 </div>
-
-                <!-- Selection toolbar (Faza 2D v2 Task 3c) -->
-                <div class="det-selection-toolbar" id="det-selection-toolbar" style="display:none;">
-                    <div class="det-selection-info">
-                        <i data-lucide="check-square"></i>
-                        <span><span id="det-selection-count">0</span> të zgjedhura</span>
+                <div class="panel-subheader detyrat-header-row2">
+                    <div class="det-filters detyrat-tabs" id="det-filters">
+                        <button class="det-chip active" data-filter="all" onclick="setFilter('all')">
+                            Të gjitha <span class="det-chip-count" id="c-all">0</span>
+                        </button>
+                        <button class="det-chip" data-filter="te-miat" onclick="setFilter('te-miat')">
+                            Detyrat e mia <span class="det-chip-count" id="c-mine">0</span>
+                        </button>
+                        <button class="det-chip" data-filter="pa-pergjegjes" onclick="setFilter('pa-pergjegjes')" id="chip-unassigned">
+                            Pa përgjegjës <span class="det-chip-count" id="c-unassigned">0</span>
+                        </button>
                     </div>
-                    <div class="det-selection-actions">
-                        <button class="det-action-bulk det-action-primary" onclick="selectAllVisible()" type="button">
-                            <i data-lucide="check-square"></i> Zgjidh të gjitha
+                    <div class="det-view-toggle detyrat-toggle">
+                        <button class="det-toggle-btn det-toggle-active" id="toggle-modul" onclick="ballinaSetView('modul')" type="button">
+                            <i data-lucide="layout-grid"></i> Modul
                         </button>
-                        <button class="det-action-bulk det-action-primary" onclick="bulkMerrPersiper()" type="button">
-                            <i data-lucide="play"></i> Merr përsipër
-                        </button>
-                        <button class="det-action-bulk det-action-success" onclick="bulkPerfundo()" type="button">
-                            <i data-lucide="check"></i> Përfundo
-                        </button>
-                        <button class="det-action-bulk det-action-danger" id="btn-bulk-anulo" onclick="bulkAnulo()" type="button" style="display:none;">
-                            <i data-lucide="x"></i> Anulo
-                        </button>
-                        <button class="det-action-bulk det-action-primary" id="btn-bulk-ricakto" onclick="hapModalRicakto()" type="button" style="display:none;">
-                            <i data-lucide="user-cog"></i> Ricakto
-                        </button>
-                        <button class="det-action-bulk det-action-cancel" onclick="toggleSelectionMode()" type="button">
-                            Anulo përzgjedhjen
+                        <button class="det-toggle-btn" id="toggle-prioritet" onclick="ballinaSetView('prioritet')" type="button">
+                            <i data-lucide="list-ordered"></i> Prioritet
                         </button>
                     </div>
                 </div>
 
-                <!-- View 1: 6 Module Cards (default) -->
-                <div class="detyrat-cards-grid" id="detyrat-cards-grid">
-                    <div class="det-empty">Duke ngarkuar detyrat...</div>
-                </div>
+                <div class="panel-content">
+                    <!-- Selection toolbar (Faza 2D v2 Task 3c) -->
+                    <div class="det-selection-toolbar" id="det-selection-toolbar" style="display:none;">
+                        <div class="det-selection-info">
+                            <i data-lucide="check-square"></i>
+                            <span><span id="det-selection-count">0</span> të zgjedhura</span>
+                        </div>
+                        <div class="det-selection-actions">
+                            <button class="det-action-bulk det-action-primary" onclick="selectAllVisible()" type="button">
+                                <i data-lucide="check-square"></i> Zgjidh të gjitha
+                            </button>
+                            <button class="det-action-bulk det-action-primary" onclick="bulkMerrPersiper()" type="button">
+                                <i data-lucide="play"></i> Merr përsipër
+                            </button>
+                            <button class="det-action-bulk det-action-success" onclick="bulkPerfundo()" type="button">
+                                <i data-lucide="check"></i> Përfundo
+                            </button>
+                            <button class="det-action-bulk det-action-danger" id="btn-bulk-anulo" onclick="bulkAnulo()" type="button" style="display:none;">
+                                <i data-lucide="x"></i> Anulo
+                            </button>
+                            <button class="det-action-bulk det-action-primary" id="btn-bulk-ricakto" onclick="hapModalRicakto()" type="button" style="display:none;">
+                                <i data-lucide="user-cog"></i> Ricakto
+                            </button>
+                            <button class="det-action-bulk det-action-cancel" onclick="toggleSelectionMode()" type="button">
+                                Anulo përzgjedhjen
+                            </button>
+                        </div>
+                    </div>
 
-                <!-- View 2: Accordion sipas prioritetit (hidden default) -->
-                <div class="det-accordion" id="det-accordion" style="display:none;">
-                    <div class="det-empty">Duke ngarkuar...</div>
-                </div>
+                    <!-- View 1: 6 Module Cards (default) -->
+                    <div class="detyrat-cards-grid" id="detyrat-cards-grid">
+                        <div class="det-empty">Duke ngarkuar detyrat...</div>
+                    </div>
+
+                    <!-- View 2: Accordion sipas prioritetit (hidden default) -->
+                    <div class="det-accordion" id="det-accordion" style="display:none;">
+                        <div class="det-empty">Duke ngarkuar...</div>
+                    </div>
+                </div><!-- /.panel-content -->
             </aside>
         </div>
     </div>

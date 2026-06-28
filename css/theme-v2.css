@@ -3233,33 +3233,43 @@ body:has(.ballina-layout) .topbar-right {
 body:has(.ballina-layout) .topbar-right > .topbar-utils,
 body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
 
-/* Panel header (Faza 2D / DEC-049 + Faza 2D v3 / DEC-061 lartësi 44px) */
+/* Panel header (Faza 2D v4 / DEC-063 — height FIKS 44px) */
+.panel-header,
 .ballina-panel-header,
 .detyrat-header-row1 {
   display: flex; align-items: center;
   justify-content: space-between;
   gap: 8px;
   padding: 10px 16px;
-  min-height: 44px;
+  height: 44px;
   border-bottom: 1px solid var(--s-border);
   background: var(--s-bg-2);
-  margin: -4px -18px 0;
+  margin: 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
-.detyrat-panel-header { padding: 0; background: transparent; margin: -4px -18px 12px; }
-.detyrat-header-row1 { margin: 0; }
+.panel-subheader,
 .detyrat-header-row2 {
   display: flex; align-items: center;
   justify-content: space-between;
   gap: 10px; flex-wrap: wrap;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--s-border-light);
+  padding: 8px 12px;
+  min-height: 40px;
+  border-bottom: 1px solid var(--s-border);
   background: var(--s-bg-1);
+  flex-shrink: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
+/* Border ndarës mes paneleve — vetëm dashboard right (divider zëvendëson) */
+.panel-dashboard { border-right: 1px solid var(--s-border); }
 
-.ballina-panel-header-left { display: inline-flex; align-items: center; gap: 8px; }
-.panel-icon { width: 16px; height: 16px; color: var(--s-brand) !important; }
+.ballina-panel-header-left,
+.panel-header-left { display: inline-flex; align-items: center; gap: 7px; }
+.panel-icon { width: 15px; height: 15px; color: var(--s-brand) !important; flex-shrink: 0; }
 .panel-title { font-size: 13px; font-weight: 600; color: var(--s-text); }
-.ballina-panel-header-actions { display: inline-flex; gap: 8px; align-items: center; }
+.ballina-panel-header-actions,
+.panel-header-right { display: inline-flex; gap: 6px; align-items: center; }
 
 /* Buton i vogël (Faza 2D v3 Task 3) */
 .btn-sm,
@@ -3378,20 +3388,39 @@ body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
 .ballina-layout {
   display: grid;
   grid-template-columns: 1fr 32px 1fr;
+  align-items: stretch;
   transition: grid-template-columns 0.35s ease;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 80px);
   /* Faza 2D v3 / DEC-062: border vijëzim — container i bashkuar */
   border: 1px solid var(--s-border);
   border-radius: 12px;
   overflow: hidden;
   margin: 0 16px 16px;
+  background: var(--s-bg-0);
+}
+/* Faza 2D v4 / DEC-063: panel struktura me flex column për alinjim të saktë */
+.ballina-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  padding: 0 !important;
+  background: var(--s-bg-0);
+}
+.panel-dashboard { background: var(--s-bg-1); }
+.panel-detyrat { background: var(--s-bg-0); }
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
 }
 .ballina-layout[data-pozicioni="full-dashboard"] { grid-template-columns: 1fr 32px 0fr; }
 .ballina-layout[data-pozicioni="split"] { grid-template-columns: 1fr 32px 1fr; }
 .ballina-layout[data-pozicioni="full-detyrat"] { grid-template-columns: 0fr 32px 1fr; }
+/* DEPRECATED stil i vjetër — v4 e zëvendëson me flex+panel-content */
 .ballina-panel {
-  overflow-y: auto;
-  padding: 4px 18px 24px;
+  overflow: visible;
+  padding: 0;
   min-width: 0;
 }
 .ballina-layout[data-pozicioni="full-dashboard"] #panel-detyrat,
