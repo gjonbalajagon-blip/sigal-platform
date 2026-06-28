@@ -1666,6 +1666,62 @@ Plus heqje e padit-it të brendshëm — panelet shtrihen edge-to-edge brenda co
 
 ---
 
+## DEC-063: Panel Alignment Fix — Content brenda `.panel-content` + Headers 44px FIKS
+**Data:** 2026-06-29
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v4, commit 5ad6b43)
+
+### Konteksti
+Pas v3, alinjimi vizual mes paneleve ishte i prishur:
+- Content i Dashboard (KPI, charts) ishte direkt brenda `.ballina-panel` me padding panel-level (4px 18px 24px) → background dhe border looking inconsistent
+- Content i Detyrat (selection-toolbar, grid) gjithashtu direkt brenda `.ballina-panel`
+- Headers kishin `min-height: 44px` (i fleksibël) — në praktikë lartësia ndryshonte sipas content-it
+- Margin negative `-4px -18px` te headers ishte hack — pamje confusing
+
+### Vendimi
+**Wrap content brenda `.panel-content` + headers height FIKS 44px:**
+
+1. **Strukturë e re HTML:**
+```html
+<aside class="ballina-panel panel-dashboard">
+  <div class="panel-header">...</div>            <!-- height: 44px FIKS -->
+  <div class="panel-content">...content...</div> <!-- flex:1, overflow:auto, padding:16px -->
+</aside>
+<aside class="ballina-panel panel-detyrat">
+  <div class="panel-header">...</div>            <!-- height: 44px FIKS -->
+  <div class="panel-subheader">...</div>         <!-- min-height: 40px -->
+  <div class="panel-content">...content...</div>
+</aside>
+```
+
+2. **CSS kryesore:**
+- `.ballina-panel { display: flex; flex-direction: column; padding: 0 }`
+- `.panel-header { height: 44px; flex-shrink: 0 }` (jo më `min-height`)
+- `.panel-content { flex: 1; overflow-y: auto; padding: 16px }`
+- `.panel-dashboard { border-right: 1px solid var(--s-border) }` për ndarje vertikale
+
+3. **Klasa aliase** për konsistencë:
+- `.panel-header` ↔ `.ballina-panel-header` ↔ `.detyrat-header-row1`
+- `.panel-subheader` ↔ `.detyrat-header-row2`
+- `.panel-header-left` ↔ `.ballina-panel-header-left`
+- `.panel-header-right` ↔ `.ballina-panel-header-actions`
+
+### Alternativat e Refuzuara
+- ❌ **Rinovo HTML me ID të reja** (btnPerzgjedh camelCase, etj.) — do prishte 30+ JS references
+- ❌ **Mbaj klasa të vjetra vetëm** — humbet rregull semantic për module të reja
+
+### Konsekuencat
+- ✅ Headers fillojnë në TË NJËJTËN Y (44px FIKS te të dy)
+- ✅ Content brenda zonës së bardhë me padding konsistent
+- ✅ Border-right te dashboard panel = ndarje vertikale e qartë
+- ✅ Aliasat e mbajnë kompatibilitet me v3 dhe spec-in e ri
+- ✅ JS i paprekur (35 IDs të verifikuara)
+- ⚠️ Strukturë me wrapper shtesë — DOM më i thellë, por organizim më i qartë
+
+### Lidhje
+Extension i DEC-061 (lartësi 44px) dhe DEC-062 (border container). Tani lartësia është **FIKS** (jo min-height) dhe content është EXPLICITLY brenda panel-content.
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase
