@@ -9,7 +9,7 @@
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 2D v7 (background identik dy panele, pa vijë të bardhë midis) e përfunduar → Faza 2E.
+**Faza aktuale:** Faza 2D v8 (fix ID-selektor: panelet realisht bg identik, divider bg eksplicit) e përfunduar → Faza 2E.
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -254,6 +254,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-06-29 | Faza 2D v4: panel alignment fix — content brenda .panel-content (overflow scroll + padding 16px), headers height 44px FIKS (jo min-height), .panel-subheader për row2 detyrat, border-right te dashboard panel për ndarje vertikale, JS IDs të paprekur (DEC-063) | Claude Code |
 | 2026-06-29 | Faza 2D v6: subheader background var(--s-bg-1) → var(--s-bg-0) (i bardhë), border-bottom i lehtë. Konsistencë strukturore: dy panelet tani kanë 2 shtresa identike (gri header → i bardhë subheader+content) (DEC-065) | Claude Code |
 | 2026-06-29 | Faza 2D v7: të dy panelet me bg IDENTIK var(--s-bg-0). Vija e bardhë midis paneleve u zhduk — divider blends me container bg. Annulim parcial i DEC-049 (panel bg ndryshe) (DEC-066) | Claude Code |
+| 2026-06-29 | Faza 2D v8: fix CSS specificity — #panel-dashboard ID rule e mbingarkonte klasën. Tani ID-rule shkruan bg-0 (jo bg-1). Divider bg eksplicit var(--s-bg-0). DEC-049 plotësisht annulluar (DEC-067) | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 

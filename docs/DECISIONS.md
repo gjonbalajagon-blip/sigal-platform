@@ -1793,6 +1793,40 @@ Annulim parcial i DEC-049 (panel bg ndryshe). Konfirmon DEC-063 (panel-content b
 
 ---
 
+## DEC-067: Fix Background Panelesh me ID Specifik
+**Data:** 2026-06-29
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v8, commit b5445cd)
+
+### Konteksti
+DEC-066 (v7) ndryshoi `.panel-dashboard, .panel-detyrat { background: var(--s-bg-0) }` për bg identik. Por user-i ende e shihte Dashboard panel gri. Diagnozë me grep zbuloi rregull më të vjetër me **ID selector**:
+
+```css
+#panel-dashboard { background: var(--s-bg-1); }
+#panel-detyrat { background: var(--s-bg-0); }
+```
+
+ID selektorët (specificitet 100) e mbingarkojnë klasat (specificitet 10) — rregulla e v7 nuk merrte efekt mbi Dashboard panel.
+
+### Vendimi
+Update **rregullin me ID selektor** (jo me klasë) për të garantuar override:
+```css
+#panel-dashboard,
+#panel-detyrat { background: var(--s-bg-0); }
+```
+
+Plus `.ballina-divider` background tani **eksplicit** `var(--s-bg-0)` (jo transparent) — siguron që divider area nuk lë "shirit të bardhë" edhe nëse container bg ndryshon në të ardhmen.
+
+### Konsekuencat
+- ✅ Të dy panelet TANI realisht me bg identik (verifikuar specificitet)
+- ✅ Divider bg eksplicit — më rezistent ndaj cascading issues të ardhme
+- ✅ DEC-049 (panel bg ndryshe) tani plotësisht annulluar — ID rule ndryshuar
+- ⚠️ Mësim: kur ka rregulla me ID specifik, override duhet të jetë gjithashtu me ID (jo klasë)
+
+### Lidhje
+Korrigjim final i DEC-066 (v7). Bashkë me të, kompleton tregimin: bg-0 mbi gjithë layout-in pa "vijë të bardhë" midis paneleve.
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase
