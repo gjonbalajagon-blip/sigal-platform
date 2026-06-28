@@ -3253,10 +3253,11 @@ body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
   display: flex; align-items: center;
   justify-content: space-between;
   gap: 10px; flex-wrap: wrap;
-  padding: 8px 12px;
+  padding: 8px 16px;
   min-height: 40px;
-  border-bottom: 1px solid var(--s-border);
-  background: var(--s-bg-1);
+  /* Faza 2D v6 / DEC-065: bg i bardhë konsistent me content; border-bottom i lehtë */
+  border-bottom: 1px solid var(--s-border-light);
+  background: var(--s-bg-0);
   flex-shrink: 0;
   margin: 0;
   box-sizing: border-box;
