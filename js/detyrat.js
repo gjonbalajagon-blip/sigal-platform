@@ -322,6 +322,20 @@ function gjeneroDetyratAuto() {
         localStorage.setItem('detyrat_last_run', new Date().toISOString());
     }
 
+    // DEBUG (Faza 2D v2 Task 1): numra processed/created për diagnozë
+    const detKon = detyrat.filter(d => d.lloji === 'auto' && d.burimi?.moduli === 'kontratat' && d.statusi !== 'e_anuluar' && d.statusi !== 'e_perfunduar').length;
+    const detRin = detyrat.filter(d => d.lloji === 'auto' && d.burimi?.moduli === 'rinovimet' && d.statusi !== 'e_anuluar' && d.statusi !== 'e_perfunduar').length;
+    const detOfe = detyrat.filter(d => d.lloji === 'auto' && d.burimi?.moduli === 'oferta' && d.statusi !== 'e_anuluar' && d.statusi !== 'e_perfunduar').length;
+    const detFat = detyrat.filter(d => d.lloji === 'auto' && d.burimi?.moduli === 'faturimi' && d.statusi !== 'e_anuluar' && d.statusi !== 'e_perfunduar').length;
+    const detDeb = detyrat.filter(d => d.lloji === 'auto' && d.burimi?.moduli === 'debitoret' && d.statusi !== 'e_anuluar' && d.statusi !== 'e_perfunduar').length;
+    console.log('[DETYRAT DEBUG] gjeneroDetyratAuto rezultati:');
+    console.log('  Kontratat:', kontratat.length, 'rekorde →', detKon, 'detyra aktive');
+    console.log('  Ofertat:', ofertat.length, 'rekorde →', detOfe, 'detyra aktive');
+    console.log('  Faturimi:', JSON.parse(localStorage.getItem('faturimi_klientet')||'[]').length, 'rekorde →', detFat, 'detyra aktive');
+    console.log('  Debitoret:', JSON.parse(localStorage.getItem('debitoret_data_v1')||'[]').length, 'rekorde →', detDeb, 'detyra aktive');
+    console.log('  Rinovimet:', rinovimet.length, 'rekorde →', detRin, 'detyra aktive');
+    console.log('  TOTAL të reja në këtë run:', krijuara);
+
     // TRIGGER 6 (async, Faza 2B): Oferta parë 3-5 herë
     skanoOfertaParEHere35().catch(e => console.warn('[T6] skip:', e.message));
 
@@ -673,16 +687,53 @@ function toggleSelectionMode() {
     const btn = document.getElementById('btn-perzgjedh');
     const toolbar = document.getElementById('det-selection-toolbar');
     if (btn) btn.style.display = _selectionMode ? 'none' : 'inline-flex';
-    if (toolbar) toolbar.style.display = _selectionMode ? 'flex' : 'none';
+    // Task 3c: toolbar fillon i fshehur (0 të zgjedhura), shfaqet pas së parës
+    if (toolbar) toolbar.style.display = 'none';
     renderAll();
+}
+
+// Task 3e: Select all visible (në Modul view: të gjitha që shfaqen aktualisht)
+function selectAllVisible() {
+    if (!_selectionMode) return;
+    if (typeof ballinaDetyratVisible === 'function') {
+        // Ballina context: detyrat e visibilshme në cards
+        const visible = ballinaDetyratVisible();
+        visible.forEach(d => _selectedIds.add(d.id));
+    } else {
+        // Detyrat standalone: të gjitha e visibilshme në accordion
+        let lista = (typeof filtroSipasPermissions === 'function') ? filtroSipasPermissions(detyrat) : detyrat;
+        if (typeof aplikoFilter === 'function') lista = aplikoFilter(lista);
+        lista.filter(d => d.statusi !== 'e_anuluar' && d.statusi !== 'e_perfunduar').forEach(d => _selectedIds.add(d.id));
+    }
+    updateSelectionCount();
+    // Surgical update — set checked + selected class
+    _selectedIds.forEach(id => {
+        document.querySelectorAll(`.det-row-wrapper[data-id="${id}"]`).forEach(row => {
+            row.classList.add('det-row-selected');
+            const cb = row.querySelector('.det-row-checkbox input');
+            if (cb) cb.checked = true;
+        });
+    });
+    const toolbar = document.getElementById('det-selection-toolbar');
+    if (toolbar) toolbar.style.display = _selectedIds.size > 0 ? 'flex' : 'none';
 }
 function toggleSelected(id, e) {
     if (e) e.stopPropagation();
     if (_selectedIds.has(id)) _selectedIds.delete(id);
     else _selectedIds.add(id);
     updateSelectionCount();
-    // re-render vetëm rreshtin për performancë (DEC marrë gjatë: re-render i plotë për konsistencë me checkbox-et e nën-grupit)
-    renderAll();
+    // Faza 2D v2 Task 3a: update kirurgjikal për të shmangur re-render që prek Chart.js
+    // (renderAll → renderAccordion → monkey-patch ka mundësi të triggerojë chart resize)
+    document.querySelectorAll(`.det-row-wrapper[data-id="${id}"]`).forEach(row => {
+        row.classList.toggle('det-row-selected', _selectedIds.has(id));
+        const cb = row.querySelector('.det-row-checkbox input');
+        if (cb) cb.checked = _selectedIds.has(id);
+    });
+    // Task 3c: shfaq toolbar vetëm kur ka >=1 të zgjedhura
+    const toolbar = document.getElementById('det-selection-toolbar');
+    if (toolbar && _selectionMode) {
+        toolbar.style.display = _selectedIds.size > 0 ? 'flex' : 'none';
+    }
 }
 function selectAllInGroup(groupId, items, e) {
     if (e) e.stopPropagation();

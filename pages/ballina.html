@@ -37,6 +37,7 @@
     <div class="main-content">
         <div class="topbar">
             <h1>Ballina</h1>
+            <div class="topbar-greeting" id="topbarGreeting" style="display:none;"></div>
             <div class="topbar-right"></div>
         </div>
 
@@ -206,7 +207,7 @@
                 <div class="detyrat-panel-header">
                     <div class="detyrat-header-row1">
                         <div class="ballina-panel-header-left">
-                            <i data-lucide="check-circle"></i>
+                            <i data-lucide="check-square"></i>
                             <span>Detyrat</span>
                         </div>
                         <div class="ballina-panel-header-actions">
@@ -238,6 +239,34 @@
                                 <i data-lucide="list-ordered"></i> Prioritet
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Selection toolbar (Faza 2D v2 Task 3c) -->
+                <div class="det-selection-toolbar" id="det-selection-toolbar" style="display:none;">
+                    <div class="det-selection-info">
+                        <i data-lucide="check-square"></i>
+                        <span><span id="det-selection-count">0</span> të zgjedhura</span>
+                    </div>
+                    <div class="det-selection-actions">
+                        <button class="det-action-bulk det-action-primary" onclick="selectAllVisible()" type="button">
+                            <i data-lucide="check-square"></i> Zgjidh të gjitha
+                        </button>
+                        <button class="det-action-bulk det-action-primary" onclick="bulkMerrPersiper()" type="button">
+                            <i data-lucide="play"></i> Merr përsipër
+                        </button>
+                        <button class="det-action-bulk det-action-success" onclick="bulkPerfundo()" type="button">
+                            <i data-lucide="check"></i> Përfundo
+                        </button>
+                        <button class="det-action-bulk det-action-danger" id="btn-bulk-anulo" onclick="bulkAnulo()" type="button" style="display:none;">
+                            <i data-lucide="x"></i> Anulo
+                        </button>
+                        <button class="det-action-bulk det-action-primary" id="btn-bulk-ricakto" onclick="hapModalRicakto()" type="button" style="display:none;">
+                            <i data-lucide="user-cog"></i> Ricakto
+                        </button>
+                        <button class="det-action-bulk det-action-cancel" onclick="toggleSelectionMode()" type="button">
+                            Anulo përzgjedhjen
+                        </button>
                     </div>
                 </div>
 
@@ -362,12 +391,6 @@
         </div>
     </div>
 
-    <!-- Hidden helpers për detyrat.js (kërkohen DOM ids — vetëm për bulk actions) -->
-    <div id="det-selection-toolbar" style="display:none">
-        <span id="det-selection-count">0</span>
-        <button id="btn-bulk-anulo" style="display:none"></button>
-        <button id="btn-bulk-ricakto" style="display:none"></button>
-    </div>
 
     <script src="../js/main.js"></script>
     <script src="../js/detyrat.js"></script>

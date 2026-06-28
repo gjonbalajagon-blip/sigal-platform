@@ -64,6 +64,11 @@
   --s-slate:       #64748b;
   --s-slate-light: #94a3b8;
 
+  /* Background levels (Faza 2D v2 Task 6) — 3 nivele për panel distinction */
+  --s-bg-0:        #ffffff;  /* më i bardhë — workspace */
+  --s-bg-1:        #f8f9fb;  /* gri shumë i butë — kontekst informativ */
+  --s-bg-2:        #eef0f4;  /* gri i ndërmjetëm — headers */
+
   /* Radii */
   --r-sm:  8px;
   --r-md:  12px;
@@ -2954,6 +2959,13 @@ body {
   display: none;
 }
 .det-row-wrapper.det-selection-active .det-row-checkbox { display: inline-flex; }
+/* Faza 2D v2 Task 3b: checkbox shfaqet me hover edhe pa selection mode aktiv */
+.det-row-wrapper:hover .det-row-checkbox {
+  display: inline-flex;
+  opacity: 0.65;
+}
+.det-row-wrapper.det-selection-active:hover .det-row-checkbox,
+.det-row-wrapper.det-row-selected .det-row-checkbox { opacity: 1; }
 .det-row-checkbox input[type="checkbox"] {
   width: 16px; height: 16px;
   cursor: pointer; accent-color: var(--s-brand);
@@ -3184,6 +3196,29 @@ body {
    BALLINA — Split-view Dashboard | Detyrat (Faza 2C / DEC-044)
    ============================================================ */
 
+/* Greeting i vogël te topbar — visible vetëm në full-detyrat (Faza 2D v2 Task 5) */
+.topbar-greeting {
+  font-size: 13px;
+  color: var(--s-text-muted);
+  justify-self: start;
+  padding-left: 4px;
+}
+
+/* Topbar te Ballina: bell+user djathtas (Faza 2D v2 Task 4)
+   topbar-right tani container flex me margin-left:auto, jo display:contents.
+   Selector specifik për ballina.html (jo prek modulet e tjera) */
+body:has(.ballina-layout) .topbar { grid-template-columns: 1fr 1fr; }
+body:has(.ballina-layout) .topbar-right {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  justify-self: end;
+  grid-column: 2;
+}
+body:has(.ballina-layout) .topbar-right > .topbar-utils,
+body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
+
 /* Panel header (Faza 2D / DEC-049) */
 .ballina-panel-header {
   display: flex; align-items: center;
@@ -3207,9 +3242,15 @@ body {
 }
 .btn-primary-sm i { width: 13px !important; height: 13px !important; }
 
-/* Sfond ndryshe për panelet (DEC-049) */
-#panel-dashboard { background: var(--s-bg-flat); }
-#panel-detyrat { background: var(--s-bg); }
+/* Sfond ndryshe për panelet (DEC-049 + Faza 2D v2 Task 6 - 3 nivele) */
+#panel-dashboard { background: var(--s-bg-1); }
+#panel-detyrat { background: var(--s-bg-0); }
+.ballina-panel-header,
+.detyrat-panel-header { background: var(--s-bg-2); }
+.ballina-panel-header span,
+.detyrat-panel-header .ballina-panel-header-left span { font-weight: 600; }
+.ballina-panel-header > i,
+.ballina-panel-header-left i { color: var(--s-brand) !important; }
 
 /* Form mandatory + error state (Faza 2D v2 / Task 8) */
 .det-form-row .req { color: var(--s-danger); font-weight: 700; margin-left: 2px; }
