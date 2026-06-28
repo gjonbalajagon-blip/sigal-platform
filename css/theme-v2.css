@@ -3255,15 +3255,14 @@ body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
   gap: 10px; flex-wrap: wrap;
   padding: 8px 16px;
   min-height: 40px;
-  /* Faza 2D v6 / DEC-065: bg i bardhë konsistent me content; border-bottom i lehtë */
+  /* Faza 2D v9: bg-1 konsistent me panel (s'krijon shirit te bardhë lokal) */
   border-bottom: 1px solid var(--s-border-light);
-  background: var(--s-bg-0);
+  background: var(--s-bg-1);
   flex-shrink: 0;
   margin: 0;
   box-sizing: border-box;
 }
-/* Border ndarës mes paneleve — vetëm dashboard right (divider zëvendëson) */
-.panel-dashboard { border-right: 1px solid var(--s-border); }
+/* v9: heqje border-right — panelet tani karta të ndara me border-radius secili */
 
 .ballina-panel-header-left,
 .panel-header-left { display: inline-flex; align-items: center; gap: 7px; }
@@ -3321,10 +3320,9 @@ body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
   color: white;
 }
 
-/* Faza 2D v8 / DEC-067: bg IDENTIK te të dy panelet me ID specifik
-   (rregull i vjetër DEC-049 me bg ndryshe — annulluar) */
+/* Faza 2D v9: bg-1 te ID-selektor (override mbi DEC-067 bg-0) — panele si karta të veçanta */
 #panel-dashboard,
-#panel-detyrat { background: var(--s-bg-0); }
+#panel-detyrat { background: var(--s-bg-1); }
 .ballina-panel-header,
 .detyrat-panel-header { background: var(--s-bg-2); }
 .ballina-panel-header span,
@@ -3393,25 +3391,28 @@ body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
   align-items: stretch;
   transition: grid-template-columns 0.35s ease;
   min-height: calc(100vh - 80px);
-  /* Faza 2D v3 / DEC-062: border vijëzim — container i bashkuar */
-  border: 1px solid var(--s-border);
-  border-radius: 12px;
-  overflow: hidden;
+  /* Faza 2D v9: container transparent — page bg shfaqet mes paneleve */
+  border: none;
+  border-radius: 0;
+  overflow: visible;
   margin: 0 16px 16px;
-  background: var(--s-bg-0);
+  background: transparent;
+  gap: 0;
 }
-/* Faza 2D v4 / DEC-063: panel struktura me flex column për alinjim të saktë */
+/* Faza 2D v4 / DEC-063 + v9: panel si kartë e veçantë me border-radius + bg-1 */
 .ballina-panel {
   display: flex;
   flex-direction: column;
   min-height: 0;
   min-width: 0;
   padding: 0 !important;
-  background: var(--s-bg-0);
+  background: var(--s-bg-1);
+  border: 1px solid var(--s-border);
+  border-radius: 12px;
+  overflow: hidden;
 }
-/* Faza 2D v7 / DEC-066: background IDENTIK mes paneleve për të hequr vijën e bardhë */
 .panel-dashboard,
-.panel-detyrat { background: var(--s-bg-0); }
+.panel-detyrat { background: var(--s-bg-1); }
 .panel-content {
   flex: 1;
   overflow-y: auto;
@@ -3436,8 +3437,8 @@ body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 6px;
-  /* Faza 2D v8 / DEC-067: bg eksplicit i njëjti me panelet për të hequr shirit të bardhë */
-  background: var(--s-bg-0);
+  /* Faza 2D v9: transparent — page bg shfaqet mes dy paneleve të ndarë */
+  background: transparent;
   position: sticky; top: 80px; z-index: 5;
   height: fit-content;
 }
