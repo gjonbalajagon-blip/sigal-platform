@@ -9,7 +9,7 @@
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 2D (10 bug fixes Ballina) e përfunduar — 7 triggers funksionalë, auto-completion aktiv → Polishe + module Produkti/Dokumentet.
+**Faza aktuale:** Faza 2D v2 (panel header 2-rresht + mandatory fields me validim visual) e përfunduar → Faza 2E gati për fillim (polish incremental ose modulet e reja).
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -248,6 +248,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-06-23 | Faza 2B: Supabase mini + trigger #6 (oferta parë 3-5 herë) — klient supabase fallback-safe, dual-write tracking, /api/oferta-tracking-bulk, skanoOfertaParEHere35 async te detyrat.js, stable id në URL oferta (DEC-042, DEC-043) | Claude Code |
 | 2026-06-24 | Faza 2C: Ballina split-view (Dashboard + Detyrat) — pages/ballina.html + js/ballina.js, 6 module-cards për Detyrat, modal "Shih të gjitha" pattern unifikuar, mobile tabs, KPI të reja (Borxh + Rinovime) + Aging chart, dashboard.html → redirect (DEC-044..048) | Claude Code |
 | 2026-06-26 | Faza 2D: 10 bug fixes Ballina + auto-completion + backfill afatesh. ROOT CAUSE P5 (kritik): parseDataAny() s'mbante DD/MM/YYYY → 33 kontrata silent skip. Trigger i ri rinovim_pa_filluar_15d. Auto-completion me 4 sinjale (DEC-049..053) | Claude Code |
+| 2026-06-28 | Faza 2D v2: Detyrat panel-header 2-rresht (titull+butona / filter+toggle), drawer Shto detyrë me fushë e re Moduli/Kategoria + validim visual (zëvendëson alert), kategoriaModul lejon manualet të lidhen me kartë moduli (DEC-054..056) | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 

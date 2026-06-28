@@ -1427,6 +1427,91 @@ Funksion `backfillAfatet()` që loop-on detyrat ekzistuese auto dhe rikalkulon `
 
 ---
 
+## DEC-054: parseDataAny — 3 Formate (ISO, pika, slash) — Konfirmuar me Data Reale
+**Data:** 2026-06-28
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D, commit b71af94)
+
+### Konteksti
+Faza 2D zbuloi që `parseDataAny()` te detyrat.js silent-skipte data DD/MM/YYYY (33 kontrata u injoruan). Pas fix-it, është verifikuar me data reale nga production.
+
+### Vendimi (formalizim)
+`parseDataAny(s)` mbështet 3 formate në renditjen e mëposhtme:
+
+1. **ISO `YYYY-MM-DD`** — preferuar për `<input type="date">` value dhe storage të ri
+2. **`DD.MM.YYYY`** (pika) — module legacy që përdorin këtë format
+3. **`DD/MM/YYYY`** (slash) — kontratat, faturimi, rinovimet (format input UI shqip)
+4. **Fallback `new Date(s)`** — për çdo gjë tjetër (përfshirë ISO me kohë `T00:00:00`)
+
+### Konvencion për module të reja
+- Storage të ri: përdor **ISO YYYY-MM-DD** (lehtë për t'u sortuar dhe parsuar)
+- UI: input me `placeholder="dd/mm/yyyy"` është acceptable nëse parsohet me parseDataAny
+
+### Konsekuencat
+- ✅ Të gjitha modulet ekzistuese parsojnë data konsistent
+- ✅ Triggers detyrash funksionojnë me të gjitha formats
+- ⚠️ **MOS** përdor `new Date("DD/MM/YYYY")` direkt — return Invalid Date në Chrome. Përdor gjithmonë parseDataAny
+
+---
+
+## DEC-055: Topbar Detyrat 2-Rresht Layout
+**Data:** 2026-06-28
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v2, commit b76784a)
+
+### Konteksti
+Pas Faza 2D, panel-header i Detyrave kishte 1 rresht: title + 2 butona. Filter chips + view toggle ndodheshin në një rresht të veçantë jashtë header-it. Pamja ishte e shpërndarë dhe kërkonte më shumë hapësirë vertikale.
+
+### Vendimi
+Konsoliduar gjithçka në **panel-header me 2 rreshta** (`.detyrat-panel-header`):
+- **Row 1**: title ("Detyrat" + ikon) ↔ butona [Përzgjedh] [Shto detyrë]
+- **Row 2**: filter chips (Të gjitha / Mia / Pa përgjegjës) ↔ view toggle (Modul / Prioritet)
+
+CSS:
+```css
+.detyrat-panel-header {
+  display: flex; flex-direction: column;
+  gap: 8px; padding: 12px 16px;
+  border-bottom: 1px solid var(--s-border);
+  background: var(--s-bg-flat);
+}
+.detyrat-header-row1, .detyrat-header-row2 {
+  display: flex; justify-content: space-between;
+  align-items: center; gap: 10px; flex-wrap: wrap;
+}
+```
+
+### Konsekuencat
+- ✅ Të gjitha kontrollet e Detyrave të organizuar në një bllok të vetëm
+- ✅ Hapësirë vertikale e zvogëluar (jo një rresht filter të ndarë)
+- ✅ Konsistencë me `.ballina-panel-header` për Dashboard (subtilisht)
+
+---
+
+## DEC-056: Panel Background Ndryshim Dashboard vs Detyrat — Konfirmim
+**Data:** 2026-06-28
+**Statusi:** ✅ Approved + KONFIRMUAR (refinim i DEC-049)
+
+### Konteksti
+DEC-049 (Faza 2D) vendosi:
+- Panel Dashboard: `var(--s-bg-flat)`
+- Panel Detyrat: `var(--s-bg)`
+
+Pas Faza 2D v2 ku panel-header i Detyrave ndryshoi në 2-rresht me background `var(--s-bg-flat)`, paneli kryesor i Detyrave mbetet `var(--s-bg)` (i bardhë default). Kontrasti subtil është:
+- Header me var(--s-bg-flat) (gri i butë)
+- Body me var(--s-bg) (i bardhë)
+
+### Vendimi (konfirmim)
+**Nuk ndryshohet vendimi i DEC-049.** Konfirmohet:
+- Panel Dashboard (kontekst KPI/charts): `var(--s-bg-flat)` (gri i butë)
+- Panel Detyrat (workspace veprimesh): `var(--s-bg)` (i bardhë default)
+- Header i Detyrat (banner i sipërm): `var(--s-bg-flat)` (gri i butë)
+
+### Konsekuencat
+- ✅ Dy nivele ngjyrash në një panel të vetëm (header gri / body i bardhë)
+- ✅ Distinkim midis paneleve: Dashboard gri / Detyrat i bardhë me header gri
+- ✅ Konsistencë vizuale me konvencionin "kontekst informativ = gri, workspace = i bardhë"
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase
