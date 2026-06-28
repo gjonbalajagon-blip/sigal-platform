@@ -451,7 +451,12 @@ function hapDrawerKrijim() {
     document.getElementById('d-titulli').value = '';
     document.getElementById('d-pershkrimi').value = '';
     document.getElementById('d-afati').value = '';
+    const moduliEl = document.getElementById('d-moduli');
+    if (moduliEl) moduliEl.value = '';
     populateStafiDropdown('d-pergjegjesi');
+    // Reset error states nga submit i mëparshëm
+    document.querySelectorAll('.drawer-panel-body .det-form-row.error').forEach(r => r.classList.remove('error'));
+    document.querySelectorAll('.drawer-panel-body .det-form-error-msg').forEach(m => m.textContent = '');
 
     // Permission lock për staff: prioriteti vetëm 'normale'
     const selPrio = document.getElementById('d-prioriteti');
@@ -487,15 +492,44 @@ function populateStafiDropdown(selectId) {
     sel.innerHTML = opts;
 }
 function ruajDetyre() {
+    // Reset error states (Faza 2D v2 Task 8)
+    document.querySelectorAll('.drawer-panel-body .det-form-row.error').forEach(r => r.classList.remove('error'));
+    document.querySelectorAll('.drawer-panel-body .det-form-error-msg').forEach(m => m.textContent = '');
+
     const titulli = document.getElementById('d-titulli').value.trim();
-    if (!titulli) { alert('Titulli është i detyrueshëm.'); return; }
+    const moduliEl = document.getElementById('d-moduli');
+    const moduli = moduliEl ? moduliEl.value : 'manual';
+    const prioritetiSel = document.getElementById('d-prioriteti').value;
     const afati = document.getElementById('d-afati').value;
-    if (!afati) { alert('Afati është i detyrueshëm për detyrat manuale.'); return; }
+    const pergjegjesi = document.getElementById('d-pergjegjesi').value;
+
+    let hasErr = false;
+    function setErr(id, msg) {
+        const inp = document.getElementById(id);
+        if (inp) {
+            const row = inp.closest('.det-form-row');
+            if (row) row.classList.add('error');
+        }
+        const el = document.getElementById('err-' + id);
+        if (el) el.textContent = msg;
+        hasErr = true;
+    }
+    if (!titulli) setErr('d-titulli', 'Titulli është i detyrueshëm');
+    if (moduliEl && !moduli) setErr('d-moduli', 'Zgjidh modulin ose "Asnjë"');
+    if (!prioritetiSel) setErr('d-prioriteti', 'Zgjidh prioritetin');
+    if (!afati) setErr('d-afati', 'Data e afatit është e detyrueshme');
+    if (!pergjegjesi) setErr('d-pergjegjesi', 'Zgjidh një përgjegjës');
+    if (hasErr) return;
+
     const u = getUserAktual();
     const now = new Date().toISOString();
     // Prioriteti: staff lejohet vetëm 'normale' (lock i imponuar nga server-side logic)
-    let prioriteti = document.getElementById('d-prioriteti').value;
+    let prioriteti = prioritetiSel;
     if (!isManagement()) prioriteti = 'normale';
+
+    // Kategoria moduli — nëse user zgjedh modul përveç 'manual', detyra duket te ajo kartë
+    const kategoriaModul = (moduli && moduli !== 'manual') ? moduli : null;
+
     const detyra = {
         id: generateId(),
         titulli,
@@ -503,13 +537,14 @@ function ruajDetyre() {
         lloji: 'manual',
         statusi: 'e_re',
         prioriteti,
-        pergjegjesi: document.getElementById('d-pergjegjesi').value || null,
+        pergjegjesi,
         krijuarNga: u ? u.username : 'agon',
         dega: u ? (u.dega || null) : null,
         data_krijimit: now.split('T')[0],
         data_afati: afati,
         data_perfundimit: null,
         burimi: null,
+        kategoriaModul,
         aktivitete: [{ data: now, autori: u ? u.username : 'agon', tipi: 'krijim', teksti: '' }]
     };
     detyrat.push(detyra);

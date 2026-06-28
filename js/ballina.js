@@ -79,8 +79,14 @@ function ballinaDetyratVisible() {
 
 function detyratPerModul(moduli) {
     return ballinaDetyratVisible().filter(d => {
-        if (moduli === 'manual') return d.lloji === 'manual';
-        return d.burimi && d.burimi.moduli === moduli;
+        if (moduli === 'manual') {
+            // Detyra manuale TË PAVARURA (pa kategori moduli)
+            return d.lloji === 'manual' && !d.kategoriaModul;
+        }
+        // Detyra auto në modulin përkatës, OSE detyra manuale me kategori të caktuar
+        if (d.burimi && d.burimi.moduli === moduli) return true;
+        if (d.lloji === 'manual' && d.kategoriaModul === moduli) return true;
+        return false;
     });
 }
 

@@ -203,39 +203,41 @@
 
             <!-- ===== PANEL DETYRAT ===== -->
             <aside class="ballina-panel" id="panel-detyrat">
-                <div class="ballina-panel-header">
-                    <div class="ballina-panel-header-left">
-                        <i data-lucide="check-circle"></i>
-                        <span>Detyrat</span>
+                <div class="detyrat-panel-header">
+                    <div class="detyrat-header-row1">
+                        <div class="ballina-panel-header-left">
+                            <i data-lucide="check-circle"></i>
+                            <span>Detyrat</span>
+                        </div>
+                        <div class="ballina-panel-header-actions">
+                            <button class="btn-primary btn-primary-sm" id="btn-perzgjedh" onclick="toggleSelectionMode()" type="button">
+                                <i data-lucide="check-square"></i> Përzgjedh
+                            </button>
+                            <button class="btn-primary btn-primary-sm" id="btn-shto-detyre" onclick="hapDrawerKrijim()" type="button">
+                                <i data-lucide="plus"></i> Shto detyrë
+                            </button>
+                        </div>
                     </div>
-                    <div class="ballina-panel-header-actions">
-                        <button class="btn-primary btn-primary-sm" id="btn-perzgjedh" onclick="toggleSelectionMode()" type="button">
-                            <i data-lucide="check-square"></i> Përzgjedh
-                        </button>
-                        <button class="btn-primary btn-primary-sm" id="btn-shto-detyre" onclick="hapDrawerKrijim()" type="button">
-                            <i data-lucide="plus"></i> Shto detyrë
-                        </button>
-                    </div>
-                </div>
-                <div class="det-filter-row">
-                    <div class="det-filters" id="det-filters">
-                        <button class="det-chip active" data-filter="all" onclick="setFilter('all')">
-                            Të gjitha <span class="det-chip-count" id="c-all">0</span>
-                        </button>
-                        <button class="det-chip" data-filter="te-miat" onclick="setFilter('te-miat')">
-                            Detyrat e mia <span class="det-chip-count" id="c-mine">0</span>
-                        </button>
-                        <button class="det-chip" data-filter="pa-pergjegjes" onclick="setFilter('pa-pergjegjes')" id="chip-unassigned">
-                            Pa përgjegjës <span class="det-chip-count" id="c-unassigned">0</span>
-                        </button>
-                    </div>
-                    <div class="det-view-toggle">
-                        <button class="det-toggle-btn det-toggle-active" id="toggle-modul" onclick="ballinaSetView('modul')" type="button">
-                            <i data-lucide="layout-grid"></i> Modul
-                        </button>
-                        <button class="det-toggle-btn" id="toggle-prioritet" onclick="ballinaSetView('prioritet')" type="button">
-                            <i data-lucide="list-ordered"></i> Prioritet
-                        </button>
+                    <div class="detyrat-header-row2">
+                        <div class="det-filters" id="det-filters">
+                            <button class="det-chip active" data-filter="all" onclick="setFilter('all')">
+                                Të gjitha <span class="det-chip-count" id="c-all">0</span>
+                            </button>
+                            <button class="det-chip" data-filter="te-miat" onclick="setFilter('te-miat')">
+                                Detyrat e mia <span class="det-chip-count" id="c-mine">0</span>
+                            </button>
+                            <button class="det-chip" data-filter="pa-pergjegjes" onclick="setFilter('pa-pergjegjes')" id="chip-unassigned">
+                                Pa përgjegjës <span class="det-chip-count" id="c-unassigned">0</span>
+                            </button>
+                        </div>
+                        <div class="det-view-toggle">
+                            <button class="det-toggle-btn det-toggle-active" id="toggle-modul" onclick="ballinaSetView('modul')" type="button">
+                                <i data-lucide="layout-grid"></i> Modul
+                            </button>
+                            <button class="det-toggle-btn" id="toggle-prioritet" onclick="ballinaSetView('prioritet')" type="button">
+                                <i data-lucide="list-ordered"></i> Prioritet
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -286,13 +288,48 @@
                 <button class="drawer-close" onclick="mbyllDrawer()" type="button"><i data-lucide="x"></i></button>
             </div>
             <div class="drawer-panel-body">
-                <div class="det-form-row"><label>Titulli <span style="color:var(--s-danger)">*</span></label><input type="text" id="d-titulli" placeholder="Shkurt çfarë duhet bërë"></div>
-                <div class="det-form-row"><label>Përshkrimi</label><textarea id="d-pershkrimi" rows="3" placeholder="Detaje shtesë (opsionale)"></textarea></div>
-                <div class="det-form-row-2">
-                    <div class="det-form-row"><label>Prioriteti</label><select id="d-prioriteti"><option value="kritike">Kritike</option><option value="te_rendesishme">Të rëndësishme</option><option value="normale" selected>Normale</option></select></div>
-                    <div class="det-form-row"><label>Data e afatit</label><input type="date" id="d-afati"></div>
+                <div class="det-form-row">
+                    <label>Titulli <span class="req">*</span></label>
+                    <input type="text" id="d-titulli" placeholder="Shkurt çfarë duhet bërë">
+                    <div class="det-form-error-msg" id="err-d-titulli"></div>
                 </div>
-                <div class="det-form-row"><label>Përgjegjësi</label><select id="d-pergjegjesi"><option value="">— Pa caktuar —</option></select></div>
+                <div class="det-form-row">
+                    <label>Përshkrimi</label>
+                    <textarea id="d-pershkrimi" rows="3" placeholder="Detaje shtesë (opsionale)"></textarea>
+                </div>
+                <div class="det-form-row">
+                    <label>Moduli / Kategoria <span class="req">*</span></label>
+                    <select id="d-moduli">
+                        <option value="">— Zgjidh —</option>
+                        <option value="manual">Asnjë (detyrë e pavarur)</option>
+                        <option value="oferta">Oferta</option>
+                        <option value="kontratat">Kontratat</option>
+                        <option value="faturimi">Faturimi</option>
+                        <option value="rinovimet">Rinovimet</option>
+                        <option value="debitoret">Debitorët</option>
+                    </select>
+                    <div class="det-form-error-msg" id="err-d-moduli"></div>
+                </div>
+                <div class="det-form-row-2">
+                    <div class="det-form-row">
+                        <label>Prioriteti <span class="req">*</span></label>
+                        <select id="d-prioriteti">
+                            <option value="kritike">Kritike</option>
+                            <option value="te_rendesishme">Të rëndësishme</option>
+                            <option value="normale" selected>Normale</option>
+                        </select>
+                    </div>
+                    <div class="det-form-row">
+                        <label>Data e afatit <span class="req">*</span></label>
+                        <input type="date" id="d-afati">
+                        <div class="det-form-error-msg" id="err-d-afati"></div>
+                    </div>
+                </div>
+                <div class="det-form-row">
+                    <label>Përgjegjësi <span class="req">*</span></label>
+                    <select id="d-pergjegjesi"><option value="">— Pa caktuar —</option></select>
+                    <div class="det-form-error-msg" id="err-d-pergjegjesi"></div>
+                </div>
             </div>
             <div class="drawer-footer">
                 <button class="btn-cancel" onclick="mbyllDrawer()">Anulo</button>

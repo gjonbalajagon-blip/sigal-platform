@@ -3211,6 +3211,42 @@ body {
 #panel-dashboard { background: var(--s-bg-flat); }
 #panel-detyrat { background: var(--s-bg); }
 
+/* Form mandatory + error state (Faza 2D v2 / Task 8) */
+.det-form-row .req { color: var(--s-danger); font-weight: 700; margin-left: 2px; }
+.det-form-row.error input,
+.det-form-row.error select,
+.det-form-row.error textarea {
+  border-color: var(--s-danger) !important;
+  background: var(--s-danger-bg);
+}
+.det-form-error-msg {
+  display: none;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--s-danger-text);
+  line-height: 1.3;
+}
+.det-form-row.error .det-form-error-msg { display: block; }
+
+/* Panel-header i Detyrave me 2 rreshta (Faza 2D v2 / DEC-055) */
+.detyrat-panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--s-border);
+  background: var(--s-bg-flat);
+  margin: -4px -18px 12px;
+}
+.detyrat-header-row1,
+.detyrat-header-row2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 /* Modal full-screen (Faza 2D / DEC-050) */
 .ballina-modal-panel {
   max-width: 920px !important;
