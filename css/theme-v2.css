@@ -3321,8 +3321,9 @@ body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
   color: white;
 }
 
-/* Sfond ndryshe për panelet (DEC-049 + Faza 2D v2 Task 6 - 3 nivele) */
-#panel-dashboard { background: var(--s-bg-1); }
+/* Faza 2D v8 / DEC-067: bg IDENTIK te të dy panelet me ID specifik
+   (rregull i vjetër DEC-049 me bg ndryshe — annulluar) */
+#panel-dashboard,
 #panel-detyrat { background: var(--s-bg-0); }
 .ballina-panel-header,
 .detyrat-panel-header { background: var(--s-bg-2); }
@@ -3435,7 +3436,8 @@ body:has(.ballina-layout) .topbar-right > .topbar-user { justify-self: auto; }
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 6px;
-  background: transparent;
+  /* Faza 2D v8 / DEC-067: bg eksplicit i njëjti me panelet për të hequr shirit të bardhë */
+  background: var(--s-bg-0);
   position: sticky; top: 80px; z-index: 5;
   height: fit-content;
 }
