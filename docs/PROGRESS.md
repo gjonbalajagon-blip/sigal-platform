@@ -26,6 +26,59 @@ Format:
 
 ---
 
+## 2026-06-28 - Faza 2D v2: Tasks 1-9 (debug + modal + bulk + bell + greeting + 3-level bg)
+
+**Tipi:** Bug fixes + UI polish vazhdues
+**Statusi:** ✅ Përfunduar (commits b76784a + 3777678 + cf8e5e1 + ky)
+
+**Konteksti:**
+Pas Faza 2D v1, user-i raportoi 9 task të reja nga audit visual. Tasks 7-9 u bënë në batch të parë (panel header 2-row, mandatory fields, docs). Tasks 1-6 në këtë batch.
+
+**Diagnozë Task 1:**
+parseDataAny ka tashmë 3 regex (YYYY-MM-DD, DD.MM.YYYY, DD/MM/YYYY). Kontratat me `mbarimi = "2026-12-31"` parsohen saktë. Nëse 33 kontrata = 0 detyra, kjo është sjellja KORREKTE: kontratat skadojnë >30 ditë (jashtë range-it të trigger-it 0-30d). Debug logs u shtuan për të konfirmuar diagnozën në runtime.
+
+**Çka u bë:**
+- ✅ Task 1: Debug logs te gjeneroDetyratAuto për të 5 modulet (kontratat/oferta/faturimi/debitoret/rinovimet)
+- ✅ Task 2: Monkey-patch renderAccordion zgjeruar — modal body rifreskohet kur është aktiv
+- ✅ Task 3a (KRITIKE - DEC-058): Bulk select surgical update — `toggleSelected` nuk thirr më renderAll → Chart.js mbrohen nga re-render
+- ✅ Task 3b: CSS hover për checkbox (opacity 0.65)
+- ✅ Task 3c: Toolbar shfaqet vetëm kur selectedIds >= 1
+- ✅ Task 3d: De-select tashmë punonte
+- ✅ Task 3e: Funksion `selectAllVisible()` + button "Zgjidh të gjitha"
+- ✅ Task 4: Bell + user djathtas — CSS override për ballina (grid 1fr/1fr + flex topbar-right)
+- ✅ Task 5 (DEC-059): Greeting global te topbar, visible në full-detyrat
+- ✅ Task 6 (DEC-057): 3-level background system (--s-bg-0/1/2) + headers me bg distinct
+- ✅ Task 7 (DEC-055): Detyrat panel-header 2-rresht (batch i mëparshëm)
+- ✅ Task 8: Mandatory fields me validim visual (batch i mëparshëm)
+- ✅ Task 9: Docs DEC-054..056 (batch i mëparshëm)
+
+**Çka NUK u prek:**
+- 🚫 Logjika 7 triggers auto-gjenerimi (vetëm debug logs)
+- 🚫 Supabase tracking
+- 🚫 Modulet jashtë scope
+
+**Vendime gjatë rrugës:**
+- 🟢 Surgical update e justifikon tradeoff: dy mënyra ndryshme update (kirurgjikale për toggleSelected, e plotë për toggleSelectionMode/selectAllVisible) — qartësohet me commenti DEC-058
+- 🟢 Topbar greeting vetëm në full-detyrat (jo gjithmonë) — për të shmangur duplikim me dashboard panel greeting
+- 🟢 CSS `body:has(.ballina-layout)` selector — scope vetëm për ballina, jo modulet e tjera
+
+**Probleme që u hasën:**
+- CSS `:has()` selector kërkon browser modern (Safari 15.4+, Chrome 105+). Production: Chrome stable OK. iOS Safari old (15.0-15.3) mund të mos suportojë. Fallback i pranueshëm: bell+user në mes (sjellja origjinale)
+
+**Lidhje:** DEC-054 (parseDataAny), DEC-055 (panel-header 2-row), DEC-056 (panel bg, refinim), DEC-057 (3-level bg), DEC-058 (surgical update), DEC-059 (greeting global)
+
+**Verifikim manual i nevojshëm nga user-i në Vercel:**
+1. Hap Ballina → console DevTools për debug logs
+2. Klik "Përzgjedh" → 0 të zgjedhura → bulk toolbar i fshehur
+3. Klik mbi 1 detyrë → toolbar shfaqet me 6 butona (përfshirë "Zgjidh të gjitha")
+4. Selekto 5 detyra → Charts e dashboard NUK lëvizin
+5. Hover mbi detyrë (pa selection mode) → checkbox shfaqet me 65% opacity
+6. Set pozicion = full-detyrat → topbar shfaq "Përshëndetje, {emri}..."
+7. Bell + user në cep djathtas (jo në mes)
+8. Header i Detyrat dhe Dashboard me 3 nivele bg distincte
+
+---
+
 ## 2026-06-26 - Faza 2D: Bug fixes Ballina (10 probleme + auto-completion + backfill)
 
 **Tipi:** Bug fixes + funksionalitet shtesë

@@ -1512,6 +1512,77 @@ Pas Faza 2D v2 ku panel-header i Detyrave ndryshoi në 2-rresht me background `v
 
 ---
 
+## DEC-057: 3-Level Background System për Panel Distinction
+**Data:** 2026-06-28
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v2 Task 6, commit 3777678)
+
+### Konteksti
+DEC-049 vendosi 2 nivele bg (--s-bg-flat për Dashboard panel, --s-bg për Detyrat). Por header-ët kishin të njëjtin bg si Dashboard panel — konfuzion vizual. Duhej 3 nivele.
+
+### Vendimi
+3 variabla të reja te `:root` për 3 nivele distincte:
+- `--s-bg-0: #ffffff` — workspace (panel-detyrat), më i bardhë
+- `--s-bg-1: #f8f9fb` — kontekst informativ (panel-dashboard), gri i butë
+- `--s-bg-2: #eef0f4` — headers (panel headers), gri i ndërmjetëm
+
+### Konsekuencat
+- ✅ Header < panel kontekst < panel workspace — gradient natyral i ngjyrës
+- ✅ Distinkim i qartë vizual midis 2 paneleve
+- ⚠️ Variablat e vjetra --s-bg / --s-bg-flat ende ekzistojnë për kompatibilitet me modulet e tjera
+
+---
+
+## DEC-058: Bulk Select Surgical Update (Mbron Chart.js nga Re-render)
+**Data:** 2026-06-28
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v2 Task 3a, commit 3777678)
+
+### Konteksti
+User-i raportoi që selektimi i një detyre (bulk select mode) bënte re-render të Chart.js charts në Dashboard → tooltips humbisnin, zoom state resetohej. Shkaku: `toggleSelected()` thirrte `renderAll()` → `renderAccordion()` → monkey-patch → `renderModuleCards()`. Ndryshimet DOM shkaktonin reflow → ResizeObserver Chart.js triggerohej → ri-paint.
+
+### Vendimi
+`toggleSelected()` tani bën **update kirurgjikal**:
+```js
+document.querySelectorAll(`.det-row-wrapper[data-id="${id}"]`).forEach(row => {
+    row.classList.toggle('det-row-selected', _selectedIds.has(id));
+    const cb = row.querySelector('.det-row-checkbox input');
+    if (cb) cb.checked = _selectedIds.has(id);
+});
+```
+
+Pa renderAll(), pa lucide.createIcons(), pa innerHTML change. Vetëm class toggle + checkbox.checked.
+
+### Konsekuencat
+- ✅ Chart.js mbetet i prekur — state ruhet midis selektimeve
+- ✅ Performancë: O(1) update në vend të O(n) re-render
+- ⚠️ Nën-grupimet (group header "Zgjidh të gjitha") prap thirrin renderAll() — ato janë jo-bulk-individual operations, dhe ndodhin më rrallë
+
+---
+
+## DEC-059: Greeting Global te Topbar (visible në full-detyrat)
+**Data:** 2026-06-28
+**Statusi:** ✅ Approved + IMPLEMENTUAR (Faza 2D v2 Task 5, commit 3777678)
+
+### Konteksti
+Greeting "Përshëndetje, Agon — Qershor 2026" ekzistonte vetëm te panel-dashboard. Kur user kalonte në full-detyrat mode, dashboard panel fshihet → greeting humbet → user humb sense identiteti.
+
+### Vendimi
+Greeting i ri minimal te topbar (jashtë panelesh):
+- HTML: `<div class="topbar-greeting" id="topbarGreeting">` mes h1 dhe topbar-right
+- Visible vetëm kur `_ballinaPoz === 'full-detyrat'` (kur dashboard panel hidden)
+- Tekst: "Përshëndetje, {emri} — {muaji} {viti}"
+- Default greeting i madh te panel-dashboard mbetet i paprekur
+
+### Alternativat e Refuzuara
+- ❌ **Move greeting nga panel-dashboard te topbar gjithmonë** — humbet greeting i madh me subtitle në kontekst dashboard
+- ❌ **Dupliko greeting (visible në të dy vendet)** — redundancë vizuale në split mode
+
+### Konsekuencat
+- ✅ Greeting visible në çdo pozicion (3 layouts)
+- ✅ Pa duplikim — 1 lokacion aktiv në çdo moment
+- ⚠️ Logjika `getGreeting` u dyfishua (ballina.js + dashboard.js) — minor, ndajme funksion në të ardhmen nëse ndryshim formati
+
+---
+
 ## 📚 Vendime në Pritje (Proposed)
 
 ### DEC-PROPOSED-001: Migrim te Supabase

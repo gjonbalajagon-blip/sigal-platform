@@ -9,7 +9,7 @@
 
 ## 📊 Status i Përgjithshëm
 
-**Faza aktuale:** Faza 2D v2 (panel header 2-rresht + mandatory fields me validim visual) e përfunduar → Faza 2E gati për fillim (polish incremental ose modulet e reja).
+**Faza aktuale:** Faza 2D v2 (tasks 1-9: debug logs + modal refresh + bulk select surgical + bell djathtas + greeting global + 3-level bg + panel header 2-row + mandatory fields) e përfunduar → Faza 2E (polish ose modulet e reja).
 
 **Cka punon mirë:**
 - Login + Auth system
@@ -249,6 +249,7 @@ Krijo një listë të rekomandimeve për update i dokumentacionit.
 | 2026-06-24 | Faza 2C: Ballina split-view (Dashboard + Detyrat) — pages/ballina.html + js/ballina.js, 6 module-cards për Detyrat, modal "Shih të gjitha" pattern unifikuar, mobile tabs, KPI të reja (Borxh + Rinovime) + Aging chart, dashboard.html → redirect (DEC-044..048) | Claude Code |
 | 2026-06-26 | Faza 2D: 10 bug fixes Ballina + auto-completion + backfill afatesh. ROOT CAUSE P5 (kritik): parseDataAny() s'mbante DD/MM/YYYY → 33 kontrata silent skip. Trigger i ri rinovim_pa_filluar_15d. Auto-completion me 4 sinjale (DEC-049..053) | Claude Code |
 | 2026-06-28 | Faza 2D v2: Detyrat panel-header 2-rresht (titull+butona / filter+toggle), drawer Shto detyrë me fushë e re Moduli/Kategoria + validim visual (zëvendëson alert), kategoriaModul lejon manualet të lidhen me kartë moduli (DEC-054..056) | Claude Code |
+| 2026-06-28 | Faza 2D v2 tasks 1-6: debug logs gjeneroDetyratAuto, modal refresh hook, bulk select surgical (mbron Chart.js), hover checkbox, toolbar conditional, selectAllVisible, bell+user djathtas via :has(), greeting global topbar, 3-level bg system --s-bg-0/1/2 (DEC-057..059) | Claude Code |
 
 > Kur të bësh update, shto rresht këtu me datë dhe çka ndryshove.
 
