@@ -1,15 +1,67 @@
 // ============================================
 // oferta-tracking.js — ngarkohet pas oferta.js
-// Shton: progress bar në drawer, async status nga Railway
+// Shton: progress bar në Tab Detajet + tracking i detajuar në Tab Tracking
+// Faza 2E-A: drawer me 2 tabs, fix bug — passon stable id (jo numeric index)
 // ============================================
 
-// --- Merr statusin nga Railway ---
+// --- Merr statusin nga backend (in-memory mirror) ---
 async function merrStatusin(ofertaId) {
     try {
-        const r = await fetch(TAPI + '/api/oferta-status/' + ofertaId);
+        const r = await fetch(TAPI + '/api/oferta-status/' + encodeURIComponent(ofertaId));
         if (!r.ok) return null;
         return await r.json();
     } catch (e) { return null; }
+}
+
+// --- Merr tracking persistent nga Supabase ---
+async function merrTrackingPersistent(ofertaId) {
+    try {
+        const r = await fetch(TAPI + '/api/oferta-tracking/' + encodeURIComponent(ofertaId));
+        if (!r.ok) return null;
+        return await r.json();
+    } catch (e) { return null; }
+}
+
+// --- Tab switching (Faza 2E-A) ---
+function ofertaSetTab(name) {
+    document.querySelectorAll('.drawer-tab').forEach(b => b.classList.toggle('drawer-tab-active', b.dataset.tab === name));
+    document.querySelectorAll('.drawer-tab-content').forEach(c => c.style.display = c.dataset.content === name ? '' : 'none');
+    if (window.lucide) lucide.createIcons();
+}
+
+// --- Render i tracking-ut të detajuar te Tab 2 ---
+function renderTrackingDetajuar(data, persistent) {
+    const body = document.getElementById('tracking-detailed-body');
+    if (!body) return;
+    const hapjet = (data && data.hapjet) || (persistent && persistent.here_pare) || 0;
+    const min = (data && data.kohaTotale) ? Math.round(data.kohaTotale / 60) : 0;
+    const hapjaPare = persistent?.data_pare_pare || null;
+    const hapjaFundit = persistent?.data_pare_fundit || (data?.hapjaFundit) || null;
+
+    if (hapjet === 0 && !persistent) {
+        body.innerHTML = '<div class="tracking-empty">Klienti ende nuk e ka hapur këtë ofertë</div>';
+        return;
+    }
+
+    let h = '<div class="tracking-stat-grid">';
+    h += '<div class="tracking-stat"><div class="tracking-stat-label">Herë të hapur</div><div class="tracking-stat-value">' + hapjet + '</div>';
+    if (hapjaFundit) h += '<div class="tracking-stat-sub">E fundit: ' + new Date(hapjaFundit).toLocaleString('sq-AL') + '</div>';
+    h += '</div>';
+    h += '<div class="tracking-stat"><div class="tracking-stat-label">Kohëzgjatja</div><div class="tracking-stat-value">' + (min > 0 ? '~' + min + ' min' : '—') + '</div>';
+    h += '<div class="tracking-stat-sub">Total session time</div></div>';
+    if (hapjaPare) {
+        h += '<div class="tracking-stat"><div class="tracking-stat-label">Hera e parë</div><div class="tracking-stat-value" style="font-size:12px;">' + new Date(hapjaPare).toLocaleString('sq-AL') + '</div></div>';
+    }
+    if (data?.konfirmimi) {
+        h += '<div class="tracking-stat"><div class="tracking-stat-label">Konfirmimi</div><div class="tracking-stat-value" style="font-size:12px;color:var(--s-success);">' + new Date(data.konfirmimi.data).toLocaleString('sq-AL') + '</div>';
+        if (data.konfirmimi.pakot) h += '<div class="tracking-stat-sub">Paketa: ' + data.konfirmimi.pakot + '</div>';
+        h += '</div>';
+    }
+    h += '</div>';
+    if (data?.konfirmimi?.koment) {
+        h += '<div style="background:var(--s-bg-1);border-left:3px solid var(--s-brand);padding:10px 12px;border-radius:6px;font-size:11.5px;color:var(--s-text-sub);font-style:italic;">"' + data.konfirmimi.koment + '"</div>';
+    }
+    body.innerHTML = h;
 }
 
 // --- Progress Bar për drawer ---
@@ -46,33 +98,54 @@ function statusProgressBar(data) {
     return h;
 }
 
-// --- Override editoOferte: shto progress bar ---
+// --- Override editoOferte: shto progress bar + tracking detajuar te Tab 2 ---
+// Faza 2E-A fix: passon stable id (jo numeric index)
 const _editoOferteOrig = editoOferte;
 editoOferte = async function(index) {
     _editoOferteOrig(index);
-    const data = await merrStatusin(index);
-    if (data) {
-        // Sync Railway → localStorage
-        const ofertat = JSON.parse(localStorage.getItem('ofertat')) || [];
-        if (ofertat[index] && !ofertat[index].realizuar) {
-            if (data.statusi === 'e_konfirmuar' && !ofertat[index].konfirmuar) {
-                ofertat[index].konfirmuar = true;
-                ofertat[index].statusi = 'e_konfirmuar';
-                ofertat[index].pakaZgjedhur = data.konfirmimi?.pakot || '';
-                ofertat[index].komentKlient = data.konfirmimi?.koment || '';
-                ofertat[index].dataKonfirmimit = data.konfirmimi?.data?.split('T')[0] || '';
-                localStorage.setItem('ofertat', JSON.stringify(ofertat));
-                renderTabela(); // Refresh tabela me statusin e ri
-            }
+    const ofertat = JSON.parse(localStorage.getItem('ofertat')) || [];
+    const oferta = ofertat[index];
+    if (!oferta) return;
+    const ofertaId = oferta.id || String(index); // stable id ose fallback index legacy
+    console.log('[TRACKING DEBUG] Marrë për oferta:', ofertaId);
+
+    // Reset tab te Detajet sa herë hapet
+    if (typeof ofertaSetTab === 'function') ofertaSetTab('detajet');
+
+    // Lexo paralelisht: status (memory) + tracking persistent (Supabase)
+    const [data, persistent] = await Promise.all([
+        merrStatusin(ofertaId),
+        merrTrackingPersistent(ofertaId)
+    ]);
+    console.log('[TRACKING DEBUG] Data marrë:', { status: data, persistent });
+
+    // Sync status nga backend → localStorage
+    if (data && !oferta.realizuar) {
+        if (data.statusi === 'e_konfirmuar' && !oferta.konfirmuar) {
+            oferta.konfirmuar = true;
+            oferta.statusi = 'e_konfirmuar';
+            oferta.pakaZgjedhur = data.konfirmimi?.pakot || '';
+            oferta.komentKlient = data.konfirmimi?.koment || '';
+            oferta.dataKonfirmimit = data.konfirmimi?.data?.split('T')[0] || '';
+            localStorage.setItem('ofertat', JSON.stringify(ofertat));
+            if (typeof renderTabela === 'function') renderTabela();
         }
+    }
+
+    // Tab 1: progress bar status (siç ishte)
+    if (data) {
         let container = document.getElementById('tracking-bar');
         if (!container) {
             container = document.createElement('div');
             container.id = 'tracking-bar';
-            // Mbështet të dy emrat e klases: .drawer-panel-body (oferta.html) + .drawer-body (legacy)
-            const drawerBody = document.querySelector('.drawer-panel-body') || document.querySelector('.drawer-body');
+            const detajetTab = document.querySelector('.drawer-tab-content[data-content="detajet"]');
+            const drawerBody = detajetTab || document.querySelector('.drawer-panel-body');
             if (drawerBody) drawerBody.insertBefore(container, drawerBody.firstChild);
         }
         container.innerHTML = statusProgressBar(data);
     }
+
+    // Tab 2: tracking i detajuar
+    renderTrackingDetajuar(data, persistent);
+    if (window.lucide) lucide.createIcons();
 };

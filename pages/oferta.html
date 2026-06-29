@@ -101,6 +101,75 @@
         /* Drawer body padding reset — për pakot-container të shfrytëzojë hapësirën */
         .drawer-panel { max-width: 960px; }
         .drawer-panel-body { padding: 18px 20px; }
+
+        /* Faza 2E-A: drawer tabs (Detajet | Historiku & Tracking) */
+        .drawer-tabs {
+            display: flex; gap: 0;
+            border-bottom: 1px solid var(--s-border);
+            margin: -18px -20px 18px;
+            padding: 0 20px;
+            background: var(--s-bg-1);
+        }
+        .drawer-tab {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 12px 16px;
+            border: none; background: transparent;
+            color: var(--s-text-muted);
+            font-family: inherit; font-size: 12.5px; font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.15s;
+        }
+        .drawer-tab i { width: 14px; height: 14px; }
+        .drawer-tab:hover { color: var(--s-text); }
+        .drawer-tab.drawer-tab-active {
+            color: var(--s-brand-dark);
+            border-bottom-color: var(--s-brand);
+        }
+        .drawer-tab-content { animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+
+        /* Tracking section në Tab 2 */
+        .tracking-section { margin-bottom: 18px; }
+        .tracking-section-header {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 700;
+            color: var(--s-brand-dark);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--s-border-light);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .tracking-section-header i { width: 16px; height: 16px; color: var(--s-brand); }
+        .tracking-detailed-body { font-size: 12px; line-height: 1.55; color: var(--s-text-sub); }
+        .tracking-empty { color: var(--s-text-faint); font-style: italic; padding: 12px; text-align: center; }
+        .tracking-stat-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .tracking-stat {
+            background: var(--s-bg-1);
+            border: 1px solid var(--s-border-light);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+        .tracking-stat-label {
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase;
+            color: var(--s-text-muted);
+            letter-spacing: 0.3px;
+            margin-bottom: 3px;
+        }
+        .tracking-stat-value {
+            font-size: 16px; font-weight: 700;
+            color: var(--s-text);
+        }
+        .tracking-stat-sub {
+            font-size: 10px; color: var(--s-text-muted);
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
@@ -265,38 +334,64 @@
                 </button>
             </div>
             <div class="drawer-panel-body">
-                <div class="form-grid">
-                    <div class="form-group"><label>Emri Mbiemri</label><input id="m-emri" placeholder="Emri Mbiemri / Kompania"></div>
-                    <div class="form-group"><label>Email</label><input id="m-email" type="email" placeholder="email@example.com"></div>
+                <!-- Faza 2E-A: 2 tabs (Detajet | Historiku & Tracking) -->
+                <div class="drawer-tabs" id="oferta-drawer-tabs">
+                    <button class="drawer-tab drawer-tab-active" data-tab="detajet" onclick="ofertaSetTab('detajet')" type="button">
+                        <i data-lucide="file-text"></i> Detajet
+                    </button>
+                    <button class="drawer-tab" data-tab="tracking" onclick="ofertaSetTab('tracking')" type="button">
+                        <i data-lucide="bar-chart-3"></i> Historiku &amp; Tracking
+                    </button>
                 </div>
-                <div class="drawer-extra-fields" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--s-border-light);">
-                    <div class="form-group"><label>Kërkuar nga</label>
-                        <select id="m-kerkuar-nga" onchange="tregoBoxAgjenti()">
-                            <option value="direkt">Direkt</option>
-                            <option value="online">Online</option>
-                            <option value="agjenti">Agjenti</option>
-                        </select>
+
+                <!-- TAB 1: Detajet (përmbajtja ekzistuese) -->
+                <div class="drawer-tab-content" data-content="detajet">
+                    <!-- tracking-bar (status progress) injektohet ende këtu nga oferta-tracking.js -->
+                    <div class="form-grid">
+                        <div class="form-group"><label>Emri Mbiemri</label><input id="m-emri" placeholder="Emri Mbiemri / Kompania"></div>
+                        <div class="form-group"><label>Email</label><input id="m-email" type="email" placeholder="email@example.com"></div>
                     </div>
-                    <div class="form-group" id="field-agjenti" style="display:none"><label>Emri i Agjentit</label><input id="m-agjenti" placeholder="Emri i agjentit"></div>
-                </div>
-
-                <input type="hidden" id="m-lloji" value="individ">
-
-                <div class="lloji-selector" style="margin-top:18px;">
-                    <button class="lloji-btn drawer-lloji-btn active" onclick="zgjidhLlojin('individ',this)">Individuale</button>
-                    <button class="lloji-btn drawer-lloji-btn" onclick="zgjidhLlojin('familje',this)">Familjare</button>
-                    <button class="lloji-btn drawer-lloji-btn" onclick="zgjidhLlojin('biznes',this)">Biznese</button>
-                </div>
-
-                <div id="pakot-container"></div>
-
-                <div class="version-panel" id="version-panel" style="display:none">
-                    <div class="version-panel-header" onclick="toggleVersions()">
-                        <span id="history-arrow">▸</span>
-                        <span id="history-label">Historiku i ofertës</span>
-                        <span id="version-count">0</span>
+                    <div class="drawer-extra-fields" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--s-border-light);">
+                        <div class="form-group"><label>Kërkuar nga</label>
+                            <select id="m-kerkuar-nga" onchange="tregoBoxAgjenti()">
+                                <option value="direkt">Direkt</option>
+                                <option value="online">Online</option>
+                                <option value="agjenti">Agjenti</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="field-agjenti" style="display:none"><label>Emri i Agjentit</label><input id="m-agjenti" placeholder="Emri i agjentit"></div>
                     </div>
-                    <div id="version-body" style="display:none;"></div>
+
+                    <input type="hidden" id="m-lloji" value="individ">
+
+                    <div class="lloji-selector" style="margin-top:18px;">
+                        <button class="lloji-btn drawer-lloji-btn active" onclick="zgjidhLlojin('individ',this)">Individuale</button>
+                        <button class="lloji-btn drawer-lloji-btn" onclick="zgjidhLlojin('familje',this)">Familjare</button>
+                        <button class="lloji-btn drawer-lloji-btn" onclick="zgjidhLlojin('biznes',this)">Biznese</button>
+                    </div>
+
+                    <div id="pakot-container"></div>
+                </div>
+
+                <!-- TAB 2: Historiku & Tracking (i ri) -->
+                <div class="drawer-tab-content" data-content="tracking" style="display:none;">
+                    <div id="tracking-section" class="tracking-section">
+                        <div class="tracking-section-header">
+                            <i data-lucide="activity"></i> Tracking i detajuar
+                        </div>
+                        <div id="tracking-detailed-body" class="tracking-detailed-body">
+                            <div class="tracking-empty">Duke ngarkuar...</div>
+                        </div>
+                    </div>
+
+                    <div class="version-panel" id="version-panel" style="display:none">
+                        <div class="version-panel-header" onclick="toggleVersions()">
+                            <span id="history-arrow">▸</span>
+                            <span id="history-label">Historiku i ofertës</span>
+                            <span id="version-count">0</span>
+                        </div>
+                        <div id="version-body" style="display:none;"></div>
+                    </div>
                 </div>
             </div>
             <div class="drawer-footer">
